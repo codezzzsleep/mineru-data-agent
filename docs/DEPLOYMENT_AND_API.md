@@ -104,9 +104,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\run_submission_cases.ps1 -Pyt
 powershell -ExecutionPolicy Bypass -File .\scripts\collect_mineru_case.ps1 -RunDir runs\mineru_cli_refresh\4568109b3cc5
 ```
 
-当前结果位于 `submission_artifacts/mineru_cases/`。该目录用于证明本地 `mineru-cli` 后端、页级 provenance、MinerU 中间文件和 retrieval 导出已经跑通。
+当前结果位于 `submission_artifacts/mineru_cases/`。该目录记录本地 `mineru-cli` 后端、页级 provenance、MinerU 中间文件和 retrieval 导出。
 
-生成官方公开真实文档证据包：
+生成官方公开真实文档案例：
 
 ```powershell
 .\.venv\Scripts\python.exe .\scripts\run_public_real_cases.py
@@ -120,7 +120,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\collect_mineru_case.ps1 -RunD
 .\.venv\Scripts\python.exe .\scripts\run_long_document_chunks.py
 ```
 
-当前结果位于 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/`。脚本会计算 PDF 页数，并按在线 MinerU Agent API 20 页上限拆分 page ranges。本次 NIST 48 页公开 PDF 保存 3 个分片、3/3 成功、42.418 秒、58 个 retrieval chunks；这证明长文档可通过 Agent 调度分片执行，但不是本地 CLI/GPU benchmark。
+当前结果位于 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/`。脚本会计算 PDF 页数，并按在线 MinerU Agent API 20 页上限拆分 page ranges。本次 NIST 48 页公开 PDF 保存 3 个分片、3/3 成功、42.418 秒、58 个 retrieval chunks；该结果展示在线 API 长文档分片执行，不是本地 CLI/GPU benchmark。
 
 ## 5. API 服务
 
@@ -317,7 +317,7 @@ runs/api/<run_id>/
 python scripts/build_evaluation_report.py
 ```
 
-当前报告位于 `submission_artifacts/evaluation/evaluation_metrics.json` 和 `submission_artifacts/evaluation/evaluation_metrics.md`。已保存结果显示 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile、结构、质量、provenance 和 recovery 门槛均通过。该指标不是完整 OCR 字符级准确率，而是面向本赛题可复查结构化输出的提交级评测面。
+当前报告位于 `submission_artifacts/evaluation/evaluation_metrics.json` 和 `submission_artifacts/evaluation/evaluation_metrics.md`。已保存结果显示 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile、结构、质量、provenance 和 recovery 门槛均通过。该报告面向本赛题的结构化输出复查；OCR 字符级和表格逐格指标可按 `docs/BENCHMARK_AND_ROADMAP.md` 扩展。
 
 ## 9. 稳定性、耗时与并发 Smoke
 
@@ -352,7 +352,7 @@ python scripts/run_http_load_test.py --requests 12 --concurrency 6 --endpoint mi
 python scripts/run_http_load_test.py --requests 100 --concurrency 20 --endpoint mixed --output-dir submission_artifacts/http_load_test_100
 ```
 
-当前报告位于 `submission_artifacts/http_load_test_100/http_load_test_report.json` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`。它保存 100 请求、并发 20、同步/异步各 50、100/100 成功、P95 约 4.21 秒、100/100 trace/result/summary 在运行时落盘的证据。该增强版默认不保留 100 份请求 artifact，避免提交包体积过大；需要逐请求 artifact 时可加 `--keep-artifacts` 复跑。
+当前报告位于 `submission_artifacts/http_load_test_100/http_load_test_report.json` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`。它保存 100 请求、并发 20、同步/异步各 50、100/100 成功、P95 约 4.21 秒、100/100 trace/result/summary 在运行时落盘的结果。该增强版默认不保留 100 份请求 artifact，避免提交包体积过大；需要逐请求 artifact 时可加 `--keep-artifacts` 复跑。
 
 如果 API 跑在 Docker 容器内，而压测脚本跑在宿主机，文件系统路径不同，应加 `--no-output-root`，让容器使用自身的 `/app/runs/api`：
 
@@ -385,4 +385,4 @@ export MINERU_DATA_AGENT_MODELSCOPE_OUTPUT_USD_PER_MILLION_TOKENS="<output-price
 
 也可用通用变量 `MINERU_DATA_AGENT_LLM_INPUT_USD_PER_MILLION_TOKENS` 和 `MINERU_DATA_AGENT_LLM_OUTPUT_USD_PER_MILLION_TOKENS`。当前 live ModelScope 案例已有 provider token usage；recovery 演练里的离线 LLM 回放仍会如实显示 0 tokens。
 
-边界：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证；HTTP load smoke 是本机 TCP loopback 验证；long document chunk report 是在线 API 分片执行证据；baseline comparison 是保存 artifact 的对比视图；LLM cost report 只统计 provider 返回或已保存的 usage。它们仍不是外部公网压测、GPU 长文档压力测试、云成本 benchmark 或第三方 OCR benchmark。若要宣称生产级高负载能力，需要额外提供公网并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。
+口径：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证；HTTP load smoke 是本机 TCP loopback 验证；long document chunk report 是在线 API 分片执行结果；baseline comparison 是保存 artifact 的对比视图；LLM cost report 统计 provider 返回或已保存的 usage。公网压测、GPU 长文档压力测试、云成本 benchmark 和第三方 OCR benchmark 可按部署环境继续补充。

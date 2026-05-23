@@ -42,12 +42,12 @@
 - [x] API 失败响应会返回失败 run 的 `trace_path`，便于评审脚本定位证据
 - [x] `result.json` 包含章节、表格、键值对、数字事实、日期/建议/异常语义信号
 - [x] 新运行的 `result.json` 包含 `field_evidence` 和 `field_evidence_map`，记录字段 confidence proxy、证据文本和 provenance
-- [x] 批处理 `batch_report.json` 可证明失败不中断和多任务调度能力
+- [x] 批处理 `batch_report.json` 记录失败不中断和多任务调度结果
 - [x] `retrieval/retrieval_chunks.jsonl` 可用于检索/向量库入库
 - [x] `retrieval/retrieval_manifest.json` 和 `retrieval/retrieval_quality.json` 记录检索导出统计和过滤情况
 - [x] DOCX/PPTX 文件级案例已生成，证据见 `submission_artifacts/office_cases/`
 - [x] `result.json` 包含 `recovery_decision.attempts`、`selected_attempt` 和 `initial_issue_codes`，用于记录自动恢复执行和复核建议
-- [x] 原创性与第三方参考边界已说明，不把参考项目代码或命名包装为本项目原创能力
+- [x] 原创性与第三方参考边界已说明，不把参考项目代码或命名包装为本项目原创内容
 - [x] 明确说明使用的 MinerU backend、镜像和计算资源
 - [x] CPU 环境完成一次 `--runner agent-api` 真实 PDF 全流程复跑，证据见 `submission_artifacts/agent_api_cases/`
 - [x] 本地 MinerU CLI 完成 4 个 PDF 文件级 `--runner cli` 全流程复跑，证据见 `submission_artifacts/mineru_cases/`

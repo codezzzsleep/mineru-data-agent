@@ -1,21 +1,21 @@
-# Executive Summary
+# 一页摘要
 
-MinerU Data Agent 是一个面向赛道二的可信文档处理 Agent：它在 MinerU/Office/HTML 解析之上增加任务意图识别、动态 schema、质量校验、自动恢复、检索导出和可审计日志。
+MinerU Data Agent 面向赛道二提交：在 MinerU、Office 和 HTML 解析结果之上，增加任务规划、结构化抽取、质量校验、自动恢复、检索导出和运行日志。
 
-## 关键证据
+## 评审先看
 
-| 评审关注点 | 证据位置 |
-| --- | --- |
-| Agent 自适应规划 | `submission_artifacts/adaptive_cases/` |
-| 真实 LLM token 用量 | `submission_artifacts/llm_cost/llm_cost_report.md` |
-| 长文档分片执行 | `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/` |
-| 带标注指标与 F1 | `submission_artifacts/evaluation/evaluation_metrics.md` |
-| HTTP 并发 smoke | `submission_artifacts/http_load_test_100/http_load_test_report.md` |
-| Recovery 证据 | `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` |
+| 关注点 | 当前结果 | 位置 |
+| --- | --- | --- |
+| 不同任务触发不同计划 | 同一财报输入分别生成增长排名和异常复核两套 `adaptive_decision`、`target_schema`、`post_processors`、`task_result` | `submission_artifacts/adaptive_cases/` |
+| 带标注指标 | 17 个案例、45 个字段、22 条文本证据、11 条数字证据、6 条表格证据；输出字段级 precision/recall/F1 | `submission_artifacts/evaluation/evaluation_metrics.md` |
+| PDF 页级恢复 | 在线 API 缺少页级 provenance 后，记录 `no_page_provenance` 并切换到 CLI artifact，`recovery_decision.executed=true` | `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` |
+| 长文档分片 | NIST AI RMF 48 页拆成 1-20、21-40、41-48 三段；3/3 成功，58 个 retrieval chunks | `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/` |
+| LLM 用量 | ModelScope DeepSeek-V4-Flash 实跑 2 次调用，记录 4309 tokens | `submission_artifacts/llm_cost/llm_cost_report.md` |
+| API 并发 | 本地 HTTP loopback 100 请求、并发 20、100/100 成功，P95 约 4.21 秒 | `submission_artifacts/http_load_test_100/http_load_test_report.md` |
 
-## 核心改进
+## 本轮重点
 
-- 同一文档、不同自然语言任务会生成不同 `adaptive_decision`、`target_schema`、`post_processors` 和 `task_result`。
-- 财报类任务可对表格行计算 delta/percent_change，并产出 `top_growth_candidate`。
-- 评测报告除轻量标签准确率外，新增字段级 precision/recall/F1 和 failed-check 分布。
-- 提交包保留诚实边界：当前不是公网生产压测，不是完整 OCR 字符级 benchmark，也不是本机 GPU 长文档 benchmark。
+- `quality.score` 用于记录空结果、乱码、页级来源缺失、合计行不一致等规则风险；字段级指标单独在 evaluation 报告中统计。
+- `execution_control` 记录任务意图、目标 schema、后处理器、LLM 建议的应用/忽略原因和恢复策略。
+- `trace.json`、`result.json`、`summary.md`、`retrieval_chunks.jsonl` 每次运行落盘，便于按文件复查。
+- 当前未包含：公网生产压测、完整 OCR 字符级 benchmark、本机 GPU 长文档 benchmark。

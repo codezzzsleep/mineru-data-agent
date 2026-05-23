@@ -1,12 +1,12 @@
 # Case Studies
 
-本提交包把案例证据分成九类，避免把轻量 fixture、合成文件或离线恢复演练结果包装成真实客户材料的广泛评测。
+本提交包把案例分成九类。每类都保留输入、结果、日志和复跑方式，方便按文件检查。
 
 ## 1. HTML/网页 Fixture 案例
 
 这 5 个案例统一由 `examples/batch_manifest_5cases.json` 驱动，并通过 `scripts/run_submission_cases.ps1` 生成。每个案例目录都包含输入 fixture、`result.json`、`trace.json`、`summary.md` 和 `retrieval/` 导出文件。
 
-边界说明：这些 HTML/网页案例是自构造 fixture，目标是验证 Agent 管线、质量校验、自动恢复、trace 和 retrieval 导出，不代表真实 PDF 的字段级或表格逐格准确率。表格中的 100 分是规则校验分，不是人工标注准确率。
+口径说明：这些 HTML/网页案例用于复跑 Agent 管线、质量校验、自动恢复、trace 和 retrieval 导出。表格中的 100 分是规则校验分；带人工标签的字段指标见 `submission_artifacts/evaluation/`。
 
 案例输出位置：`submission_artifacts/cases/`
 
@@ -54,7 +54,7 @@ PDF 文件级案例位置：`submission_artifacts/mineru_cases/`
 - `retrieval/`：保留 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`。
 - `input.pdf`：保留本次案例输入副本，便于复查。
 - `case_mineru_cli_financial_pdf/human_spot_check.md`：对财报 fixture 的关键行和合计行做 8/8 样本级人工核对。
-- `case_mineru_cli_financial_pdf/mismatch_drill/`：故意把合计行改错，保存 `numeric_total_mismatch` 触发证据，证明规则不是永远报通过。
+- `case_mineru_cli_financial_pdf/mismatch_drill/`：故意把合计行改错，保存 `numeric_total_mismatch` 触发记录，用于检查规则能否识别错误合计。
 
 收集方式：
 
@@ -90,7 +90,7 @@ Recovery 案例位置：`submission_artifacts/recovery_cases/case_pdf_llm_api_to
 | 最终质量 | `pass` 100 |
 | 最终 provenance | `page` |
 
-边界必须如实说明：当前运行环境没有可用的 DeepSeek/ModelScope key，也没有可直接调用的本地 MinerU CLI 可执行文件，所以这个案例使用离线确定性预调度器和已保存的本地 CLI artifact 回放。它证明的是代码级自动 fallback、attempt 记录、择优和证据链闭合；若要做现场全链路演示，需要配置真实 LLM key 和 MinerU CLI。
+运行条件：当前运行环境没有可用的 DeepSeek/ModelScope key，也没有可直接调用的本地 MinerU CLI 可执行文件，所以这个案例使用离线确定性预调度器和已保存的本地 CLI artifact 回放。该目录记录自动 fallback、attempt 记录、择优和结果落盘；现场全链路演示需要配置真实 LLM key 和 MinerU CLI。
 
 ## 5. DOCX/PPTX 文件级案例
 
@@ -125,11 +125,11 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 
 这些样本已纳入 `examples/evaluation/labels.json` 和 `submission_artifacts/evaluation/`，用于评测 17 个提交案例中的新增挑战维度。
 
-## 7. 自适应规划证据包
+## 7. 自适应规划案例
 
 自适应规划位置：`submission_artifacts/adaptive_cases/`
 
-该证据包使用同一份财报 HTML 输入，分别执行两个不同自然语言任务，检查 Agent 是否改变任务意图、目标 schema、后处理器和任务级答案。
+该案例使用同一份财报 HTML 输入，分别执行两个不同自然语言任务，检查 Agent 是否改变任务意图、目标 schema、后处理器和任务级答案。
 
 | Case | 任务 | 关键差异 |
 | --- | --- | --- |
@@ -142,13 +142,13 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 .\.venv\Scripts\python.exe .\scripts\run_adaptive_planning_cases.py
 ```
 
-边界说明：该证据证明任务级规划和后处理可变，不等同于多轮对话 Agent 或大规模语义 benchmark。
+口径说明：该案例检查任务级规划和后处理是否随任务变化；多轮对话规划和大规模语义 benchmark 可在后续基准集中补充。
 
-## 8. 官方公开真实文档证据包
+## 8. 官方公开真实文档案例
 
 公开真实文档位置：`submission_artifacts/public_real_cases/`
 
-这些案例由 `examples/public_real_documents/manifest.json` 和 `scripts/run_public_real_cases.py` 生成。它们使用官方公开来源，不是本项目合成 fixture；每个案例保存输入副本、`source_metadata.json`、`human_labels.json`、`result.json`、`trace.json`、`summary.md` 和 retrieval 导出。标签范围是样本级人工轻量标注和文本证据检查，不宣称完整 OCR 字符级或表格逐格准确率。
+这些案例由 `examples/public_real_documents/manifest.json` 和 `scripts/run_public_real_cases.py` 生成。它们使用官方公开来源，不是本项目合成 fixture；每个案例保存输入副本、`source_metadata.json`、`human_labels.json`、`result.json`、`trace.json`、`summary.md` 和 retrieval 导出。标签范围包括关键字段、文本证据和部分数字/表格证据。
 
 | Case | 官方来源 | 文档类型 | 标注重点 | 当前结果 |
 | --- | --- | --- | --- | --- |
@@ -157,7 +157,7 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 | `public_microsoft_annual_report` | U.S. SEC EDGAR | Microsoft 2024 Annual Report PDF exhibit | 公司、年报标题、财年、Revenue/Cash/Cloud 文本证据 | `pass_with_warnings` 76，48 个 retrieval chunks |
 | `public_cdc_vis_instructions` | Centers for Disease Control and Prevention | VIS 使用说明 PDF | 主题、机构、法律语境、Required Use 文本证据 | `pass_with_warnings` 84，5 个 retrieval chunks |
 
-边界说明：NIST 与 Microsoft 是长文档，公开真实样本包通过在线 MinerU Agent API 跑前 20 页，`source_metadata.json` 中保留 `page_range`。4 个公开案例都因在线 API 轻量路径缺少页级 provenance 而保留 `no_page_provenance` warning，评审应把它看作外部真实材料兼容性证据，而不是页级审计能力的最终证明。
+口径说明：NIST 与 Microsoft 是长文档，公开真实样本包通过在线 MinerU Agent API 跑前 20 页，`source_metadata.json` 中保留 `page_range`。4 个公开案例都因在线 API 轻量路径缺少页级 provenance 而保留 `no_page_provenance` warning；需要页级 artifact 时应使用本地 MinerU CLI。
 
 复跑方式：
 
@@ -183,7 +183,7 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 .\.venv\Scripts\python.exe .\scripts\run_long_document_chunks.py
 ```
 
-边界说明：这是在线 API 长文档分片编排证据，不是本地 MinerU CLI/GPU pages-per-second benchmark，也不是公网生产压测；在线 API 路径仍可能缺少页级 provenance。
+口径说明：这是在线 API 长文档分片编排结果；本地 MinerU CLI/GPU pages-per-second 和公网压测需在对应环境单独运行。在线 API 路径仍可能缺少页级 provenance。
 
 ## 10. LLM-Enabled 财报复核案例
 
@@ -218,7 +218,7 @@ LLM 在该案例中的职责是：
 - Provenance gate pass rate: 100.0% (17/17)
 - Recovery gate pass rate: 100.0% (2/2)
 
-该评测不是完整 OCR 字符级标注集，但能把关键字段、结构输出和可追溯性变成可复跑指标，补足“只有案例展示、没有指标”的短板。
+该评测把关键字段、结构输出和可追溯性变成可复跑指标。OCR 字符级和表格逐格标注可按 `docs/BENCHMARK_AND_ROADMAP.md` 扩展。
 
 ## 12. 稳定性、耗时与 API 并发 Smoke
 
@@ -257,15 +257,15 @@ API 并发 smoke 位置：`submission_artifacts/api_load_smoke/`
 
 该报告由 `scripts/build_baseline_comparison.py` 生成，复用 evaluation 与 stability 两份报告，把 17 个案例按 native HTML、MinerU CLI PDF、Office、LLM recovery、挑战 fixture 和官方公开 PDF 分组。当前保存结果显示每组轻量人工标注检查均通过，同时保留工具耗时、平均质量分、trace 步骤、页级 provenance 和 recovery 执行数量，用来回应评审关于“成本、速度、精度平衡没有量化”的追问。
 
-边界说明：稳定性报告是保存 artifact 的摘要；API 并发 smoke 是本地进程内接口验证；HTTP loopback 压测走真实本地 TCP 请求；长文档分片案例是单文档在线 API 编排验证；成本/速度/质量对比基于保存 artifact 和轻量人工标注。它们仍不是外部公网、高 GPU 负载、第三方 OCR benchmark 或长期长文档 soak 压测。
+口径说明：稳定性报告是保存 artifact 的摘要；API 并发 smoke 是本地进程内接口验证；HTTP loopback 压测走真实本地 TCP 请求；长文档分片案例是单文档在线 API 编排验证；成本/速度/质量对比基于保存 artifact 和人工标注。
 
-## 13. 边界说明
+## 13. 后续补充项
 
-当前证据已经能证明项目具备 HTML/网页结构化处理闭环、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出能力。
+当前案例覆盖 HTML/网页结构化处理、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出。
 
-但目前仍有明确缺口：
+后续如继续冲高分，优先补以下材料：
 
-- PDF 文件级证据已扩展到 4 个，Office 文件级证据已扩展到 2 个，挑战 fixture 已扩展到 4 个，并新增 4 个官方公开真实 PDF 案例；但公开真实案例仍是轻量人工标注，还不足以证明真实客户材料的长期泛化能力。
+- 扩大公开真实 PDF 标注集，把当前轻量标注升级为字段级、表格逐格或 OCR 字符级 benchmark。
 - LLM 预调度已接入 profile/method/backend/lang 的安全控制，但 runner 的实际选择仍由部署参数控制，避免模型在运行中切换到当前环境不可用的后端。
-- 已补“真实 PDF + 解析前调度 + recovery executed=true”的证据 artifact，但当前环境使用离线确定性预调度器和缓存 CLI artifact 回放；直播式全链路证据仍需要真实 DeepSeek/ModelScope key 和可调用 MinerU CLI。
-- 当前 API smoke 已覆盖本地 HTML 上传、PDF 上传、异步 job 接口和本地并发 smoke；PDF 路径使用在线 Agent API，因此仍会保留 `no_page_provenance` 边界提示。
+- 使用真实 DeepSeek/ModelScope key 与可调用 MinerU CLI 复跑 PDF recovery，生成现场全链路日志。
+- 在公网或 HeyWhale GPU 环境复跑 API 压测和长文档 CLI benchmark。

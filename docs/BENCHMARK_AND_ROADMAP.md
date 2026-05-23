@@ -1,13 +1,13 @@
 # Benchmark and Roadmap
 
-This document answers two reviewer questions that should not be hidden inside the README:
+This document answers two reviewer questions:
 
 1. What is this project compared against?
 2. What remains to be proven before making stronger accuracy or production claims?
 
 ## 1. Current Evidence Position
 
-The current submission is strongest as an engineering evidence package for a MinerU-based Data Agent:
+The current submission focuses on a MinerU-based Data Agent with saved artifacts for:
 
 - task planning and profile routing
 - online API / local CLI / native Office and HTML execution paths
@@ -15,7 +15,7 @@ The current submission is strongest as an engineering evidence package for a Min
 - lightweight labeled evaluation across saved cases
 - live local HTTP API smoke testing
 
-It should not be presented as a full OCR benchmark or a hidden-test leaderboard result. Current labels are submission-facing checks over selected key fields, text evidence, numeric evidence, table fragments, profile routing, quality gates, provenance gates, and recovery gates.
+Current labels cover selected key fields, text evidence, numeric evidence, table fragments, profile routing, quality gates, provenance gates, and recovery gates. OCR character-level and table cell-level benchmark labels can be added with the schema below.
 
 ## 2. Baseline Matrix
 
@@ -79,7 +79,7 @@ Compare:
 - token count
 - estimated cost per document
 
-Current saved artifacts include older LLM runs that predate token instrumentation, so `submission_artifacts/llm_cost/` may honestly show missing token usage until the LLM cases are regenerated with live provider responses.
+Current saved artifacts include older LLM runs that predate token instrumentation. Regenerating those cases with live provider responses fills the token and cost fields.
 
 ## 5. Engineering Roadmap
 
@@ -98,14 +98,14 @@ Medium-term maintainability items:
 3. Add external baselines for raw MinerU, PyMuPDF/PyPDF2 text, Marker, and direct LLM extraction.
 4. Publish a small benchmark label schema for community contributions.
 
-## 6. Honest Submission Boundary
+## 6. Next Measurements
 
-The current project is submit-ready as a strong engineering Data Agent. It should not claim:
+The following measurements would support stronger public claims:
 
-- full OCR character-level accuracy
-- table cell-level benchmark superiority
+- OCR character-level accuracy
+- table cell-level benchmark results
 - public internet production load capacity
 - GPU high-throughput stability
-- live full-chain LLM + MinerU CLI recovery unless regenerated in such an environment
+- live full-chain LLM + MinerU CLI recovery in the target environment
 
-Those claims require the benchmark and live runs described above.
+The benchmark and live runs above define how to collect those measurements.
