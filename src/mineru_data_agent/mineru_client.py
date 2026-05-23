@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -12,6 +13,13 @@ from typing import Any
 import httpx
 
 from .models import ParseArtifacts, ToolCall
+
+
+def resolve_mineru_executable(executable: str | None = None) -> str | None:
+    candidate = executable or os.getenv("MINERU_EXECUTABLE")
+    if candidate:
+        return candidate
+    return shutil.which("mineru")
 
 
 class MinerUParseError(RuntimeError):

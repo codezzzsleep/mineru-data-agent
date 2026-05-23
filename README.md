@@ -14,7 +14,7 @@
 - 文本质量、页码溯源、财报数字、合同/规范结构等校验
 - 可选 DeepSeek/ModelScope 预执行调度：在解析前建议 profile、runner、backend、method、语言、目标 schema 和恢复策略，并把安全白名单内的建议实际应用到本次运行
 - 质量异常后的自动恢复执行：编码噪声清理二次 pass，以及 PDF/图片类低质量结果的 OCR 重试择优
-- 在线 Agent API 缺少页级 provenance 时，可自动触发本地 MinerU CLI fallback，并把初始问题码、两次尝试和最终择优结果写入 `recovery_decision`
+- 在线 Agent API 缺少页级 provenance 时，如果检测到本地 MinerU CLI 或显式配置了 CLI 路径，可自动触发 CLI fallback，并把初始问题码、两次尝试和最终择优结果写入 `recovery_decision`
 - 面向检索/评测入库的 `retrieval_chunks.jsonl` 导出
 - `result.json`、`trace.json`、`summary.md` 三类可复查输出
 - FastAPI 接口，方便组委会或评审脚本调用
@@ -148,7 +148,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\collect_mineru_case.ps1 -RunD
 
 当前证据位于 `submission_artifacts/mineru_cases/case_mineru_cli_low_quality_pdf/`，包含原始输入 PDF、副本、`mineru-cli` trace、MinerU `middle/model/layout/span/origin` 等 artifact 和 retrieval 导出。
 
-在线 API 缺少页级 provenance 时的自动 CLI fallback 可保持默认开启；如需指定 fallback 使用的本地 MinerU 可执行文件：
+在线 API 缺少页级 provenance 时，系统会在检测到本地 `mineru` 命令、`MINERU_EXECUTABLE` 或显式 `--fallback-mineru-executable` 后自动启用 CLI fallback；没有可用 CLI 时会保留在线 API 结果和 provenance 警告，避免在评审 CPU 环境里产生无意义的失败恢复记录：
 
 ```bash
 data-agent run \
@@ -298,7 +298,7 @@ python scripts/build_evaluation_report.py
 ## Backend Strategy
 
 - `--runner agent-api`：调用 MinerU 在线 Agent API，免 Token、资源轻、启动快，适合先完成比赛演示闭环。
-- 在线 Agent API 的轻量 Markdown 路径不保证页级 provenance；系统会在 `quality.issues` 中用 `no_page_provenance` 显式提示，并在配置了 CLI fallback 时自动尝试本地 MinerU CLI。
+- 在线 Agent API 的轻量 Markdown 路径不保证页级 provenance；系统会在 `quality.issues` 中用 `no_page_provenance` 显式提示，并在检测到可用 CLI fallback 时自动尝试本地 MinerU CLI。
 - `--runner cli`：调用本地 MinerU CLI，适合 GPU 镜像、大文件、完整中间结果和可视化 PDF artifact。
 - `--llm deepseek`：可选 DeepSeek v4-flash 官方推理层，参与解析前调度和解析后复核；不开启时项目仍可完整运行。
 - `--llm modelscope`：可选 ModelScope 推理入口，默认模型 `deepseek-ai/DeepSeek-V4-Flash`。

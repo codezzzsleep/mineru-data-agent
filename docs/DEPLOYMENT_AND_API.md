@@ -51,7 +51,7 @@ data-agent run \
   --method auto
 ```
 
-在线 API 缺少页级 provenance 时默认会尝试本地 CLI fallback。可通过 `--fallback-mineru-executable` 指定 fallback 使用的 MinerU 可执行文件；如只想保留在线 API 结果，可关闭该恢复路径：
+在线 API 缺少页级 provenance 时，系统会在检测到本地 `mineru` 命令、`MINERU_EXECUTABLE` 或显式 CLI 路径后尝试本地 CLI fallback。可通过 `--fallback-mineru-executable` 指定 fallback 使用的 MinerU 可执行文件；如果当前环境没有可用 CLI，系统会保留在线 API 结果和 `no_page_provenance` 警告，不会盲目产生失败恢复记录。如只想保留在线 API 结果，也可关闭该恢复路径：
 
 ```bash
 data-agent run \
@@ -194,7 +194,7 @@ curl -X POST http://127.0.0.1:8080/v1/parse \
 
 本提交包保存了一次实际启用 ModelScope DeepSeek-V4-Flash 的运行证据，见 `submission_artifacts/llm_cases/`。该证据的 `trace.json` 记录了 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`。当前代码还会在解析前新增 `llm_pre_execution_planning` 步骤：LLM 建议 profile、runner、backend、method、语言、目标 schema 和恢复策略，系统把白名单内且未被显式锁定的建议写入 `execution_control.applied` 并用于本次解析。API key 只通过环境变量传入，不进入输出文件。
 
-API 同样支持 provenance fallback 参数：`cli_fallback_on_no_page_provenance=true` 默认开启，`fallback_mineru_executable` 可指定本地 MinerU CLI 路径。当前提交包的 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 已保存一个真实 PDF 的恢复演练：在线 API 首次解析后触发 `no_page_provenance`，随后选择 `cli_fallback`，最终 `recovery_decision.executed=true`。该案例在无真实 key/CLI 的当前环境下使用离线确定性预调度器和缓存 CLI artifact 回放，文档和 trace 已标注边界。
+API 同样支持 provenance fallback 参数：`cli_fallback_on_no_page_provenance=true` 默认开启，`fallback_mineru_executable` 可指定本地 MinerU CLI 路径。实际 fallback runner 只有在显式路径、`MINERU_EXECUTABLE` 或系统 `mineru` 命令可用时才会创建。当前提交包的 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 已保存一个真实 PDF 的恢复演练：在线 API 首次解析后触发 `no_page_provenance`，随后选择 `cli_fallback`，最终 `recovery_decision.executed=true`。该案例在无真实 key/CLI 的当前环境下使用离线确定性预调度器和缓存 CLI artifact 回放，文档和 trace 已标注边界。
 
 ## 6. 返回结果
 

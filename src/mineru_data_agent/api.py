@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from . import __version__
 from .agent import AgentRunError, MinerUDataAgent
 from .llm_client import DeepSeekLLMClient, ModelScopeLLMClient
-from .mineru_client import MinerUAgentAPIRunner, MinerURunner
+from .mineru_client import MinerUAgentAPIRunner, MinerURunner, resolve_mineru_executable
 
 app = FastAPI(title="MinerU Data Agent", version=__version__)
 
@@ -66,10 +66,11 @@ async def parse_document(
         if runner == "agent-api"
         else MinerURunner(executable=mineru_executable)
     )
-    fallback_runner = (
-        MinerURunner(executable=fallback_mineru_executable or mineru_executable)
-        if runner == "agent-api" and cli_fallback_on_no_page_provenance
-        else None
+    fallback_runner = _build_fallback_runner(
+        runner=runner,
+        enabled=cli_fallback_on_no_page_provenance,
+        fallback_mineru_executable=fallback_mineru_executable,
+        mineru_executable=mineru_executable,
     )
     if llm == "modelscope":
         llm_client = ModelScopeLLMClient(model=llm_model, base_url=llm_base_url, timeout_seconds=llm_timeout)
@@ -115,6 +116,21 @@ def _normalize_choice(value: str, name: str, allowed: set[str]) -> str:
             detail={"error": f"invalid_{name}", "allowed": sorted(allowed), "received": value},
         )
     return normalized
+
+
+def _build_fallback_runner(
+    *,
+    runner: str,
+    enabled: bool,
+    fallback_mineru_executable: str | None,
+    mineru_executable: str | None,
+) -> MinerURunner | None:
+    if runner != "agent-api" or not enabled:
+        return None
+    executable = resolve_mineru_executable(fallback_mineru_executable or mineru_executable)
+    if not executable:
+        return None
+    return MinerURunner(executable=executable)
 
 
 def _resolve_output_root(output_root: str | None) -> Path:

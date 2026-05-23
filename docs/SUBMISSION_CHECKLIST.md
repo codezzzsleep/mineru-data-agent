@@ -38,4 +38,5 @@
 - [x] CPU 环境完成一次 `--runner agent-api` 真实 PDF 全流程复跑，证据见 `submission_artifacts/agent_api_cases/`
 - [x] 本地 MinerU CLI 完成 4 个 PDF 文件级 `--runner cli` 全流程复跑，证据见 `submission_artifacts/mineru_cases/`
 - [x] 在线 API 缺页级 provenance 后自动 CLI fallback 的代码路径有单元测试和提交 artifact
+- [x] 无本地 CLI 环境下不会盲目创建 fallback runner，避免 CPU 评审环境产生无意义失败记录
 - [x] 最终提交压缩包或项目链接前完成一次全流程复跑

@@ -15,7 +15,7 @@
 系统由六层组成：
 
 1. Task Planner：根据任务描述和文件名推断场景 profile，例如财报、合同/规范、流程图、低质量 OCR。可选接入 DeepSeek v4-flash 或 ModelScope 上的 `deepseek-ai/DeepSeek-V4-Flash` 执行解析前调度，建议 profile、runner、backend、method、语言、目标 schema、复核重点和恢复策略。
-2. MinerU Adapter：支持在线 Agent API 与本地 MinerU CLI 两种后端。在线 API 用于低成本快速验证，本地 CLI 用于保留 Markdown、content list、middle json、layout pdf 等完整 artifact。在线 API 的轻量 Markdown 路径若缺少页级 provenance，会被质量校验明确标注；当配置 fallback runner 时，系统会自动执行本地 CLI fallback 并择优。
+2. MinerU Adapter：支持在线 Agent API 与本地 MinerU CLI 两种后端。在线 API 用于低成本快速验证，本地 CLI 用于保留 Markdown、content list、middle json、layout pdf 等完整 artifact。在线 API 的轻量 Markdown 路径若缺少页级 provenance，会被质量校验明确标注；当检测到本地 CLI 或显式配置 fallback runner 时，系统会自动执行本地 CLI fallback 并择优。
 3. Structured Extractor：从 Markdown 与内容块中生成章节、表格、键值对、键值字典、数字事实、日期/建议/异常语义信号和页级溯源摘要。HTML 输入会保留标题层级、段落、列表和表格，避免网页语料被压平成不可复用纯文本。
 4. Retrieval Exporter：把解析结果整理为 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`，便于检索、向量库入库与评审复查。跨页文本不会再合并到第一页；chunk 保留 `page_no` 起始页和 `pages` 覆盖页列表。
 5. Quality Validator：检查空结果、编码噪声、页码覆盖、profile 预期、表格合计行等风险。

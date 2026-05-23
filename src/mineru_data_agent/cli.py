@@ -7,7 +7,7 @@ from pathlib import Path
 from .agent import MinerUDataAgent
 from .batch import run_batch
 from .llm_client import DeepSeekLLMClient, ModelScopeLLMClient
-from .mineru_client import MinerUAgentAPIRunner, MinerURunner
+from .mineru_client import MinerUAgentAPIRunner, MinerURunner, resolve_mineru_executable
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -109,7 +109,10 @@ def _build_runner(args: argparse.Namespace) -> MinerURunner | MinerUAgentAPIRunn
 def _build_fallback_runner(args: argparse.Namespace) -> MinerURunner | None:
     if args.runner != "agent-api" or not args.cli_fallback_on_no_page_provenance:
         return None
-    return MinerURunner(executable=args.fallback_mineru_executable or args.mineru_executable)
+    executable = resolve_mineru_executable(args.fallback_mineru_executable or args.mineru_executable)
+    if not executable:
+        return None
+    return MinerURunner(executable=executable)
 
 
 def _add_llm_args(parser: argparse.ArgumentParser) -> None:

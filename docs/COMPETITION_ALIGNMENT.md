@@ -43,7 +43,7 @@
 
 因此，本项目的比赛路线是：
 
-1. `--runner agent-api`：先跑通 Data Agent 主流程，保证 CPU 环境可演示。轻量结果若缺少页级 provenance，会在质量报告中标注；若配置了 fallback CLI，系统会自动尝试本地 MinerU CLI。
+1. `--runner agent-api`：先跑通 Data Agent 主流程，保证 CPU 环境可演示。轻量结果若缺少页级 provenance，会在质量报告中标注；若检测到本地 CLI 或显式配置了 fallback CLI，系统会自动尝试本地 MinerU CLI。
 2. `--runner cli`：在 MinerU 镜像或 GPU 资源可用时补齐完整 artifact，增强评审说服力。
 3. 在技术报告中明确两种后端的边界，避免把在线 API 的轻量结果包装成完整本地解析能力。
 

@@ -2,6 +2,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from mineru_data_agent import api as api_module
 from mineru_data_agent.api import app
 
 
@@ -102,3 +103,30 @@ def test_parse_api_rejects_output_root_outside_allowed_base(tmp_path: Path, monk
 
     assert response.status_code == 400
     assert response.json()["detail"]["error"] == "output_root_outside_allowed_base"
+
+
+def test_api_fallback_runner_skips_when_cli_unavailable(monkeypatch) -> None:
+    monkeypatch.setattr(api_module, "resolve_mineru_executable", lambda executable=None: None)
+
+    runner = api_module._build_fallback_runner(
+        runner="agent-api",
+        enabled=True,
+        fallback_mineru_executable=None,
+        mineru_executable=None,
+    )
+
+    assert runner is None
+
+
+def test_api_fallback_runner_uses_explicit_executable(monkeypatch) -> None:
+    monkeypatch.setattr(api_module, "resolve_mineru_executable", lambda executable=None: executable)
+
+    runner = api_module._build_fallback_runner(
+        runner="agent-api",
+        enabled=True,
+        fallback_mineru_executable="/opt/mineru/bin/mineru",
+        mineru_executable=None,
+    )
+
+    assert runner is not None
+    assert runner.executable == "/opt/mineru/bin/mineru"
