@@ -21,6 +21,7 @@
 - [x] 带标注评测指标已生成，见 `submission_artifacts/evaluation/`
 - [x] 评测指标已覆盖 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据和 2 个 recovery gate
 - [x] 稳定性与工具耗时摘要已生成，见 `submission_artifacts/stability/`
+- [x] 成本、速度与质量分组对比已生成，见 `submission_artifacts/baseline_comparison/`
 - [x] 至少 5 个典型任务案例，见 `submission_artifacts/cases/`
 - [x] 额外 4 个复杂挑战样本与人工标注表已生成，见 `submission_artifacts/challenge_cases/`
 - [x] 额外 4 个官方公开真实 PDF 样本、来源元数据和人工轻量标注已生成，见 `submission_artifacts/public_real_cases/`
@@ -48,3 +49,5 @@
 - [x] 无本地 CLI 环境下不会盲目创建 fallback runner，避免 CPU 评审环境产生无意义失败记录
 - [x] 最终提交压缩包或项目链接前完成一次全流程复跑
 - [x] 本地 API 并发 smoke 已生成，见 `submission_artifacts/api_load_smoke/`
+- [x] 真实 HTTP loopback 压测已生成，见 `submission_artifacts/http_load_test/`
+- [x] Dockerfile 与 docker-compose 已加入，支持一条命令启动 API

@@ -1,0 +1,14 @@
+services:
+  mineru-data-agent-api:
+    build:
+      context: .
+    image: mineru-data-agent:local
+    ports:
+      - "8080:8080"
+    environment:
+      MINERU_DATA_AGENT_OUTPUT_DIR: /app/runs/api
+      MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE: /app
+      MINERU_DATA_AGENT_MAX_UPLOAD_MB: "200"
+      MINERU_DATA_AGENT_ASYNC_WORKERS: "2"
+    volumes:
+      - ./runs:/app/runs

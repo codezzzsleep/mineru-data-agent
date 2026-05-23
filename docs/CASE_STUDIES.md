@@ -206,7 +206,15 @@ API 并发 smoke 位置：`submission_artifacts/api_load_smoke/`
 - Quality status counts: 8 个 `pass`
 - Minimum field evidence count: 5
 
-边界说明：稳定性报告是保存 artifact 的摘要；API 并发 smoke 是本地进程内接口验证。它们仍不是外部公网、高 GPU 负载或长文档 soak 压测。
+真实 HTTP loopback 压测位置：`submission_artifacts/http_load_test/`
+
+该报告由 `scripts/run_http_load_test.py --requests 12 --concurrency 6 --endpoint mixed --keep-artifacts` 生成，先访问运行中的 `http://127.0.0.1:8080/health`，再通过真实 TCP loopback 混合调用同步 `/v1/parse` 和异步 `/v1/jobs`。当前保存结果显示 12/12 成功、12/12 均落盘 trace/result/summary，P95 延迟约 1.42 秒。它比 TestClient smoke 更接近评审脚本调用方式，但仍不是公网或 GPU 高并发压测。
+
+成本/速度/质量对比位置：`submission_artifacts/baseline_comparison/`
+
+该报告由 `scripts/build_baseline_comparison.py` 生成，复用 evaluation 与 stability 两份报告，把 17 个案例按 native HTML、MinerU CLI PDF、Office、LLM recovery、挑战 fixture 和官方公开 PDF 分组。当前保存结果显示每组轻量人工标注检查均通过，同时保留工具耗时、平均质量分、trace 步骤、页级 provenance 和 recovery 执行数量，用来回应评审关于“成本、速度、精度平衡没有量化”的追问。
+
+边界说明：稳定性报告是保存 artifact 的摘要；API 并发 smoke 是本地进程内接口验证；HTTP loopback 压测走真实本地 TCP 请求；成本/速度/质量对比基于保存 artifact 和轻量人工标注。它们仍不是外部公网、高 GPU 负载、第三方 OCR benchmark 或长文档 soak 压测。
 
 ## 11. 边界说明
 

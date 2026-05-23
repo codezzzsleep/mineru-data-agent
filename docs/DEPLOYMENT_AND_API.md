@@ -122,6 +122,14 @@ powershell -ExecutionPolicy Bypass -File .\scripts\collect_mineru_case.ps1 -RunD
 uvicorn mineru_data_agent.api:app --host 0.0.0.0 --port 8080
 ```
 
+Docker 一键启动：
+
+```bash
+docker compose up --build
+```
+
+容器默认监听 `8080`，把 `./runs` 挂载到 `/app/runs`，并设置 `MINERU_DATA_AGENT_OUTPUT_DIR=/app/runs/api`、`MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE=/app` 和上传大小限制。该镜像用于 CPU 友好的 API 复现；如要跑本地 MinerU CLI/GPU pipeline，仍建议使用 HeyWhale MinerU 官方镜像或在容器内额外安装 `mineru[pipeline]`。
+
 稳定接口、参数、返回 schema 和错误码见 `docs/API_CONTRACT.md`。该文档是评审脚本优先参考的 API 合约。
 
 健康检查：
@@ -321,4 +329,27 @@ python scripts/run_api_load_smoke.py --requests 8 --concurrency 4 --keep-runs
 
 当前报告位于 `submission_artifacts/api_load_smoke/api_load_smoke_report.json` 和 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`。它使用 FastAPI TestClient 在本地进程内发起 8 个请求、并发 4，检查每次请求的响应、质量状态、field evidence 数量以及 trace/result/summary 是否落盘。
 
-边界：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证。二者仍不是外部公网压测、GPU 长文档压力测试或云成本 benchmark。若要宣称生产级高负载能力，需要额外提供并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。
+生成真实 HTTP loopback 压测：
+
+```bash
+uvicorn mineru_data_agent.api:app --host 127.0.0.1 --port 8080
+python scripts/run_http_load_test.py --requests 12 --concurrency 6 --endpoint mixed --keep-artifacts
+```
+
+当前报告位于 `submission_artifacts/http_load_test/http_load_test_report.json` 和 `submission_artifacts/http_load_test/http_load_test_report.md`。它通过真实 TCP loopback 请求访问 `http://127.0.0.1:8080`，混合调用 `/v1/parse` 与 `/v1/jobs`，保存 12 请求、并发 6、12/12 成功、12/12 trace/result/summary 落盘的证据。
+
+如果 API 跑在 Docker 容器内，而压测脚本跑在宿主机，文件系统路径不同，应加 `--no-output-root`，让容器使用自身的 `/app/runs/api`：
+
+```bash
+python scripts/run_http_load_test.py --requests 12 --concurrency 6 --endpoint mixed --no-output-root
+```
+
+生成成本、速度与质量对比：
+
+```bash
+python scripts/build_baseline_comparison.py
+```
+
+当前报告位于 `submission_artifacts/baseline_comparison/baseline_comparison.json` 和 `submission_artifacts/baseline_comparison/baseline_comparison.md`。它把 17 个带标注案例按 native HTML、MinerU CLI PDF、Office、LLM recovery、挑战 fixture 和官方公开 PDF 分组，汇总标注通过率、工具耗时、平均质量分、trace 步骤、页级 provenance 与 recovery 执行情况。
+
+边界：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证；HTTP load smoke 是本机 TCP loopback 验证；baseline comparison 是保存 artifact 的对比视图。它们仍不是外部公网压测、GPU 长文档压力测试、云成本 benchmark 或第三方 OCR benchmark。若要宣称生产级高负载能力，需要额外提供公网并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。

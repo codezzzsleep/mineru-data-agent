@@ -1,0 +1,347 @@
+{
+  "schema_version": "2026-05-24",
+  "generated_at": "2026-05-23T16:45:27Z",
+  "scope": "Saved-artifact cost/speed/quality comparison across runner families and scenario groups. This is not a third-party OCR benchmark.",
+  "source_reports": {
+    "evaluation": "submission_artifacts/evaluation/evaluation_metrics.json",
+    "stability": "submission_artifacts/stability/stability_report.json"
+  },
+  "overall": {
+    "cases": 17,
+    "field_accuracy": 1.0,
+    "text_evidence_accuracy": 1.0,
+    "numeric_evidence_accuracy": 1.0,
+    "table_evidence_accuracy": 1.0,
+    "total_tool_elapsed_seconds": 240.107,
+    "recovery_executed_cases": 4,
+    "provenance_level_counts": {
+      "document": 13,
+      "page": 4
+    }
+  },
+  "groups": [
+    {
+      "id": "html_native_fixtures",
+      "name": "Native HTML/Web fixtures",
+      "interpretation": "Low-cost deterministic parser path for task planning, schema, trace, and retrieval checks.",
+      "case_count": 4,
+      "checks_passed": 12,
+      "checks_total": 12,
+      "labeled_check_accuracy": 1.0,
+      "field_accuracy": 1.0,
+      "text_evidence_accuracy": null,
+      "numeric_evidence_accuracy": null,
+      "table_evidence_accuracy": null,
+      "average_quality_score": 100.0,
+      "total_tool_elapsed_seconds": 0.0,
+      "average_tool_elapsed_seconds": 0.0,
+      "average_trace_steps": 6.25,
+      "page_provenance_cases": 0,
+      "document_provenance_cases": 4,
+      "recovery_executed_cases": 1,
+      "tool_counts": {},
+      "cases": [
+        {
+          "id": "html_financial_report",
+          "profile": "financial_report",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": false
+        },
+        {
+          "id": "html_low_quality_ocr",
+          "profile": "low_quality_ocr",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": true
+        },
+        {
+          "id": "html_contract",
+          "profile": "standard_or_contract",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": false
+        },
+        {
+          "id": "html_workflow",
+          "profile": "workflow_or_diagram",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": false
+        }
+      ]
+    },
+    {
+      "id": "mineru_cli_pdf",
+      "name": "MinerU CLI PDF with page provenance",
+      "interpretation": "Full local MinerU artifact path with page-level provenance and saved middle/layout/model files.",
+      "case_count": 2,
+      "checks_passed": 6,
+      "checks_total": 6,
+      "labeled_check_accuracy": 1.0,
+      "field_accuracy": 1.0,
+      "text_evidence_accuracy": null,
+      "numeric_evidence_accuracy": null,
+      "table_evidence_accuracy": null,
+      "average_quality_score": 100.0,
+      "total_tool_elapsed_seconds": 172.06,
+      "average_tool_elapsed_seconds": 86.03,
+      "average_trace_steps": 5.0,
+      "page_provenance_cases": 2,
+      "document_provenance_cases": 0,
+      "recovery_executed_cases": 0,
+      "tool_counts": {
+        "mineru-cli": 2
+      },
+      "cases": [
+        {
+          "id": "mineru_cli_financial_pdf",
+          "profile": "financial_report",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "page",
+          "tool_elapsed_seconds": 89.128,
+          "recovery_executed": false
+        },
+        {
+          "id": "mineru_cli_contract_pdf",
+          "profile": "standard_or_contract",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "page",
+          "tool_elapsed_seconds": 82.932,
+          "recovery_executed": false
+        }
+      ]
+    },
+    {
+      "id": "office_native",
+      "name": "Native Office files",
+      "interpretation": "DOCX/PPTX structure path for non-PDF enterprise material.",
+      "case_count": 2,
+      "checks_passed": 6,
+      "checks_total": 6,
+      "labeled_check_accuracy": 1.0,
+      "field_accuracy": 1.0,
+      "text_evidence_accuracy": null,
+      "numeric_evidence_accuracy": null,
+      "table_evidence_accuracy": null,
+      "average_quality_score": 100.0,
+      "total_tool_elapsed_seconds": 0.0,
+      "average_tool_elapsed_seconds": 0.0,
+      "average_trace_steps": 6.0,
+      "page_provenance_cases": 1,
+      "document_provenance_cases": 1,
+      "recovery_executed_cases": 0,
+      "tool_counts": {},
+      "cases": [
+        {
+          "id": "office_docx_standard",
+          "profile": "standard_or_contract",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": false
+        },
+        {
+          "id": "office_pptx_workflow",
+          "profile": "workflow_or_diagram",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "page",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": false
+        }
+      ]
+    },
+    {
+      "id": "llm_recovery_fallback",
+      "name": "LLM plan plus recovery fallback",
+      "interpretation": "Agent scheduling/recovery evidence: online API warning triggers CLI fallback and accepted recovery.",
+      "case_count": 1,
+      "checks_passed": 3,
+      "checks_total": 3,
+      "labeled_check_accuracy": 1.0,
+      "field_accuracy": 1.0,
+      "text_evidence_accuracy": null,
+      "numeric_evidence_accuracy": null,
+      "table_evidence_accuracy": null,
+      "average_quality_score": 100.0,
+      "total_tool_elapsed_seconds": 8.38,
+      "average_tool_elapsed_seconds": 8.38,
+      "average_trace_steps": 9.0,
+      "page_provenance_cases": 1,
+      "document_provenance_cases": 0,
+      "recovery_executed_cases": 1,
+      "tool_counts": {
+        "cached-mineru-cli-fallback": 1,
+        "mineru-agent-api": 1,
+        "offline-llm": 1,
+        "offline-llm-preplan": 1
+      },
+      "cases": [
+        {
+          "id": "pdf_llm_api_to_cli_fallback",
+          "profile": "standard_or_contract",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "page",
+          "tool_elapsed_seconds": 8.38,
+          "recovery_executed": true
+        }
+      ]
+    },
+    {
+      "id": "challenge_fixtures",
+      "name": "Challenge fixtures",
+      "interpretation": "Stress fixtures for cross-page tables, OCR noise, industry matrices, and workflow incidents.",
+      "case_count": 4,
+      "checks_passed": 12,
+      "checks_total": 12,
+      "labeled_check_accuracy": 1.0,
+      "field_accuracy": 1.0,
+      "text_evidence_accuracy": null,
+      "numeric_evidence_accuracy": null,
+      "table_evidence_accuracy": null,
+      "average_quality_score": 98.0,
+      "total_tool_elapsed_seconds": 0.0,
+      "average_tool_elapsed_seconds": 0.0,
+      "average_trace_steps": 6.25,
+      "page_provenance_cases": 0,
+      "document_provenance_cases": 4,
+      "recovery_executed_cases": 1,
+      "tool_counts": {},
+      "cases": [
+        {
+          "id": "challenge_cross_page_financial",
+          "profile": "financial_report",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 92,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": false
+        },
+        {
+          "id": "challenge_noisy_contract_scan",
+          "profile": "low_quality_ocr",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": true
+        },
+        {
+          "id": "challenge_industry_standard_matrix",
+          "profile": "standard_or_contract",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": false
+        },
+        {
+          "id": "challenge_incident_workflow_report",
+          "profile": "workflow_or_diagram",
+          "checks_passed": 3,
+          "checks_total": 3,
+          "quality_score": 100,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 0.0,
+          "recovery_executed": false
+        }
+      ]
+    },
+    {
+      "id": "public_real_pdf",
+      "name": "Public real PDFs via online API",
+      "interpretation": "Official public PDF evidence for real-world formatting and text/table evidence gates.",
+      "case_count": 4,
+      "checks_passed": 45,
+      "checks_total": 45,
+      "labeled_check_accuracy": 1.0,
+      "field_accuracy": 1.0,
+      "text_evidence_accuracy": 1.0,
+      "numeric_evidence_accuracy": 1.0,
+      "table_evidence_accuracy": 1.0,
+      "average_quality_score": 82.0,
+      "total_tool_elapsed_seconds": 59.667,
+      "average_tool_elapsed_seconds": 14.917,
+      "average_trace_steps": 6.25,
+      "page_provenance_cases": 0,
+      "document_provenance_cases": 4,
+      "recovery_executed_cases": 1,
+      "tool_counts": {
+        "mineru-agent-api": 5
+      },
+      "cases": [
+        {
+          "id": "public_irs_w4_form",
+          "profile": "standard_or_contract",
+          "checks_passed": 10,
+          "checks_total": 10,
+          "quality_score": 76,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 16.277,
+          "recovery_executed": false
+        },
+        {
+          "id": "public_nist_ai_rmf",
+          "profile": "standard_or_contract",
+          "checks_passed": 13,
+          "checks_total": 13,
+          "quality_score": 92,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 11.934,
+          "recovery_executed": false
+        },
+        {
+          "id": "public_microsoft_annual_report",
+          "profile": "financial_report",
+          "checks_passed": 13,
+          "checks_total": 13,
+          "quality_score": 76,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 16.17,
+          "recovery_executed": false
+        },
+        {
+          "id": "public_cdc_vis_instructions",
+          "profile": "standard_or_contract",
+          "checks_passed": 9,
+          "checks_total": 9,
+          "quality_score": 84,
+          "provenance_level": "document",
+          "tool_elapsed_seconds": 15.286,
+          "recovery_executed": true
+        }
+      ]
+    }
+  ],
+  "boundary": [
+    "Accuracy is computed from lightweight human labels, not full OCR character error rate.",
+    "Tool elapsed time is read from saved trace tool calls; native parsers can show zero external-tool seconds.",
+    "The comparison helps reviewers see tradeoffs between cheap native parsing, MinerU CLI provenance, online API PDFs, and recovery paths.",
+    "A stronger future benchmark should add external baselines such as raw OCR, raw MinerU-only output, and direct LLM extraction on the same hidden label set."
+  ]
+}
