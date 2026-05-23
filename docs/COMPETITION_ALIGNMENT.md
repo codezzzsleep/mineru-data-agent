@@ -22,9 +22,9 @@
 | 调用工具或模块 | `MinerUAgentAPIRunner` 调用在线 API；`MinerURunner` 调用本地 MinerU CLI；HTML/DOCX/PPTX 使用轻量结构化模块；在线 API 支持瞬时错误重试；质量异常时可执行 text cleanup 或 OCR retry；LLM 预调度建议会通过安全白名单进入 `execution_control.applied` |
 | 完成数据处理 | 抽取 Markdown、内容块、章节、表格、键值对、键值字典、数字事实、日期/建议/异常信号、页级或文档级线索和 `recovery_decision` |
 | 生成结构化结果 | 每次运行生成 `result.json` 与 `retrieval_chunks.jsonl`，供程序、评审脚本或检索入库流程直接消费；HTML/DOCX/PPTX 输入保留标题、段落、列表、表格和 slide-level provenance |
-| 输出可验证日志 | 每次运行生成 `trace.json`，记录执行步骤、工具调用、耗时、状态、重试事件、LLM 预调度、自动恢复尝试和错误摘要；失败运行也会落 trace；提交包内包含 5 个 HTML fixture artifact、4 个 PDF 文件级 CLI artifact、1 个 Agent API PDF artifact、1 个 API-to-CLI recovery artifact、2 个 Office 文件级 artifact、4 个挑战 fixture、4 个官方公开真实 PDF artifact、1 个 LLM-enabled artifact 和 1 份带标注评测报告 |
+| 输出可验证日志 | 每次运行生成 `trace.json`，记录执行步骤、工具调用、耗时、状态、重试事件、LLM 预调度、自动恢复尝试和错误摘要；失败运行也会落 trace；提交包内包含 5 个 HTML fixture artifact、4 个 PDF 文件级 CLI artifact、1 个 Agent API PDF artifact、1 个 API-to-CLI recovery artifact、2 个 Office 文件级 artifact、4 个挑战 fixture、4 个官方公开真实 PDF artifact、1 个 LLM-enabled artifact、1 份带标注评测报告和 1 份 artifact 级稳定性报告 |
 | 面向复杂文档 | 内置财报、合同/规范、低质量 OCR、流程/工程资料、HTML 语料等 profile |
-| 可部署可复现 | 提供 CLI、批处理、FastAPI、单元测试、提交压缩包、HeyWhale 部署建议和 `scripts/build_evaluation_report.py` 评测脚本 |
+| 可部署可复现 | 提供 CLI、批处理、FastAPI、单元测试、提交压缩包、HeyWhale 部署建议、`docs/API_CONTRACT.md` API 合约、`docs/ENGINEERING_EVIDENCE.md` 扣分点证据矩阵、`scripts/build_evaluation_report.py` 评测脚本和 `scripts/build_stability_report.py` 稳定性摘要脚本 |
 
 ## 3. 为什么先用在线 API
 
@@ -47,7 +47,7 @@
 2. `--runner cli`：在 MinerU 镜像或 GPU 资源可用时补齐完整 artifact，增强评审说服力。
 3. 在技术报告中明确两种后端的边界，避免把在线 API 的轻量结果包装成完整本地解析能力。
 
-当前已补充 4 个 PDF 文件级本地 `mineru-cli` 证据，路径为 `submission_artifacts/mineru_cases/`。它们覆盖低质量扫描件、财报密集数字表、合同/标准条款和流程图文档，能够证明 CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和 retrieval 导出可用。另补 1 个 CPU 友好的在线 Agent API PDF 证据，路径为 `submission_artifacts/agent_api_cases/`，用于证明无 GPU 条件下也能跑通真实 PDF 主流程；该路径不冒充本地 CLI 的完整页级 artifact，缺少页级 provenance 时会在质量报告中显式标注。新增 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 证明真实 PDF 在解析前调度后先走在线 API，命中 `no_page_provenance` 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；该证据当前使用离线确定性预调度器和缓存 CLI artifact 回放，边界已写入案例 README。再补 2 个 DOCX/PPTX 文件级 native extractor 证据，路径为 `submission_artifacts/office_cases/`，用于覆盖 Word/PPT 结构化处理；新增 4 个挑战 fixture 与人工标注表，路径为 `submission_artifacts/challenge_cases/`。本轮新增 `submission_artifacts/public_real_cases/`，使用 IRS W-4、NIST AI RMF 1.0、Microsoft 2024 Annual Report SEC PDF exhibit 和 CDC VIS 使用说明 4 份官方公开 PDF，并提供 source metadata、human labels、trace、result 和 retrieval 导出；NIST 与 Microsoft 长文档按在线 API 限制只跑前 20 页，已在 metadata 中标明。新增 `submission_artifacts/evaluation/` 用 17 个案例、39 个标注字段、22 条文本证据和多类门槛指标补足提交级评测证据。上述公开真实样本提升了外部证据强度，但仍不能代表真实客户材料的长期泛化评测。
+当前已补充 4 个 PDF 文件级本地 `mineru-cli` 证据，路径为 `submission_artifacts/mineru_cases/`。它们覆盖低质量扫描件、财报密集数字表、合同/标准条款和流程图文档，能够证明 CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和 retrieval 导出可用。另补 1 个 CPU 友好的在线 Agent API PDF 证据，路径为 `submission_artifacts/agent_api_cases/`，用于证明无 GPU 条件下也能跑通真实 PDF 主流程；该路径不冒充本地 CLI 的完整页级 artifact，缺少页级 provenance 时会在质量报告中显式标注。新增 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 证明真实 PDF 在解析前调度后先走在线 API，命中 `no_page_provenance` 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；该证据当前使用离线确定性预调度器和缓存 CLI artifact 回放，边界已写入案例 README。再补 2 个 DOCX/PPTX 文件级 native extractor 证据，路径为 `submission_artifacts/office_cases/`，用于覆盖 Word/PPT 结构化处理；新增 4 个挑战 fixture 与人工标注表，路径为 `submission_artifacts/challenge_cases/`。本轮新增 `submission_artifacts/public_real_cases/`，使用 IRS W-4、NIST AI RMF 1.0、Microsoft 2024 Annual Report SEC PDF exhibit 和 CDC VIS 使用说明 4 份官方公开 PDF，并提供 source metadata、human labels、trace、result 和 retrieval 导出；NIST 与 Microsoft 长文档按在线 API 限制只跑前 20 页，已在 metadata 中标明。新增 `submission_artifacts/evaluation/` 用 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据和多类门槛指标补足提交级评测证据。新增 `submission_artifacts/stability/` 汇总同一批保存 artifact 的 trace 完整性、工具调用次数、工具耗时、质量状态、provenance 分布和自动恢复执行数量；它是 artifact 级稳定性证据，不是高并发压测。上述公开真实样本提升了外部证据强度，但仍不能代表真实客户材料的长期泛化评测。
 
 ## 4. 评审展示重点
 
@@ -56,7 +56,7 @@
 - 不是「调用一次 MinerU」：核心价值在于任务规划、结构化抽取、质量控制和可审计日志。
 - 不是「只做文档转 Markdown」：输出包含机器可读 JSON、人工摘要和 trace。
 - 不是「只能展示 Demo」：额外输出可入库的 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`。
-- 不是「没有指标的 Demo」：提供 `evaluation_metrics.json` 和 `evaluation_metrics.md`，可复查 39 个标注字段、22 条文本证据和结构/质量/provenance/recovery 门槛。
+- 不是「没有指标的 Demo」：提供 `evaluation_metrics.json` 和 `evaluation_metrics.md`，可复查 45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据和结构/质量/provenance/recovery 门槛。
 - 不是「单场景 Demo」：围绕赛题痛点覆盖财报数字、低质量 OCR、合同/规范结构、HTML 语料等多类任务。
 - 不隐藏失败和风险：质量校验会把空结果、乱码、页码缺失、数字/表格风险显式写入输出。
 - 资源策略清楚：CPU 可跑在线 API 闭环，GPU/MinerU 镜像可跑完整 CLI artifact。

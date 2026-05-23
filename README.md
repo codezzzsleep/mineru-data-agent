@@ -273,7 +273,7 @@ runs/<run_id>/
 python scripts/build_evaluation_report.py
 ```
 
-当前报告位于 `submission_artifacts/evaluation/`，覆盖 17 个提交案例、39 个标注字段、22 条文本证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。
+当前报告位于 `submission_artifacts/evaluation/`，覆盖 17 个提交案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。
 
 ## Recommended HeyWhale Setup
 
@@ -302,7 +302,7 @@ python scripts/build_evaluation_report.py
 
 项目原创性、第三方参考边界和密钥处理说明见 `docs/ORIGINALITY_AND_COMPLIANCE.md`。
 
-开源发布前后检查见 `docs/OPEN_SOURCE_RELEASE.md`。当前压缩包提交路径已经完整，公开仓库为 https://github.com/codezzzsleep/mineru-data-agent；提交时同时记录本次推送后的 commit hash。
+开源发布前后检查见 `docs/OPEN_SOURCE_RELEASE.md`。当前压缩包提交路径已经完整，公开仓库为 https://github.com/codezzzsleep/mineru-data-agent；提交时同时记录本次推送后的 commit hash。开源协作材料包括 `CONTRIBUTING.md`、GitHub Actions 和 `.github/ISSUE_TEMPLATE/`，便于评审或后续使用者按可复现证据提交问题。
 
 ## Backend Strategy
 
@@ -312,4 +312,6 @@ python scripts/build_evaluation_report.py
 - `--llm deepseek`：可选 DeepSeek v4-flash 官方推理层，参与解析前调度和解析后复核；不开启时项目仍可完整运行。
 - `--llm modelscope`：可选 ModelScope 推理入口，默认模型 `deepseek-ai/DeepSeek-V4-Flash`。
 
-当前提交包内的强复现证据分为九类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；1 个 PDF recovery 案例证明在线 API 缺少页级 provenance 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；4 个挑战 fixture 与人工标注表覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；4 个官方公开真实 PDF 案例证明系统能处理外部公开材料，并通过 22 条文本证据门槛；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议；1 份带标注评测报告证明 17 个案例的 39 个标注字段、22 条文本证据、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛均可复查。公开真实文档证据包仍是轻量人工标注，不等同于完整 OCR 字符级 benchmark。
+当前提交包内的强复现证据分为九类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；1 个 PDF recovery 案例证明在线 API 缺少页级 provenance 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；4 个挑战 fixture 与人工标注表覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；4 个官方公开真实 PDF 案例证明系统能处理外部公开材料，并通过文本、数字和表格证据门槛；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议；1 份带标注评测报告证明 17 个案例的 45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛均可复查；1 份稳定性报告汇总 17 个保存案例的 trace、工具调用、耗时、质量状态和恢复执行。公开真实文档证据包仍是轻量人工标注，不等同于完整 OCR 字符级 benchmark。
+
+针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 稳定接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；稳定性与成本/速度/质量摘要见 `submission_artifacts/stability/stability_report.md`。

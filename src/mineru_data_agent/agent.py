@@ -507,6 +507,15 @@ def _initial_execution_control(
             "lang": lang,
             "runner": runner_kind,
         },
+        "planning_rationale": _planning_rationale(
+            profile=resolved_profile,
+            runner=runner_kind,
+            backend=backend,
+            method=method,
+            lang=lang,
+            suffix=suffix,
+            source="rules",
+        ),
         "runner_class": runner_name,
         "applied": [],
         "ignored": [],
@@ -647,7 +656,57 @@ def _apply_llm_preplan(
         "lang": resolved_lang,
         "runner": "native" if suffix in NATIVE_SUFFIXES else runner_kind,
     }
+    control["planning_rationale"] = _planning_rationale(
+        profile=resolved_profile,
+        runner=control["resolved"]["runner"],
+        backend=resolved_backend,
+        method=resolved_method,
+        lang=resolved_lang,
+        suffix=suffix,
+        source="llm_preplan+rules",
+    )
     return resolved_profile, resolved_backend, resolved_method, resolved_lang, control
+
+
+def _planning_rationale(
+    *,
+    profile: str,
+    runner: str,
+    backend: str,
+    method: str,
+    lang: str,
+    suffix: str,
+    source: str,
+) -> dict[str, Any]:
+    file_family = "native_office_or_html" if suffix in NATIVE_SUFFIXES else "pdf_or_image"
+    profile_reasons = {
+        "financial_report": "financial keywords or explicit profile require table and numeric consistency checks",
+        "standard_or_contract": "standard/contract keywords or explicit profile require section and clause preservation",
+        "workflow_or_diagram": "workflow/diagram keywords or explicit profile require procedural and figure evidence",
+        "low_quality_ocr": "scan/OCR/low-quality keywords or explicit profile require OCR/noise checks and recovery readiness",
+        "general_document": "no specialized profile signal was strong enough; use general structured extraction",
+    }
+    runner_reasons = {
+        "native": "HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU",
+        "agent-api": "online MinerU Agent API is selected for CPU-friendly PDF parsing and quick reproducibility",
+        "cli": "local MinerU CLI is selected when full artifacts and page-level provenance are required",
+    }
+    recovery_policy = [
+        "text_cleanup if mojibake or encoding noise is detected",
+        "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+        "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+        "manual_numeric_review when subtotal/total consistency checks fail",
+    ]
+    return {
+        "source": source,
+        "file_family": file_family,
+        "profile_reason": profile_reasons.get(profile, profile_reasons["general_document"]),
+        "runner_reason": runner_reasons.get(runner, "runner was supplied by caller or deployment configuration"),
+        "backend_reason": f"backend={backend} is used for MinerU parsing when the selected runner calls MinerU",
+        "method_reason": f"method={method} balances automatic parsing with OCR fallback when quality gates require it",
+        "lang_reason": f"lang={lang} is passed to MinerU or recorded for native extraction audit",
+        "recovery_policy": recovery_policy,
+    }
 
 
 def _safe_choice(value: Any, allowed: set[str]) -> str:
@@ -700,6 +759,16 @@ def _build_summary(result: AgentResult) -> str:
         "## Plan",
     ]
     lines.extend([f"{index}. {step}" for index, step in enumerate(result.plan, start=1)])
+    rationale = result.execution_control.get("planning_rationale", {})
+    if isinstance(rationale, dict) and rationale:
+        lines.extend(["", "## Planning Rationale"])
+        for key in ["profile_reason", "runner_reason", "backend_reason", "method_reason", "lang_reason"]:
+            if rationale.get(key):
+                lines.append(f"- {rationale[key]}")
+        policy = rationale.get("recovery_policy", [])
+        if isinstance(policy, list) and policy:
+            lines.append("- Recovery policy:")
+            lines.extend([f"  - {item}" for item in policy[:6]])
     if result.llm_analysis.get("enabled"):
         llm_plan = result.llm_analysis.get("execution_plan", [])
         lines.extend(["", "## LLM Agent Analysis", ""])

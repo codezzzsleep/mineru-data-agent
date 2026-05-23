@@ -39,6 +39,10 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         f"({aggregate['matched_fields']}/{aggregate['expected_fields']})",
         f"- Text evidence accuracy: {_pct(aggregate['text_evidence_accuracy'])} "
         f"({aggregate['matched_text_evidence']}/{aggregate['expected_text_evidence']})",
+        f"- Numeric evidence accuracy: {_pct(aggregate['numeric_evidence_accuracy'])} "
+        f"({aggregate['matched_numeric_evidence']}/{aggregate['expected_numeric_evidence']})",
+        f"- Table evidence accuracy: {_pct(aggregate['table_evidence_accuracy'])} "
+        f"({aggregate['matched_table_evidence']}/{aggregate['expected_table_evidence']})",
         f"- Profile accuracy: {_pct(aggregate['profile_accuracy'])} "
         f"({aggregate['profile_matches']}/{aggregate['profile_checks']})",
         f"- Structure gate pass rate: {_pct(aggregate['structure_gate_pass_rate'])} "
@@ -52,16 +56,18 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         "",
         "## Cases",
         "",
-        "| Case | Field Accuracy | Text Evidence | Profile | Structure | Quality | Provenance | Recovery | Result |",
-        "| --- | ---: | ---: | --- | --- | --- | --- | --- | --- |",
+        "| Case | Field Accuracy | Text Evidence | Numeric Evidence | Table Evidence | Profile | Structure | Quality | Provenance | Recovery | Result |",
+        "| --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- |",
     ]
     for item in report["cases"]:
         result_path = item.get("result_path", "")
         lines.append(
-            "| {case_id} | {field_accuracy} | {text_accuracy} | {profile} | {structure} | {quality} | {provenance} | {recovery} | `{result}` |".format(
+            "| {case_id} | {field_accuracy} | {text_accuracy} | {numeric_accuracy} | {table_accuracy} | {profile} | {structure} | {quality} | {provenance} | {recovery} | `{result}` |".format(
                 case_id=item["id"],
                 field_accuracy=_pct(item["field_accuracy"]),
                 text_accuracy=_pct(item["text_evidence_accuracy"]),
+                numeric_accuracy=_pct(item["numeric_evidence_accuracy"]),
+                table_accuracy=_pct(item["table_evidence_accuracy"]),
                 profile=_ok(item["profile_match"]),
                 structure=_ok(item["structure_gate"]["passed"]),
                 quality=_ok(item["quality_gate"]["passed"]),
@@ -77,6 +83,8 @@ def render_markdown_report(report: dict[str, Any]) -> str:
             "",
             "- Field accuracy here measures labeled key-value expectations, not full OCR character accuracy.",
             "- Text evidence accuracy checks whether lightweight human-labeled facts appear anywhere in the structured output.",
+            "- Numeric evidence accuracy checks labeled numeric facts by nearby text and expected number tokens.",
+            "- Table evidence accuracy checks labeled table fragments by headers/cells and row or column minima.",
             "- Structure gates check minimum sections, tables, numeric facts, retrieval chunks, and issue codes where labels define them.",
             "- Recovery gates check executed recovery decisions, selected attempts, final decisions, and preserved initial issue codes when labels define them.",
             "- This complements the trace/artifact evidence and gives reviewers a reproducible scoring surface.",
@@ -98,6 +106,8 @@ def _evaluate_case(raw_case: Any, project_root: Path) -> dict[str, Any]:
 
     field_checks = _check_fields(raw_case.get("expected_fields", {}), extracted.get("key_value_map", {}))
     text_checks = _check_text_contains(raw_case.get("expected_text_contains", []), extracted)
+    numeric_checks = _check_numeric_evidence(raw_case.get("expected_numeric_evidence", []), extracted.get("numeric_facts", []))
+    table_checks = _check_table_evidence(raw_case.get("expected_table_evidence", []), extracted.get("tables", []))
     profile_match = result.get("profile") == raw_case.get("expected_profile")
     structure_gate = _check_structure(raw_case.get("minimums", {}), extracted, retrieval, quality)
     quality_gate = _check_quality(raw_case.get("expected_quality", {}), quality)
@@ -107,6 +117,10 @@ def _evaluate_case(raw_case: Any, project_root: Path) -> dict[str, Any]:
     matched_count = sum(1 for item in field_checks if item["matched"])
     expected_text_count = len(text_checks)
     matched_text_count = sum(1 for item in text_checks if item["matched"])
+    expected_numeric_count = len(numeric_checks)
+    matched_numeric_count = sum(1 for item in numeric_checks if item["matched"])
+    expected_table_count = len(table_checks)
+    matched_table_count = sum(1 for item in table_checks if item["matched"])
     return {
         "id": case_id,
         "result_path": _display_path(result_path, project_root),
@@ -121,6 +135,14 @@ def _evaluate_case(raw_case: Any, project_root: Path) -> dict[str, Any]:
         "matched_text_evidence": matched_text_count,
         "expected_text_evidence": expected_text_count,
         "text_checks": text_checks,
+        "numeric_evidence_accuracy": matched_numeric_count / expected_numeric_count if expected_numeric_count else 1.0,
+        "matched_numeric_evidence": matched_numeric_count,
+        "expected_numeric_evidence": expected_numeric_count,
+        "numeric_checks": numeric_checks,
+        "table_evidence_accuracy": matched_table_count / expected_table_count if expected_table_count else 1.0,
+        "matched_table_evidence": matched_table_count,
+        "expected_table_evidence": expected_table_count,
+        "table_checks": table_checks,
         "structure_gate": structure_gate,
         "quality_gate": quality_gate,
         "provenance_gate": provenance_gate,
@@ -160,6 +182,70 @@ def _check_text_contains(expected_items: Any, extracted: dict[str, Any]) -> list
                 "matched": expected_text in haystack,
             }
         )
+    return checks
+
+
+def _check_numeric_evidence(expected_items: Any, numeric_facts: Any) -> list[dict[str, Any]]:
+    if not isinstance(expected_items, list):
+        return []
+    facts = numeric_facts if isinstance(numeric_facts, list) else []
+    checks = []
+    for expected in expected_items:
+        rule = expected if isinstance(expected, dict) else {"text_contains": expected}
+        expected_text = _normalize_value(rule.get("text_contains", ""))
+        expected_numbers = [_normalize_number(item) for item in rule.get("numbers_include", [])]
+        matched_fact = None
+        for fact in facts:
+            if not isinstance(fact, dict):
+                continue
+            fact_text = _normalize_value(fact.get("text", ""))
+            fact_numbers = {_normalize_number(item) for item in fact.get("numbers", [])}
+            if expected_text and expected_text not in fact_text:
+                continue
+            if any(number not in fact_numbers for number in expected_numbers):
+                continue
+            matched_fact = {
+                "line": fact.get("line"),
+                "text": fact.get("text"),
+                "numbers": fact.get("numbers", []),
+            }
+            break
+        checks.append({"expected": expected, "matched": matched_fact is not None, "actual": matched_fact})
+    return checks
+
+
+def _check_table_evidence(expected_items: Any, tables: Any) -> list[dict[str, Any]]:
+    if not isinstance(expected_items, list):
+        return []
+    table_items = tables if isinstance(tables, list) else []
+    checks = []
+    for expected in expected_items:
+        rule = expected if isinstance(expected, dict) else {"text_contains": expected}
+        expected_text = _normalize_value(rule.get("text_contains", ""))
+        expected_cells = [_normalize_value(item) for item in rule.get("cells_include", [])]
+        min_rows = rule.get("min_rows")
+        min_columns = rule.get("min_columns")
+        matched_table = None
+        for table in table_items:
+            if not isinstance(table, dict):
+                continue
+            table_text = _normalize_value(_flatten_text(table))
+            if expected_text and expected_text not in table_text:
+                continue
+            if any(cell not in table_text for cell in expected_cells):
+                continue
+            if min_rows is not None and int(table.get("row_count") or 0) < int(min_rows):
+                continue
+            if min_columns is not None and int(table.get("column_count") or 0) < int(min_columns):
+                continue
+            matched_table = {
+                "start_line": table.get("start_line"),
+                "row_count": table.get("row_count"),
+                "column_count": table.get("column_count"),
+                "headers": table.get("headers", []),
+            }
+            break
+        checks.append({"expected": expected, "matched": matched_table is not None, "actual": matched_table})
     return checks
 
 
@@ -247,6 +333,10 @@ def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
     matched_fields = sum(item["matched_fields"] for item in cases)
     expected_text_evidence = sum(item["expected_text_evidence"] for item in cases)
     matched_text_evidence = sum(item["matched_text_evidence"] for item in cases)
+    expected_numeric_evidence = sum(item["expected_numeric_evidence"] for item in cases)
+    matched_numeric_evidence = sum(item["matched_numeric_evidence"] for item in cases)
+    expected_table_evidence = sum(item["expected_table_evidence"] for item in cases)
+    matched_table_evidence = sum(item["matched_table_evidence"] for item in cases)
     profile_checks = len(cases)
     profile_matches = sum(1 for item in cases if item["profile_match"])
     structure_gates = len(cases)
@@ -268,6 +358,14 @@ def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
         "expected_text_evidence": expected_text_evidence,
         "matched_text_evidence": matched_text_evidence,
         "text_evidence_accuracy": matched_text_evidence / expected_text_evidence if expected_text_evidence else 1.0,
+        "expected_numeric_evidence": expected_numeric_evidence,
+        "matched_numeric_evidence": matched_numeric_evidence,
+        "numeric_evidence_accuracy": matched_numeric_evidence / expected_numeric_evidence
+        if expected_numeric_evidence
+        else 1.0,
+        "expected_table_evidence": expected_table_evidence,
+        "matched_table_evidence": matched_table_evidence,
+        "table_evidence_accuracy": matched_table_evidence / expected_table_evidence if expected_table_evidence else 1.0,
         "profile_checks": profile_checks,
         "profile_matches": profile_matches,
         "profile_accuracy": profile_matches / profile_checks if profile_checks else 1.0,
@@ -330,6 +428,10 @@ def _flatten_text(value: Any) -> str:
 
 def _normalize_value(value: Any) -> str:
     return " ".join(str(value).strip().split()).lower()
+
+
+def _normalize_number(value: Any) -> str:
+    return str(value).strip().replace("$", "").replace("\\$", "")
 
 
 def _pct(value: float) -> str:

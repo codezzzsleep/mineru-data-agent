@@ -116,6 +116,8 @@ def test_llm_preplan_controls_profile_method_and_trace(tmp_path: Path) -> None:
     assert result.profile == "low_quality_ocr"
     assert "LLM preplan: Force OCR parsing for scanned input" in result.plan
     assert result.execution_control["resolved"]["method"] == "ocr"
+    assert result.execution_control["planning_rationale"]["source"] == "llm_preplan+rules"
+    assert "OCR" in result.execution_control["planning_rationale"]["profile_reason"]
     assert {"field": "method", "from": "auto", "to": "ocr", "reason": "llm_preplan"} in result.execution_control["applied"]
     assert result.llm_analysis["pre_execution_plan"]["target_schema"]["报告日期"] == "date"
     assert llm.post_parse_profile == "low_quality_ocr"

@@ -319,6 +319,49 @@
         "Internal Revenue Service",
         "General Instructions"
       ],
+      "expected_numeric_evidence": [
+        {
+          "text_contains": "total income will be $200,000",
+          "numbers_include": [
+            "200,000",
+            "400,000",
+            "17",
+            "500"
+          ]
+        },
+        {
+          "text_contains": "Form W-4 for 2027",
+          "numbers_include": [
+            "2027",
+            "5"
+          ]
+        },
+        {
+          "text_contains": "Internal Revenue Code sections 3402",
+          "numbers_include": [
+            "3402",
+            "6109"
+          ]
+        }
+      ],
+      "expected_table_evidence": [
+        {
+          "text_contains": "Step 3: Claim Dependent and Other Credits",
+          "cells_include": [
+            "$500",
+            "Step 4: Other Adjustments"
+          ],
+          "min_rows": 5
+        },
+        {
+          "text_contains": "Step 1: Enter Personal Information",
+          "cells_include": [
+            "Social security number",
+            "Address"
+          ],
+          "min_columns": 4
+        }
+      ],
       "minimums": {
         "sections": 5,
         "tables": 5,
@@ -338,6 +381,17 @@
       "id": "public_nist_ai_rmf",
       "result_path": "submission_artifacts/public_real_cases/public_nist_ai_rmf/result.json",
       "expected_profile": "standard_or_contract",
+      "expected_fields": {
+        "Part 1": {
+          "contains": "Foundational Information"
+        },
+        "Appendix B": {
+          "contains": "How AI Risks Differ"
+        },
+        "Tracking emergent risks": {
+          "contains": "Organizations"
+        }
+      },
       "expected_text_contains": [
         "Artificial Intelligence Risk Management Framework",
         "NIST AI 100-1",
@@ -346,6 +400,31 @@
         "MAP",
         "MEASURE",
         "MANAGE"
+      ],
+      "expected_numeric_evidence": [
+        {
+          "text_contains": "January 2023",
+          "numbers_include": [
+            "2023"
+          ]
+        },
+        {
+          "text_contains": "no later than 2028",
+          "numbers_include": [
+            "1.0",
+            "1.1"
+          ]
+        }
+      ],
+      "expected_table_evidence": [
+        {
+          "cells_include": [
+            "Deploy",
+            "Operate"
+          ],
+          "min_rows": 3,
+          "min_columns": 10
+        }
       ],
       "minimums": {
         "sections": 10,
@@ -374,6 +453,70 @@
         "Cash",
         "Cloud"
       ],
+      "expected_numeric_evidence": [
+        {
+          "text_contains": "over \\$245 billion in annual revenue",
+          "numbers_include": [
+            "245",
+            "16",
+            "109",
+            "24"
+          ]
+        },
+        {
+          "text_contains": "GitHub Copilot",
+          "numbers_include": [
+            "1.8",
+            "77,000",
+            "180"
+          ]
+        },
+        {
+          "text_contains": "employed approximately 228,000",
+          "numbers_include": [
+            "228,000",
+            "126,000",
+            "102,000"
+          ]
+        },
+        {
+          "text_contains": "Power Platform",
+          "numbers_include": [
+            "48",
+            "40"
+          ]
+        }
+      ],
+      "expected_table_evidence": [
+        {
+          "text_contains": "Year Ended June 30",
+          "cells_include": [
+            "Total",
+            "$ 11,960",
+            "$ 18,400"
+          ],
+          "min_rows": 6,
+          "min_columns": 7
+        },
+        {
+          "text_contains": "Fiscal Year 2024",
+          "cells_include": [
+            "September 19, 2023",
+            "$ 22,296"
+          ],
+          "min_rows": 6
+        },
+        {
+          "text_contains": "Microsoft Corporation",
+          "cells_include": [
+            "S&P 500",
+            "NASDAQ Computer",
+            "349.91"
+          ],
+          "min_rows": 3,
+          "min_columns": 7
+        }
+      ],
       "minimums": {
         "sections": 20,
         "tables": 2,
@@ -394,11 +537,30 @@
       "id": "public_cdc_vis_instructions",
       "result_path": "submission_artifacts/public_real_cases/public_cdc_vis_instructions/result.json",
       "expected_profile": "standard_or_contract",
+      "expected_fields": {
+        "DTaP (Diphtheria, Tetanus, Pertussis)": "8/6/21",
+        "Pneumococcal (PCV)†": "5/29/25",
+        "Multi-Vaccine\\*†": "7/24/23"
+      },
       "expected_text_contains": [
         "Vaccine Information Statements",
         "Required Use",
         "Centers for Disease Control",
         "National Childhood Vaccine Injury Act"
+      ],
+      "expected_numeric_evidence": [
+        {
+          "text_contains": "National Childhood Vaccine Injury Act",
+          "numbers_include": [
+            "42"
+          ]
+        },
+        {
+          "text_contains": "recordkeeping requirement supplements",
+          "numbers_include": [
+            "42"
+          ]
+        }
       ],
       "minimums": {
         "sections": 5,

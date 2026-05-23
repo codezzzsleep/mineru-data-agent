@@ -23,6 +23,7 @@ New-Item -ItemType Directory -Force -Path $stage | Out-Null
 
 $items = @(
   "README.md",
+  "CONTRIBUTING.md",
   "LICENSE",
   ".gitignore",
   ".gitattributes",

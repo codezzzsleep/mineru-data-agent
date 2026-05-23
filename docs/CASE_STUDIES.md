@@ -167,10 +167,12 @@ LLM 在该案例中的职责是：
 
 评测报告位置：`submission_artifacts/evaluation/`
 
-该报告由 `examples/evaluation/labels.json` 和 `scripts/build_evaluation_report.py` 生成，覆盖 17 个提交案例、39 个标注字段、22 条文本证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。当前已保存结果：
+该报告由 `examples/evaluation/labels.json` 和 `scripts/build_evaluation_report.py` 生成，覆盖 17 个提交案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。当前已保存结果：
 
-- Expected-field accuracy: 100.0% (39/39)
+- Expected-field accuracy: 100.0% (45/45)
 - Text evidence accuracy: 100.0% (22/22)
+- Numeric evidence accuracy: 100.0% (11/11)
+- Table evidence accuracy: 100.0% (6/6)
 - Profile accuracy: 100.0% (17/17)
 - Structure gate pass rate: 100.0% (17/17)
 - Quality gate pass rate: 100.0% (17/17)
@@ -179,7 +181,23 @@ LLM 在该案例中的职责是：
 
 该评测不是完整 OCR 字符级标注集，但能把关键字段、结构输出和可追溯性变成可复跑指标，补足“只有案例展示、没有指标”的短板。
 
-## 10. 边界说明
+## 10. 稳定性与耗时摘要
+
+稳定性报告位置：`submission_artifacts/stability/`
+
+该报告由 `scripts/build_stability_report.py` 生成，覆盖同一组 17 个提交案例，检查 result/trace 是否存在，统计 trace 步骤、工具调用、工具耗时、质量状态、provenance 分布和自动恢复执行。当前保存结果显示：
+
+- Completed or inferred-completed traces: 17/17
+- Total trace steps: 106
+- Total tool calls: 11
+- Total tool elapsed seconds: 240.107
+- Max single-tool elapsed seconds: 89.128
+- Recovery executed cases: 4
+- Quality status counts: 12 个 `pass`，5 个 `pass_with_warnings`
+
+边界说明：这是保存 artifact 的稳定性摘要，不是高并发压测。
+
+## 11. 边界说明
 
 当前证据已经能证明项目具备 HTML/网页结构化处理闭环、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出能力。
 

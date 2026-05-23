@@ -14,7 +14,10 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
                     "key_value_map": {"报告日期": "2026-05-23", "公司名称": "测试公司"},
                     "sections": [{}, {}],
                     "tables": [{}],
-                    "numeric_facts": [{}, {}],
+                    "numeric_facts": [
+                        {"line": 1, "text": "收入 100 成本 40", "numbers": ["100", "40"]},
+                        {"line": 2, "text": "利润 60", "numbers": ["60"]},
+                    ],
                     "content_summary": {"provenance_level": "page"},
                 },
                 "quality": {
@@ -45,6 +48,11 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
                         "expected_profile": "financial_report",
                         "expected_fields": {"报告日期": "2026-05-23", "公司名称": "测试公司"},
                         "expected_text_contains": ["测试公司", "page"],
+                        "expected_numeric_evidence": [
+                            {"text_contains": "收入", "numbers_include": ["100", "40"]},
+                            {"text_contains": "利润", "numbers_include": ["60"]},
+                        ],
+                        "expected_table_evidence": [{"min_rows": 0, "min_columns": 0}],
                         "minimums": {
                             "sections": 2,
                             "tables": 1,
@@ -72,9 +80,13 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
 
     assert report["aggregate"]["field_accuracy"] == 1.0
     assert report["aggregate"]["text_evidence_accuracy"] == 1.0
+    assert report["aggregate"]["numeric_evidence_accuracy"] == 1.0
+    assert report["aggregate"]["table_evidence_accuracy"] == 1.0
     assert report["aggregate"]["profile_accuracy"] == 1.0
     assert report["aggregate"]["structure_gate_pass_rate"] == 1.0
     assert report["aggregate"]["recovery_gate_pass_rate"] == 1.0
     assert "Expected-field accuracy: 100.0%" in render_markdown_report(report)
     assert "Text evidence accuracy: 100.0%" in render_markdown_report(report)
+    assert "Numeric evidence accuracy: 100.0%" in render_markdown_report(report)
+    assert "Table evidence accuracy: 100.0%" in render_markdown_report(report)
     assert "Recovery gate pass rate: 100.0%" in render_markdown_report(report)

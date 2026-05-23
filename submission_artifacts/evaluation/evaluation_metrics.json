@@ -4,12 +4,18 @@
   "project_root": "<PROJECT_ROOT>",
   "case_count": 17,
   "aggregate": {
-    "expected_fields": 39,
-    "matched_fields": 39,
+    "expected_fields": 45,
+    "matched_fields": 45,
     "field_accuracy": 1.0,
     "expected_text_evidence": 22,
     "matched_text_evidence": 22,
     "text_evidence_accuracy": 1.0,
+    "expected_numeric_evidence": 11,
+    "matched_numeric_evidence": 11,
+    "numeric_evidence_accuracy": 1.0,
+    "expected_table_evidence": 6,
+    "matched_table_evidence": 6,
+    "table_evidence_accuracy": 1.0,
     "profile_checks": 17,
     "profile_matches": 17,
     "profile_accuracy": 1.0,
@@ -62,6 +68,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -130,6 +144,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -196,6 +218,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -262,6 +292,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -326,6 +364,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -390,6 +436,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -454,6 +508,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -522,6 +584,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -588,6 +658,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -666,6 +744,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -732,6 +818,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -811,6 +905,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -875,6 +977,14 @@
       "matched_text_evidence": 0,
       "expected_text_evidence": 0,
       "text_checks": [],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 0,
+      "expected_numeric_evidence": 0,
+      "numeric_checks": [],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -941,6 +1051,132 @@
           "matched": true
         }
       ],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 3,
+      "expected_numeric_evidence": 3,
+      "numeric_checks": [
+        {
+          "expected": {
+            "text_contains": "total income will be $200,000",
+            "numbers_include": [
+              "200,000",
+              "400,000",
+              "17",
+              "500"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 15,
+            "text": "Step 3: Claim Dependent and Other Credits If your total income will be $200,000 or less ($400,000 or less if married filing jointly): (a) Multiply the number of qualifying children under age 17 by 3(a)$ $2,200.. (b) Multiply the number of other dependents by $500 3(b)$ Add the amounts from Steps 3(a",
+            "numbers": [
+              "3",
+              "200,000",
+              "400,000",
+              "17",
+              "3",
+              "2",
+              "500",
+              "3",
+              "3",
+              "3",
+              "3",
+              "4",
+              "4",
+              "4",
+              "4",
+              "4"
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "Form W-4 for 2027",
+            "numbers_include": [
+              "2027",
+              "5"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 17,
+            "text": "Exempt from withholding I claiexeption ro witholding or02,an I cert hat Imeet both the conditions or exeptn for 202.See Exemption from witholding on page 2. I understand I will need to submit a new Form W-4 for 2027 Step 5: Sign Here Employers Employee's signature (This form is not valid unless you ",
+            "numbers": [
+              "2027",
+              "5"
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "Internal Revenue Code sections 3402",
+            "numbers_include": [
+              "3402",
+              "6109"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 83,
+            "text": "Privacy Act and Paperwork Reduction Act Notice. We ask for the information on this form to carry out the Internal Revenue laws of the United States. Internal Revenue Code sections 3402(f)(2) and 6109 and their regulations require you to provide this information; your employer uses it to determine yo",
+            "numbers": [
+              "3402",
+              "2",
+              "6109"
+            ]
+          }
+        }
+      ],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 2,
+      "expected_table_evidence": 2,
+      "table_checks": [
+        {
+          "expected": {
+            "text_contains": "Step 3: Claim Dependent and Other Credits",
+            "cells_include": [
+              "$500",
+              "Step 4: Other Adjustments"
+            ],
+            "min_rows": 5
+          },
+          "matched": true,
+          "actual": {
+            "start_line": 15,
+            "row_count": 10,
+            "column_count": 5,
+            "headers": [
+              "Step 3: Claim Dependent and Other Credits",
+              "If your total income will be $200,000 or less ($400,000 or less if married filing jointly):",
+              "",
+              "",
+              ""
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "Step 1: Enter Personal Information",
+            "cells_include": [
+              "Social security number",
+              "Address"
+            ],
+            "min_columns": 4
+          },
+          "matched": true,
+          "actual": {
+            "start_line": 7,
+            "row_count": 5,
+            "column_count": 4,
+            "headers": [
+              "Step 1: Enter Personal Information",
+              "First name and middle initial",
+              "Last name",
+              "Social security number"
+            ]
+          }
+        }
+      ],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -979,9 +1215,34 @@
       "expected_profile": "standard_or_contract",
       "profile_match": true,
       "field_accuracy": 1.0,
-      "matched_fields": 0,
-      "expected_fields": 0,
-      "field_checks": [],
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Part 1",
+          "expected": {
+            "contains": "Foundational Information"
+          },
+          "actual": "Foundational Information 4",
+          "matched": true
+        },
+        {
+          "field": "Appendix B",
+          "expected": {
+            "contains": "How AI Risks Differ"
+          },
+          "actual": "How AI Risks Differ from Traditional Software Risks 38",
+          "matched": true
+        },
+        {
+          "field": "Tracking emergent risks",
+          "expected": {
+            "contains": "Organizations"
+          },
+          "actual": "Organizations’ risk management efforts will be enhanced by identifying and tracking emergent risks and considering techniques for measuring them.",
+          "matched": true
+        }
+      ],
       "text_evidence_accuracy": 1.0,
       "matched_text_evidence": 7,
       "expected_text_evidence": 7,
@@ -1013,6 +1274,88 @@
         {
           "expected": "MANAGE",
           "matched": true
+        }
+      ],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 2,
+      "expected_numeric_evidence": 2,
+      "numeric_checks": [
+        {
+          "expected": {
+            "text_contains": "January 2023",
+            "numbers_include": [
+              "2023"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 13,
+            "text": "January 2023",
+            "numbers": [
+              "2023"
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "no later than 2028",
+            "numbers_include": [
+              "1.0",
+              "1.1"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 27,
+            "text": "NIST will review the content and usefulness of the Framework regularly to determine if an update is appropriate; a review with formal input from the AI community is expected to take place no later than 2028. The Framework will employ a two-number versioning system to track and identify major and min",
+            "numbers": [
+              "1.0",
+              "1.1"
+            ]
+          }
+        }
+      ],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 1,
+      "expected_table_evidence": 1,
+      "table_checks": [
+        {
+          "expected": {
+            "cells_include": [
+              "Deploy",
+              "Operate"
+            ],
+            "min_rows": 3,
+            "min_columns": 10
+          },
+          "matched": true,
+          "actual": {
+            "start_line": 212,
+            "row_count": 30,
+            "column_count": 20,
+            "headers": [
+              "",
+              "heceeste",
+              "Plan and",
+              "",
+              "Collect and",
+              "",
+              "Build and",
+              "",
+              "Verify and",
+              "",
+              "Deploy",
+              "",
+              "Operate and",
+              "",
+              "Use or",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          }
         }
       ],
       "structure_gate": {
@@ -1085,6 +1428,181 @@
           "matched": true
         }
       ],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 4,
+      "expected_numeric_evidence": 4,
+      "numeric_checks": [
+        {
+          "expected": {
+            "text_contains": "over \\$245 billion in annual revenue",
+            "numbers_include": [
+              "245",
+              "16",
+              "109",
+              "24"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 29,
+            "text": "Financially, the year was also marked by record performance. We delivered over \\$245 billion in annual revenue, up 16 percent year-over-year, and over \\$109 billion in operating income, up 24 percent.",
+            "numbers": [
+              "245",
+              "16",
+              "109",
+              "24"
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "GitHub Copilot",
+            "numbers_include": [
+              "1.8",
+              "77,000",
+              "180"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 65,
+            "text": "From GitHub to Visual Studio, we have the most comprehensive developer tools. GitHub Copilot had a breakout year, as it became standard issue for developers in every industry. We now have more than 1.8 million paid subscribers and over 77,000 enterprise customers, up 180 percent year-over-year. They",
+            "numbers": [
+              "1.8",
+              "77,000",
+              "180",
+              "55"
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "employed approximately 228,000",
+            "numbers_include": [
+              "228,000",
+              "126,000",
+              "102,000"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 376,
+            "text": "As of June 30, 2024, we employed approximately 228,000 people on a full-time basis, 126,000 in the U.S. and 102,000 internationally. Of the total employed people, 86,000 were in operations, including product support and consulting services, datacenter operations, and manufacturing and distribution; ",
+            "numbers": [
+              "30",
+              "2024",
+              "228,000",
+              "126,000",
+              "102,000",
+              "86,000",
+              "81,000",
+              "45,000",
+              "16,000"
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "Power Platform",
+            "numbers_include": [
+              "48",
+              "40"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 67,
+            "text": "We are also integrating generative AI across Power Platform, enabling anyone to use natural language to create apps, automate workflows, or build a website. In total, we now have 48 million monthly active users of Power Platform, up 40 percent year-over-year.",
+            "numbers": [
+              "48",
+              "40"
+            ]
+          }
+        }
+      ],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 3,
+      "expected_table_evidence": 3,
+      "table_checks": [
+        {
+          "expected": {
+            "text_contains": "Year Ended June 30",
+            "cells_include": [
+              "Total",
+              "$ 11,960",
+              "$ 18,400"
+            ],
+            "min_rows": 6,
+            "min_columns": 7
+          },
+          "matched": true,
+          "actual": {
+            "start_line": 215,
+            "row_count": 6,
+            "column_count": 7,
+            "headers": [
+              "(In millions)",
+              "Shares",
+              "Amount",
+              "Shares",
+              "Amount",
+              "Shares",
+              "Amount"
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "Fiscal Year 2024",
+            "cells_include": [
+              "September 19, 2023",
+              "$ 22,296"
+            ],
+            "min_rows": 6
+          },
+          "matched": true,
+          "actual": {
+            "start_line": 223,
+            "row_count": 12,
+            "column_count": 6,
+            "headers": [
+              "Declaration Date",
+              "Record Date",
+              "Payment Date",
+              "Dividend",
+              "Per Share",
+              "Amount"
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "Microsoft Corporation",
+            "cells_include": [
+              "S&P 500",
+              "NASDAQ Computer",
+              "349.91"
+            ],
+            "min_rows": 3,
+            "min_columns": 7
+          },
+          "matched": true,
+          "actual": {
+            "start_line": 230,
+            "row_count": 3,
+            "column_count": 7,
+            "headers": [
+              "",
+              "6/19",
+              "6/20",
+              "6/21",
+              "6/22",
+              "6/23",
+              "6/24"
+            ]
+          }
+        }
+      ],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -1123,9 +1641,28 @@
       "expected_profile": "standard_or_contract",
       "profile_match": true,
       "field_accuracy": 1.0,
-      "matched_fields": 0,
-      "expected_fields": 0,
-      "field_checks": [],
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "DTaP (Diphtheria, Tetanus, Pertussis)",
+          "expected": "8/6/21",
+          "actual": "8/6/21",
+          "matched": true
+        },
+        {
+          "field": "Pneumococcal (PCV)†",
+          "expected": "5/29/25",
+          "actual": "5/29/25",
+          "matched": true
+        },
+        {
+          "field": "Multi-Vaccine\\*†",
+          "expected": "7/24/23",
+          "actual": "7/24/23",
+          "matched": true
+        }
+      ],
       "text_evidence_accuracy": 1.0,
       "matched_text_evidence": 4,
       "expected_text_evidence": 4,
@@ -1147,6 +1684,47 @@
           "matched": true
         }
       ],
+      "numeric_evidence_accuracy": 1.0,
+      "matched_numeric_evidence": 2,
+      "expected_numeric_evidence": 2,
+      "numeric_checks": [
+        {
+          "expected": {
+            "text_contains": "National Childhood Vaccine Injury Act",
+            "numbers_include": [
+              "42"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 7,
+            "text": "As required under the National Childhood Vaccine Injury Act (42 U.S.C. §300aa-26), all health care providers in the United States who administer, to any child or adult, any of the following vaccines — diphtheria, tetanus, pertussis, measles, mumps, rubella, polio, hepatitis A, hepatitis B, Haemophil",
+            "numbers": [
+              "42"
+            ]
+          }
+        },
+        {
+          "expected": {
+            "text_contains": "recordkeeping requirement supplements",
+            "numbers_include": [
+              "42"
+            ]
+          },
+          "matched": true,
+          "actual": {
+            "line": 25,
+            "text": "This recordkeeping requirement supplements the requirement of 42 U.S.C. §300aa-25 that all health care providers administering these vaccines must record in the patient’s permanent medical record (or in a permanent office log):",
+            "numbers": [
+              "42"
+            ]
+          }
+        }
+      ],
+      "table_evidence_accuracy": 1.0,
+      "matched_table_evidence": 0,
+      "expected_table_evidence": 0,
+      "table_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {

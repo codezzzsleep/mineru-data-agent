@@ -122,6 +122,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\collect_mineru_case.ps1 -RunD
 uvicorn mineru_data_agent.api:app --host 0.0.0.0 --port 8080
 ```
 
+稳定接口、参数、返回 schema 和错误码见 `docs/API_CONTRACT.md`。该文档是评审脚本优先参考的 API 合约。
+
 健康检查：
 
 ```bash
@@ -273,4 +275,16 @@ runs/api/<run_id>/
 python scripts/build_evaluation_report.py
 ```
 
-当前报告位于 `submission_artifacts/evaluation/evaluation_metrics.json` 和 `submission_artifacts/evaluation/evaluation_metrics.md`。已保存结果显示 17 个案例、39 个标注字段、22 条文本证据、profile、结构、质量、provenance 和 recovery 门槛均通过。该指标不是完整 OCR 字符级准确率，而是面向本赛题可复查结构化输出的提交级评测面。
+当前报告位于 `submission_artifacts/evaluation/evaluation_metrics.json` 和 `submission_artifacts/evaluation/evaluation_metrics.md`。已保存结果显示 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile、结构、质量、provenance 和 recovery 门槛均通过。该指标不是完整 OCR 字符级准确率，而是面向本赛题可复查结构化输出的提交级评测面。
+
+## 9. 稳定性与耗时摘要
+
+生成稳定性报告：
+
+```bash
+python scripts/build_stability_report.py
+```
+
+当前报告位于 `submission_artifacts/stability/stability_report.json` 和 `submission_artifacts/stability/stability_report.md`。它检查 `examples/evaluation/labels.json` 覆盖的 17 个保存案例，汇总 result/trace 存在性、trace 步骤数、工具调用次数、工具耗时、质量状态分布、provenance 分布和自动恢复执行数量。
+
+边界：该报告是保存 artifact 的工程稳定性摘要，不是高并发压测。若要宣称生产级高负载能力，需要额外提供并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。

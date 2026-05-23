@@ -1,0 +1,366 @@
+{
+  "schema_version": "2026-05-23",
+  "generated_at": "2026-05-23T14:54:16Z",
+  "scope": "Submission artifact stability report over saved evaluation cases. This is not a high-concurrency load test.",
+  "case_count": 17,
+  "completed_cases": 17,
+  "result_files_checked": 17,
+  "trace_files_checked": 17,
+  "total_steps": 106,
+  "total_tool_calls": 11,
+  "total_tool_elapsed_seconds": 240.107,
+  "max_tool_elapsed_seconds": 89.128,
+  "recovery_executed_cases": 4,
+  "quality_status_counts": {
+    "pass": 12,
+    "pass_with_warnings": 5
+  },
+  "provenance_level_counts": {
+    "document": 13,
+    "page": 4
+  },
+  "issue_code_counts": {
+    "document_level_provenance": 9,
+    "expected_anomaly_signal_missing": 1,
+    "no_page_provenance": 4,
+    "numeric_total_mismatch": 4,
+    "numeric_total_needs_review": 1,
+    "numeric_total_verified": 4
+  },
+  "tool_counts": {
+    "cached-mineru-cli-fallback": 1,
+    "mineru-agent-api": 6,
+    "mineru-cli": 2,
+    "offline-llm": 1,
+    "offline-llm-preplan": 1
+  },
+  "cases": [
+    {
+      "id": "html_financial_report",
+      "result_path": "submission_artifacts\\cases\\case_1_financial_report\\result.json",
+      "trace_path": "runs\\submission_cases\\693d37d36b41\\trace.json",
+      "status": "completed",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "tools": []
+    },
+    {
+      "id": "html_low_quality_ocr",
+      "result_path": "submission_artifacts\\cases\\case_2_low_quality_ocr\\result.json",
+      "trace_path": "runs\\submission_cases\\31921e2b4f8f\\trace.json",
+      "status": "completed",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "document",
+      "step_count": 7,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": true,
+      "selected_attempt": "text_cleanup",
+      "issue_codes": [
+        "document_level_provenance"
+      ],
+      "tools": []
+    },
+    {
+      "id": "html_contract",
+      "result_path": "submission_artifacts\\cases\\case_3_standard_contract\\result.json",
+      "trace_path": "runs\\submission_cases\\6eebecbf0e8a\\trace.json",
+      "status": "completed",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "document_level_provenance"
+      ],
+      "tools": []
+    },
+    {
+      "id": "html_workflow",
+      "result_path": "submission_artifacts\\cases\\case_4_workflow_diagram\\result.json",
+      "trace_path": "runs\\submission_cases\\82f2fcd2a454\\trace.json",
+      "status": "completed",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "document_level_provenance"
+      ],
+      "tools": []
+    },
+    {
+      "id": "mineru_cli_financial_pdf",
+      "result_path": "submission_artifacts\\mineru_cases\\case_mineru_cli_financial_pdf\\result.json",
+      "trace_path": "runs\\real_pdf_cases\\42db2610f372\\trace.json",
+      "status": "completed_inferred",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "page",
+      "step_count": 5,
+      "tool_call_count": 1,
+      "tool_elapsed_seconds": 89.128,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "numeric_total_verified"
+      ],
+      "tools": [
+        "mineru-cli"
+      ]
+    },
+    {
+      "id": "mineru_cli_contract_pdf",
+      "result_path": "submission_artifacts\\mineru_cases\\case_mineru_cli_contract_pdf\\result.json",
+      "trace_path": "runs\\real_pdf_cases\\fbda43429d8a\\trace.json",
+      "status": "completed_inferred",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "page",
+      "step_count": 5,
+      "tool_call_count": 1,
+      "tool_elapsed_seconds": 82.932,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [],
+      "tools": [
+        "mineru-cli"
+      ]
+    },
+    {
+      "id": "office_docx_standard",
+      "result_path": "submission_artifacts\\office_cases\\case_docx_standard_review\\result.json",
+      "trace_path": "runs\\office_cases\\4a46b742ae8c\\trace.json",
+      "status": "completed_inferred",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "document_level_provenance"
+      ],
+      "tools": []
+    },
+    {
+      "id": "office_pptx_workflow",
+      "result_path": "submission_artifacts\\office_cases\\case_pptx_workflow_review\\result.json",
+      "trace_path": "runs\\office_cases\\d8eea5507bd5\\trace.json",
+      "status": "completed_inferred",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "page",
+      "step_count": 6,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [],
+      "tools": []
+    },
+    {
+      "id": "pdf_llm_api_to_cli_fallback",
+      "result_path": "submission_artifacts\\recovery_cases\\case_pdf_llm_api_to_cli_fallback\\result.json",
+      "trace_path": "runs\\recovery_evidence\\52c948b82c48\\trace.json",
+      "status": "completed",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "page",
+      "step_count": 9,
+      "tool_call_count": 4,
+      "tool_elapsed_seconds": 8.38,
+      "recovery_executed": true,
+      "selected_attempt": "cli_fallback",
+      "issue_codes": [],
+      "tools": [
+        "offline-llm-preplan",
+        "mineru-agent-api",
+        "cached-mineru-cli-fallback",
+        "offline-llm"
+      ]
+    },
+    {
+      "id": "challenge_cross_page_financial",
+      "result_path": "submission_artifacts\\challenge_cases\\case_6_cross_page_financial_table\\result.json",
+      "trace_path": "runs\\challenge_cases\\58d40cd48116\\trace.json",
+      "status": "completed",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified",
+        "numeric_total_mismatch"
+      ],
+      "tools": []
+    },
+    {
+      "id": "challenge_noisy_contract_scan",
+      "result_path": "submission_artifacts\\challenge_cases\\case_7_noisy_contract_scan\\result.json",
+      "trace_path": "runs\\challenge_cases\\ee0d71622431\\trace.json",
+      "status": "completed",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "document",
+      "step_count": 7,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": true,
+      "selected_attempt": "text_cleanup",
+      "issue_codes": [
+        "document_level_provenance"
+      ],
+      "tools": []
+    },
+    {
+      "id": "challenge_industry_standard_matrix",
+      "result_path": "submission_artifacts\\challenge_cases\\case_8_industry_standard_matrix\\result.json",
+      "trace_path": "runs\\challenge_cases\\c62b72d418ea\\trace.json",
+      "status": "completed",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "document_level_provenance"
+      ],
+      "tools": []
+    },
+    {
+      "id": "challenge_incident_workflow_report",
+      "result_path": "submission_artifacts\\challenge_cases\\case_9_incident_workflow_report\\result.json",
+      "trace_path": "runs\\challenge_cases\\591a12766ed6\\trace.json",
+      "status": "completed",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 0,
+      "tool_elapsed_seconds": 0,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "document_level_provenance"
+      ],
+      "tools": []
+    },
+    {
+      "id": "public_irs_w4_form",
+      "result_path": "submission_artifacts\\public_real_cases\\public_irs_w4_form\\result.json",
+      "trace_path": "runs\\public_real_cases\\ad440d103164\\trace.json",
+      "status": "completed",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 76,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 1,
+      "tool_elapsed_seconds": 16.277,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "no_page_provenance",
+        "numeric_total_needs_review",
+        "numeric_total_mismatch"
+      ],
+      "tools": [
+        "mineru-agent-api"
+      ]
+    },
+    {
+      "id": "public_nist_ai_rmf",
+      "result_path": "submission_artifacts\\public_real_cases\\public_nist_ai_rmf\\result.json",
+      "trace_path": "runs\\public_real_cases\\c661beff50a8\\trace.json",
+      "status": "completed",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 1,
+      "tool_elapsed_seconds": 11.934,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "no_page_provenance"
+      ],
+      "tools": [
+        "mineru-agent-api"
+      ]
+    },
+    {
+      "id": "public_microsoft_annual_report",
+      "result_path": "submission_artifacts\\public_real_cases\\public_microsoft_annual_report\\result.json",
+      "trace_path": "runs\\public_real_cases\\18cd14d4f93a\\trace.json",
+      "status": "completed",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 76,
+      "provenance_level": "document",
+      "step_count": 6,
+      "tool_call_count": 1,
+      "tool_elapsed_seconds": 16.17,
+      "recovery_executed": false,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "no_page_provenance",
+        "numeric_total_mismatch",
+        "numeric_total_verified",
+        "numeric_total_mismatch"
+      ],
+      "tools": [
+        "mineru-agent-api"
+      ]
+    },
+    {
+      "id": "public_cdc_vis_instructions",
+      "result_path": "submission_artifacts\\public_real_cases\\public_cdc_vis_instructions\\result.json",
+      "trace_path": "runs\\public_real_cases\\d6f8646990e9\\trace.json",
+      "status": "completed",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 84,
+      "provenance_level": "document",
+      "step_count": 7,
+      "tool_call_count": 2,
+      "tool_elapsed_seconds": 15.286,
+      "recovery_executed": true,
+      "selected_attempt": "initial",
+      "issue_codes": [
+        "no_page_provenance",
+        "expected_anomaly_signal_missing"
+      ],
+      "tools": [
+        "mineru-agent-api",
+        "mineru-agent-api"
+      ]
+    }
+  ]
+}
