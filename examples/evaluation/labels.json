@@ -1,5 +1,5 @@
 {
-  "description": "Lightweight human labels for submission artifact evaluation. These labels check expected key fields, profile routing, structure gates, quality gates, and provenance gates.",
+  "description": "Lightweight human labels for submission artifact evaluation. These labels check expected key fields, text evidence, profile routing, structure gates, quality gates, provenance gates, and recovery gates.",
   "cases": [
     {
       "id": "html_financial_report",
@@ -305,6 +305,112 @@
       "expected_quality": {
         "status": "pass",
         "min_score": 95
+      },
+      "expected_provenance": "document"
+    },
+    {
+      "id": "public_irs_w4_form",
+      "result_path": "submission_artifacts/public_real_cases/public_irs_w4_form/result.json",
+      "expected_profile": "standard_or_contract",
+      "expected_text_contains": [
+        "Employee",
+        "Withholding Certificate",
+        "Department of the Treasury",
+        "Internal Revenue Service",
+        "General Instructions"
+      ],
+      "minimums": {
+        "sections": 5,
+        "tables": 5,
+        "numeric_facts": 10,
+        "retrieval_chunks": 10,
+        "issue_codes": [
+          "no_page_provenance"
+        ]
+      },
+      "expected_quality": {
+        "status": "pass_with_warnings",
+        "min_score": 70
+      },
+      "expected_provenance": "document"
+    },
+    {
+      "id": "public_nist_ai_rmf",
+      "result_path": "submission_artifacts/public_real_cases/public_nist_ai_rmf/result.json",
+      "expected_profile": "standard_or_contract",
+      "expected_text_contains": [
+        "Artificial Intelligence Risk Management Framework",
+        "NIST AI 100-1",
+        "January 2023",
+        "GOVERN",
+        "MAP",
+        "MEASURE",
+        "MANAGE"
+      ],
+      "minimums": {
+        "sections": 10,
+        "tables": 1,
+        "numeric_facts": 20,
+        "retrieval_chunks": 10,
+        "issue_codes": [
+          "no_page_provenance"
+        ]
+      },
+      "expected_quality": {
+        "status": "pass_with_warnings",
+        "min_score": 90
+      },
+      "expected_provenance": "document"
+    },
+    {
+      "id": "public_microsoft_annual_report",
+      "result_path": "submission_artifacts/public_real_cases/public_microsoft_annual_report/result.json",
+      "expected_profile": "financial_report",
+      "expected_text_contains": [
+        "Microsoft",
+        "Annual Report",
+        "Fiscal year 2024",
+        "Revenue",
+        "Cash",
+        "Cloud"
+      ],
+      "minimums": {
+        "sections": 20,
+        "tables": 2,
+        "numeric_facts": 20,
+        "retrieval_chunks": 20,
+        "issue_codes": [
+          "no_page_provenance",
+          "numeric_total_verified"
+        ]
+      },
+      "expected_quality": {
+        "status": "pass_with_warnings",
+        "min_score": 70
+      },
+      "expected_provenance": "document"
+    },
+    {
+      "id": "public_cdc_vis_instructions",
+      "result_path": "submission_artifacts/public_real_cases/public_cdc_vis_instructions/result.json",
+      "expected_profile": "standard_or_contract",
+      "expected_text_contains": [
+        "Vaccine Information Statements",
+        "Required Use",
+        "Centers for Disease Control",
+        "National Childhood Vaccine Injury Act"
+      ],
+      "minimums": {
+        "sections": 5,
+        "numeric_facts": 5,
+        "retrieval_chunks": 4,
+        "issue_codes": [
+          "no_page_provenance"
+        ]
+      },
+      "expected_quality": {
+        "status": "pass_with_warnings",
+        "min_score": 80
       },
       "expected_provenance": "document"
     }

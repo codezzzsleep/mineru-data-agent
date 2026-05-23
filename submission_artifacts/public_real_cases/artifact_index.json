@@ -1,0 +1,36 @@
+{
+  "cases": [
+    {
+      "id": "public_irs_w4_form",
+      "source_url": "https://www.irs.gov/pub/irs-pdf/fw4.pdf",
+      "result_path": "submission_artifacts/public_real_cases/public_irs_w4_form/result.json",
+      "trace_path": "submission_artifacts/public_real_cases/public_irs_w4_form/trace.json",
+      "human_labels_path": "submission_artifacts/public_real_cases/public_irs_w4_form/human_labels.json",
+      "source_metadata_path": "submission_artifacts/public_real_cases/public_irs_w4_form/source_metadata.json"
+    },
+    {
+      "id": "public_nist_ai_rmf",
+      "source_url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+      "result_path": "submission_artifacts/public_real_cases/public_nist_ai_rmf/result.json",
+      "trace_path": "submission_artifacts/public_real_cases/public_nist_ai_rmf/trace.json",
+      "human_labels_path": "submission_artifacts/public_real_cases/public_nist_ai_rmf/human_labels.json",
+      "source_metadata_path": "submission_artifacts/public_real_cases/public_nist_ai_rmf/source_metadata.json"
+    },
+    {
+      "id": "public_microsoft_annual_report",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312524242888/d815777dars.pdf",
+      "result_path": "submission_artifacts/public_real_cases/public_microsoft_annual_report/result.json",
+      "trace_path": "submission_artifacts/public_real_cases/public_microsoft_annual_report/trace.json",
+      "human_labels_path": "submission_artifacts/public_real_cases/public_microsoft_annual_report/human_labels.json",
+      "source_metadata_path": "submission_artifacts/public_real_cases/public_microsoft_annual_report/source_metadata.json"
+    },
+    {
+      "id": "public_cdc_vis_instructions",
+      "source_url": "https://www.cdc.gov/vaccines/hcp/vis/about/required-use-instructions.pdf",
+      "result_path": "submission_artifacts/public_real_cases/public_cdc_vis_instructions/result.json",
+      "trace_path": "submission_artifacts/public_real_cases/public_cdc_vis_instructions/trace.json",
+      "human_labels_path": "submission_artifacts/public_real_cases/public_cdc_vis_instructions/human_labels.json",
+      "source_metadata_path": "submission_artifacts/public_real_cases/public_cdc_vis_instructions/source_metadata.json"
+    }
+  ]
+}

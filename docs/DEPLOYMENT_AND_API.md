@@ -106,6 +106,14 @@ powershell -ExecutionPolicy Bypass -File .\scripts\collect_mineru_case.ps1 -RunD
 
 当前结果位于 `submission_artifacts/mineru_cases/`。该目录用于证明本地 `mineru-cli` 后端、页级 provenance、MinerU 中间文件和 retrieval 导出已经跑通。
 
+生成官方公开真实文档证据包：
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\run_public_real_cases.py
+```
+
+当前结果位于 `submission_artifacts/public_real_cases/`，覆盖 IRS W-4、NIST AI RMF 1.0、Microsoft 2024 Annual Report SEC PDF exhibit 和 CDC VIS 使用说明。每个案例包含官方输入副本、source metadata、human labels、trace、result、summary 和 retrieval 导出；NIST 与 Microsoft 长文档按在线 Agent API 限制只跑前 20 页，并在 metadata 中写明。
+
 ## 5. API 服务
 
 启动：
@@ -257,7 +265,7 @@ runs/api/<run_id>/
 
 ## 8. 带标注评测
 
-标注文件位于 `examples/evaluation/labels.json`，覆盖 HTML、PDF/MinerU CLI、Office、recovery 和挑战案例的关键字段、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。
+标注文件位于 `examples/evaluation/labels.json`，覆盖 HTML、PDF/MinerU CLI、Office、recovery、挑战案例和官方公开真实 PDF 案例的关键字段、文本证据、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。
 
 生成评测报告：
 
@@ -265,4 +273,4 @@ runs/api/<run_id>/
 python scripts/build_evaluation_report.py
 ```
 
-当前报告位于 `submission_artifacts/evaluation/evaluation_metrics.json` 和 `submission_artifacts/evaluation/evaluation_metrics.md`。已保存结果显示 13 个案例、39 个标注字段、profile、结构、质量、provenance 和 recovery 门槛均通过。该指标不是完整 OCR 字符级准确率，而是面向本赛题可复查结构化输出的提交级评测面。
+当前报告位于 `submission_artifacts/evaluation/evaluation_metrics.json` 和 `submission_artifacts/evaluation/evaluation_metrics.md`。已保存结果显示 17 个案例、39 个标注字段、22 条文本证据、profile、结构、质量、provenance 和 recovery 门槛均通过。该指标不是完整 OCR 字符级准确率，而是面向本赛题可复查结构化输出的提交级评测面。

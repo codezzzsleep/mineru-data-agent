@@ -1,0 +1,15 @@
+{
+  "id": "public_cdc_vis_instructions",
+  "human_labels": {
+    "document_topic": "Vaccine Information Statements",
+    "issuer": "Centers for Disease Control and Prevention",
+    "legal_context": "federal law requires VIS distribution"
+  },
+  "expected_text_contains": [
+    "Vaccine Information Statements",
+    "Required Use",
+    "Centers for Disease Control",
+    "National Childhood Vaccine Injury Act"
+  ],
+  "label_scope": "Sample-level public-document labels for key facts and text evidence."
+}

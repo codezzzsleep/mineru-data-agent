@@ -1,0 +1,18 @@
+{
+  "id": "public_microsoft_annual_report",
+  "human_labels": {
+    "company": "Microsoft Corporation",
+    "report_title": "2024 Annual Report",
+    "filing_source": "SEC EDGAR",
+    "fiscal_year": "2024"
+  },
+  "expected_text_contains": [
+    "Microsoft",
+    "Annual Report",
+    "Fiscal year 2024",
+    "Revenue",
+    "Cash",
+    "Cloud"
+  ],
+  "label_scope": "Sample-level public-document labels for key facts and text evidence."
+}

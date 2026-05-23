@@ -1,0 +1,96 @@
+{
+  "description": "Public real-document evidence pack. Files are downloaded from official public sources and used to test external generalization beyond synthetic fixtures.",
+  "documents": [
+    {
+      "id": "public_irs_w4_form",
+      "filename": "irs_w4.pdf",
+      "source_url": "https://www.irs.gov/pub/irs-pdf/fw4.pdf",
+      "source_organization": "Internal Revenue Service",
+      "source_type": "official public PDF form",
+      "profile": "standard_or_contract",
+      "task": "Parse a public IRS W-4 PDF form, extract form title, department, structured sections, form tables, quality issues, trace, and retrieval chunks.",
+      "human_labels": {
+        "document_title": "Employee's Withholding Certificate",
+        "issuer": "Department of the Treasury Internal Revenue Service",
+        "year": "2026",
+        "document_family": "Form W-4"
+      },
+      "expected_text_contains": [
+        "Employee",
+        "Withholding Certificate",
+        "Department of the Treasury",
+        "Internal Revenue Service",
+        "General Instructions"
+      ]
+    },
+    {
+      "id": "public_nist_ai_rmf",
+      "filename": "nist_ai_rmf_1_0.pdf",
+      "source_url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+      "source_organization": "National Institute of Standards and Technology",
+      "source_type": "official public framework PDF",
+      "page_range": "1-20",
+      "profile": "standard_or_contract",
+      "task": "Parse the public NIST AI RMF 1.0 PDF, extract publication identity, section structure, framework functions, quality issues, trace, and retrieval chunks.",
+      "human_labels": {
+        "document_title": "Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+        "publication_id": "NIST AI 100-1",
+        "issuer": "National Institute of Standards and Technology",
+        "publication_date": "January 2023"
+      },
+      "expected_text_contains": [
+        "Artificial Intelligence Risk Management Framework",
+        "NIST AI 100-1",
+        "January 2023",
+        "GOVERN",
+        "MAP",
+        "MEASURE",
+        "MANAGE"
+      ]
+    },
+    {
+      "id": "public_microsoft_annual_report",
+      "filename": "microsoft_2024_annual_report.pdf",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312524242888/d815777dars.pdf",
+      "source_organization": "U.S. Securities and Exchange Commission",
+      "source_type": "official SEC annual report PDF exhibit",
+      "page_range": "1-20",
+      "profile": "financial_report",
+      "task": "Parse Microsoft 2024 Annual Report PDF from SEC, extract company identity, annual report signals, financial sections, tables, quality issues, trace, and retrieval chunks.",
+      "human_labels": {
+        "company": "Microsoft Corporation",
+        "report_title": "2024 Annual Report",
+        "filing_source": "SEC EDGAR",
+        "fiscal_year": "2024"
+      },
+      "expected_text_contains": [
+        "Microsoft",
+        "Annual Report",
+        "Fiscal year 2024",
+        "Revenue",
+        "Cash",
+        "Cloud"
+      ]
+    },
+    {
+      "id": "public_cdc_vis_instructions",
+      "filename": "cdc_vis_instructions.pdf",
+      "source_url": "https://www.cdc.gov/vaccines/hcp/vis/about/required-use-instructions.pdf",
+      "source_organization": "Centers for Disease Control and Prevention",
+      "source_type": "official public health instruction PDF",
+      "profile": "standard_or_contract",
+      "task": "Parse the public CDC VIS instruction PDF, extract instruction title, responsible agency, legal-use statements, quality issues, trace, and retrieval chunks.",
+      "human_labels": {
+        "document_topic": "Vaccine Information Statements",
+        "issuer": "Centers for Disease Control and Prevention",
+        "legal_context": "federal law requires VIS distribution"
+      },
+      "expected_text_contains": [
+        "Vaccine Information Statements",
+        "Required Use",
+        "Centers for Disease Control",
+        "National Childhood Vaccine Injury Act"
+      ]
+    }
+  ]
+}

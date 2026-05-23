@@ -1,0 +1,17 @@
+{
+  "id": "public_irs_w4_form",
+  "human_labels": {
+    "document_title": "Employee's Withholding Certificate",
+    "issuer": "Department of the Treasury Internal Revenue Service",
+    "year": "2026",
+    "document_family": "Form W-4"
+  },
+  "expected_text_contains": [
+    "Employee",
+    "Withholding Certificate",
+    "Department of the Treasury",
+    "Internal Revenue Service",
+    "General Instructions"
+  ],
+  "label_scope": "Sample-level public-document labels for key facts and text evidence."
+}

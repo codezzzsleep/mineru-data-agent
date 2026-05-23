@@ -37,6 +37,8 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         f"- Cases: {report['case_count']}",
         f"- Expected-field accuracy: {_pct(aggregate['field_accuracy'])} "
         f"({aggregate['matched_fields']}/{aggregate['expected_fields']})",
+        f"- Text evidence accuracy: {_pct(aggregate['text_evidence_accuracy'])} "
+        f"({aggregate['matched_text_evidence']}/{aggregate['expected_text_evidence']})",
         f"- Profile accuracy: {_pct(aggregate['profile_accuracy'])} "
         f"({aggregate['profile_matches']}/{aggregate['profile_checks']})",
         f"- Structure gate pass rate: {_pct(aggregate['structure_gate_pass_rate'])} "
@@ -50,15 +52,16 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         "",
         "## Cases",
         "",
-        "| Case | Field Accuracy | Profile | Structure | Quality | Provenance | Recovery | Result |",
-        "| --- | ---: | --- | --- | --- | --- | --- | --- |",
+        "| Case | Field Accuracy | Text Evidence | Profile | Structure | Quality | Provenance | Recovery | Result |",
+        "| --- | ---: | ---: | --- | --- | --- | --- | --- | --- |",
     ]
     for item in report["cases"]:
         result_path = item.get("result_path", "")
         lines.append(
-            "| {case_id} | {field_accuracy} | {profile} | {structure} | {quality} | {provenance} | {recovery} | `{result}` |".format(
+            "| {case_id} | {field_accuracy} | {text_accuracy} | {profile} | {structure} | {quality} | {provenance} | {recovery} | `{result}` |".format(
                 case_id=item["id"],
                 field_accuracy=_pct(item["field_accuracy"]),
+                text_accuracy=_pct(item["text_evidence_accuracy"]),
                 profile=_ok(item["profile_match"]),
                 structure=_ok(item["structure_gate"]["passed"]),
                 quality=_ok(item["quality_gate"]["passed"]),
@@ -73,6 +76,7 @@ def render_markdown_report(report: dict[str, Any]) -> str:
             "## Notes",
             "",
             "- Field accuracy here measures labeled key-value expectations, not full OCR character accuracy.",
+            "- Text evidence accuracy checks whether lightweight human-labeled facts appear anywhere in the structured output.",
             "- Structure gates check minimum sections, tables, numeric facts, retrieval chunks, and issue codes where labels define them.",
             "- Recovery gates check executed recovery decisions, selected attempts, final decisions, and preserved initial issue codes when labels define them.",
             "- This complements the trace/artifact evidence and gives reviewers a reproducible scoring surface.",
@@ -93,6 +97,7 @@ def _evaluate_case(raw_case: Any, project_root: Path) -> dict[str, Any]:
     recovery = result.get("recovery_decision", {})
 
     field_checks = _check_fields(raw_case.get("expected_fields", {}), extracted.get("key_value_map", {}))
+    text_checks = _check_text_contains(raw_case.get("expected_text_contains", []), extracted)
     profile_match = result.get("profile") == raw_case.get("expected_profile")
     structure_gate = _check_structure(raw_case.get("minimums", {}), extracted, retrieval, quality)
     quality_gate = _check_quality(raw_case.get("expected_quality", {}), quality)
@@ -100,6 +105,8 @@ def _evaluate_case(raw_case: Any, project_root: Path) -> dict[str, Any]:
     recovery_gate = _check_recovery(raw_case.get("expected_recovery"), recovery)
     expected_count = len(field_checks)
     matched_count = sum(1 for item in field_checks if item["matched"])
+    expected_text_count = len(text_checks)
+    matched_text_count = sum(1 for item in text_checks if item["matched"])
     return {
         "id": case_id,
         "result_path": _display_path(result_path, project_root),
@@ -110,6 +117,10 @@ def _evaluate_case(raw_case: Any, project_root: Path) -> dict[str, Any]:
         "matched_fields": matched_count,
         "expected_fields": expected_count,
         "field_checks": field_checks,
+        "text_evidence_accuracy": matched_text_count / expected_text_count if expected_text_count else 1.0,
+        "matched_text_evidence": matched_text_count,
+        "expected_text_evidence": expected_text_count,
+        "text_checks": text_checks,
         "structure_gate": structure_gate,
         "quality_gate": quality_gate,
         "provenance_gate": provenance_gate,
@@ -131,6 +142,22 @@ def _check_fields(expected_fields: Any, key_value_map: Any) -> list[dict[str, An
                 "expected": expected,
                 "actual": actual,
                 "matched": matched,
+            }
+        )
+    return checks
+
+
+def _check_text_contains(expected_items: Any, extracted: dict[str, Any]) -> list[dict[str, Any]]:
+    if not isinstance(expected_items, list):
+        return []
+    haystack = _normalize_value(_flatten_text(extracted))
+    checks = []
+    for expected in expected_items:
+        expected_text = _normalize_value(expected)
+        checks.append(
+            {
+                "expected": expected,
+                "matched": expected_text in haystack,
             }
         )
     return checks
@@ -218,6 +245,8 @@ def _check_recovery(expected: Any, recovery: Any) -> dict[str, Any]:
 def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
     expected_fields = sum(item["expected_fields"] for item in cases)
     matched_fields = sum(item["matched_fields"] for item in cases)
+    expected_text_evidence = sum(item["expected_text_evidence"] for item in cases)
+    matched_text_evidence = sum(item["matched_text_evidence"] for item in cases)
     profile_checks = len(cases)
     profile_matches = sum(1 for item in cases if item["profile_match"])
     structure_gates = len(cases)
@@ -236,6 +265,9 @@ def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
         "expected_fields": expected_fields,
         "matched_fields": matched_fields,
         "field_accuracy": matched_fields / expected_fields if expected_fields else 1.0,
+        "expected_text_evidence": expected_text_evidence,
+        "matched_text_evidence": matched_text_evidence,
+        "text_evidence_accuracy": matched_text_evidence / expected_text_evidence if expected_text_evidence else 1.0,
         "profile_checks": profile_checks,
         "profile_matches": profile_matches,
         "profile_accuracy": profile_matches / profile_checks if profile_checks else 1.0,
@@ -282,6 +314,18 @@ def _value_matches(expected: Any, actual: Any) -> bool:
         if "one_of" in expected and isinstance(expected["one_of"], list):
             return actual_text in {_normalize_value(item) for item in expected["one_of"]}
     return actual_text == _normalize_value(expected)
+
+
+def _flatten_text(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        return " ".join(_flatten_text(item) for item in value.values())
+    if isinstance(value, list):
+        return " ".join(_flatten_text(item) for item in value)
+    return str(value)
 
 
 def _normalize_value(value: Any) -> str:

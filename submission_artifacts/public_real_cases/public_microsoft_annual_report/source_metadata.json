@@ -1,0 +1,13 @@
+{
+  "id": "public_microsoft_annual_report",
+  "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312524242888/d815777dars.pdf",
+  "source_organization": "U.S. Securities and Exchange Commission",
+  "source_type": "official SEC annual report PDF exhibit",
+  "filename": "microsoft_2024_annual_report.pdf",
+  "input_copy": "input.pdf",
+  "task": "Parse Microsoft 2024 Annual Report PDF from SEC, extract company identity, annual report signals, financial sections, tables, quality issues, trace, and retrieval chunks.",
+  "profile": "financial_report",
+  "public_document_boundary": "Official public document used for lightweight external-generalization evidence; not a full OCR character-level benchmark.",
+  "page_range": "1-20",
+  "page_range_boundary": "Only the listed page range is submitted because of the online MinerU Agent API page limit."
+}

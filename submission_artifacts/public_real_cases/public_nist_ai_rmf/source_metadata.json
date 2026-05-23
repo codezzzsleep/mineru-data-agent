@@ -1,0 +1,13 @@
+{
+  "id": "public_nist_ai_rmf",
+  "source_url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+  "source_organization": "National Institute of Standards and Technology",
+  "source_type": "official public framework PDF",
+  "filename": "nist_ai_rmf_1_0.pdf",
+  "input_copy": "input.pdf",
+  "task": "Parse the public NIST AI RMF 1.0 PDF, extract publication identity, section structure, framework functions, quality issues, trace, and retrieval chunks.",
+  "profile": "standard_or_contract",
+  "public_document_boundary": "Official public document used for lightweight external-generalization evidence; not a full OCR character-level benchmark.",
+  "page_range": "1-20",
+  "page_range_boundary": "Only the listed page range is submitted because of the online MinerU Agent API page limit."
+}

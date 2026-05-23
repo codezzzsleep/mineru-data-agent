@@ -1,0 +1,107 @@
+{
+  "created_at": "2026-05-23T14:03:04.846485+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-23T14:02:48.632881+00:00",
+      "ended_at": "2026-05-23T14:02:48.632881+00:00",
+      "detail": {
+        "task": "Parse Microsoft 2024 Annual Report PDF from SEC, extract company identity, annual report signals, financial sections, tables, quality issues, trace, and retrieval chunks.",
+        "input_file": "<PROJECT_ROOT>\\examples\\public_real_documents\\files\\microsoft_2024_annual_report.pdf"
+      }
+    },
+    {
+      "name": "mineru_parse",
+      "status": "completed",
+      "started_at": "2026-05-23T14:02:48.632881+00:00",
+      "ended_at": "2026-05-23T14:03:04.805608+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "en"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:04.805608+00:00",
+      "ended_at": "2026-05-23T14:03:04.820169+00:00",
+      "detail": {
+        "item_count": 210,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "mineru-agent-api": 210
+        },
+        "section_count": 43,
+        "table_count": 3,
+        "key_value_count": 0,
+        "numeric_fact_count": 64,
+        "semantic_signal_counts": {
+          "dates": 0,
+          "recommendations": 4,
+          "anomaly_lines": 6
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:04.820169+00:00",
+      "ended_at": "2026-05-23T14:03:04.820169+00:00",
+      "detail": {
+        "profile": "financial_report"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:04.820169+00:00",
+      "ended_at": "2026-05-23T14:03:04.820169+00:00",
+      "detail": {
+        "quality_status": "pass_with_warnings",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:04.820169+00:00",
+      "ended_at": "2026-05-23T14:03:04.837803+00:00",
+      "detail": {
+        "chunks_count": 48,
+        "by_type": {
+          "text": 45,
+          "table": 3
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "mineru-agent-api",
+      "command": [
+        "mineru-agent-api",
+        "parse-file",
+        "microsoft_2024_annual_report.pdf"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 16.17,
+      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"8a648168-2d7a-4b4d-83dc-2943ee26d74805\",\n    \"trace_id\": \"331675f554692ac28ccd3daf0ce162e8\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"07c2f24679c7c03d88f00171e2122245\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"pending\",\n    \"trace_id\": \"f7bfef79ad4e0df133abfe592b852c9e\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"pending\",\n    \"trace_id\": \"886c8cd91ac1f7f823432526da57bd5a\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"pending\",\n    \"trace_id\": \"b64a758c30302418afd76d221c76e99f\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"a278cc32ce541c93784c5f818f342d24\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"92a156ef3b269e82a62e37b1a28ce023\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"8fc740725690ede6fe2967d018d652ea\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"310537e0661dd01cb39336edd50e18b7\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"8a648168-2d7a-4b4d-83dc-2943ee26d74805\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-23/38236be5-3a5e-4a58-987b-e795a17f00e8/full.md\"\n  }\n]",
+      "stderr_tail": ""
+    }
+  ],
+  "run_id": "18cd14d4f93a",
+  "task": "Parse Microsoft 2024 Annual Report PDF from SEC, extract company identity, annual report signals, financial sections, tables, quality issues, trace, and retrieval chunks.",
+  "profile": "financial_report",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\summary.md"
+}

@@ -44,6 +44,7 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
                         "result_path": "result.json",
                         "expected_profile": "financial_report",
                         "expected_fields": {"报告日期": "2026-05-23", "公司名称": "测试公司"},
+                        "expected_text_contains": ["测试公司", "page"],
                         "minimums": {
                             "sections": 2,
                             "tables": 1,
@@ -70,8 +71,10 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
     report = evaluate_cases(labels_path, project_root=tmp_path)
 
     assert report["aggregate"]["field_accuracy"] == 1.0
+    assert report["aggregate"]["text_evidence_accuracy"] == 1.0
     assert report["aggregate"]["profile_accuracy"] == 1.0
     assert report["aggregate"]["structure_gate_pass_rate"] == 1.0
     assert report["aggregate"]["recovery_gate_pass_rate"] == 1.0
     assert "Expected-field accuracy: 100.0%" in render_markdown_report(report)
+    assert "Text evidence accuracy: 100.0%" in render_markdown_report(report)
     assert "Recovery gate pass rate: 100.0%" in render_markdown_report(report)

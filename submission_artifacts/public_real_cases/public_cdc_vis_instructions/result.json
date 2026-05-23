@@ -1,0 +1,399 @@
+{
+  "run_id": "d6f8646990e9",
+  "task": "Parse the public CDC VIS instruction PDF, extract instruction title, responsible agency, legal-use statements, quality issues, trace, and retrieval chunks.",
+  "profile": "standard_or_contract",
+  "input_file": "<PROJECT_ROOT>\\examples\\public_real_documents\\files\\cdc_vis_instructions.pdf",
+  "output_dir": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize section hierarchy and clause-like paragraph extraction",
+    "Preserve source page or document heading evidence for each clause"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": false,
+    "requested": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "en"
+    },
+    "initial": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "en",
+      "runner": "agent-api"
+    },
+    "resolved": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "en",
+      "runner": "agent-api"
+    },
+    "runner_class": "PageRangeAgentAPIRunner",
+    "applied": [],
+    "ignored": []
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 28,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 7,
+        "text": 16,
+        "list": 5
+      },
+      "source_counts": {
+        "mineru-agent-api": 28
+      },
+      "text_characters": 3405
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "Vaccine Information Statements",
+        "line": 1,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 2,
+        "title": "Required Use",
+        "line": 3,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 2,
+        "title": "1. Provide a Vaccine Information Statement (VIS) when a vaccination is given.",
+        "line": 5,
+        "source": "heading",
+        "text": "As required under the National Childhood Vaccine Injury Act (42 U.S.C. §300aa-26), all health care providers in the United States who administer, to any child or adult, any of the following vaccines — diphtheria, tetanus, pertussis, measles, mumps, rubella, polio, hepatitis A, hepatitis B, Haemophilus influenzae type b (Hib), influenza, pneumococcal conjugate, meningococcal, rotavirus, human papillomavirus (HPV), or varicella (chickenpox) — shall, prior to administration of each dose of the vaccine, provide a copy to keep of the relevant current edition vaccine information materials that have been produced by the Centers for Disease Control and Prevention (CDC):\n\n to the parent or legal representative1 of any child to whom the provider intends to administer such vaccine, OR\n\n to any adult2 to whom the provider intends to administer such vaccine.\n\nIf there is not a single VIS for a combination vaccine, use the VISs for all component vaccines.\n\nVISs should be supplemented with visual presentations or oral explanations as appropriate."
+      },
+      {
+        "level": 2,
+        "title": "2. Record information for each VIS provided.",
+        "line": 17,
+        "source": "heading",
+        "text": "Health care providers shall make a notation in each patient’s permanent medical record at the time vaccine information materials are provided, indicating:\n\n- (1) the edition date of the Vaccine Information Statement distributed, and\n\n- (2) the date the VIS was provided.\n\nThis recordkeeping requirement supplements the requirement of 42 U.S.C. §300aa-25 that all health care providers administering these vaccines must record in the patient’s permanent medical record (or in a permanent office log):\n\n- (3) the name, address and title of the individual who administers the vaccine,\n\n- (4) the date of administration, and\n\n- (5) the vaccine manufacturer and lot number of the vaccine used.\n\n1 “Legal representative” is defined as a parent or other individual who is qualified under State law to consent to the immunization of a minor child or incompetent adult.\n\n2 In the case of an incompetent adult, relevant VISs shall be provided to the individual’s legal representative. If the incompetent adult is living in a long-term care facility, all relevant VISs may be provided at the time of admission, or at the time of consent if later than admission, rather than prior to each vaccination."
+      },
+      {
+        "level": 2,
+        "title": "Applicability of State Law",
+        "line": 37,
+        "source": "heading",
+        "text": "Health care providers should consult their legal counsel to determine additional State requirements pertaining to immunization. The Federal requirement to provide the vaccine information materials supplements any applicable State laws."
+      },
+      {
+        "level": 2,
+        "title": "Availability of Copies",
+        "line": 41,
+        "source": "heading",
+        "text": "Copies are available in English from CDC's website at www.cdc.gov/vaccines/hcp/vis/index.html; copies in other languages are available from immunize.org at www.immunize.org/vaccines/vis/about-vis/. Single camera-ready copies may also be available from State health departments."
+      },
+      {
+        "level": 2,
+        "title": "Current VIS Editions",
+        "line": 45,
+        "source": "heading",
+        "text": "DTaP (Diphtheria, Tetanus, Pertussis): 8/6/21\n\nHepatitis A: 1/31/25\n\nHepatitis B†: 1/31/25\n\nHPV (Human Papillomavirus): 8/6/21\n\nInfluenza (inactivated): 1/31/25   \nInfluenza (live): 1/31/25   \nMMR: 1/31/25   \nMMRV: 1/31/25   \nMeningococcal ACWY: 1/31/25   \nMeningococcal B: 1/31/25   \nPneumococcal (PCV)†: 5/29/25   \nPolio: 1/31/25   \nRotavirus: 10/15/21   \nTd: 8/6/21   \nTdap: 1/31/25   \nVaricella: 1/31/25   \nMulti-Vaccine\\*†: 7/24/23"
+      }
+    ],
+    "tables": [],
+    "key_values": [
+      {
+        "key": "DTaP (Diphtheria, Tetanus, Pertussis)",
+        "value": "8/6/21"
+      },
+      {
+        "key": "Hepatitis A",
+        "value": "1/31/25"
+      },
+      {
+        "key": "Hepatitis B†",
+        "value": "1/31/25"
+      },
+      {
+        "key": "HPV (Human Papillomavirus)",
+        "value": "8/6/21"
+      },
+      {
+        "key": "Influenza (inactivated)",
+        "value": "1/31/25"
+      },
+      {
+        "key": "Influenza (live)",
+        "value": "1/31/25"
+      },
+      {
+        "key": "MMR",
+        "value": "1/31/25"
+      },
+      {
+        "key": "MMRV",
+        "value": "1/31/25"
+      },
+      {
+        "key": "Meningococcal ACWY",
+        "value": "1/31/25"
+      },
+      {
+        "key": "Meningococcal B",
+        "value": "1/31/25"
+      },
+      {
+        "key": "Pneumococcal (PCV)†",
+        "value": "5/29/25"
+      },
+      {
+        "key": "Polio",
+        "value": "1/31/25"
+      },
+      {
+        "key": "Rotavirus",
+        "value": "10/15/21"
+      },
+      {
+        "key": "Td",
+        "value": "8/6/21"
+      },
+      {
+        "key": "Tdap",
+        "value": "1/31/25"
+      },
+      {
+        "key": "Varicella",
+        "value": "1/31/25"
+      },
+      {
+        "key": "Multi-Vaccine\\*†",
+        "value": "7/24/23"
+      }
+    ],
+    "key_value_map": {
+      "DTaP (Diphtheria, Tetanus, Pertussis)": "8/6/21",
+      "Hepatitis A": "1/31/25",
+      "Hepatitis B†": "1/31/25",
+      "HPV (Human Papillomavirus)": "8/6/21",
+      "Influenza (inactivated)": "1/31/25",
+      "Influenza (live)": "1/31/25",
+      "MMR": "1/31/25",
+      "MMRV": "1/31/25",
+      "Meningococcal ACWY": "1/31/25",
+      "Meningococcal B": "1/31/25",
+      "Pneumococcal (PCV)†": "5/29/25",
+      "Polio": "1/31/25",
+      "Rotavirus": "10/15/21",
+      "Td": "8/6/21",
+      "Tdap": "1/31/25",
+      "Varicella": "1/31/25",
+      "Multi-Vaccine\\*†": "7/24/23"
+    },
+    "numeric_facts": [
+      {
+        "line": 7,
+        "text": "As required under the National Childhood Vaccine Injury Act (42 U.S.C. §300aa-26), all health care providers in the United States who administer, to any child or adult, any of the following vaccines — diphtheria, tetanus, pertussis, measles, mumps, rubella, polio, hepatitis A, hepatitis B, Haemophil",
+        "numbers": [
+          "42"
+        ]
+      },
+      {
+        "line": 21,
+        "text": "- (1) the edition date of the Vaccine Information Statement distributed, and",
+        "numbers": [
+          "1"
+        ]
+      },
+      {
+        "line": 23,
+        "text": "- (2) the date the VIS was provided.",
+        "numbers": [
+          "2"
+        ]
+      },
+      {
+        "line": 25,
+        "text": "This recordkeeping requirement supplements the requirement of 42 U.S.C. §300aa-25 that all health care providers administering these vaccines must record in the patient’s permanent medical record (or in a permanent office log):",
+        "numbers": [
+          "42"
+        ]
+      },
+      {
+        "line": 27,
+        "text": "- (3) the name, address and title of the individual who administers the vaccine,",
+        "numbers": [
+          "3"
+        ]
+      },
+      {
+        "line": 29,
+        "text": "- (4) the date of administration, and",
+        "numbers": [
+          "4"
+        ]
+      },
+      {
+        "line": 31,
+        "text": "- (5) the vaccine manufacturer and lot number of the vaccine used.",
+        "numbers": [
+          "5"
+        ]
+      },
+      {
+        "line": 33,
+        "text": "1 “Legal representative” is defined as a parent or other individual who is qualified under State law to consent to the immunization of a minor child or incompetent adult.",
+        "numbers": [
+          "1"
+        ]
+      },
+      {
+        "line": 35,
+        "text": "2 In the case of an incompetent adult, relevant VISs shall be provided to the individual’s legal representative. If the incompetent adult is living in a long-term care facility, all relevant VISs may be provided at the time of admission, or at the time of consent if later than admission, rather than",
+        "numbers": [
+          "2"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [],
+      "recommendations": [],
+      "anomaly_lines": [],
+      "field_coverage": {
+        "has_date": false,
+        "has_recommendation": false,
+        "has_anomaly_signal": false
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 7,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# Vaccine Information Statements\n\n## Required Use\n\n## 1. Provide a Vaccine Information Statement (VIS) when a vaccination is given.\n\nAs required under the National Childhood Vaccine Injury Act (42 U.S.C. §300aa-26), all health care providers in the United States who administer, to any child or adult, any of the following vaccines — diphtheria, tetanus, pertussis, measles, mumps, rubella, polio, hepatitis A, hepatitis B, Haemophilus influenzae type b (Hib), influenza, pneumococcal conjugate, meningococcal, rotavirus, human papillomavirus (HPV), or varicella (chickenpox) — shall, prior to administration of each dose of the vaccine, provide a copy to keep of the relevant current edition vaccine information materials that have been produced by the Centers for Disease Control and Prevention (CDC):\n\n to the parent or legal representative1 of any child to whom the provider intends to administer such vaccine, OR\n\n to any adult2 to whom the provider intends to administer such vaccine.\n\nIf there is not a single VIS for a combination vaccine, use the VISs for all component vaccines.\n\nVISs should be supplemented with visual presentations or oral explanations as appropriate.\n\n## 2. Record information for each VIS provided.\n\nHealth care providers shall make a notation in each patient’s permanent medical record at the time vaccine information materials are provided, indicating:\n\n- (1) the edition date of the Vaccine Information Statement distributed, and\n\n- (2) the date the VIS was provided.\n\nThis recordkeeping requirement supplements the requirement of 42 U.S.C. §300aa-25 that all health care providers administering these vaccines must record in the patient’s permanent medical record (or in a permanent office log):\n\n- (3) the name, address and title of the individual who administers the vaccine,\n\n- (4) the date of administration, and\n\n- (5) the vaccine manufacturer and lot number of the vaccine used.\n\n1 “Legal representative” is defined as a parent or other individual who is qu"
+  },
+  "quality": {
+    "score": 84,
+    "status": "pass_with_warnings",
+    "issue_count": 2,
+    "issue_counts": {
+      "error": 0,
+      "warning": 2,
+      "info": 0
+    },
+    "issues": [
+      {
+        "code": "no_page_provenance",
+        "level": "warning",
+        "message": "Content blocks were extracted, but no page-level provenance is available.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 28
+        }
+      },
+      {
+        "code": "expected_anomaly_signal_missing",
+        "level": "warning",
+        "message": "Task asks for anomalies/risks, but no anomaly-like evidence was extracted.",
+        "evidence": {}
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "accept_with_review_notes",
+    "actions": [
+      "Executed 1 automatic recovery attempt(s); selected `initial`.",
+      "Use local MinerU CLI when page-level provenance is required."
+    ],
+    "issue_codes": [
+      "no_page_provenance",
+      "expected_anomaly_signal_missing"
+    ],
+    "initial_issue_codes": [
+      "no_page_provenance",
+      "expected_anomaly_signal_missing"
+    ],
+    "selected_attempt": "initial",
+    "executed": true,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass_with_warnings",
+        "score": 84,
+        "issue_codes": [
+          "no_page_provenance",
+          "expected_anomaly_signal_missing"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\mineru\\cdc_vis_instructions\\agent_api\\cdc_vis_instructions.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\mineru\\cdc_vis_instructions\\agent_api\\cdc_vis_instructions_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\mineru\\cdc_vis_instructions\\agent_api\\cdc_vis_instructions_agent_response.json",
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      },
+      {
+        "name": "ocr_retry",
+        "backend": "pipeline",
+        "method": "ocr",
+        "quality_status": "pass_with_warnings",
+        "score": 84,
+        "issue_codes": [
+          "no_page_provenance",
+          "expected_anomaly_signal_missing"
+        ],
+        "selected": false,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\mineru_retry_ocr\\cdc_vis_instructions\\agent_api\\cdc_vis_instructions.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\mineru_retry_ocr\\cdc_vis_instructions\\agent_api\\cdc_vis_instructions_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\mineru_retry_ocr\\cdc_vis_instructions\\agent_api\\cdc_vis_instructions_agent_response.json",
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 5,
+      "by_type": {
+        "text": 5
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\mineru\\cdc_vis_instructions\\agent_api\\cdc_vis_instructions.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\mineru\\cdc_vis_instructions\\agent_api\\cdc_vis_instructions_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\mineru\\cdc_vis_instructions\\agent_api\\cdc_vis_instructions_agent_response.json",
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\summary.md"
+}

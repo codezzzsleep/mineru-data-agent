@@ -1,0 +1,1557 @@
+{
+  "run_id": "18cd14d4f93a",
+  "task": "Parse Microsoft 2024 Annual Report PDF from SEC, extract company identity, annual report signals, financial sections, tables, quality issues, trace, and retrieval chunks.",
+  "profile": "financial_report",
+  "input_file": "<PROJECT_ROOT>\\examples\\public_real_documents\\files\\microsoft_2024_annual_report.pdf",
+  "output_dir": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize dense table extraction and numeric consistency checks",
+    "Flag subtotal/total rows and suspicious numeric cells"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": false,
+    "requested": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "en"
+    },
+    "initial": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "en",
+      "runner": "agent-api"
+    },
+    "resolved": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "en",
+      "runner": "agent-api"
+    },
+    "runner_class": "PageRangeAgentAPIRunner",
+    "applied": [],
+    "ignored": []
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 210,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "text": 164,
+        "heading": 43,
+        "table": 3
+      },
+      "source_counts": {
+        "mineru-agent-api": 210
+      },
+      "text_characters": 60684
+    },
+    "sections": [
+      {
+        "level": 2,
+        "title": "AGE OF AI",
+        "line": 33,
+        "source": "heading",
+        "text": "If we go back 70 years to the beginning of modern computing, our industry has had two dreams: First, can computers understand us instead of us having to understand computers? And second, as we digitize more of the world—including people, places, and things—can computers help us reason, plan, and act more effectively using all that information? Over the past year, we have had breakthroughs on both fronts.\n\nThe core underlying force behind these breakthroughs is scaling laws. Just like Moore’s Law drove the information revolution, the scaling laws of deep neural networks (DNN) and transformers are driving today’s AI revolution. Up until the DNN inflection point, progress in compute was keeping up with Moore’s Law—doubling every two years. But we have now started to see progress in AI performance double roughly every six months.\n\nThere are three capabilities coming together because of these scaling laws. First, we have a new natural user interface that is multimodal. It supports speech, images, and videos—both as input and output. We have memory that retains important context, recalling both our personal knowledge and data across devices, apps, and the web. And, finally, we have new reasoning and planning capabilities that help us understand complex context, complete end-to-end tasks on our behalf, and reduce our cognitive load.\n\nThis new world is being defined by a rich tapestry of AI agents, which can take action on our behalf, including personal agents across work and life, business process agents, and cross-organizational ones. These agents will be able to work in concert as a new input to help make small businesses more productive, make multinationals more competitive, make the public sector more efficient, and improve health and education outcomes broadly.\n\nMicrosoft has built three leading platforms to help our customers maximize their opportunity in this emerging agentic era: Copilot, which you can think of as the new UI for AI—the human interface for this agentic world; the Copilot stack, which brings together infrastructure, data, and app services to help customers build their own copilots and agents for their own business processes; and a new category of Copilot devices that are purpose-built for this new era, including the Copilot+ PCs we introduced this year."
+      },
+      {
+        "level": 2,
+        "title": "OUR OPPORTUNITY",
+        "line": 45,
+        "source": "heading",
+        "text": "The innovation we have driven over the past year matters only if we translate it into enduring value for our customers. That’s why, across our tech stack, we are focused on helping people and organizations realize the benefits of AI."
+      },
+      {
+        "level": 2,
+        "title": "Infrastructure",
+        "line": 49,
+        "source": "heading",
+        "text": "This year, we expanded our cloud and AI capacity, announcing new investments across five continents. These are long-term assets to drive new growth for the next decade and beyond, and ensure communities around the world have access to the compute they need to drive economic growth in this new era.\n\nOur cloud now also offers top performance for AI training and inference and the most diverse selection of AI accelerators, including the latest from AMD and NVIDIA, as well as our own first-party silicon, Azure Maia, which we introduced last November.\n\nMore broadly, we continued to see sustained revenue growth from migrations as customers turn to Azure. Azure Arc is helping customers streamline their transition, as they secure, develop, and operate workloads with Azure services anywhere. We have 36,000 Arc customers, up 90 percent year-over-year. And we remain the hyperscale cloud of choice for SAP and Oracle workloads."
+      },
+      {
+        "level": 2,
+        "title": "Data & AI",
+        "line": 57,
+        "source": "heading",
+        "text": "AI models are now key building blocks for every application. And with Azure AI, we are building out the app server for the AI age, providing access to the most diverse selection of models to meet customers’ unique cost, latency, and design considerations. We offer leading frontier models, thanks to our strategic partnership with OpenAI. With Phi-3, which we announced in April, we offer a family of powerful, small language models. And, with Models as a service, we provide API access to third-party models, including the latest from Cohere, Meta, and Mistral. In total, we have over 60,000 Azure AI customers, up nearly 60 percent year-over-year. This year, we also announced a partnership with G42, which will run its AI applications and services on our cloud, as we collaborate to bring our latest AI technologies to the United Arab Emirates and other countries.\n\nAI does not get created without data. At the data layer, we are fundamentally rethinking what it means to be an analytics database or an operational data store in the world of AI. Our Microsoft Intelligent Data Platform provides customers with the broadest capabilities spanning databases, analytics, business intelligence, and governance— along with seamless integration with all our AI services. And Microsoft Fabric, our AI-powered, next-generation data platform we made generally available this year, now has over 14,000 paid customers who can go from data, to insights, to action—all within the same unified SaaS solution."
+      },
+      {
+        "level": 2,
+        "title": "Digital & app innovation",
+        "line": 63,
+        "source": "heading",
+        "text": "From GitHub to Visual Studio, we have the most comprehensive developer tools. GitHub Copilot had a breakout year, as it became standard issue for developers in every industry. We now have more than 1.8 million paid subscribers and over 77,000 enterprise customers, up 180 percent year-over-year. They are realizing productivity gains of up to 55 percent while staying in their flow and bringing the joy back to coding. This year, we also introduced Copilot Workspace, a Copilot-native developer environment, which helps any developer go from idea, to code, to software—all in natural language.\n\nWe are also integrating generative AI across Power Platform, enabling anyone to use natural language to create apps, automate workflows, or build a website. In total, we now have 48 million monthly active users of Power Platform, up 40 percent year-over-year."
+      },
+      {
+        "level": 2,
+        "title": "Modern work",
+        "line": 69,
+        "source": "heading",
+        "text": "Microsoft 365 Copilot is becoming a daily habit for knowledge workers, transforming their work, workflow, and work artifacts. Adoption has been faster than any other new Microsoft 365 suite. And employees at nearly 60 percent of the Fortune 500 now use Copilot to complete tasks faster, hold more effective meetings, and automate business workflows and processes. In fact, internal and external studies show as much as a 70 percent improvement in productivity using generative AI for specific work tasks. And early Microsoft 365 Copilot users were 29 percent faster in a series of general tasks like searching, writing, and summarizing.\n\nAnd we’re going further, bringing the Web plus Work plus Pages together as the new AI design system for knowledge work. With Pages, which we just announced last month, you can take any information from the web or your work and turn it into a multiplayer, AI-powered canvas. You can ideate with AI and then easily share what you create for collaboration with other people.\n\nAnd with Copilot Studio, customers can extend Copilot with agents and build their own agents that proactively respond to data and events from their own first- and third-party business data. To date, 50,000 organizations have used it. And, just this week, we announced new capabilities that will make it possible for customers to build autonomous agents using Copilot Studio.\n\nMicrosoft Teams remains essential to how hundreds of millions of people meet, call, chat, collaborate, and do business. This year, we rolled out to all customers a new version that is up to two times faster while using 50 percent less memory. And Teams Premium surpassed 3 million seats, up nearly 400 percent year-over-year, as organizations chose it for advanced features like end-to-end encryption and real-time translation."
+      },
+      {
+        "level": 2,
+        "title": "Business applications",
+        "line": 79,
+        "source": "heading",
+        "text": "We’re using this AI moment to redefine our role in business applications, too. Dynamics 365 once again took share, as organizations use our AI-powered apps to transform their marketing, sales, service, finance, and supply chain functions.\n\nAnd we are expanding our total addressable market by integrating Copilot into third-party systems as well. Our new Dynamics 365 Contact Center infuses generative AI throughout the contact center workflow in a customer’s existing CRM.\n\nWe are also extending Copilot to specific industries, including healthcare. With DAX Copilot, more than 400 healthcare organizations are increasing physician productivity and reducing burnout. On average, clinicians save more than five minutes per patient encounter. And 77 percent say it also improves documentation quality."
+      },
+      {
+        "level": 2,
+        "title": "Security",
+        "line": 87,
+        "source": "heading",
+        "text": "As I mentioned earlier, security underpins every layer of our tech stack. We are doubling down on our Secure Future Initiative, as we implement our principles of secure by design, secure by default, and secure operations. And we are focused on making continuous progress across the six pillars of the initiative: protect tenants and isolate production systems; protect identities and secrets; protect networks; protect engineering systems; monitor and detect threats; and accelerate response and remediation. As part of this commitment, all Microsoft employees now have security as a “core priority,” holding each one of us accountable for building secure products and services.\n\nWe are continuously applying what we are learning and translating it into security innovation for our customers. A great example is Copilot for Security, which we made generally available this year. It brings together LLMs with domain-specific skills informed by our threat intelligence and 78 trillion daily security signals to provide security teams with actionable insights."
+      },
+      {
+        "level": 2,
+        "title": "Devices & creativity",
+        "line": 93,
+        "source": "heading",
+        "text": "This year, we introduced an entirely new category of Windows PCs engineered to unleash the power of distributed AI across the cloud and edge. Copilot+ PCs are the fastest, most AI-ready Windows PCs ever built. They include a new system architecture designed to deliver best-in-class performance and breakthrough AI experiences. And we are working across our entire ecosystem to bring these to life, including with AMD, Intel, and Qualcomm, along with our OEM partners."
+      },
+      {
+        "level": 2,
+        "title": "Professional social network",
+        "line": 97,
+        "source": "heading",
+        "text": "LinkedIn continues to see accelerated member growth and record engagement. We surpassed 1 billion members for the first time this year, as we combine our unique data with this new generation of AI to transform how people learn, sell, and get hired. LinkedIn Marketing Solutions continues to be a leader in B2B digital advertising, helping companies deliver the right message, to the right audience, on a safe and trusted platform. And when it comes to our subscription businesses, Premium signups increased 51 percent, and we are adding even more value to our members and customers with new AI tools and skilling opportunities."
+      },
+      {
+        "level": 2,
+        "title": "Search, ads, and news",
+        "line": 101,
+        "source": "heading",
+        "text": "With Copilot, we’re taking the first steps toward creating an AI companion, one that’s always by your side, helping you feel smarter and more supported through natural conversations. The refreshed Copilot app we introduced earlier this month delivers a more intuitive design with more digestible, speedy, and fluent answers. It now adapts to you with a warm tone and a distinct style, providing not only information but encouragement, feedback, and advice as you navigate life’s everyday challenges—no matter how big or small. And we’re adding advanced capabilities like Voice and Vision that make it both more useful and more natural.\n\nWe also continue to apply generative AI to pioneer new approaches to how people search and browse. Microsoft Bing and Edge both took share again this year. And we introduced Copilot Pro, providing access to the latest models for quick answers and higher-quality image creation, and access to Copilot for Microsoft 365 Personal and Family subscribers.\n\nThousands of news and entertainment publishers trust us to reach new audiences with Microsoft Start. And we are also helping advertisers increase their ROI. Copilot in Microsoft Ad Platform helps marketers create campaigns and troubleshoot using natural language."
+      },
+      {
+        "level": 2,
+        "title": "Gaming",
+        "line": 109,
+        "source": "heading",
+        "text": "We are bringing great games to more people on more devices. With our acquisition of Activision Blizzard King, which closed October 2023, we’ve added hundreds of millions of players to our ecosystem. We now have 20 franchises that have generated over \\$1 billion in lifetime revenue—from Candy Crush, Diablo, and Halo, to Warcraft, Elder Scrolls, and Gears of War. And with Xbox cloud gaming, we continue to innovate to offer players more ways to experience the games they love—where, when, and how they want. Finally, we brought four of our fan-favorite titles to Nintendo Switch and Sony PlayStation for the first time, as we continue to extend our content to new platforms."
+      },
+      {
+        "level": 2,
+        "title": "OUR MISSION",
+        "line": 113,
+        "source": "heading",
+        "text": "Although we have made outstanding progress over the past year, we cannot take our permission to innovate—let alone operate—for granted. It is something we must earn.\n\nWe always say Microsoft will do well only if the world around us does well. And that’s why we are focused on four enduring commitments. They keep us grounded, serving as a guide as we make decisions, pushing us to ask critical questions to ensure the technology we create benefits everyone on the planet, as well as the planet itself."
+      },
+      {
+        "level": 2,
+        "title": "How can we expand opportunity?",
+        "line": 119,
+        "source": "heading",
+        "text": "We are democratizing access to AI and the skills needed to harness its potential, ensuring that every person, organization, and community can benefit from the opportunities AI brings.\n\nThis year, we partnered with 375,000 nonprofits globally, providing \\$4.7 billion in donated and discounted technology—to help them build capacity, drive efficiencies, innovate, and increase their impact as they take on the world’s greatest challenges. Together with our partners, we also made significant strides in skilling. We have trained and certified 14.1 million people across 202 countries in digital skills as of June 2024. Over 80 percent of the learners were from groups furthest from opportunity in the digital economy.\n\nAnd our work doesn’t stop there. We must do more to accelerate the equitable adoption of AI and narrow the digital divide. That’s why we’ve launched new AI skilling initiatives in partnership with governments, educational institutions, industry, and civil society—to help millions of people learn to use generative AI, develop AI tools, and lead AI adoption. This includes people from underserved communities, with a focus on young people, women, rural communities, and the Global South, as well as employees of social impact organizations."
+      },
+      {
+        "level": 2,
+        "title": "How can we earn trust?",
+        "line": 127,
+        "source": "heading",
+        "text": "We recognize that trust is earned, not given. And we remain committed to earning trust every day, spanning cybersecurity, trustworthy AI, privacy, and digital safety.\n\nOur Secure Future Initiative advances how we design, build, test, and operate our technology to ensure we deliver solutions that meet the highest possible standard of security. Our first SFI Progress Report highlights updates spanning culture, governance, technology, and operations, but we recognize that our work on security is never complete. We must and will do more. Our promise is to continually learn, improve, and adapt to the evolving needs of an increasingly complex security landscape.\n\nWe are focused on building AI that is trustworthy, meaning that it is secure, safe, and private. Our responsible AI practices, grounded in our foundational AI principles, help ensure we do this from the beginning. And we’re building on this commitment by introducing new product capabilities across our tech stack, ensuring that both our customers and developers are safeguarded at every level. Ultimately, these commitments and capabilities are key to fulfilling our mission. The world is looking to us to help defend and protect them, and we take that responsibility seriously.\n\nIn May, we published our first AI Transparency Report, which outlines how we build generative applications responsibly and support our customers. We also released Goals and Governance: Goals and Lessons for AI, which draws lessons from other globally governed technologies like civil aviation and nuclear power. Through our Accelerating Foundation Models Research program, we’ve made grants to hundreds of projects in AI safety and alignment research, AI-driven scientific discovery, and beneficial applications of AI. And we launched our Global Perspectives Responsible AI Fellowship program, designed to center the voices of AI experts from the Global South and enable us to better understand AI’s impact on developing countries.\n\nAs we drive AI innovation, we continue to respond to a changing privacy landscape. We provide tools to help our customers protect their privacy and control their data, and we have published several resources outlining our approach to privacy and AI for our consumer, commercial, and public sector customers.\n\nFinally, we continue our work to create safe experiences online and protect customers from illegal and harmful content and conduct. To bolster our efforts to prevent child sexual exploitation and abuse risks, we have made new commitments to safety by design in our AI services, joined the Tech Coalition’s Lantern Program, and proposed concrete actions that US policymakers can take to protect the public through regulatory and policy measures."
+      },
+      {
+        "level": 2,
+        "title": "How can we protect fundamental rights?",
+        "line": 141,
+        "source": "heading",
+        "text": "We are committed to protecting fundamental rights—extending the benefits of technology while mitigating its potential harms. For us, this means promoting responsible business practices, expanding connectivity and accessibility, protecting democracy, and advancing a fair and inclusive society.\n\nOver the past year, as regulators increasingly required greater transparency and process consistency across corporate supply chains and human rights efforts, we ensured compliance with reporting and due diligence directives. Going forward, we’ll continue to respect global human rights and laws and take steps to mitigate the impact of our operations and our technology on the people in our value chain.\n\nAs we build and deploy more AI solutions, connectivity and accessibility are foundational. Since 2017, we’ve extended access to affordable high-speed internet to over 100 million people, including nearly 40 million in Africa. And we remain focused on building inclusive, accessible AI that empowers people across the spectrum of disability.\n\nMore than 4 billion people will vote this year in their respective elections, making it the biggest election year in history. At the Munich Security Conference in February, we came together with others across the tech sector and pledged to help prevent deceptive AI content from interfering with global elections. As part of this pledge, we have worked to empower campaigns, candidates, election officials, and voters to understand the risks of deceptive AI in elections and to take steps to protect themselves and democracies. To date, we’ve conducted deepfake trainings in over 20 countries. And our corresponding public awareness campaign has reached over 355 million people.\n\nLastly, we continued investing in both strategic national partnerships and community-based projects that leverage data and insights to enable changes that advance racial equity and fairness in the criminal legal system."
+      },
+      {
+        "level": 2,
+        "title": "How can we advance sustainability?",
+        "line": 153,
+        "source": "heading",
+        "text": "Finally, we are on a journey to build a more sustainable future, from addressing our own environmental footprint to empowering our customers and the world with the technology needed to meet the climate challenge. Over the past year, we have seen how AI can catalyze environmental progress in remarkable ways—from increasing the capacity of transmission lines to deliver renewable power, to the discovery of new materials to support energy production and storage, to empowering the workforce with sustainability skills.\n\nBut we also recognize the resource intensity of the infrastructure needed to yield these benefits, which is why we’re advancing the sustainability of AI, from design to construction to operations, all while working to improve the efficiency of these technologies. We’re also investing in innovation through Microsoft’s Climate Innovation Fund and our AI for Good Lab, advancing research and advocating for policies that can drive global impact.\n\nIn our latest Environmental Sustainability Report, we shared progress toward our 2030 commitments. We’re on track in several areas. Where we’re not yet on track, we’re mobilizing to accelerate our progress toward becoming carbon negative, water positive, and zero waste, as well as to protect and preserve ecosystems.\n\nWhen it comes to our carbon footprint, we continue to support clean electricity infrastructure through long-term investments to bring more power onto the grids where we operate. Since setting our carbon negative target, we have contracted over 34 gigawatts of renewable energy, including projects in 24 countries.\n\nIn our efforts to become water positive, we provided more than 1.5 million people with access to clean water and sanitation, achieving our water access target.\n\nOur journey to zero waste includes reducing waste at our campuses and datacenters and advancing circularity for cloud hardware, packaging, and devices. Our most recent report showed we had a reuse and recycle rate of 89.4 percent for servers and components across all cloud hardware.\n\nFinally, AI gives new opportunity for ecosystem and biodiversity management with solutions like AI-assisted bioacoustics. And we’re expanding collaboration with local communities to build and operate datacenters in ways that address local challenges and create greater benefits. This work is guided by our Sustainability Standards for new construction and our Datacenter Community Pledge.\n\nLearn more about our progress and learnings as we pursue our commitments in our annual Impact Summary."
+      },
+      {
+        "level": 2,
+        "title": "OUR CULTURE",
+        "line": 171,
+        "source": "heading",
+        "text": "Just as our culture has been critical in getting us to this point, it will be critical to our success going forward. At Microsoft, we think of our culture as being both input and output. To pursue new concepts, we need new capability. To build new capability, we need a culture that allows us to grow that capability long before it is conventional wisdom. For us, that means constantly exercising our growth mindset and confronting our fixed mindset—each one of us, every day. It is the only way we will succeed.\n\nOur growth mindset culture helps us in our continuous pursuit of high performance. It doesn’t matter what we said about our culture 10 years ago or even last year if we aren’t practicing it today—by anticipating the unmet and unarticulated needs of customers; by working together as One Microsoft to deliver the best end-to-end solutions and services; and by actively seeking diversity and embracing inclusion—to ensure our workforce represents the planet we serve and the products we build always meet our customers’ needs. In our latest Diversity & Inclusion Report, we share the ways our longstanding commitment to diversity and inclusion endures, and what we’re learning as we continue to hire, develop, and grow a global workforce that best supports each other and our customers. This is how we thrive—as individuals, as teams, and as an organization. And, when we thrive, we can help our customers and the world thrive too.\n\nGiving also remains core to our culture. This year, more than 106,000 employees gave \\$250 million (including company match) to nearly 35,000 nonprofits in 111 countries. And our employees volunteered over 1 million hours to causes they care about. I am deeply grateful for my colleagues’ dedication to making a difference. Together, we can continue to empower everyone around the world.\n\nIn closing, this is a consequential time for our company, our industry, and the world. Ultimately, our mission requires that we translate technology into empowerment for everyone, into real-world impact. At the end of the day, that’s what really matters.\n\nNearly two years later, I can’t stop thinking about the Indian farmer I met in January 2023. He was able to apply for complex government farm subsidies using just his voice, thanks to an app built with GPT 3.5. It was remarkable. A frontier model developed on the West Coast of the US just months earlier was being used to directly improve the lives of rural farmers on the other side of the globe.\n\nThat rate of diffusion was unlike anything I had seen in my career. And the pace has only increased. Earlier this year, I was in Thailand, where I met developers using Phi-3 to optimize their operations just days after the small language model was released.\n\nTo me, that represents the true democratization of expertise. Where the internet era put information at our fingertips, AI is putting expertise at our fingertips. Impact like this is why we are in this industry, and it is what gives all of us at Microsoft deep meaning in our work.\n\nIt is why we are investing in our fundamentals, in our people, and in continued innovation—so that we can help others achieve more for the long term.\n\nIt is not an exaggeration to say that what each of us does right now with the unique opportunity we have been given will shape the future. And I look forward to seeing how all of us use Microsoft as a platform to make a difference— one customer, one community, one country at a time.\n\n<!-- image-->\n\nSatya Nadella\n\nChairman and Chief Executive Officer\n\nOctober 18, 2024"
+      },
+      {
+        "level": 1,
+        "title": "ISSUER PURCHASES OF EQUITY SECURITIES, DIVIDENDS, AND STOCK PERFORMANCE",
+        "line": 199,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 1,
+        "title": "MARKET AND STOCKHOLDERS",
+        "line": 201,
+        "source": "heading",
+        "text": "Our common stock is traded on the NASDAQ Stock Market under the symbol MSFT. On July 25, 2024, there were 81,346 registered holders of record of our common stock."
+      },
+      {
+        "level": 2,
+        "title": "SHARE REPURCHASES AND DIVIDENDS",
+        "line": 205,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 2,
+        "title": "Share Repurchases",
+        "line": 207,
+        "source": "heading",
+        "text": "On September 18, 2019, our Board of Directors approved a share repurchase program authorizing up to \\$40.0 billion in share repurchases. This share repurchase program commenced in February 2020 and was completed in November 2021.\n\nOn September 14, 2021, our Board of Directors approved a share repurchase program authorizing up to \\$60.0 billion in share repurchases. This share repurchase program commenced in November 2021, following completion of the program approved on September 18, 2019, has no expiration date, and may be terminated at any time. As of June 30, 2024, \\$10.3 billion remained of this \\$60.0 billion share repurchase program.\n\nWe repurchased the following shares of common stock under the share repurchase programs:\n\n<table><tr><td>(In millions)</td><td>Shares</td><td>Amount</td><td>Shares</td><td>Amount</td><td>Shares</td><td>Amount</td></tr><tr><td>Year Ended June 30,</td><td></td><td>2024</td><td></td><td>2023</td><td></td><td>2022</td></tr><tr><td>First Quarter</td><td>11</td><td>$ 3,560</td><td>17</td><td>$ 4,600</td><td>21</td><td>$ 6,200</td></tr><tr><td>Second Quarter</td><td>7</td><td>2,800</td><td>20</td><td>4,600</td><td>20</td><td>6,233</td></tr><tr><td>Third Quarter</td><td>7</td><td>2,800</td><td>18</td><td>4,600</td><td>26</td><td>7,800</td></tr><tr><td>Fourth Quarter</td><td>7</td><td>2,800</td><td>14</td><td>4,600</td><td>28</td><td>7,800</td></tr><tr><td>Total</td><td>32</td><td>$ 11,960</td><td>69</td><td>$ 18,400</td><td>95</td><td>$28,033</td></tr></table>\n\nAll repurchases were made using cash resources. Shares repurchased during the first quarter of fiscal year 2022 were under the share repurchase program approved on September 18, 2019. Shares repurchased during the second quarter of fiscal year 2022 were under the share repurchase programs approved on September 18, 2019 and September 14, 2021. All other shares repurchased were under the share repurchase program approved on September 14, 2021. The above table excludes shares repurchased to settle employee tax withholding related to the vesting of stock awards of \\$5.3 billion, \\$3.8 billion, and \\$4.7 billion for fiscal years 2024, 2023, and 2022, respectively."
+      },
+      {
+        "level": 2,
+        "title": "Dividends",
+        "line": 219,
+        "source": "heading",
+        "text": "Our Board of Directors declared the following dividends:\n\n<table><tr><td>Declaration Date</td><td>Record Date</td><td>Payment Date</td><td>Dividend</td><td>Per Share</td><td>Amount</td></tr><tr><td>Fiscal Year 2024</td><td></td><td></td><td></td><td></td><td>(In millions)</td></tr><tr><td>September 19, 2023</td><td>November 16, 2023</td><td>December 14, 2023</td><td>$</td><td>0.75</td><td>$ 5,574</td></tr><tr><td>November 28, 2023</td><td>February 15, 2024</td><td>March 14, 2024</td><td></td><td>0.75</td><td>5,573</td></tr><tr><td>March 12, 2024</td><td>May 16, 2024</td><td>June 13, 2024</td><td></td><td>0.75</td><td>5,574</td></tr><tr><td>June 12, 2024</td><td>August 15, 2024</td><td>September 12, 2024</td><td></td><td>0.75</td><td>5,575</td></tr><tr><td>Total</td><td></td><td></td><td>$</td><td>3.00</td><td>$ 22,296</td></tr><tr><td>Fiscal Year 2023</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>September 20, 2022</td><td>November 17, 2022</td><td>December 8, 2022</td><td>$</td><td>0.68 $</td><td>5,066</td></tr><tr><td>November 29, 2022</td><td>February 16, 2023</td><td>March 9, 2023</td><td></td><td>0.68</td><td>5,059</td></tr><tr><td>March 14, 2023</td><td>May 18, 2023</td><td>June 8, 2023</td><td></td><td>0.68</td><td>5,054</td></tr><tr><td>June 13, 2023</td><td>August 17, 2023</td><td>September 14, 2023</td><td></td><td>0.68</td><td>5,051</td></tr><tr><td>Total</td><td></td><td></td><td>A</td><td>2.72</td><td>$ 20,230</td></tr></table>\n\nThe dividend declared on June 12, 2024 was included in other current liabilities as of June 30, 2024.\n\nSTOCK PERFORMANCE COMPARISON OF 5 YEAR CUMULATIVE TOTAL RETURN\\* Among Microsoft Corporation, the S&P 500 Index and the NASDAQ Computer Index  \n<!-- image-->\n\n<table><tr><td></td><td>6/19</td><td>6/20</td><td>6/21</td><td>6/22</td><td>6/23</td><td>6/24</td></tr><tr><td>Microsoft Corporation</td><td>100.00</td><td>153.80</td><td>206.72</td><td>197.60</td><td>264.54</td><td>349.91</td></tr><tr><td>S&amp;P 500</td><td>100.00</td><td>107.51</td><td>151.36</td><td>135.29</td><td>161.80</td><td>201.54</td></tr><tr><td>NASDAQ Computer</td><td>100.00</td><td>147.90</td><td>222.50</td><td>173.91</td><td>228.85</td><td>331.25</td></tr></table>\n\n\\* \\$100 invested on 6/30/19 in stock or index, including reinvestment of dividends. Fiscal year ending June 30."
+      },
+      {
+        "level": 2,
+        "title": "Note About Forward-Looking Statements",
+        "line": 234,
+        "source": "heading",
+        "text": "This report includes estimates, projections, statements relating to our business plans, objectives, and expected operating results that are “forward-looking statements” within the meaning of the Private Securities Litigation Reform Act of 1995, Section 27A of the Securities Act of 1933, and Section 21E of the Securities Exchange Act of 1934. Forward-looking statements may appear throughout this report, including the following sections: “Business” and “Management’s Discussion and Analysis of Financial Condition and Results of Operations”. These forwardlooking statements generally are identified by the words “believe,” “project,” “expect,” “anticipate,” “estimate,” “intend,” “strategy,” “future,” “opportunity,” “plan,” “may,” “should,” “will,” “would,” “will be,” “will continue,” “will likely result,” and similar expressions. Forward-looking statements are based on current expectations and assumptions that are subject to risks and uncertainties that may cause actual results to differ materially. We describe risks and uncertainties that could cause actual results and events to differ materially in “Risk Factors,” “Management’s Discussion and Analysis of Financial Condition and Results of Operations,” and “Quantitative and Qualitative Disclosures About Market Risk” in our fiscal year 2024 Form 10-K. Readers are cautioned not to place undue reliance on forward-looking statements, which speak only as of the date they are made. We undertake no obligation to update or revise publicly any forward-looking statements, whether because of new information, future events, or otherwise."
+      },
+      {
+        "level": 2,
+        "title": "BUSINESS",
+        "line": 238,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 2,
+        "title": "GENERAL",
+        "line": 240,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 2,
+        "title": "Embracing Our Future",
+        "line": 242,
+        "source": "heading",
+        "text": "Microsoft is a technology company committed to making digital technology and artificial intelligence (“AI”) available broadly and doing so responsibly, with a mission to empower every person and every organization on the planet to achieve more. We create platforms and tools, powered by AI, that deliver innovative solutions that meet the evolving needs of our customers. From infrastructure and data, to business applications and collaboration, we provide unique, differentiated value to customers. We strive to create local opportunity, growth, and impact in every country around the world.\n\nWe have entered a new age of AI that will fundamentally transform productivity for every individual, organization, and industry on earth, while helping us address some of our most pressing challenges. Microsoft’s AI offerings, including Copilot and our Copilot stack, are already orchestrating a new era of AI transformation, driving better business outcomes across every role and industry. As a company, we believe we can be the democratizing force for this new generation of technology and the opportunity it will help unlock for every country, community, and individual.\n\nWe believe AI should be as empowering across communities as it is powerful, and we’re committed to ensuring it is responsibly designed and built with safety and security from the outset."
+      },
+      {
+        "level": 2,
+        "title": "What We Offer",
+        "line": 250,
+        "source": "heading",
+        "text": "Founded in 1975, we develop and support software, services, devices, and solutions that deliver new value for customers and help people and businesses realize their full potential.\n\nWe offer an array of services, including cloud-based solutions that provide customers with software, services, platforms, and content, and we provide solution support and consulting services. We also deliver relevant online advertising to a global audience.\n\nOur products include operating systems, cross-device productivity and collaboration applications, server applications, business solution applications, desktop and server management tools, software development tools, and video games. We also design and sell devices, including PCs, tablets, gaming and entertainment consoles, other intelligent devices, and related accessories."
+      },
+      {
+        "level": 2,
+        "title": "The Ambitions That Drive Us",
+        "line": 258,
+        "source": "heading",
+        "text": "To achieve our vision, our research and development efforts focus on three interconnected ambitions:\n\n• Reinvent productivity and business processes.\n\n• Build the intelligent cloud and intelligent edge platform.\n\n• Create more personal computing."
+      },
+      {
+        "level": 2,
+        "title": "Reinvent Productivity and Business Processes",
+        "line": 268,
+        "source": "heading",
+        "text": "At Microsoft, we provide technology and resources to help our customers create a secure, productive work environment. Our family of products plays a key role in the ways the world works, learns, and connects.\n\nOur growth depends on securely delivering continuous innovation and advancing our leading productivity and collaboration tools and services, including Microsoft 365, LinkedIn, and Dynamics 365. Microsoft 365 is an AI first platform that brings together Office, Windows, Copilot, and Enterprise Mobility + Security to help organizations empower their employees. Copilot for Microsoft 365 combines AI with business data in the Microsoft Graph and Microsoft 365 applications. Microsoft Teams is a comprehensive platform for communication and collaboration, with meetings, calling, chat, file collaboration, and the ability to bring all of the applications teams use into a single place. Microsoft Viva is an employee experience platform that brings together communications, knowledge, learning, resources, and insights.\n\nTogether, the Microsoft Cloud, Dynamics 365, Microsoft Teams, and our AI offerings bring a new era of collaborative applications for every role and business function to get insights and business impact faster. Dynamics 365 is a portfolio of intelligent business applications that delivers operational efficiency and breakthrough customer experiences. Our role-based extensions of Microsoft Copilot – Copilot for Sales, Copilot for Service, and Copilot for Finance – bring together the power of Copilot for Microsoft 365 with role-specific insights and workflow assistance to streamline business processes. Copilot Studio allows customers to customize Copilot for Microsoft 365 or build their own Copilot. Microsoft Power Platform helps domain experts drive productivity gains with low-code/no-code tools, robotic process automation, virtual agents, and business intelligence. Copilot Pro is a consumer subscription service that offers faster and more powerful AI assistance in Microsoft 365 apps and on the web. LinkedIn combines our unique data with this new generation of AI to transform the way professionals learn, sell, market, and get hired."
+      },
+      {
+        "level": 2,
+        "title": "Build the Intelligent Cloud and Intelligent Edge Platform",
+        "line": 276,
+        "source": "heading",
+        "text": "Digital transformation and adoption of AI continues to revolutionize more business workstreams for organizations in every sector across the globe. For enterprises, digital technology empowers employees, optimizes operations, engages customers, and in some cases, changes the very core of products and services. We continue to invest in high performance and sustainable computing to meet the growing demand for fast access to Microsoft services provided by our network of cloud computing and AI infrastructure and datacenters.\n\nOur cloud business benefits from three economies of scale: datacenters that deploy computational resources at significantly lower cost per unit than smaller ones; datacenters that coordinate and aggregate diverse customer, geographic, and application demand patterns, improving the utilization of computing, storage, and network resources; and multi-tenancy locations that lower application maintenance labor costs.\n\nThe Microsoft Cloud provides the best integration across the technology stack while offering openness, improving time to value, reducing costs, and increasing agility. As the foundation of the Microsoft Cloud, Azure uniquely offers hybrid consistency, developer productivity, data and AI capabilities, and trusted security and compliance.\n\nWe offer supercomputing power for AI at scale to run large workloads, complemented by our rapidly expanding portfolio of AI cloud services and hardware, which includes custom-built silicon and strong partnerships with chip manufacturers. We have introduced purpose-built cloud infrastructure for AI workloads including a custom AI accelerator, Azure Maia, and a custom in-house central processing unit, Azure Cobalt.\n\nOur AI platform, Azure AI, is helping organizations transform, bringing intelligence and insights to the hands of their employees and customers to solve their most pressing challenges. We offer a wide selection of industry-leading frontier and open models, including from partners, as well as state-of-the-art tooling, and AI-optimized infrastructure, delivering the Copilot stack for Microsoft, enterprises, and developers. Organizations large and small are deploying Azure AI solutions to achieve more at scale, more easily, with the proper enterprise-level responsible AI and safety and security protections. Azure AI Studio provides a full lifecycle toolchain customers can use to ground these models on their own data, create prompt workflows, and help ensure they are deployed and used safely.\n\nGitHub Copilot is at the forefront of AI-powered software development, giving developers a tool to write code easier and faster. From GitHub to Visual Studio, we provide a developer tool chain for everyone, no matter the technical experience, across all platforms.\n\nWe have a long-term partnership with OpenAI, a leading AI research and deployment company. We deploy OpenAI’s models across our consumer and enterprise products. As OpenAI’s exclusive cloud provider, Azure powers all of OpenAI’s workloads. We have also increased our investments in the development and deployment of specialized supercomputing systems to accelerate OpenAI’s research.\n\nOur hybrid infrastructure offers integrated, end-to-end security, compliance, identity, and management capabilities to support the real-world needs and evolving regulatory requirements of commercial customers and enterprises. Our industry clouds bring together capabilities across the entire Microsoft Cloud, along with industry-specific customizations. Azure Arc simplifies governance and management by delivering a consistent multi-cloud and on-premises management platform.\n\nThe Microsoft Intelligent Data Platform fully integrates databases, analytics, and governance. Microsoft Fabric is an end-to-end, unified analytics platform that brings together all the data and analytics tools that organizations need.\n\nNuance is a leader in conversational AI and ambient intelligence across industries, including healthcare, financial services, retail, and telecommunications. Microsoft and Nuance enable organizations to accelerate their business goals with security-focused, cloud-based solutions infused with AI.\n\nAs the rate and pace of cyberthreats continue to accelerate, security is a top priority for every organization. Microsoft offers customers integrated products addressing security, compliance, identity, management, and privacy across customers’ multi-cloud, application, and device assets. With Copilot for Security, Microsoft offers an AI cybersecurity product that enables security professionals to respond to cyberthreats quickly.\n\nWindows 365 enables users to stream a full Windows experience from the Microsoft Cloud to any device."
+      },
+      {
+        "level": 2,
+        "title": "Create More Personal Computing",
+        "line": 302,
+        "source": "heading",
+        "text": "We strive to make computing more personal, enabling users to interact with technology in more intuitive, engaging, and dynamic ways.\n\nWindows 11 offers innovations focused on performance, productivity, and creativity, including Copilot in Windows. Windows 11 security and privacy features include operating system security, application security, and user and identity security. Dev Home is an open-source experience in Windows to help developer productivity. We are committed to designing and marketing first-party devices to help drive innovation, create new device categories, and stimulate demand in the Windows ecosystem. The Surface family includes Surface Pro, Surface Laptop, and other Surface products. Copilot+ PCs are a new class of Windows 11 PCs that are powered by a neural processing unit. These PCs use on-device AI for enhanced performance and features.\n\nCopilot is an AI assistant that helps users navigate the web, answer questions, and create content. Microsoft Edge is our fast and secure browser that helps protect users’ data and offers enhanced browsing capabilities including quick access to AI-powered tools, apps, and more. The AI-powered Bing search engine with Copilot delivers better search, more complete answers, and the ability to generate content.\n\nMicrosoft is expanding how billions of people globally access and play video games on PC, console, mobile, and cloud. We put game development front and center, backed by innovative hardware, experiences, and a subscription service, Xbox Game Pass, that allows those games to reach more players across more devices. Activision Blizzard, Inc. (“Activision Blizzard”), a leader in game development and an interactive entertainment content publisher, joined Microsoft in October 2023."
+      },
+      {
+        "level": 2,
+        "title": "Our Future Opportunity",
+        "line": 312,
+        "source": "heading",
+        "text": "We are focused on helping customers use the breadth and depth of the Microsoft Cloud to get the most value out of their digital spend while leading the AI platform wave across our solution areas. We continue to develop complete, intelligent solutions for our customers that empower people to be productive and collaborate, while safeguarding businesses and simplifying IT management. Our goal is to lead the industry in several distinct areas of technology over the long term, which we expect will translate to sustained growth. We are investing significant resources in:\n\n• Transforming the workplace to deliver new modern, modular business applications, drive deeper insights, and improve how people communicate, collaborate, learn, work, and interact with one another.\n\n• Building and running cloud-based services in ways that utilize ubiquitous computing to unleash new experiences and opportunities for businesses and individuals.\n\n• Applying AI and ambient intelligence to drive insights, revolutionize many types of work and business processes, and provide substantive productivity gains using natural methods of communication.\n\n• Tackling security from all angles with our integrated, end-to-end solutions spanning security, compliance, identity, and management, across all clouds and platforms.\n\n• Inventing new gaming experiences that bring people together around their shared love for games on any devices and pushing the boundaries of innovation with console and PC gaming.\n\nUsing Windows to fuel our cloud business, grow our share of the PC market, and drive increased engagement with our services like Microsoft Edge, Bing, Microsoft Teams, Microsoft 365 Consumer, Xbox Game Pass, and more.\n\nOur future growth depends on our ability to transcend current product category definitions, business models, and sales motions."
+      },
+      {
+        "level": 2,
+        "title": "Corporate Social Responsibility",
+        "line": 330,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 2,
+        "title": "Commitment to Sustainability",
+        "line": 332,
+        "source": "heading",
+        "text": "Microsoft’s approach to addressing climate change starts with the sustainability of our own business. In 2020, we committed to being a carbon negative, water positive, and zero waste company by 2030.\n\nSince announcing that commitment, we have seen major changes both in the technology sector and in our understanding of what it will take to meet our climate goals. New technologies, including generative AI, hold promise for new innovations that can help address the climate crisis. At the same time, the infrastructure and electricity needed for these technologies create new challenges for meeting sustainability commitments across the tech sector.\n\nIn May 2024, we released our Environmental Sustainability Report which looked back at our progress in several areas during fiscal year 2023. In four areas we are on track, and in each of these we see progress that has the potential to have global impact beyond our own sustainability work. These are:\n\n• Reducing our direct operational emissions (Scope 1 and 2).\n\n• Accelerating carbon removal.\n\n• Designing for circularity to minimize waste and reusing cloud hardware.\n\n• Improving biodiversity and protecting more land than we use.\n\nAt the same time, there are two areas where we’re not yet on track, and in each of these we are intensively engaged in work to identify and pursue additional breakthroughs. These are:\n\n• Reducing our indirect emissions (Scope 3).\n\n• Reducing our water use and replenishing more water than we consume in our datacenter operations.\n\nEven amid the challenges, we remain optimistic. We’re encouraged by ongoing progress across our campuses and datacenters, and throughout our value chain."
+      },
+      {
+        "level": 2,
+        "title": "Addressing Racial Injustice and Inequity",
+        "line": 356,
+        "source": "heading",
+        "text": "In June 2020, we outlined a series of multi-year commitments designed to address the racial injustice and inequity experienced by racial and ethnic minorities in the United States, including Black and African American communities. We remain committed to addressing racial injustice and inequity and helping improve lived experiences at Microsoft, in employees’ communities, and beyond.\n\nIn fiscal year 2024, we continued to collaborate with partners and worked within neighborhoods and communities to advance projects and programs. We grew our Nonprofit Tech Acceleration for Black and African American Communities program, to help more than 3,000 local organizations in nearly 1,900 Black and African American communities use technical solutions to modernize and streamline operations. We also expanded our Technology Education and Learning Support (“TEALS”) program to reach nearly 550 high schools across 21 racial equity expansion regions with the support of nearly 1,500 volunteers, 12% of whom identify as Black or African American.\n\nWe have committed \\$150 million in Minority Depository Institutions and funds supporting Black and African American-owned small businesses. These commitments drive sustained impact by directly enabling an increase of funds into local communities, improving diverse, small-business access to capital, and increasing skill development. We continue to partner with diverse-owned banking partners and asset managers to catalyze growth and industry participation. Additionally, we enriched our supplier pipeline, achieving our goal to spend \\$500 million with double the number of Black- and African American-owned suppliers. We have also provided 162 low- or no-interest loans to our small to medium-sized partners through our Partner Capital Fund.\n\nWe also continue to make progress toward our overall commitment to double the number of Black and African American and Hispanic and Latinx leaders in the U.S. by 2025."
+      },
+      {
+        "level": 2,
+        "title": "Investing in Digital Skills",
+        "line": 366,
+        "source": "heading",
+        "text": "Microsoft’s Skills for Jobs initiative aims to support a more skills-based labor market, with greater flexibility and accessible learning paths to develop the right skills needed for the most in-demand jobs. This initiative brings together classes, Career Essentials Certificates, and other resources from LinkedIn, GitHub, and Microsoft Learn, and is built on data insights drawn from LinkedIn’s Economic Graph. Our goal was to train and certify 10 million learners by 2025. As of May 2024, we have surpassed that goal, training and certifying 12.6 million learners. We also launched a campaign in the United States in 2021 to help skill and recruit 250,000 people into the nation’s cybersecurity workforce by 2025, representing half of the country’s workforce shortage. To that end, we are making curriculum available free of charge to all of the nation’s higher education institutions, providing training for new and existing faculty, and providing scholarships and supplemental resources to 25,000 students. The cyber skills initiative has expanded to 27 additional countries that show elevated cyberthreat risks coupled with significant gaps in their cybersecurity workforces, where we’ve partnered with nonprofits and other educational institutions to train the next generation of cybersecurity workers.\n\nGenerative AI is creating unparalleled opportunities to empower workers globally, but only if everyone has the skills to use it. In June 2023, we launched an AI Skills initiative to help everyone learn how to harness the power of AI. This includes a new LinkedIn learning pathway offering new coursework on learning the foundations of generative AI. We also launched a new global grant challenge to uncover new ways of training workers on generative AI and provide greater access to digital learning events and resources. Additionally, we extended our reach in rural communities, including through our TechSpark initiative in the United States. As of June 2024, we’ve helped more than 2.5 million people in 92% of the world’s countries learn how to use AI."
+      },
+      {
+        "level": 2,
+        "title": "HUMAN CAPITAL RESOURCES",
+        "line": 372,
+        "source": "heading",
+        "text": "Microsoft aims to recruit, develop, and retain world-changing talent from a diversity of backgrounds. To foster their and our success, we seek to create an environment where people can thrive and do their best work. We strive to maximize the potential of our human capital resources by creating a respectful, rewarding, and inclusive work environment that enables our global employees to create products and services that further our mission. Microsoft’s culture is grounded in growth mindset. This means everyone is on a continuous journey to learn and grow, operating as one company instead of multiple siloed businesses. Our culture also embeds the security of customers and Microsoft as a priority for every employee and across all of our organizations.\n\nAs of June 30, 2024, we employed approximately 228,000 people on a full-time basis, 126,000 in the U.S. and 102,000 internationally. Of the total employed people, 86,000 were in operations, including product support and consulting services, datacenter operations, and manufacturing and distribution; 81,000 were in product research and development; 45,000 were in sales and marketing; and 16,000 were in general and administration. Certain employees are subject to collective bargaining agreements.\n\nWe design our programs to attract, reward, and retain top talent, enable our employees’ continual growth, and reinforce our culture and values. Our total compensation opportunity is highly differentiated and market competitive. Our intended result is a global performance and development approach that fosters our culture, drives company performance, and competitive compensation that ensures equitable pay by role while supporting pay for performance.\n\nDiversity and inclusion are core to our business. As reported in our Global Diversity and Inclusion Reports, we monitor pay equity and career progress across multiple dimensions. We encourage every person at Microsoft to play an active role in creating an inclusive environment.\n\nWe have invested significantly in employee wellbeing and offer a differentiated benefits package which includes many physical, emotional, and financial wellness programs. Our Occupational Health and Safety program helps to protect employees’ safety while they are working. We also have introduced Hybrid Workplace Flexibility guidance to better support leaders, managers, and employees in hybrid work scenarios.\n\nWe believe providing employees with access to continual learning enables them to drive impact for the company. We provide individuals and teams with access to first and third-party content resources across professions, disciplines, and roles, and offer skilling opportunities to support employees’ growth while driving organizations’ needs.\n\nOur employee listening systems enable us to gather feedback directly from our workforce to inform our programs and employee needs globally, giving us real-time insights into ways we can support our employees. As a company, we will continue to leverage data and research to inform decision making, balancing the needs of the business, team, and individual."
+      },
+      {
+        "level": 2,
+        "title": "OPERATING SEGMENTS",
+        "line": 388,
+        "source": "heading",
+        "text": "We operate our business and report our financial performance using three segments: Productivity and Business Processes, Intelligent Cloud, and More Personal Computing. Our segments provide management with a\n\ncomprehensive financial view of our key businesses. The segments enable the alignment of strategies and objectives across the development, sales, marketing, and services organizations, and they provide a framework for timely and rational allocation of resources within businesses.\n\nAdditional information on our operating segments and geographic and product information is contained in Note 19 – Segment Information and Geographic Data of the Notes to Financial Statements.\n\nOur reportable segments are described below."
+      },
+      {
+        "level": 2,
+        "title": "Productivity and Business Processes",
+        "line": 398,
+        "source": "heading",
+        "text": "Our Productivity and Business Processes segment consists of products and services in our portfolio of productivity, communication, and information services, spanning a variety of devices and platforms. This segment primarily comprises:\n\nOffice Commercial (Office 365 subscriptions, the Office 365 portion of Microsoft 365 Commercial subscriptions, and Office licensed on-premises), comprising Office, Exchange, SharePoint, Microsoft Teams, Office 365 Security and Compliance, Microsoft Viva, and Copilot for Microsoft 365.\n\n• Office Consumer, including Microsoft 365 Consumer and Copilot Pro subscriptions, Office licensed on-premises, and other Office services.\n\n• LinkedIn, including Talent Solutions, Marketing Solutions, Premium Subscriptions, and Sales Solutions.\n\nDynamics business solutions, including Dynamics 365, comprising a set of intelligent, cloud-based applications across ERP, CRM, Power Apps, and Power Automate; and on-premises ERP and CRM applications."
+      },
+      {
+        "level": 2,
+        "title": "Office Commercial",
+        "line": 410,
+        "source": "heading",
+        "text": "Office Commercial is designed to increase personal, team, and organizational productivity through a range of products and services. Growth depends on our ability to reach new users in new markets such as frontline workers, small and medium businesses, and growth markets, as well as add value to our core product and service offerings to span AI and productivity categories such as communication, collaboration, analytics, security, and compliance. Office Commercial revenue is mainly affected by a combination of continued installed base growth and average revenue per user expansion, as well as the continued shift from Office licensed on-premises to Office 365."
+      },
+      {
+        "level": 2,
+        "title": "Office Consumer",
+        "line": 414,
+        "source": "heading",
+        "text": "Office Consumer is designed to increase personal productivity and creativity through a range of products and services. Growth depends on our ability to reach new users, add value to our core product set with new features including AI tools, and continue to expand our product and service offerings into new markets. Office Consumer revenue is mainly affected by the percentage of customers that buy Office with their new devices and the continued shift from Office licensed on-premises to Microsoft 365 Consumer subscriptions. Office Consumer Services revenue is mainly affected by the demand for communication and storage through Skype, Outlook.com, and OneDrive, which is largely driven by subscriptions, advertising, and the sale of minutes."
+      },
+      {
+        "level": 2,
+        "title": "LinkedIn",
+        "line": 418,
+        "source": "heading",
+        "text": "LinkedIn connects the world’s professionals to make them more productive and successful and transforms the way companies hire, market, sell, and learn. Our vision is to create economic opportunity for every member of the global workforce through the ongoing development of the world’s first Economic Graph, a digital representation of the global economy. In addition to LinkedIn’s free services, LinkedIn offers monetized solutions designed to offer AI-enabled insights and productivity: Talent Solutions, Marketing Solutions, Premium Subscriptions, and Sales"
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 215,
+        "headers": [
+          "(In millions)",
+          "Shares",
+          "Amount",
+          "Shares",
+          "Amount",
+          "Shares",
+          "Amount"
+        ],
+        "rows": [
+          [
+            "Year Ended June 30,",
+            "",
+            "2024",
+            "",
+            "2023",
+            "",
+            "2022"
+          ],
+          [
+            "First Quarter",
+            "11",
+            "$ 3,560",
+            "17",
+            "$ 4,600",
+            "21",
+            "$ 6,200"
+          ],
+          [
+            "Second Quarter",
+            "7",
+            "2,800",
+            "20",
+            "4,600",
+            "20",
+            "6,233"
+          ],
+          [
+            "Third Quarter",
+            "7",
+            "2,800",
+            "18",
+            "4,600",
+            "26",
+            "7,800"
+          ],
+          [
+            "Fourth Quarter",
+            "7",
+            "2,800",
+            "14",
+            "4,600",
+            "28",
+            "7,800"
+          ],
+          [
+            "Total",
+            "32",
+            "$ 11,960",
+            "69",
+            "$ 18,400",
+            "95",
+            "$28,033"
+          ]
+        ],
+        "row_count": 6,
+        "column_count": 7,
+        "source": "html_table"
+      },
+      {
+        "start_line": 223,
+        "headers": [
+          "Declaration Date",
+          "Record Date",
+          "Payment Date",
+          "Dividend",
+          "Per Share",
+          "Amount"
+        ],
+        "rows": [
+          [
+            "Fiscal Year 2024",
+            "",
+            "",
+            "",
+            "",
+            "(In millions)"
+          ],
+          [
+            "September 19, 2023",
+            "November 16, 2023",
+            "December 14, 2023",
+            "$",
+            "0.75",
+            "$ 5,574"
+          ],
+          [
+            "November 28, 2023",
+            "February 15, 2024",
+            "March 14, 2024",
+            "",
+            "0.75",
+            "5,573"
+          ],
+          [
+            "March 12, 2024",
+            "May 16, 2024",
+            "June 13, 2024",
+            "",
+            "0.75",
+            "5,574"
+          ],
+          [
+            "June 12, 2024",
+            "August 15, 2024",
+            "September 12, 2024",
+            "",
+            "0.75",
+            "5,575"
+          ],
+          [
+            "Total",
+            "",
+            "",
+            "$",
+            "3.00",
+            "$ 22,296"
+          ],
+          [
+            "Fiscal Year 2023",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "September 20, 2022",
+            "November 17, 2022",
+            "December 8, 2022",
+            "$",
+            "0.68 $",
+            "5,066"
+          ],
+          [
+            "November 29, 2022",
+            "February 16, 2023",
+            "March 9, 2023",
+            "",
+            "0.68",
+            "5,059"
+          ],
+          [
+            "March 14, 2023",
+            "May 18, 2023",
+            "June 8, 2023",
+            "",
+            "0.68",
+            "5,054"
+          ],
+          [
+            "June 13, 2023",
+            "August 17, 2023",
+            "September 14, 2023",
+            "",
+            "0.68",
+            "5,051"
+          ],
+          [
+            "Total",
+            "",
+            "",
+            "A",
+            "2.72",
+            "$ 20,230"
+          ]
+        ],
+        "row_count": 12,
+        "column_count": 6,
+        "source": "html_table"
+      },
+      {
+        "start_line": 230,
+        "headers": [
+          "",
+          "6/19",
+          "6/20",
+          "6/21",
+          "6/22",
+          "6/23",
+          "6/24"
+        ],
+        "rows": [
+          [
+            "Microsoft Corporation",
+            "100.00",
+            "153.80",
+            "206.72",
+            "197.60",
+            "264.54",
+            "349.91"
+          ],
+          [
+            "S&P 500",
+            "100.00",
+            "107.51",
+            "151.36",
+            "135.29",
+            "161.80",
+            "201.54"
+          ],
+          [
+            "NASDAQ Computer",
+            "100.00",
+            "147.90",
+            "222.50",
+            "173.91",
+            "228.85",
+            "331.25"
+          ]
+        ],
+        "row_count": 3,
+        "column_count": 7,
+        "source": "html_table"
+      }
+    ],
+    "key_values": [],
+    "key_value_map": {},
+    "numeric_facts": [
+      {
+        "line": 5,
+        "text": "Annual Report 2024",
+        "numbers": [
+          "2024"
+        ]
+      },
+      {
+        "line": 9,
+        "text": "Fiscal year 2024 was a pivotal year for Microsoft. We entered our 50th year as a company and the second year of the AI platform shift. With these milestones, I’ve found myself reflecting on how Microsoft has remained a consequential company decade after decade in an industry with no franchise value.",
+        "numbers": [
+          "2024"
+        ]
+      },
+      {
+        "line": 11,
+        "text": "Microsoft has been a platform and tools company from the start. We were founded in 1975 with a belief in creating technology that would enable others to create their own. And, nearly 50 years later, this belief remains at the heart of our mission to empower every person and every organization on the",
+        "numbers": [
+          "1975",
+          "50"
+        ]
+      },
+      {
+        "line": 15,
+        "text": "• Coles is generating 1.6 billion daily AI predictions across 850 Australian stores, ensuring every shopper finds what they need.",
+        "numbers": [
+          "1.6",
+          "850"
+        ]
+      },
+      {
+        "line": 27,
+        "text": "• And enterprise customers and their employees around the world, from Amgen and Disney, to Finastra and Vodafone, are using Microsoft 365 Copilot to become more creative and productive.",
+        "numbers": [
+          "365"
+        ]
+      },
+      {
+        "line": 29,
+        "text": "Financially, the year was also marked by record performance. We delivered over \\$245 billion in annual revenue, up 16 percent year-over-year, and over \\$109 billion in operating income, up 24 percent.",
+        "numbers": [
+          "245",
+          "16",
+          "109",
+          "24"
+        ]
+      },
+      {
+        "line": 35,
+        "text": "If we go back 70 years to the beginning of modern computing, our industry has had two dreams: First, can computers understand us instead of us having to understand computers? And second, as we digitize more of the world—including people, places, and things—can computers help us reason, plan, and act",
+        "numbers": [
+          "70"
+        ]
+      },
+      {
+        "line": 55,
+        "text": "More broadly, we continued to see sustained revenue growth from migrations as customers turn to Azure. Azure Arc is helping customers streamline their transition, as they secure, develop, and operate workloads with Azure services anywhere. We have 36,000 Arc customers, up 90 percent year-over-year. ",
+        "numbers": [
+          "36,000",
+          "90"
+        ]
+      },
+      {
+        "line": 59,
+        "text": "AI models are now key building blocks for every application. And with Azure AI, we are building out the app server for the AI age, providing access to the most diverse selection of models to meet customers’ unique cost, latency, and design considerations. We offer leading frontier models, thanks to ",
+        "numbers": [
+          "60,000",
+          "60"
+        ]
+      },
+      {
+        "line": 61,
+        "text": "AI does not get created without data. At the data layer, we are fundamentally rethinking what it means to be an analytics database or an operational data store in the world of AI. Our Microsoft Intelligent Data Platform provides customers with the broadest capabilities spanning databases, analytics,",
+        "numbers": [
+          "14,000"
+        ]
+      },
+      {
+        "line": 65,
+        "text": "From GitHub to Visual Studio, we have the most comprehensive developer tools. GitHub Copilot had a breakout year, as it became standard issue for developers in every industry. We now have more than 1.8 million paid subscribers and over 77,000 enterprise customers, up 180 percent year-over-year. They",
+        "numbers": [
+          "1.8",
+          "77,000",
+          "180",
+          "55"
+        ]
+      },
+      {
+        "line": 67,
+        "text": "We are also integrating generative AI across Power Platform, enabling anyone to use natural language to create apps, automate workflows, or build a website. In total, we now have 48 million monthly active users of Power Platform, up 40 percent year-over-year.",
+        "numbers": [
+          "48",
+          "40"
+        ]
+      },
+      {
+        "line": 71,
+        "text": "Microsoft 365 Copilot is becoming a daily habit for knowledge workers, transforming their work, workflow, and work artifacts. Adoption has been faster than any other new Microsoft 365 suite. And employees at nearly 60 percent of the Fortune 500 now use Copilot to complete tasks faster, hold more eff",
+        "numbers": [
+          "365",
+          "365",
+          "60",
+          "500",
+          "70",
+          "365",
+          "29"
+        ]
+      },
+      {
+        "line": 75,
+        "text": "And with Copilot Studio, customers can extend Copilot with agents and build their own agents that proactively respond to data and events from their own first- and third-party business data. To date, 50,000 organizations have used it. And, just this week, we announced new capabilities that will make ",
+        "numbers": [
+          "50,000"
+        ]
+      },
+      {
+        "line": 77,
+        "text": "Microsoft Teams remains essential to how hundreds of millions of people meet, call, chat, collaborate, and do business. This year, we rolled out to all customers a new version that is up to two times faster while using 50 percent less memory. And Teams Premium surpassed 3 million seats, up nearly 40",
+        "numbers": [
+          "50",
+          "3",
+          "400"
+        ]
+      },
+      {
+        "line": 81,
+        "text": "We’re using this AI moment to redefine our role in business applications, too. Dynamics 365 once again took share, as organizations use our AI-powered apps to transform their marketing, sales, service, finance, and supply chain functions.",
+        "numbers": [
+          "365"
+        ]
+      },
+      {
+        "line": 83,
+        "text": "And we are expanding our total addressable market by integrating Copilot into third-party systems as well. Our new Dynamics 365 Contact Center infuses generative AI throughout the contact center workflow in a customer’s existing CRM.",
+        "numbers": [
+          "365"
+        ]
+      },
+      {
+        "line": 85,
+        "text": "We are also extending Copilot to specific industries, including healthcare. With DAX Copilot, more than 400 healthcare organizations are increasing physician productivity and reducing burnout. On average, clinicians save more than five minutes per patient encounter. And 77 percent say it also improv",
+        "numbers": [
+          "400",
+          "77"
+        ]
+      },
+      {
+        "line": 91,
+        "text": "We are continuously applying what we are learning and translating it into security innovation for our customers. A great example is Copilot for Security, which we made generally available this year. It brings together LLMs with domain-specific skills informed by our threat intelligence and 78 trilli",
+        "numbers": [
+          "78"
+        ]
+      },
+      {
+        "line": 99,
+        "text": "LinkedIn continues to see accelerated member growth and record engagement. We surpassed 1 billion members for the first time this year, as we combine our unique data with this new generation of AI to transform how people learn, sell, and get hired. LinkedIn Marketing Solutions continues to be a lead",
+        "numbers": [
+          "1",
+          "51"
+        ]
+      },
+      {
+        "line": 105,
+        "text": "We also continue to apply generative AI to pioneer new approaches to how people search and browse. Microsoft Bing and Edge both took share again this year. And we introduced Copilot Pro, providing access to the latest models for quick answers and higher-quality image creation, and access to Copilot ",
+        "numbers": [
+          "365"
+        ]
+      },
+      {
+        "line": 111,
+        "text": "We are bringing great games to more people on more devices. With our acquisition of Activision Blizzard King, which closed October 2023, we’ve added hundreds of millions of players to our ecosystem. We now have 20 franchises that have generated over \\$1 billion in lifetime revenue—from Candy Crush, ",
+        "numbers": [
+          "2023",
+          "20",
+          "1"
+        ]
+      },
+      {
+        "line": 123,
+        "text": "This year, we partnered with 375,000 nonprofits globally, providing \\$4.7 billion in donated and discounted technology—to help them build capacity, drive efficiencies, innovate, and increase their impact as they take on the world’s greatest challenges. Together with our partners, we also made signif",
+        "numbers": [
+          "375,000",
+          "4.7",
+          "14.1",
+          "202",
+          "80"
+        ]
+      },
+      {
+        "line": 147,
+        "text": "As we build and deploy more AI solutions, connectivity and accessibility are foundational. Since 2017, we’ve extended access to affordable high-speed internet to over 100 million people, including nearly 40 million in Africa. And we remain focused on building inclusive, accessible AI that empowers p",
+        "numbers": [
+          "2017",
+          "100",
+          "40"
+        ]
+      },
+      {
+        "line": 149,
+        "text": "More than 4 billion people will vote this year in their respective elections, making it the biggest election year in history. At the Munich Security Conference in February, we came together with others across the tech sector and pledged to help prevent deceptive AI content from interfering with glob",
+        "numbers": [
+          "4",
+          "20",
+          "355"
+        ]
+      },
+      {
+        "line": 159,
+        "text": "In our latest Environmental Sustainability Report, we shared progress toward our 2030 commitments. We’re on track in several areas. Where we’re not yet on track, we’re mobilizing to accelerate our progress toward becoming carbon negative, water positive, and zero waste, as well as to protect and pre",
+        "numbers": [
+          "2030"
+        ]
+      },
+      {
+        "line": 161,
+        "text": "When it comes to our carbon footprint, we continue to support clean electricity infrastructure through long-term investments to bring more power onto the grids where we operate. Since setting our carbon negative target, we have contracted over 34 gigawatts of renewable energy, including projects in ",
+        "numbers": [
+          "34",
+          "24"
+        ]
+      },
+      {
+        "line": 163,
+        "text": "In our efforts to become water positive, we provided more than 1.5 million people with access to clean water and sanitation, achieving our water access target.",
+        "numbers": [
+          "1.5"
+        ]
+      },
+      {
+        "line": 165,
+        "text": "Our journey to zero waste includes reducing waste at our campuses and datacenters and advancing circularity for cloud hardware, packaging, and devices. Our most recent report showed we had a reuse and recycle rate of 89.4 percent for servers and components across all cloud hardware.",
+        "numbers": [
+          "89.4"
+        ]
+      },
+      {
+        "line": 175,
+        "text": "Our growth mindset culture helps us in our continuous pursuit of high performance. It doesn’t matter what we said about our culture 10 years ago or even last year if we aren’t practicing it today—by anticipating the unmet and unarticulated needs of customers; by working together as One Microsoft to ",
+        "numbers": [
+          "10"
+        ]
+      },
+      {
+        "line": 177,
+        "text": "Giving also remains core to our culture. This year, more than 106,000 employees gave \\$250 million (including company match) to nearly 35,000 nonprofits in 111 countries. And our employees volunteered over 1 million hours to causes they care about. I am deeply grateful for my colleagues’ dedication ",
+        "numbers": [
+          "106,000",
+          "250",
+          "35,000",
+          "111",
+          "1"
+        ]
+      },
+      {
+        "line": 197,
+        "text": "October 18, 2024",
+        "numbers": [
+          "18",
+          "2024"
+        ]
+      },
+      {
+        "line": 203,
+        "text": "Our common stock is traded on the NASDAQ Stock Market under the symbol MSFT. On July 25, 2024, there were 81,346 registered holders of record of our common stock.",
+        "numbers": [
+          "25",
+          "2024",
+          "81,346"
+        ]
+      },
+      {
+        "line": 209,
+        "text": "On September 18, 2019, our Board of Directors approved a share repurchase program authorizing up to \\$40.0 billion in share repurchases. This share repurchase program commenced in February 2020 and was completed in November 2021.",
+        "numbers": [
+          "18",
+          "2019",
+          "40.0",
+          "2020"
+        ]
+      },
+      {
+        "line": 211,
+        "text": "On September 14, 2021, our Board of Directors approved a share repurchase program authorizing up to \\$60.0 billion in share repurchases. This share repurchase program commenced in November 2021, following completion of the program approved on September 18, 2019, has no expiration date, and may be te",
+        "numbers": [
+          "14",
+          "2021",
+          "60.0",
+          "2021",
+          "18",
+          "2019",
+          "30",
+          "2024",
+          "10.3",
+          "60.0"
+        ]
+      },
+      {
+        "line": 215,
+        "text": "(In millions) Shares Amount Shares Amount Shares Amount Year Ended June 30, 2024 2023 2022 First Quarter 11 $ 3,560 17 $ 4,600 21 $ 6,200 Second Quarter 7 2,800 20 4,600 20 6,233 Third Quarter 7 2,800 18 4,600 26 7,800 Fourth Quarter 7 2,800 14 4,600 28 7,800 Total 32 $ 11,960 69 $ 18,400 95 $28,033",
+        "numbers": [
+          "30",
+          "2024",
+          "2023",
+          "2022",
+          "11",
+          "3,560",
+          "17",
+          "4,600",
+          "21",
+          "6,200",
+          "7",
+          "2,800",
+          "20",
+          "4,600",
+          "20",
+          "6,233",
+          "7",
+          "2,800",
+          "18",
+          "4,600",
+          "26",
+          "7,800",
+          "7",
+          "2,800",
+          "14",
+          "4,600",
+          "28",
+          "7,800",
+          "32",
+          "11,960",
+          "69",
+          "18,400",
+          "95",
+          "28,033"
+        ]
+      },
+      {
+        "line": 217,
+        "text": "All repurchases were made using cash resources. Shares repurchased during the first quarter of fiscal year 2022 were under the share repurchase program approved on September 18, 2019. Shares repurchased during the second quarter of fiscal year 2022 were under the share repurchase programs approved o",
+        "numbers": [
+          "2022",
+          "18",
+          "2022",
+          "18",
+          "2019",
+          "14",
+          "14",
+          "5.3",
+          "3.8",
+          "4.7",
+          "2024",
+          "2023",
+          "2022"
+        ]
+      },
+      {
+        "line": 223,
+        "text": "Declaration Date Record Date Payment Date Dividend Per Share Amount Fiscal Year 2024 (In millions) September 19, 2023 November 16, 2023 December 14, 2023 $ 0.75 $ 5,574 November 28, 2023 February 15, 2024 March 14, 2024 0.75 5,573 March 12, 2024 May 16, 2024 June 13, 2024 0.75 5,574 June 12, 2024 Au",
+        "numbers": [
+          "2024",
+          "19",
+          "2023",
+          "16",
+          "2023",
+          "14",
+          "2023",
+          "0.75",
+          "5,574",
+          "28",
+          "2023",
+          "15",
+          "2024",
+          "14",
+          "2024",
+          "0.75",
+          "5,573",
+          "12",
+          "2024",
+          "16",
+          "2024",
+          "13",
+          "2024",
+          "0.75",
+          "5,574",
+          "12",
+          "2024",
+          "15",
+          "2024",
+          "12",
+          "2024",
+          "0.75",
+          "5,575",
+          "3.00",
+          "22,296",
+          "2023",
+          "20",
+          "2022",
+          "17",
+          "2022",
+          "8",
+          "2022",
+          "0.68",
+          "5,066",
+          "29",
+          "2022",
+          "16",
+          "2023",
+          "9",
+          "2023",
+          "0.68",
+          "5,059",
+          "14",
+          "2023",
+          "18",
+          "2023",
+          "8",
+          "2023",
+          "0.68",
+          "5,054",
+          "13",
+          "2023",
+          "17",
+          "2023",
+          "14",
+          "2023",
+          "0.68",
+          "5,051",
+          "2.72",
+          "20,230"
+        ]
+      },
+      {
+        "line": 225,
+        "text": "The dividend declared on June 12, 2024 was included in other current liabilities as of June 30, 2024.",
+        "numbers": [
+          "12",
+          "2024",
+          "30"
+        ]
+      },
+      {
+        "line": 227,
+        "text": "STOCK PERFORMANCE COMPARISON OF 5 YEAR CUMULATIVE TOTAL RETURN\\* Among Microsoft Corporation, the S&P 500 Index and the NASDAQ Computer Index",
+        "numbers": [
+          "5",
+          "500"
+        ]
+      },
+      {
+        "line": 230,
+        "text": "6/19 6/20 6/21 6/22 6/23 6/24 Microsoft Corporation 100.00 153.80 206.72 197.60 264.54 349.91 S&P 500 100.00 107.51 151.36 135.29 161.80 201.54 NASDAQ Computer 100.00 147.90 222.50 173.91 228.85 331.25",
+        "numbers": [
+          "100.00",
+          "153.80",
+          "206.72",
+          "197.60",
+          "264.54",
+          "349.91",
+          "500",
+          "100.00",
+          "107.51",
+          "151.36",
+          "135.29",
+          "161.80",
+          "201.54",
+          "100.00",
+          "147.90",
+          "222.50",
+          "173.91",
+          "228.85",
+          "331.25"
+        ]
+      },
+      {
+        "line": 232,
+        "text": "\\* \\$100 invested on 6/30/19 in stock or index, including reinvestment of dividends. Fiscal year ending June 30.",
+        "numbers": [
+          "100"
+        ]
+      },
+      {
+        "line": 236,
+        "text": "This report includes estimates, projections, statements relating to our business plans, objectives, and expected operating results that are “forward-looking statements” within the meaning of the Private Securities Litigation Reform Act of 1995, Section 27A of the Securities Act of 1933, and Section ",
+        "numbers": [
+          "1995",
+          "1933",
+          "2024"
+        ]
+      },
+      {
+        "line": 252,
+        "text": "Founded in 1975, we develop and support software, services, devices, and solutions that deliver new value for customers and help people and businesses realize their full potential.",
+        "numbers": [
+          "1975"
+        ]
+      },
+      {
+        "line": 272,
+        "text": "Our growth depends on securely delivering continuous innovation and advancing our leading productivity and collaboration tools and services, including Microsoft 365, LinkedIn, and Dynamics 365. Microsoft 365 is an AI first platform that brings together Office, Windows, Copilot, and Enterprise Mobili",
+        "numbers": [
+          "365",
+          "365",
+          "365",
+          "365"
+        ]
+      },
+      {
+        "line": 274,
+        "text": "Together, the Microsoft Cloud, Dynamics 365, Microsoft Teams, and our AI offerings bring a new era of collaborative applications for every role and business function to get insights and business impact faster. Dynamics 365 is a portfolio of intelligent business applications that delivers operational",
+        "numbers": [
+          "365",
+          "365",
+          "365",
+          "365",
+          "365"
+        ]
+      },
+      {
+        "line": 300,
+        "text": "Windows 365 enables users to stream a full Windows experience from the Microsoft Cloud to any device.",
+        "numbers": [
+          "365"
+        ]
+      },
+      {
+        "line": 306,
+        "text": "Windows 11 offers innovations focused on performance, productivity, and creativity, including Copilot in Windows. Windows 11 security and privacy features include operating system security, application security, and user and identity security. Dev Home is an open-source experience in Windows to help",
+        "numbers": [
+          "11",
+          "11",
+          "11"
+        ]
+      },
+      {
+        "line": 326,
+        "text": "Using Windows to fuel our cloud business, grow our share of the PC market, and drive increased engagement with our services like Microsoft Edge, Bing, Microsoft Teams, Microsoft 365 Consumer, Xbox Game Pass, and more.",
+        "numbers": [
+          "365"
+        ]
+      },
+      {
+        "line": 334,
+        "text": "Microsoft’s approach to addressing climate change starts with the sustainability of our own business. In 2020, we committed to being a carbon negative, water positive, and zero waste company by 2030.",
+        "numbers": [
+          "2020"
+        ]
+      },
+      {
+        "line": 338,
+        "text": "In May 2024, we released our Environmental Sustainability Report which looked back at our progress in several areas during fiscal year 2023. In four areas we are on track, and in each of these we see progress that has the potential to have global impact beyond our own sustainability work. These are:",
+        "numbers": [
+          "2024"
+        ]
+      },
+      {
+        "line": 340,
+        "text": "• Reducing our direct operational emissions (Scope 1 and 2).",
+        "numbers": [
+          "1",
+          "2"
+        ]
+      },
+      {
+        "line": 350,
+        "text": "• Reducing our indirect emissions (Scope 3).",
+        "numbers": [
+          "3"
+        ]
+      },
+      {
+        "line": 358,
+        "text": "In June 2020, we outlined a series of multi-year commitments designed to address the racial injustice and inequity experienced by racial and ethnic minorities in the United States, including Black and African American communities. We remain committed to addressing racial injustice and inequity and h",
+        "numbers": [
+          "2020"
+        ]
+      },
+      {
+        "line": 360,
+        "text": "In fiscal year 2024, we continued to collaborate with partners and worked within neighborhoods and communities to advance projects and programs. We grew our Nonprofit Tech Acceleration for Black and African American Communities program, to help more than 3,000 local organizations in nearly 1,900 Bla",
+        "numbers": [
+          "2024",
+          "3,000",
+          "1,900",
+          "550",
+          "21",
+          "1,500",
+          "12%"
+        ]
+      },
+      {
+        "line": 362,
+        "text": "We have committed \\$150 million in Minority Depository Institutions and funds supporting Black and African American-owned small businesses. These commitments drive sustained impact by directly enabling an increase of funds into local communities, improving diverse, small-business access to capital, ",
+        "numbers": [
+          "150",
+          "500",
+          "162"
+        ]
+      },
+      {
+        "line": 368,
+        "text": "Microsoft’s Skills for Jobs initiative aims to support a more skills-based labor market, with greater flexibility and accessible learning paths to develop the right skills needed for the most in-demand jobs. This initiative brings together classes, Career Essentials Certificates, and other resources",
+        "numbers": [
+          "10",
+          "2024",
+          "12.6",
+          "2021",
+          "250,000",
+          "2025",
+          "25,000",
+          "27"
+        ]
+      },
+      {
+        "line": 370,
+        "text": "Generative AI is creating unparalleled opportunities to empower workers globally, but only if everyone has the skills to use it. In June 2023, we launched an AI Skills initiative to help everyone learn how to harness the power of AI. This includes a new LinkedIn learning pathway offering new coursew",
+        "numbers": [
+          "2023",
+          "2024",
+          "2.5",
+          "92%"
+        ]
+      },
+      {
+        "line": 376,
+        "text": "As of June 30, 2024, we employed approximately 228,000 people on a full-time basis, 126,000 in the U.S. and 102,000 internationally. Of the total employed people, 86,000 were in operations, including product support and consulting services, datacenter operations, and manufacturing and distribution; ",
+        "numbers": [
+          "30",
+          "2024",
+          "228,000",
+          "126,000",
+          "102,000",
+          "86,000",
+          "81,000",
+          "45,000",
+          "16,000"
+        ]
+      },
+      {
+        "line": 394,
+        "text": "Additional information on our operating segments and geographic and product information is contained in Note 19 – Segment Information and Geographic Data of the Notes to Financial Statements.",
+        "numbers": [
+          "19"
+        ]
+      },
+      {
+        "line": 402,
+        "text": "Office Commercial (Office 365 subscriptions, the Office 365 portion of Microsoft 365 Commercial subscriptions, and Office licensed on-premises), comprising Office, Exchange, SharePoint, Microsoft Teams, Office 365 Security and Compliance, Microsoft Viva, and Copilot for Microsoft 365.",
+        "numbers": [
+          "365",
+          "365",
+          "365",
+          "365"
+        ]
+      },
+      {
+        "line": 404,
+        "text": "• Office Consumer, including Microsoft 365 Consumer and Copilot Pro subscriptions, Office licensed on-premises, and other Office services.",
+        "numbers": [
+          "365"
+        ]
+      },
+      {
+        "line": 408,
+        "text": "Dynamics business solutions, including Dynamics 365, comprising a set of intelligent, cloud-based applications across ERP, CRM, Power Apps, and Power Automate; and on-premises ERP and CRM applications.",
+        "numbers": [
+          "365"
+        ]
+      },
+      {
+        "line": 416,
+        "text": "Office Consumer is designed to increase personal productivity and creativity through a range of products and services. Growth depends on our ability to reach new users, add value to our core product set with new features including AI tools, and continue to expand our product and service offerings in",
+        "numbers": [
+          "365"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [],
+      "recommendations": [
+        {
+          "source": "line",
+          "text": "This new world is being defined by a rich tapestry of AI agents, which can take action on our behalf, including personal agents across work and life, business process agents, and cross-organizational ones. These agents will be able to work in concert as a new input to help make small businesses more"
+        },
+        {
+          "source": "line",
+          "text": "AI does not get created without data. At the data layer, we are fundamentally rethinking what it means to be an analytics database or an operational data store in the world of AI. Our Microsoft Intelligent Data Platform provides customers with the broadest capabilities spanning databases, analytics,"
+        },
+        {
+          "source": "line",
+          "text": "We are continuously applying what we are learning and translating it into security innovation for our customers. A great example is Copilot for Security, which we made generally available this year. It brings together LLMs with domain-specific skills informed by our threat intelligence and 78 trilli"
+        },
+        {
+          "source": "line",
+          "text": "Finally, we continue our work to create safe experiences online and protect customers from illegal and harmful content and conduct. To bolster our efforts to prevent child sexual exploitation and abuse risks, we have made new commitments to safety by design in our AI services, joined the Tech Coalit"
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 65,
+          "text": "From GitHub to Visual Studio, we have the most comprehensive developer tools. GitHub Copilot had a breakout year, as it became standard issue for developers in every industry. We now have more than 1.8 million paid subscribers and over 77,000 enterprise customers, up 180 percent year-over-year. They"
+        },
+        {
+          "line": 139,
+          "text": "Finally, we continue our work to create safe experiences online and protect customers from illegal and harmful content and conduct. To bolster our efforts to prevent child sexual exploitation and abuse risks, we have made new commitments to safety by design in our AI services, joined the Tech Coalit"
+        },
+        {
+          "line": 149,
+          "text": "More than 4 billion people will vote this year in their respective elections, making it the biggest election year in history. At the Munich Security Conference in February, we came together with others across the tech sector and pledged to help prevent deceptive AI content from interfering with glob"
+        },
+        {
+          "line": 199,
+          "text": "# ISSUER PURCHASES OF EQUITY SECURITIES, DIVIDENDS, AND STOCK PERFORMANCE"
+        },
+        {
+          "line": 236,
+          "text": "This report includes estimates, projections, statements relating to our business plans, objectives, and expected operating results that are “forward-looking statements” within the meaning of the Private Securities Litigation Reform Act of 1995, Section 27A of the Securities Act of 1933, and Section "
+        },
+        {
+          "line": 368,
+          "text": "Microsoft’s Skills for Jobs initiative aims to support a more skills-based labor market, with greater flexibility and accessible learning paths to develop the right skills needed for the most in-demand jobs. This initiative brings together classes, Career Essentials Certificates, and other resources"
+        }
+      ],
+      "field_coverage": {
+        "has_date": false,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 43,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "<!-- image-->\n\nMicrosoft\n\nAnnual Report 2024\n\nDear shareholders, colleagues, customers, and partners:\n\nFiscal year 2024 was a pivotal year for Microsoft. We entered our 50th year as a company and the second year of the AI platform shift. With these milestones, I’ve found myself reflecting on how Microsoft has remained a consequential company decade after decade in an industry with no franchise value. And I realize that it’s because—time and time again, when tech paradigms have shifted—we have seized the opportunity to reinvent ourselves to stay relevant to our customers, our partners, and our employees. And that’s what we are doing again today.\n\nMicrosoft has been a platform and tools company from the start. We were founded in 1975 with a belief in creating technology that would enable others to create their own. And, nearly 50 years later, this belief remains at the heart of our mission to empower every person and every organization on the planet to achieve more.\n\nThis year, we moved from talking about AI to helping our customers translate it into real outcomes—one person, one organization, one institution, and one country at a time. We have made remarkable progress on this front across every industry. For example:\n\n• Coles is generating 1.6 billion daily AI predictions across 850 Australian stores, ensuring every shopper finds what they need.\n\n• Unilever is performing thousands of simulations with AI in the time it would take to run tens of laboratory experiments, as it accelerates its product development.\n\n• Developers at Itaú, Brazil’s largest private bank, are coding more efficiently using our AI pair programmer, GitHub Copilot.\n\n• Khan Academy is making tutoring more accessible for students and helping teachers plan more creative lessons, using our small language model Phi.\n\n• Aquafarmers in Indonesia are improving their yields, thanks to an app built with the Azure OpenAI Service, as well as Azure IoT.\n\n• In Kenya, street vendors now have access to credit for"
+  },
+  "quality": {
+    "score": 76,
+    "status": "pass_with_warnings",
+    "issue_count": 4,
+    "issue_counts": {
+      "error": 0,
+      "warning": 3,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "no_page_provenance",
+        "level": "warning",
+        "message": "Content blocks were extracted, but no page-level provenance is available.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 210
+        }
+      },
+      {
+        "code": "numeric_total_mismatch",
+        "level": "warning",
+        "message": "A total/subtotal row does not match the sum of comparable numeric rows.",
+        "evidence": {
+          "table_index": 0,
+          "row_index": 5,
+          "row_preview": [
+            "Total",
+            "32",
+            "$ 11,960",
+            "69",
+            "$ 18,400",
+            "95",
+            "$28,033"
+          ],
+          "verified": [
+            {
+              "column_index": 1,
+              "expected_total": 32.0,
+              "computed_total": 32.0,
+              "delta": 0.0,
+              "source_value_count": 4
+            },
+            {
+              "column_index": 3,
+              "expected_total": 69.0,
+              "computed_total": 69.0,
+              "delta": 0.0,
+              "source_value_count": 4
+            },
+            {
+              "column_index": 5,
+              "expected_total": 95.0,
+              "computed_total": 95.0,
+              "delta": 0.0,
+              "source_value_count": 4
+            }
+          ],
+          "mismatches": [
+            {
+              "column_index": 2,
+              "expected_total": 11960.0,
+              "computed_total": 13984.0,
+              "delta": 2024.0,
+              "source_value_count": 5
+            },
+            {
+              "column_index": 4,
+              "expected_total": 18400.0,
+              "computed_total": 20423.0,
+              "delta": 2023.0,
+              "source_value_count": 5
+            },
+            {
+              "column_index": 6,
+              "expected_total": 28033.0,
+              "computed_total": 30055.0,
+              "delta": 2022.0,
+              "source_value_count": 5
+            }
+          ]
+        }
+      },
+      {
+        "code": "numeric_total_verified",
+        "level": "info",
+        "message": "A total/subtotal row matched the sum of comparable numeric rows.",
+        "evidence": {
+          "table_index": 1,
+          "row_index": 5,
+          "row_preview": [
+            "Total",
+            "",
+            "",
+            "$",
+            "3.00",
+            "$ 22,296"
+          ],
+          "verified": [
+            {
+              "column_index": 4,
+              "expected_total": 3.0,
+              "computed_total": 3.0,
+              "delta": 0.0,
+              "source_value_count": 4
+            },
+            {
+              "column_index": 5,
+              "expected_total": 22296.0,
+              "computed_total": 22296.0,
+              "delta": 0.0,
+              "source_value_count": 4
+            }
+          ],
+          "mismatches": []
+        }
+      },
+      {
+        "code": "numeric_total_mismatch",
+        "level": "warning",
+        "message": "A total/subtotal row does not match the sum of comparable numeric rows.",
+        "evidence": {
+          "table_index": 1,
+          "row_index": 11,
+          "row_preview": [
+            "Total",
+            "",
+            "",
+            "A",
+            "2.72",
+            "$ 20,230"
+          ],
+          "verified": [],
+          "mismatches": [
+            {
+              "column_index": 4,
+              "expected_total": 2.72,
+              "computed_total": 5.04,
+              "delta": 2.32,
+              "source_value_count": 7
+            },
+            {
+              "column_index": 5,
+              "expected_total": 20230.0,
+              "computed_total": 42526.0,
+              "delta": 22296.0,
+              "source_value_count": 8
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "manual_numeric_review",
+    "actions": [
+      "Use local MinerU CLI when page-level provenance is required.",
+      "Route total/subtotal mismatches to numeric review before downstream use."
+    ],
+    "issue_codes": [
+      "no_page_provenance",
+      "numeric_total_mismatch",
+      "numeric_total_verified",
+      "numeric_total_mismatch"
+    ],
+    "initial_issue_codes": [
+      "no_page_provenance",
+      "numeric_total_mismatch",
+      "numeric_total_verified",
+      "numeric_total_mismatch"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass_with_warnings",
+        "score": 76,
+        "issue_codes": [
+          "no_page_provenance",
+          "numeric_total_mismatch",
+          "numeric_total_verified",
+          "numeric_total_mismatch"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\mineru\\microsoft_2024_annual_report\\agent_api\\microsoft_2024_annual_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\mineru\\microsoft_2024_annual_report\\agent_api\\microsoft_2024_annual_report_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\mineru\\microsoft_2024_annual_report\\agent_api\\microsoft_2024_annual_report_agent_response.json",
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 48,
+      "by_type": {
+        "text": 45,
+        "table": 3
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\mineru\\microsoft_2024_annual_report\\agent_api\\microsoft_2024_annual_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\mineru\\microsoft_2024_annual_report\\agent_api\\microsoft_2024_annual_report_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\mineru\\microsoft_2024_annual_report\\agent_api\\microsoft_2024_annual_report_agent_response.json",
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\18cd14d4f93a\\summary.md"
+}

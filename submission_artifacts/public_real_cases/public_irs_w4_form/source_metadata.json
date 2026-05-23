@@ -1,0 +1,11 @@
+{
+  "id": "public_irs_w4_form",
+  "source_url": "https://www.irs.gov/pub/irs-pdf/fw4.pdf",
+  "source_organization": "Internal Revenue Service",
+  "source_type": "official public PDF form",
+  "filename": "irs_w4.pdf",
+  "input_copy": "input.pdf",
+  "task": "Parse a public IRS W-4 PDF form, extract form title, department, structured sections, form tables, quality issues, trace, and retrieval chunks.",
+  "profile": "standard_or_contract",
+  "public_document_boundary": "Official public document used for lightweight external-generalization evidence; not a full OCR character-level benchmark."
+}

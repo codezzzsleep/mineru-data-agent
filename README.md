@@ -2,7 +2,7 @@
 
 基于 MinerU 的复杂文档 Data Agent，面向「智能进化·Agent 能力评测赛道」设计。
 
-证据边界：本项目里的 `quality.score` 是规则校验分，不是字段级、表格逐格或 OCR 字符级准确率。`submission_artifacts/cases/` 是自构造 HTML/网页 fixture，用于验证 Agent 管线和可追溯产物；PDF 文件级 MinerU 证据见 `submission_artifacts/mineru_cases/`，其中多个样本是为公开提交生成的合成业务样本。
+证据边界：本项目里的 `quality.score` 是规则校验分，不是字段级、表格逐格或 OCR 字符级准确率。`submission_artifacts/cases/` 是自构造 HTML/网页 fixture，用于验证 Agent 管线和可追溯产物；PDF 文件级 MinerU 证据见 `submission_artifacts/mineru_cases/`，其中多个样本是为公开提交生成的合成业务样本。为补足真实样本证据，项目新增 `submission_artifacts/public_real_cases/`，使用 IRS、NIST、SEC 和 CDC 的官方公开 PDF，并附 source metadata、人工轻量标注和文本证据评测。
 
 它不是简单调用 MinerU，而是在 MinerU/HTML 解析结果之上增加：
 
@@ -24,6 +24,7 @@
 - 1 个真实 PDF recovery 证据：在线 API 先跑、缺少页级 provenance 后自动 fallback 到 CLI artifact，`recovery_decision.executed=true`
 - 2 个 Office 文件级 artifact，覆盖 Word 合规矩阵和 PowerPoint 工作流汇报
 - 4 个更贴近评审挑战的复杂文档 fixture，并附人工标注表，覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流
+- 4 个官方公开真实 PDF 证据包，覆盖 IRS 表单、NIST AI RMF、Microsoft SEC 年报和 CDC 公共卫生说明，并附人工轻量标注和来源元数据
 - 1 个实际启用 DeepSeek-V4-Flash 的 LLM 证据案例，用于任务理解、schema 建议、复核重点和恢复建议
 
 ## Quick Start
@@ -172,6 +173,14 @@ $env:MINERU_ROOT\.venv\Scripts\python.exe .\scripts\generate_complex_pdf_fixture
 - `case_mineru_cli_contract_pdf`：2 页合同/标准样本，包含条款、合规矩阵和签署信息。
 - `case_mineru_cli_workflow_pdf`：2 页流程/工程样本，包含流程图图片 artifact、执行矩阵、异常和建议。
 
+生成官方公开真实文档证据包：
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\run_public_real_cases.py
+```
+
+当前证据位于 `submission_artifacts/public_real_cases/`，包含 4 份官方公开 PDF：IRS W-4 表单、NIST AI RMF 1.0、Microsoft 2024 Annual Report SEC PDF exhibit 和 CDC VIS 使用说明。每个案例都保存输入副本、source metadata、human labels、`result.json`、`trace.json`、`summary.md` 和 retrieval 导出。NIST 与 Microsoft 长文档受在线 Agent API 页数限制，manifest 中只提交前 20 页，并在 `source_metadata.json` 标明边界。
+
 生成并复跑 Office 文件级样本：
 
 ```powershell
@@ -264,7 +273,7 @@ runs/<run_id>/
 python scripts/build_evaluation_report.py
 ```
 
-当前报告位于 `submission_artifacts/evaluation/`，覆盖 13 个提交案例、39 个标注字段、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。
+当前报告位于 `submission_artifacts/evaluation/`，覆盖 17 个提交案例、39 个标注字段、22 条文本证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。
 
 ## Recommended HeyWhale Setup
 
@@ -303,4 +312,4 @@ python scripts/build_evaluation_report.py
 - `--llm deepseek`：可选 DeepSeek v4-flash 官方推理层，参与解析前调度和解析后复核；不开启时项目仍可完整运行。
 - `--llm modelscope`：可选 ModelScope 推理入口，默认模型 `deepseek-ai/DeepSeek-V4-Flash`。
 
-当前提交包内的强复现证据分为八类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；1 个 PDF recovery 案例证明在线 API 缺少页级 provenance 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；4 个挑战 fixture 与人工标注表覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议；1 份带标注评测报告证明 13 个案例的 39 个标注字段、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛均可复查。合成 PDF/Office/挑战样本不能替代真实客户材料的长期泛化评测。
+当前提交包内的强复现证据分为九类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；1 个 PDF recovery 案例证明在线 API 缺少页级 provenance 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；4 个挑战 fixture 与人工标注表覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；4 个官方公开真实 PDF 案例证明系统能处理外部公开材料，并通过 22 条文本证据门槛；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议；1 份带标注评测报告证明 17 个案例的 39 个标注字段、22 条文本证据、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛均可复查。公开真实文档证据包仍是轻量人工标注，不等同于完整 OCR 字符级 benchmark。

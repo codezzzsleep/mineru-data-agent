@@ -1,0 +1,19 @@
+{
+  "id": "public_nist_ai_rmf",
+  "human_labels": {
+    "document_title": "Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+    "publication_id": "NIST AI 100-1",
+    "issuer": "National Institute of Standards and Technology",
+    "publication_date": "January 2023"
+  },
+  "expected_text_contains": [
+    "Artificial Intelligence Risk Management Framework",
+    "NIST AI 100-1",
+    "January 2023",
+    "GOVERN",
+    "MAP",
+    "MEASURE",
+    "MANAGE"
+  ],
+  "label_scope": "Sample-level public-document labels for key facts and text evidence."
+}

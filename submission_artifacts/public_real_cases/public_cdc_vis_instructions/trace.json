@@ -1,0 +1,129 @@
+{
+  "created_at": "2026-05-23T14:03:20.176737+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:04.877277+00:00",
+      "ended_at": "2026-05-23T14:03:04.877277+00:00",
+      "detail": {
+        "task": "Parse the public CDC VIS instruction PDF, extract instruction title, responsible agency, legal-use statements, quality issues, trace, and retrieval chunks.",
+        "input_file": "<PROJECT_ROOT>\\examples\\public_real_documents\\files\\cdc_vis_instructions.pdf"
+      }
+    },
+    {
+      "name": "mineru_parse",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:04.878278+00:00",
+      "ended_at": "2026-05-23T14:03:12.450049+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "en"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:12.450049+00:00",
+      "ended_at": "2026-05-23T14:03:12.451345+00:00",
+      "detail": {
+        "item_count": 28,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "mineru-agent-api": 28
+        },
+        "section_count": 7,
+        "table_count": 0,
+        "key_value_count": 17,
+        "numeric_fact_count": 9,
+        "semantic_signal_counts": {
+          "dates": 0,
+          "recommendations": 0,
+          "anomaly_lines": 0
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:12.451345+00:00",
+      "ended_at": "2026-05-23T14:03:12.451345+00:00",
+      "detail": {
+        "profile": "standard_or_contract"
+      }
+    },
+    {
+      "name": "auto_recovery_ocr_retry",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:12.452344+00:00",
+      "ended_at": "2026-05-23T14:03:20.169064+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "from_method": "auto",
+        "retry_method": "ocr"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:20.169064+00:00",
+      "ended_at": "2026-05-23T14:03:20.169064+00:00",
+      "detail": {
+        "quality_status": "pass_with_warnings",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-23T14:03:20.169064+00:00",
+      "ended_at": "2026-05-23T14:03:20.173737+00:00",
+      "detail": {
+        "chunks_count": 5,
+        "by_type": {
+          "text": 5
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "mineru-agent-api",
+      "command": [
+        "mineru-agent-api",
+        "parse-file",
+        "cdc_vis_instructions.pdf"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 7.571,
+      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"2e8e651b-2c51-4f0f-921f-55ee1e7705cc05\",\n    \"trace_id\": \"21ba10ef1f589f36593c979ce064d5e7\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"0f15ee157c660150cc07cbfcd6125ff1\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"888c195e7336ca0a59b7f67ef42376b0\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"8e492c6c05fdd7dfa42a2f2b1d827325\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"f85e0d55db596cfb284713ab01a444c2\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"2e8e651b-2c51-4f0f-921f-55ee1e7705cc05\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-23/bd3b1101-1b7c-4790-9352-9e18e0239e9b/full.md\"\n  }\n]",
+      "stderr_tail": ""
+    },
+    {
+      "tool": "mineru-agent-api",
+      "command": [
+        "mineru-agent-api",
+        "parse-file",
+        "cdc_vis_instructions.pdf"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 7.715,
+      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"fd1cdb6b-a418-4602-9d2f-da35eed0abc805\",\n    \"trace_id\": \"0eccf3ec16b550e9d33b4e24c6351c26\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"5698e6d128a30ab7705ea0ebb26084e2\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"pending\",\n    \"trace_id\": \"d257a74040099a537342b9b5433dc65a\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"pending\",\n    \"trace_id\": \"c2ad13d1d1ccb0685731d58021f0d573\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"0019280b4279bccf4357f96c13af4254\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"fd1cdb6b-a418-4602-9d2f-da35eed0abc805\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-23/4396560c-e3c1-4cff-9e60-4e4fc3ddcf06/full.md\"\n  }\n]",
+      "stderr_tail": ""
+    }
+  ],
+  "run_id": "d6f8646990e9",
+  "task": "Parse the public CDC VIS instruction PDF, extract instruction title, responsible agency, legal-use statements, quality issues, trace, and retrieval chunks.",
+  "profile": "standard_or_contract",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\d6f8646990e9\\summary.md"
+}

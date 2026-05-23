@@ -1,6 +1,6 @@
 # Case Studies
 
-本提交包把案例证据分成八类，避免把轻量 fixture、合成文件或离线恢复演练结果包装成真实客户材料的广泛评测。
+本提交包把案例证据分成九类，避免把轻量 fixture、合成文件或离线恢复演练结果包装成真实客户材料的广泛评测。
 
 ## 1. HTML/网页 Fixture 案例
 
@@ -123,9 +123,30 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 | `case_8_industry_standard_matrix` | 行业标准合规矩阵 | Standard ID、Review Date、Owner、关键要求 | `pass` 100 |
 | `case_9_incident_workflow_report` | 故障处置工作流与 fallback 时间线 | Incident ID、Report Date、System、fallback 动作 | `pass` 100 |
 
-这些样本已纳入 `examples/evaluation/labels.json` 和 `submission_artifacts/evaluation/`，用于评测 13 个提交案例中的新增挑战维度。
+这些样本已纳入 `examples/evaluation/labels.json` 和 `submission_artifacts/evaluation/`，用于评测 17 个提交案例中的新增挑战维度。
 
-## 7. LLM-Enabled 财报复核案例
+## 7. 官方公开真实文档证据包
+
+公开真实文档位置：`submission_artifacts/public_real_cases/`
+
+这些案例由 `examples/public_real_documents/manifest.json` 和 `scripts/run_public_real_cases.py` 生成。它们使用官方公开来源，不是本项目合成 fixture；每个案例保存输入副本、`source_metadata.json`、`human_labels.json`、`result.json`、`trace.json`、`summary.md` 和 retrieval 导出。标签范围是样本级人工轻量标注和文本证据检查，不宣称完整 OCR 字符级或表格逐格准确率。
+
+| Case | 官方来源 | 文档类型 | 标注重点 | 当前结果 |
+| --- | --- | --- | --- | --- |
+| `public_irs_w4_form` | Internal Revenue Service | W-4 表单 PDF | 标题、机构、年份、表单族、说明文本 | `pass_with_warnings` 76，22 个 retrieval chunks |
+| `public_nist_ai_rmf` | National Institute of Standards and Technology | AI RMF 1.0 框架 PDF | 标题、NIST AI 100-1、发布日期、GOVERN/MAP/MEASURE/MANAGE 文本证据 | `pass_with_warnings` 92，23 个 retrieval chunks |
+| `public_microsoft_annual_report` | U.S. SEC EDGAR | Microsoft 2024 Annual Report PDF exhibit | 公司、年报标题、财年、Revenue/Cash/Cloud 文本证据 | `pass_with_warnings` 76，48 个 retrieval chunks |
+| `public_cdc_vis_instructions` | Centers for Disease Control and Prevention | VIS 使用说明 PDF | 主题、机构、法律语境、Required Use 文本证据 | `pass_with_warnings` 84，5 个 retrieval chunks |
+
+边界说明：NIST 与 Microsoft 是长文档，当前通过在线 MinerU Agent API 跑前 20 页，`source_metadata.json` 中保留 `page_range`。4 个公开案例都因在线 API 轻量路径缺少页级 provenance 而保留 `no_page_provenance` warning，评审应把它看作外部真实材料兼容性证据，而不是页级审计能力的最终证明。
+
+复跑方式：
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\run_public_real_cases.py
+```
+
+## 8. LLM-Enabled 财报复核案例
 
 LLM 案例位置：`submission_artifacts/llm_cases/case_llm_financial_review/`
 
@@ -142,28 +163,29 @@ LLM 在该案例中的职责是：
 
 当前代码已把 LLM 从单纯解析后复核前移到解析前调度。开启 `--llm deepseek` 或 `--llm modelscope` 时，trace 会新增 `llm_pre_execution_planning`，结果会新增 `execution_control` 和 `llm_analysis.pre_execution_plan`，记录模型建议的 profile、runner、backend、method、语言、目标 schema 和恢复策略；系统只应用安全白名单内且未被用户显式锁定的建议。
 
-## 8. 带标注评测指标
+## 9. 带标注评测指标
 
 评测报告位置：`submission_artifacts/evaluation/`
 
-该报告由 `examples/evaluation/labels.json` 和 `scripts/build_evaluation_report.py` 生成，覆盖 13 个提交案例、39 个标注字段、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。当前已保存结果：
+该报告由 `examples/evaluation/labels.json` 和 `scripts/build_evaluation_report.py` 生成，覆盖 17 个提交案例、39 个标注字段、22 条文本证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。当前已保存结果：
 
 - Expected-field accuracy: 100.0% (39/39)
-- Profile accuracy: 100.0% (13/13)
-- Structure gate pass rate: 100.0% (13/13)
-- Quality gate pass rate: 100.0% (13/13)
-- Provenance gate pass rate: 100.0% (13/13)
+- Text evidence accuracy: 100.0% (22/22)
+- Profile accuracy: 100.0% (17/17)
+- Structure gate pass rate: 100.0% (17/17)
+- Quality gate pass rate: 100.0% (17/17)
+- Provenance gate pass rate: 100.0% (17/17)
 - Recovery gate pass rate: 100.0% (2/2)
 
 该评测不是完整 OCR 字符级标注集，但能把关键字段、结构输出和可追溯性变成可复跑指标，补足“只有案例展示、没有指标”的短板。
 
-## 9. 边界说明
+## 10. 边界说明
 
 当前证据已经能证明项目具备 HTML/网页结构化处理闭环、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出能力。
 
 但目前仍有明确缺口：
 
-- PDF 文件级证据已扩展到 4 个，Office 文件级证据已扩展到 2 个，挑战 fixture 已扩展到 4 个，但其中多个样本是可公开提交的合成业务样本，还不足以证明真实客户材料的长期泛化能力。
+- PDF 文件级证据已扩展到 4 个，Office 文件级证据已扩展到 2 个，挑战 fixture 已扩展到 4 个，并新增 4 个官方公开真实 PDF 案例；但公开真实案例仍是轻量人工标注，还不足以证明真实客户材料的长期泛化能力。
 - LLM 预调度已接入 profile/method/backend/lang 的安全控制，但 runner 的实际选择仍由部署参数控制，避免模型在运行中切换到当前环境不可用的后端。
 - 已补“真实 PDF + 解析前调度 + recovery executed=true”的证据 artifact，但当前环境使用离线确定性预调度器和缓存 CLI artifact 回放；直播式全链路证据仍需要真实 DeepSeek/ModelScope key 和可调用 MinerU CLI。
 - 当前 API smoke 已覆盖本地 HTML 上传和 PDF 上传；PDF 路径使用在线 Agent API，因此仍会保留 `no_page_provenance` 边界提示。

@@ -17,9 +17,10 @@
 - [x] 真实 PDF 已保存解析前调度 + API-to-CLI fallback 恢复证据，见 `submission_artifacts/recovery_cases/`
 - [x] `recovery_decision.executed=true` 的 PDF 证据已生成，且评测标签会检查 `selected_attempt=cli_fallback`
 - [x] 带标注评测指标已生成，见 `submission_artifacts/evaluation/`
-- [x] 评测指标已覆盖 13 个案例、39 个标注字段和 2 个 recovery gate
+- [x] 评测指标已覆盖 17 个案例、39 个标注字段、22 条文本证据和 2 个 recovery gate
 - [x] 至少 5 个典型任务案例，见 `submission_artifacts/cases/`
 - [x] 额外 4 个复杂挑战样本与人工标注表已生成，见 `submission_artifacts/challenge_cases/`
+- [x] 额外 4 个官方公开真实 PDF 样本、来源元数据和人工轻量标注已生成，见 `submission_artifacts/public_real_cases/`
 - [x] 每个案例包含输入、输出、日志和关键 artifact
 - [x] API `/health` 可访问
 - [x] API `/v1/parse` 可上传文件并返回结构化 JSON

@@ -1,0 +1,107 @@
+{
+  "created_at": "2026-05-23T14:02:36.560675+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-23T14:02:20.170722+00:00",
+      "ended_at": "2026-05-23T14:02:20.170722+00:00",
+      "detail": {
+        "task": "Parse a public IRS W-4 PDF form, extract form title, department, structured sections, form tables, quality issues, trace, and retrieval chunks.",
+        "input_file": "<PROJECT_ROOT>\\examples\\public_real_documents\\files\\irs_w4.pdf"
+      }
+    },
+    {
+      "name": "mineru_parse",
+      "status": "completed",
+      "started_at": "2026-05-23T14:02:20.170722+00:00",
+      "ended_at": "2026-05-23T14:02:36.450513+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "en"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-23T14:02:36.450513+00:00",
+      "ended_at": "2026-05-23T14:02:36.544364+00:00",
+      "detail": {
+        "item_count": 51,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "mineru-agent-api": 51
+        },
+        "section_count": 6,
+        "table_count": 9,
+        "key_value_count": 0,
+        "numeric_fact_count": 23,
+        "semantic_signal_counts": {
+          "dates": 0,
+          "recommendations": 0,
+          "anomaly_lines": 1
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-23T14:02:36.544364+00:00",
+      "ended_at": "2026-05-23T14:02:36.545360+00:00",
+      "detail": {
+        "profile": "standard_or_contract"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T14:02:36.546411+00:00",
+      "ended_at": "2026-05-23T14:02:36.546411+00:00",
+      "detail": {
+        "quality_status": "pass_with_warnings",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-23T14:02:36.546411+00:00",
+      "ended_at": "2026-05-23T14:02:36.554511+00:00",
+      "detail": {
+        "chunks_count": 22,
+        "by_type": {
+          "text": 12,
+          "table": 10
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\ad440d103164\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\ad440d103164\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\ad440d103164\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "mineru-agent-api",
+      "command": [
+        "mineru-agent-api",
+        "parse-file",
+        "irs_w4.pdf"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 16.277,
+      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"b2987d2b-60f8-4004-b4d9-c482436da14c05\",\n    \"trace_id\": \"09028e809e0336a36ca17b8a71d58767\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"ae0c34c3a095075f6de9626c9a760043\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"fd246964fc8f21e2d2ba0ca7087cd95e\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"b95074f2e1a4f319efd435148738951a\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"0c16bf64c4a008f12d5312c9af0b7399\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"0697a85d2d6954e931729ca2d3aa1eb7\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"cece5658d6e65aa59c63c673f2b49d16\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"96a877979969142abaf35ba7f7033c88\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"44b577ae037f3605a40499f5469b417a\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"b2987d2b-60f8-4004-b4d9-c482436da14c05\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-23/86616cc6-20a5-436a-a0b5-4772d1194dd8/full.md\"\n  }\n]",
+      "stderr_tail": ""
+    }
+  ],
+  "run_id": "ad440d103164",
+  "task": "Parse a public IRS W-4 PDF form, extract form title, department, structured sections, form tables, quality issues, trace, and retrieval chunks.",
+  "profile": "standard_or_contract",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\ad440d103164\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\public_real_cases\\ad440d103164\\summary.md"
+}

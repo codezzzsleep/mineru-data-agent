@@ -1,0 +1,11 @@
+{
+  "id": "public_cdc_vis_instructions",
+  "source_url": "https://www.cdc.gov/vaccines/hcp/vis/about/required-use-instructions.pdf",
+  "source_organization": "Centers for Disease Control and Prevention",
+  "source_type": "official public health instruction PDF",
+  "filename": "cdc_vis_instructions.pdf",
+  "input_copy": "input.pdf",
+  "task": "Parse the public CDC VIS instruction PDF, extract instruction title, responsible agency, legal-use statements, quality issues, trace, and retrieval chunks.",
+  "profile": "standard_or_contract",
+  "public_document_boundary": "Official public document used for lightweight external-generalization evidence; not a full OCR character-level benchmark."
+}

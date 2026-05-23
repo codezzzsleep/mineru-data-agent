@@ -2,22 +2,25 @@
   "schema_version": "2026-05-23",
   "labels_path": "examples\\evaluation\\labels.json",
   "project_root": "<PROJECT_ROOT>",
-  "case_count": 13,
+  "case_count": 17,
   "aggregate": {
     "expected_fields": 39,
     "matched_fields": 39,
     "field_accuracy": 1.0,
-    "profile_checks": 13,
-    "profile_matches": 13,
+    "expected_text_evidence": 22,
+    "matched_text_evidence": 22,
+    "text_evidence_accuracy": 1.0,
+    "profile_checks": 17,
+    "profile_matches": 17,
     "profile_accuracy": 1.0,
-    "structure_gates": 13,
-    "structure_gates_passed": 13,
+    "structure_gates": 17,
+    "structure_gates_passed": 17,
     "structure_gate_pass_rate": 1.0,
-    "quality_gates": 13,
-    "quality_gates_passed": 13,
+    "quality_gates": 17,
+    "quality_gates_passed": 17,
     "quality_gate_pass_rate": 1.0,
-    "provenance_gates": 13,
-    "provenance_gates_passed": 13,
+    "provenance_gates": 17,
+    "provenance_gates_passed": 17,
     "provenance_gate_pass_rate": 1.0,
     "recovery_gates": 2,
     "recovery_gates_passed": 2,
@@ -55,6 +58,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -119,6 +126,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -181,6 +192,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -243,6 +258,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -303,6 +322,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -363,6 +386,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -423,6 +450,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -487,6 +518,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -549,6 +584,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -623,6 +662,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -685,6 +728,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -760,6 +807,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -820,6 +871,10 @@
           "matched": true
         }
       ],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 0,
+      "expected_text_evidence": 0,
+      "text_checks": [],
       "structure_gate": {
         "passed": true,
         "actual": {
@@ -835,6 +890,278 @@
         "actual": {
           "status": "pass",
           "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
+      }
+    },
+    {
+      "id": "public_irs_w4_form",
+      "result_path": "submission_artifacts\\public_real_cases\\public_irs_w4_form\\result.json",
+      "profile": "standard_or_contract",
+      "expected_profile": "standard_or_contract",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 0,
+      "expected_fields": 0,
+      "field_checks": [],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 5,
+      "expected_text_evidence": 5,
+      "text_checks": [
+        {
+          "expected": "Employee",
+          "matched": true
+        },
+        {
+          "expected": "Withholding Certificate",
+          "matched": true
+        },
+        {
+          "expected": "Department of the Treasury",
+          "matched": true
+        },
+        {
+          "expected": "Internal Revenue Service",
+          "matched": true
+        },
+        {
+          "expected": "General Instructions",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 6,
+          "tables": 9,
+          "numeric_facts": 23,
+          "retrieval_chunks": 22
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass_with_warnings",
+          "score": 76
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
+      }
+    },
+    {
+      "id": "public_nist_ai_rmf",
+      "result_path": "submission_artifacts\\public_real_cases\\public_nist_ai_rmf\\result.json",
+      "profile": "standard_or_contract",
+      "expected_profile": "standard_or_contract",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 0,
+      "expected_fields": 0,
+      "field_checks": [],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 7,
+      "expected_text_evidence": 7,
+      "text_checks": [
+        {
+          "expected": "Artificial Intelligence Risk Management Framework",
+          "matched": true
+        },
+        {
+          "expected": "NIST AI 100-1",
+          "matched": true
+        },
+        {
+          "expected": "January 2023",
+          "matched": true
+        },
+        {
+          "expected": "GOVERN",
+          "matched": true
+        },
+        {
+          "expected": "MAP",
+          "matched": true
+        },
+        {
+          "expected": "MEASURE",
+          "matched": true
+        },
+        {
+          "expected": "MANAGE",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 19,
+          "tables": 1,
+          "numeric_facts": 75,
+          "retrieval_chunks": 23
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass_with_warnings",
+          "score": 92
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
+      }
+    },
+    {
+      "id": "public_microsoft_annual_report",
+      "result_path": "submission_artifacts\\public_real_cases\\public_microsoft_annual_report\\result.json",
+      "profile": "financial_report",
+      "expected_profile": "financial_report",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 0,
+      "expected_fields": 0,
+      "field_checks": [],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 6,
+      "expected_text_evidence": 6,
+      "text_checks": [
+        {
+          "expected": "Microsoft",
+          "matched": true
+        },
+        {
+          "expected": "Annual Report",
+          "matched": true
+        },
+        {
+          "expected": "Fiscal year 2024",
+          "matched": true
+        },
+        {
+          "expected": "Revenue",
+          "matched": true
+        },
+        {
+          "expected": "Cash",
+          "matched": true
+        },
+        {
+          "expected": "Cloud",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 43,
+          "tables": 3,
+          "numeric_facts": 64,
+          "retrieval_chunks": 48
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass_with_warnings",
+          "score": 76
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
+      }
+    },
+    {
+      "id": "public_cdc_vis_instructions",
+      "result_path": "submission_artifacts\\public_real_cases\\public_cdc_vis_instructions\\result.json",
+      "profile": "standard_or_contract",
+      "expected_profile": "standard_or_contract",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 0,
+      "expected_fields": 0,
+      "field_checks": [],
+      "text_evidence_accuracy": 1.0,
+      "matched_text_evidence": 4,
+      "expected_text_evidence": 4,
+      "text_checks": [
+        {
+          "expected": "Vaccine Information Statements",
+          "matched": true
+        },
+        {
+          "expected": "Required Use",
+          "matched": true
+        },
+        {
+          "expected": "Centers for Disease Control",
+          "matched": true
+        },
+        {
+          "expected": "National Childhood Vaccine Injury Act",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 7,
+          "tables": 0,
+          "numeric_facts": 9,
+          "retrieval_chunks": 5
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass_with_warnings",
+          "score": 84
         },
         "failures": []
       },
