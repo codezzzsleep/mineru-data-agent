@@ -1,9 +1,9 @@
 {
-  "run_id": "42f057700d90",
-  "task": "解析财报密集数字表格，抽取报告日期、公司名称、关键数字、检查合计行，并由大模型给出复核计划、目标schema和风险恢复建议。注意：HTML fixture 由本地 HTML 结构化模块解析，不要写成 MinerU CLI/API 已解析；没有质量错误时不要输出 error 级风险。",
+  "run_id": "293dc94f8705",
+  "task": "启用大模型预调度和复核，解析财报 HTML，抽取报告日期、公司名称、合计数字，检查表格总计并给出可验证证据。",
   "profile": "financial_report",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90",
+  "output_dir": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705",
   "plan": [
     "Inspect input type and task objective",
     "Parse document with MinerU or native HTML extractor",
@@ -11,8 +11,75 @@
     "Build markdown, section, key-value, table, and numeric views",
     "Run quality checks and produce traceable logs",
     "Prioritize dense table extraction and numeric consistency checks",
-    "Flag subtotal/total rows and suspicious numeric cells"
+    "Flag subtotal/total rows and suspicious numeric cells",
+    "LLM preplan: Load HTML file via CLI runner with pipeline backend",
+    "LLM preplan: Extract report_date, company_name, and numeric totals using HTML structure and regex patterns",
+    "LLM preplan: Validate extracted table totals by summing individual line items and comparing to reported totals",
+    "LLM preplan: Generate verifiable evidence including source snippets and calculations"
   ],
+  "execution_control": {
+    "llm_preplan_enabled": true,
+    "requested": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch"
+    },
+    "initial": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "resolved": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "planning_rationale": {
+      "source": "llm_preplan+rules",
+      "file_family": "native_office_or_html",
+      "profile_reason": "financial keywords or explicit profile require table and numeric consistency checks",
+      "runner_reason": "HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU",
+      "backend_reason": "backend=pipeline is used for MinerU parsing when the selected runner calls MinerU",
+      "method_reason": "method=auto balances automatic parsing with OCR fallback when quality gates require it",
+      "lang_reason": "lang=ch is passed to MinerU or recorded for native extraction audit",
+      "recovery_policy": [
+        "text_cleanup if mojibake or encoding noise is detected",
+        "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+        "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+        "manual_numeric_review when subtotal/total consistency checks fail"
+      ]
+    },
+    "runner_class": "MinerURunner",
+    "applied": [],
+    "ignored": [
+      {
+        "field": "backend",
+        "recommended": "pipeline",
+        "current": "pipeline",
+        "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+      },
+      {
+        "field": "method",
+        "recommended": "auto",
+        "current": "auto",
+        "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+      }
+    ],
+    "llm_preplan_status": "completed",
+    "llm_recommendation": {
+      "profile": "financial_report",
+      "runner": "cli",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "confidence": 0.9
+    }
+  },
   "extracted": {
     "content_summary": {
       "item_count": 8,
@@ -125,6 +192,135 @@
       "异常提示": "合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。",
       "处理建议": "将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。"
     },
+    "field_evidence": [
+      {
+        "key": "报告日期",
+        "value": "2026-04-30",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "报告日期：2026-04-30",
+        "provenance": {
+          "line": 3,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 0
+      },
+      {
+        "key": "公司名称",
+        "value": "华东制造有限公司",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "公司名称：华东制造有限公司",
+        "provenance": {
+          "line": 5,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 1
+      },
+      {
+        "key": "报表口径",
+        "value": "人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "报表口径：人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。",
+        "provenance": {
+          "line": 7,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 2
+      },
+      {
+        "key": "异常提示",
+        "value": "合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "异常提示：合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。",
+        "provenance": {
+          "line": 20,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 3
+      },
+      {
+        "key": "处理建议",
+        "value": "将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "处理建议：将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。",
+        "provenance": {
+          "line": 22,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 4
+      }
+    ],
+    "field_evidence_map": {
+      "报告日期": [
+        {
+          "value": "2026-04-30",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 3,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "报告日期：2026-04-30"
+        }
+      ],
+      "公司名称": [
+        {
+          "value": "华东制造有限公司",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 5,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "公司名称：华东制造有限公司"
+        }
+      ],
+      "报表口径": [
+        {
+          "value": "人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 7,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "报表口径：人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。"
+        }
+      ],
+      "异常提示": [
+        {
+          "value": "合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 20,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "异常提示：合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。"
+        }
+      ],
+      "处理建议": [
+        {
+          "value": "将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 22,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "处理建议：将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。"
+        }
+      ]
+    },
     "numeric_facts": [
       {
         "line": 1,
@@ -232,11 +428,16 @@
     "score": 100,
     "status": "pass",
     "issue_count": 2,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 2
+    },
     "issues": [
       {
         "code": "document_level_provenance",
         "level": "info",
-        "message": "HTML input has document-level provenance rather than page-level provenance.",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
         "evidence": {
           "page_count": 0,
           "item_count": 8,
@@ -279,96 +480,6 @@
       }
     ]
   },
-  "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_quality.json",
-    "stats": {
-      "total_chunks": 3,
-      "by_type": {
-        "text": 2,
-        "table": 1
-      },
-      "pages": [
-        1
-      ]
-    }
-  },
-  "llm_analysis": {
-    "task_understanding": "解析一份由本地HTML结构化模块（native-html-extractor）提取的财务报告HTML fixture，报告为华东制造有限公司2026年一季度经营报表。任务包括：抽取报告日期、公司名称、表中关键数字（营业收入、营业成本、销售费用、管理费用、利润总额、合计项），验证合计行数值与明细项之和是否一致，并输出复核计划、目标提取schema、风险发现和恢复建议。输入为文档级溯源（无页面级），质量检查无错误，合计行已验证一致。",
-    "execution_plan": [
-      "确认输入来源为native-html-extractor，标注解析器类型并避免误写为MinerU CLI/API",
-      "从markdown_preview和section_titles抽取报告日期、公司名称",
-      "提取表格中所有数值行，包括明细项和合计行，记录每行每个数值单元格",
-      "对合计行进行独立性验算：将前5个明细项的2026Q1列和2025Q4列分别求和，与合计行对应数值比较（已由quality.issues验证一致，delta=0）",
-      "构建结构化schema，包含字段：报告日期、公司名称、项目、2026Q1值、2025Q4值、变动率、合计验证状态",
-      "生成验证重点清单，涵盖数字一致性、合计行正确性、溯源完整性",
-      "基于当前无质量错误的事实，输出info或warning级别的风险发现，不输出error级别",
-      "提出恢复建议，针对未来可能出现的OCR跨列、行数不匹配等场景准备预案"
-    ],
-    "target_schema": {
-      "报告日期": "财务报表所覆盖季度的截止日期，本例为2026-04-30",
-      "公司名称": "财务报表主体公司全称，本例为华东制造有限公司",
-      "项目": "报表中各项指标名称，如营业收入、营业成本等",
-      "2026Q1": "2026年第一季度报表数值（单位：万元），格式为保留两位小数的数字",
-      "2025Q4": "2025年第四季度报表数值（单位：万元），格式为保留两位小数的数字",
-      "变动率": "季度同比增长率，以百分数表示，如8.05%",
-      "合计验证状态": "合计行数值与明细项之和的匹配状态，值为'一致'或'不一致'",
-      "溯源级别": "内容溯源粒度，当前为document级（无页面信息）"
-    },
-    "verification_focus": [
-      "确认抽取的报告日期和公司名称与markdown标题一致",
-      "逐项核对表格中每个数字的提取正确性（例如千分位分隔符是否保留）",
-      "对合计行的2026Q1列（25,721.00）进行手动求和：12,860.50+8,430.25+615.30+781.20+3,033.75=25,721.00，验证一致",
-      "对合计行的2025Q4列（23,804.20）进行手动求和：11,902.10+7,921.30+590.00+760.15+2,630.65=23,804.20，验证一致",
-      "确认变动率合计行（8.05%）是否由加权计算或简单平均得出（本例与行列无关，仅提取）",
-      "检查溯源级别为document级，确认无页面信息是否影响后续参考",
-      "复查质量检查中issue_count=2但均为info，无error，确保风险级别正确"
-    ],
-    "risk_findings": [
-      {
-        "level": "info",
-        "message": "输入为HTML fixture，解析器为native-html-extractor，非MinerU CLI/API，溯源为文档级而非页面级。",
-        "evidence": "parser_context.actual_parser: native-html-extractor; source_counts.html: 8; provenance_level: document"
-      },
-      {
-        "level": "info",
-        "message": "合计行数值已验证与明细项之和完全匹配（delta=0），无数字不一致风险。",
-        "evidence": "quality.issues[1].level: info; numeric_total_verified: table_index=0, column_index=1 expected_total=25721.0 computed_total=25721.0 delta=0.0; column_index=2 expected_total=23804.2 computed_total=23804.2 delta=0.0"
-      },
-      {
-        "level": "warning",
-        "message": "异常提示字段虽注明'合计行需要与明细项重新核验'，但实际验算结果一致，提示可能为保守预设；建议后续处理时仍保留该提醒以防结构性变更。",
-        "evidence": "key_value_examples中异常提示内容与quality.issues不一致；markdown_preview中也包含该提示"
-      },
-      {
-        "level": "info",
-        "message": "表格仅包含5个明细行和1个合计行，变动率合计行未做与加权平均值的对比，仅提取原始值。",
-        "evidence": "numeric_fact_examples中合计行的变动率为8.05%，但明细项变动率分别为8.05%,6.43%,4.29%,2.77%,15.32%，合计行的变动率不简单等于明细项平均值"
-      }
-    ],
-    "recovery_suggestions": [
-      "若未来遇到与当前验证不一致的合计行（delta非零），应自动回退至原始表格图片或HTML源码重新解析，并触发人工复核流程",
-      "对于文档级溯源（无page_indices），建议在输出时增加文档整体标识符（如文件名哈希），便于后续回溯",
-      "建议在下一次解析中增加对变动率合计行的独立验算（例如加权平均值与表格值的比较），以进一步降低幻觉风险",
-      "若OCR输入出现跨列截断，应在schema中加入'截断标记'字段，并由后处理程序做边缘检测"
-    ],
-    "reasoning_content": "我们被要求输出严格的JSON，不要包含markdown fences。任务是对给定的财务报告HTML解析结果进行分析，给出task_understanding, execution_plan, target_schema, verification_focus, risk_findings, recovery_suggestions。\n\n注意：用户指定了HTML input由native-html-extractor解析，不是MinerU CLI/API。质量检查issues有两个info级别的，没有error。所以不要输出error级风险。\n\n内容总结：有一个表格，有合计行被验证正确（delta=0），但提示中强调合计行需要重新核验。实际上质量检查显示total verified，没有mismatch。所以应该是正确的。但任务要求“检查合计行”，且异常提示说需要重新核验，我们可以在风险中作为warning但基于事实没有错误，所以可以给info或warning。\n\n根据schema：risk_findings level只能是info|warning|error。没有error级问题。\n\n我们需要提取：报告日期（2026-04-30）、公司名称（华东制造有限公司）、关键数字（表格中的五个明细项目和合计），合计行检查（已验证正确）。\n\n目标schema：field_name -> description。建议包括：报告日期、公司名称、项目、2026Q1、2025Q4、变动率、合计项、总体验证状态等。\n\nverification_focus: 需包括数字一致性、合计行验证、provenance信息等。\n\nrecovery_suggestions: 因为无错误，可以建议后续扩展等。\n\n注意：必须严格遵循required_json_schema，每个字段都要有。\n\n让我们构造。",
-    "enabled": true,
-    "status": "completed"
-  },
-  "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\html\\case_1_financial_report.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\html\\case_1_financial_report_content_list.json",
-    "middle_json_path": null,
-    "model_json_path": null,
-    "layout_pdf_path": null,
-    "span_pdf_path": null,
-    "origin_pdf_path": null,
-    "image_dir": null
-  },
-  "trace_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\summary.md",
   "recovery_decision": {
     "decision": "accept",
     "actions": [
@@ -387,8 +498,8 @@
     "attempts": [
       {
         "name": "initial",
-        "backend": "recorded",
-        "method": "recorded",
+        "backend": "pipeline",
+        "method": "auto",
         "quality_status": "pass",
         "score": 100,
         "issue_codes": [
@@ -397,8 +508,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\html\\case_1_financial_report.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\html\\case_1_financial_report_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\html\\case_1_financial_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\html\\case_1_financial_report_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -408,5 +519,303 @@
         }
       }
     ]
-  }
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 3,
+      "by_type": {
+        "text": 2,
+        "table": 1
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": true,
+    "pre_execution_plan": {
+      "task_understanding": "Parse financial report HTML to extract report date, company name, and total numbers; validate table totals and provide verifiable evidence using LLM pre-scheduling and review.",
+      "recommended_profile": "financial_report",
+      "recommended_runner": "cli",
+      "recommended_backend": "pipeline",
+      "recommended_method": "auto",
+      "recommended_lang": "ch",
+      "execution_plan": [
+        "Load HTML file via CLI runner with pipeline backend",
+        "Extract report_date, company_name, and numeric totals using HTML structure and regex patterns",
+        "Validate extracted table totals by summing individual line items and comparing to reported totals",
+        "Generate verifiable evidence including source snippets and calculations"
+      ],
+      "target_schema": {
+        "report_date": "Date of the financial report (e.g., 2023-12-31)",
+        "company_name": "Name of the company as stated in the report",
+        "total_numbers": "Array of numeric totals from financial statements (e.g., total assets, total liabilities, net income)"
+      },
+      "verification_focus": [
+        "Ensure report_date is a valid date format",
+        "Verify company_name matches known legal entity names",
+        "Confirm extracted total_numbers match computed sums from line items",
+        "Cross-check table structure for consistency"
+      ],
+      "recovery_policy": [
+        "If extraction fails, retry with method: ocr (in case HTML contains embedded scanned images)",
+        "If validation mismatches, flag for manual review with evidence provided"
+      ],
+      "confidence": 0.9,
+      "llm_usage": {
+        "provider": "modelscope",
+        "model": "deepseek-ai/DeepSeek-V4-Flash",
+        "usage": {
+          "prompt_tokens": 407,
+          "completion_tokens": 997,
+          "total_tokens": 1404,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "cost_estimate": {
+          "configured": false,
+          "currency": "USD",
+          "estimated_cost": null,
+          "input_usd_per_million_tokens": null,
+          "output_usd_per_million_tokens": null,
+          "note": "Set provider or generic *_USD_PER_MILLION_TOKENS environment variables to compute cost."
+        }
+      },
+      "reasoning_content": "We are given: task description, input metadata, inferred_profile=financial_report, requested_profile=financial_report, requested_backend=pipeline, requested_method=auto, requested_lang=ch, current_runner=cli. We need to output JSON according to the schema.\n\nThe task: \"启用大模型预调度和复核，解析财报 HTML，抽取报告日期、公司名称、合计数字，检查表格总计并给出可验证证据。\" This is in Chinese, but we understand: enable LLM pre-scheduling and review, parse financial report HTML, extract report date, company name, total numbers, check table totals and give verifiable evidence.\n\nInput metadata: filename=case_1_financial_report.html, .html, size 1375 bytes, is_native_extractor_input=true. So it's a small HTML file. It's a financial report HTML. Likely not scanned, but HTML. So method could be txt or auto. But requested method is auto. Since it's HTML, auto should be fine. profile is financial_report. runner: cli is fine. backend: pipeline is requested. lang: ch (Chinese).\n\nWe need to generate an execution plan, target schema, verification focus, recovery policy, and confidence.\n\nFor financial report, typical fields: report_date, company_name, total_numbers (maybe total assets, etc.). We need to extract those and validate table totals.\n\nExecution plan: steps might include:\n1. Parse HTML using pipeline backend.\n2. Extract structured data: report_date, company_name, numeric totals.\n3. Validate table totals (summation checks).\n4. Provide verifiable evidence (e.g., line items).\n\nTarget schema: we need to define fields. For example: report_date, company_name, total_assets (or total_numbers as array?), but the schema expects field_name with description. We can define multiple fields. But schema shows \"field_name\": \"description\". So we can have an object with keys being field names and values being descriptions. Alternatively, we can output an array of such objects? The required_json_schema shows {\"field_name\": \"description\"} which implies a single field object, but we can have multiple fields by having multiple key-value pairs. Let's interpret as an object mapping field names to descriptions. So like: {\"report_date\": \"Date of the financial report\", \"company_name\": \"Name of the company\", \"total_numbers\": \"Aggregated numerical totals from financial statements\"}\n\nVerification focus: list checks like \"Ensure report_date is a valid date\", \"Company name matches known entities\", \"Table totals sum correctly\".\n\nRecovery policy: if extraction fails, retry with OCR? But HTML is fine. If table sum mismatch, maybe flag for manual review. So actions: \"Retry extraction with OCR if text extraction incomplete\", \"Flag for manual review if totals mismatch\".\n\nConfidence: high because HTML and small size, but we need to be cautious. Probably 0.9.\n\nNow, ensure we only use method values from auto, ocr, txt. We'll keep auto as requested.\n\nOutput must be strict JSON only. No markdown fences.\n\nLet's construct JSON.",
+      "status": "completed",
+      "enabled": true
+    },
+    "execution_control": {
+      "llm_preplan_enabled": true,
+      "requested": {
+        "profile": "financial_report",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch"
+      },
+      "initial": {
+        "profile": "financial_report",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch",
+        "runner": "native"
+      },
+      "resolved": {
+        "profile": "financial_report",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch",
+        "runner": "native"
+      },
+      "planning_rationale": {
+        "source": "llm_preplan+rules",
+        "file_family": "native_office_or_html",
+        "profile_reason": "financial keywords or explicit profile require table and numeric consistency checks",
+        "runner_reason": "HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU",
+        "backend_reason": "backend=pipeline is used for MinerU parsing when the selected runner calls MinerU",
+        "method_reason": "method=auto balances automatic parsing with OCR fallback when quality gates require it",
+        "lang_reason": "lang=ch is passed to MinerU or recorded for native extraction audit",
+        "recovery_policy": [
+          "text_cleanup if mojibake or encoding noise is detected",
+          "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+          "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+          "manual_numeric_review when subtotal/total consistency checks fail"
+        ]
+      },
+      "runner_class": "MinerURunner",
+      "applied": [],
+      "ignored": [
+        {
+          "field": "backend",
+          "recommended": "pipeline",
+          "current": "pipeline",
+          "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+        },
+        {
+          "field": "method",
+          "recommended": "auto",
+          "current": "auto",
+          "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+        }
+      ],
+      "llm_preplan_status": "completed",
+      "llm_recommendation": {
+        "profile": "financial_report",
+        "runner": "cli",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch",
+        "confidence": 0.9
+      }
+    },
+    "post_parse_analysis": {
+      "task_understanding": "用户要求使用大模型预调度和复核机制，解析财报HTML文档，提取报告日期、公司名称和合计数字，验证表格总计的准确性，并提供可追溯的证据。输入来源是原生HTML（通过本地HTML提取器解析，非MinerU CLI/API），内容为单页财报，包含一个表格和元数据。当前已有提取结果，但需要LLM介入进行预调度（可能指任务分配）和复核（验证提取质量），确保数值一致性。任务核心是利用结构化数据验证表格合计行与明细行之和是否匹配。",
+      "execution_plan": [
+        "1. 确认输入类型为HTML，且由原生HTML提取器处理，非MinerU CLI/API。",
+        "2. 解析HTML内容，识别报告日期、公司名称、报表口径等元数据键值对。",
+        "3. 定位表格区域，解析表头（项目、2026Q1、2025Q4、变动率）与各行数据。",
+        "4. 提取合计行的数值（25,721.00 和 23,804.20）。",
+        "5. 分别对2026Q1和2025Q4列，从明细行（营业收入、营业成本、销售费用、管理费用、利润总额）求和，并与合计行比较。",
+        "6. 若一致，记录验证通过证据（来源行号、计算过程、delta=0）。",
+        "7. 若不一致，标记风险并生成计算差异报告。",
+        "8. 组织最终输出：报告日期、公司名称、合计数字、验证结果、证据切片。"
+      ],
+      "target_schema": {
+        "report_date": "财报报告日期，格式为YYYY-MM-DD，如2026-04-30。",
+        "company_name": "公司全称，如华东制造有限公司。",
+        "total_2026Q1": "2026年一季度的合计数字，单位万元，提取自合计行的第2列。",
+        "total_2025Q4": "2025年四季度的合计数字，单位万元，提取自合计行的第3列。",
+        "total_verification": "布尔值，指示提取的合计是否与明细行求和一致。",
+        "verification_details": "验证详细数据，包括列索引、期望值、计算值、差值、参与求值的行数。"
+      },
+      "verification_focus": [
+        "确认合计行中的数值是否等于前五行（营业收入、营业成本、销售费用、管理费用、利润总额）对应列数值之和",
+        "检查数值格式是否正确（千位分隔符，小数点后两位）",
+        "验证报告日期和公司名称是否从文本中正确提取",
+        "确认未将变动率列误计入数值验证",
+        "核实没有遗漏或重复的行（如标题行不影响合计）"
+      ],
+      "risk_findings": [
+        {
+          "level": "info",
+          "message": "文档级别来源：原生HTML输入只有文档级元数据，无页面级来源，可能导致跨页定位困难。",
+          "evidence": "content_summary.provenance_level = 'document', page_count = 0, item_count = 8, source_counts = {'html': 8}"
+        },
+        {
+          "level": "info",
+          "message": "数字总计已验证：合计行与明细行之和完全匹配，无差异。",
+          "evidence": "quality.issues[1].evidence: table_index=0, row_index=5, verified columns: col1 expected 25721.0 computed 25721.0 delta=0.0, col2 expected 23804.2 computed 23804.2 delta=0.0, mismatches=[], source_value_count=5"
+        }
+      ],
+      "recovery_suggestions": [
+        "若合计验证失败，检查明细行是否全部包含在求和范围内（如表格外是否有额外行）。",
+        "若存在空值或非数字单元格，应标记为缺失并排除出求和。",
+        "当文档为多页时，建议使用页面级来源追踪，避免行号混淆。",
+        "可增加交叉验证，使用其他结构性来源（如JSON-LD）的数字作为参考。",
+        "对于非标准表格（如跨列合并），需在提取前进行列对齐校准。"
+      ],
+      "llm_usage": {
+        "provider": "modelscope",
+        "model": "deepseek-ai/DeepSeek-V4-Flash",
+        "usage": {
+          "prompt_tokens": 1685,
+          "completion_tokens": 1220,
+          "total_tokens": 2905,
+          "cached_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "cost_estimate": {
+          "configured": false,
+          "currency": "USD",
+          "estimated_cost": null,
+          "input_usd_per_million_tokens": null,
+          "output_usd_per_million_tokens": null,
+          "note": "Set provider or generic *_USD_PER_MILLION_TOKENS environment variables to compute cost."
+        }
+      },
+      "reasoning_content": "我们被要求分析任务，细化执行计划，提出目标提取模式，并审查当前结构化提取的风险和恢复行动。严格JSON输出。内容摘要显示是HTML输入，被本地HTML提取器解析，不是MinerU CLI/API。质量检查中有两条信息级别的问题：文档级来源和数字总计已验证（没有不匹配）。任务：启用大模型预调度和复核，解析财报HTML，抽取报告日期、公司名称、合计数字，检查表格总计并给出可验证证据。当前计划已经包含一些LLM预计划步骤。我们需要输出符合要求的JSON。\n\n我们需要生成：\n- task_understanding: 对任务的理解，包括工具来源等。\n- execution_plan: 细化的步骤字符串列表。\n- target_schema: 对象，字段名映射到描述。需要包含report_date, company_name, total_numbers等。还有合计数字。\n- verification_focus: 检查列表。\n- risk_findings: 级别（info|warning|error），消息，证据。根据quality.issues只有info级别，没有error。所以风险只能是info。evidence可以从现有issues取。\n- recovery_suggestions: 操作字符串列表。\n\n注意：parser_context警告不要描述为MinerU解析。内容摘要source_counts仅有html，所以是native HTML extractor。\n\n我们构建JSON。",
+      "status": "completed"
+    },
+    "task_understanding": "用户要求使用大模型预调度和复核机制，解析财报HTML文档，提取报告日期、公司名称和合计数字，验证表格总计的准确性，并提供可追溯的证据。输入来源是原生HTML（通过本地HTML提取器解析，非MinerU CLI/API），内容为单页财报，包含一个表格和元数据。当前已有提取结果，但需要LLM介入进行预调度（可能指任务分配）和复核（验证提取质量），确保数值一致性。任务核心是利用结构化数据验证表格合计行与明细行之和是否匹配。",
+    "execution_plan": [
+      "1. 确认输入类型为HTML，且由原生HTML提取器处理，非MinerU CLI/API。",
+      "2. 解析HTML内容，识别报告日期、公司名称、报表口径等元数据键值对。",
+      "3. 定位表格区域，解析表头（项目、2026Q1、2025Q4、变动率）与各行数据。",
+      "4. 提取合计行的数值（25,721.00 和 23,804.20）。",
+      "5. 分别对2026Q1和2025Q4列，从明细行（营业收入、营业成本、销售费用、管理费用、利润总额）求和，并与合计行比较。",
+      "6. 若一致，记录验证通过证据（来源行号、计算过程、delta=0）。",
+      "7. 若不一致，标记风险并生成计算差异报告。",
+      "8. 组织最终输出：报告日期、公司名称、合计数字、验证结果、证据切片。"
+    ],
+    "target_schema": {
+      "report_date": "财报报告日期，格式为YYYY-MM-DD，如2026-04-30。",
+      "company_name": "公司全称，如华东制造有限公司。",
+      "total_2026Q1": "2026年一季度的合计数字，单位万元，提取自合计行的第2列。",
+      "total_2025Q4": "2025年四季度的合计数字，单位万元，提取自合计行的第3列。",
+      "total_verification": "布尔值，指示提取的合计是否与明细行求和一致。",
+      "verification_details": "验证详细数据，包括列索引、期望值、计算值、差值、参与求值的行数。"
+    },
+    "verification_focus": [
+      "确认合计行中的数值是否等于前五行（营业收入、营业成本、销售费用、管理费用、利润总额）对应列数值之和",
+      "检查数值格式是否正确（千位分隔符，小数点后两位）",
+      "验证报告日期和公司名称是否从文本中正确提取",
+      "确认未将变动率列误计入数值验证",
+      "核实没有遗漏或重复的行（如标题行不影响合计）"
+    ],
+    "risk_findings": [
+      {
+        "level": "info",
+        "message": "文档级别来源：原生HTML输入只有文档级元数据，无页面级来源，可能导致跨页定位困难。",
+        "evidence": "content_summary.provenance_level = 'document', page_count = 0, item_count = 8, source_counts = {'html': 8}"
+      },
+      {
+        "level": "info",
+        "message": "数字总计已验证：合计行与明细行之和完全匹配，无差异。",
+        "evidence": "quality.issues[1].evidence: table_index=0, row_index=5, verified columns: col1 expected 25721.0 computed 25721.0 delta=0.0, col2 expected 23804.2 computed 23804.2 delta=0.0, mismatches=[], source_value_count=5"
+      }
+    ],
+    "recovery_suggestions": [
+      "若合计验证失败，检查明细行是否全部包含在求和范围内（如表格外是否有额外行）。",
+      "若存在空值或非数字单元格，应标记为缺失并排除出求和。",
+      "当文档为多页时，建议使用页面级来源追踪，避免行号混淆。",
+      "可增加交叉验证，使用其他结构性来源（如JSON-LD）的数字作为参考。",
+      "对于非标准表格（如跨列合并），需在提取前进行列对齐校准。"
+    ],
+    "llm_usage": {
+      "provider": "modelscope",
+      "model": "deepseek-ai/DeepSeek-V4-Flash",
+      "usage": {
+        "prompt_tokens": 1685,
+        "completion_tokens": 1220,
+        "total_tokens": 2905,
+        "cached_tokens": 0,
+        "reasoning_tokens": 0
+      },
+      "cost_estimate": {
+        "configured": false,
+        "currency": "USD",
+        "estimated_cost": null,
+        "input_usd_per_million_tokens": null,
+        "output_usd_per_million_tokens": null,
+        "note": "Set provider or generic *_USD_PER_MILLION_TOKENS environment variables to compute cost."
+      }
+    },
+    "reasoning_content": "我们被要求分析任务，细化执行计划，提出目标提取模式，并审查当前结构化提取的风险和恢复行动。严格JSON输出。内容摘要显示是HTML输入，被本地HTML提取器解析，不是MinerU CLI/API。质量检查中有两条信息级别的问题：文档级来源和数字总计已验证（没有不匹配）。任务：启用大模型预调度和复核，解析财报HTML，抽取报告日期、公司名称、合计数字，检查表格总计并给出可验证证据。当前计划已经包含一些LLM预计划步骤。我们需要输出符合要求的JSON。\n\n我们需要生成：\n- task_understanding: 对任务的理解，包括工具来源等。\n- execution_plan: 细化的步骤字符串列表。\n- target_schema: 对象，字段名映射到描述。需要包含report_date, company_name, total_numbers等。还有合计数字。\n- verification_focus: 检查列表。\n- risk_findings: 级别（info|warning|error），消息，证据。根据quality.issues只有info级别，没有error。所以风险只能是info。evidence可以从现有issues取。\n- recovery_suggestions: 操作字符串列表。\n\n注意：parser_context警告不要描述为MinerU解析。内容摘要source_counts仅有html，所以是native HTML extractor。\n\n我们构建JSON。",
+    "status": "completed",
+    "usage_summary": {
+      "tool_call_count": 2,
+      "prompt_tokens": 2092,
+      "completion_tokens": 2217,
+      "total_tokens": 4309,
+      "cost_configured_calls": 0,
+      "estimated_cost_usd": null,
+      "providers": [
+        {
+          "provider": "modelscope",
+          "model": "deepseek-ai/DeepSeek-V4-Flash"
+        },
+        {
+          "provider": "modelscope",
+          "model": "deepseek-ai/DeepSeek-V4-Flash"
+        }
+      ],
+      "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+    }
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\html\\case_1_financial_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\html\\case_1_financial_report_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\summary.md"
 }

@@ -1,21 +1,97 @@
 {
-  "created_at": "2026-05-23T03:16:11.576728+08:00",
+  "created_at": "2026-05-23T18:11:47.730696+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-23T03:15:58.790971+08:00",
-      "ended_at": "2026-05-23T03:15:58.790971+08:00",
+      "started_at": "2026-05-23T18:11:25.468101+00:00",
+      "ended_at": "2026-05-23T18:11:25.468101+00:00",
       "detail": {
-        "task": "解析财报密集数字表格，抽取报告日期、公司名称、关键数字、检查合计行，并由大模型给出复核计划、目标schema和风险恢复建议。注意：HTML fixture 由本地 HTML 结构化模块解析，不要写成 MinerU CLI/API 已解析；没有质量错误时不要输出 error 级风险。",
+        "task": "启用大模型预调度和复核，解析财报 HTML，抽取报告日期、公司名称、合计数字，检查表格总计并给出可验证证据。",
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html"
+      }
+    },
+    {
+      "name": "llm_pre_execution_planning",
+      "status": "completed",
+      "started_at": "2026-05-23T18:11:25.468101+00:00",
+      "ended_at": "2026-05-23T18:11:34.002914+00:00",
+      "detail": {
+        "requested_profile": "financial_report",
+        "inferred_profile": "financial_report",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch",
+        "execution_control": {
+          "llm_preplan_enabled": true,
+          "requested": {
+            "profile": "financial_report",
+            "backend": "pipeline",
+            "method": "auto",
+            "lang": "ch"
+          },
+          "initial": {
+            "profile": "financial_report",
+            "backend": "pipeline",
+            "method": "auto",
+            "lang": "ch",
+            "runner": "native"
+          },
+          "resolved": {
+            "profile": "financial_report",
+            "backend": "pipeline",
+            "method": "auto",
+            "lang": "ch",
+            "runner": "native"
+          },
+          "planning_rationale": {
+            "source": "llm_preplan+rules",
+            "file_family": "native_office_or_html",
+            "profile_reason": "financial keywords or explicit profile require table and numeric consistency checks",
+            "runner_reason": "HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU",
+            "backend_reason": "backend=pipeline is used for MinerU parsing when the selected runner calls MinerU",
+            "method_reason": "method=auto balances automatic parsing with OCR fallback when quality gates require it",
+            "lang_reason": "lang=ch is passed to MinerU or recorded for native extraction audit",
+            "recovery_policy": [
+              "text_cleanup if mojibake or encoding noise is detected",
+              "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+              "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+              "manual_numeric_review when subtotal/total consistency checks fail"
+            ]
+          },
+          "runner_class": "MinerURunner",
+          "applied": [],
+          "ignored": [
+            {
+              "field": "backend",
+              "recommended": "pipeline",
+              "current": "pipeline",
+              "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+            },
+            {
+              "field": "method",
+              "recommended": "auto",
+              "current": "auto",
+              "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+            }
+          ],
+          "llm_preplan_status": "completed",
+          "llm_recommendation": {
+            "profile": "financial_report",
+            "runner": "cli",
+            "backend": "pipeline",
+            "method": "auto",
+            "lang": "ch",
+            "confidence": 0.9
+          }
+        }
       }
     },
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-23T03:15:58.790971+08:00",
-      "ended_at": "2026-05-23T03:15:58.861616+08:00",
+      "started_at": "2026-05-23T18:11:34.002914+00:00",
+      "ended_at": "2026-05-23T18:11:34.068103+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html"
       }
@@ -23,8 +99,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-23T03:15:58.861616+08:00",
-      "ended_at": "2026-05-23T03:15:58.861616+08:00",
+      "started_at": "2026-05-23T18:11:34.068103+00:00",
+      "ended_at": "2026-05-23T18:11:34.069134+00:00",
       "detail": {
         "item_count": 8,
         "page_count": 0,
@@ -46,17 +122,27 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-23T03:15:58.861616+08:00",
-      "ended_at": "2026-05-23T03:15:58.862133+08:00",
+      "started_at": "2026-05-23T18:11:34.069134+00:00",
+      "ended_at": "2026-05-23T18:11:34.069134+00:00",
       "detail": {
         "profile": "financial_report"
       }
     },
     {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T18:11:34.069134+00:00",
+      "ended_at": "2026-05-23T18:11:34.069134+00:00",
+      "detail": {
+        "quality_status": "pass",
+        "selected_attempt": "initial"
+      }
+    },
+    {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-23T03:15:58.862133+08:00",
-      "ended_at": "2026-05-23T03:15:58.865182+08:00",
+      "started_at": "2026-05-23T18:11:34.069134+00:00",
+      "ended_at": "2026-05-23T18:11:34.072102+00:00",
       "detail": {
         "chunks_count": 3,
         "by_type": {
@@ -66,20 +152,53 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\retrieval\\retrieval_quality.json"
       }
     },
     {
       "name": "llm_agent_analysis",
       "status": "completed",
-      "started_at": "2026-05-23T03:15:58.865182+08:00",
-      "ended_at": "2026-05-23T03:16:11.57349+08:00",
+      "started_at": "2026-05-23T18:11:34.072102+00:00",
+      "ended_at": "2026-05-23T18:11:47.725244+00:00",
       "detail": {}
     }
   ],
   "tool_calls": [
+    {
+      "tool": "modelscope-llm-preplan",
+      "command": [
+        "modelscope-chat-completions",
+        "deepseek-ai/DeepSeek-V4-Flash",
+        "pre-execution"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 8.534,
+      "stdout_tail": "{\n  \"provider\": \"modelscope\",\n  \"model\": \"deepseek-ai/DeepSeek-V4-Flash\",\n  \"base_url\": \"https://api-inference.modelscope.cn/v1\",\n  \"preplan\": {\n    \"status\": \"completed\",\n    \"recommended_profile\": \"financial_report\",\n    \"recommended_runner\": \"cli\",\n    \"recommended_backend\": \"pipeline\",\n    \"recommended_method\": \"auto\",\n    \"recommended_lang\": \"ch\",\n    \"execution_plan\": [\n      \"Load HTML file via CLI runner with pipeline backend\",\n      \"Extract report_date, company_name, and numeric totals using HTML structure and regex patterns\",\n      \"Validate extracted table totals by summing individual line items and comparing to reported totals\",\n      \"Generate verifiable evidence including source snippets and calculations\"\n    ],\n    \"target_schema_keys\": [\n      \"report_date\",\n      \"company_name\",\n      \"total_numbers\"\n    ],\n    \"confidence\": 0.9\n  }\n}",
+      "stderr_tail": "",
+      "metadata": {
+        "llm_usage": {
+          "provider": "modelscope",
+          "model": "deepseek-ai/DeepSeek-V4-Flash",
+          "usage": {
+            "prompt_tokens": 407,
+            "completion_tokens": 997,
+            "total_tokens": 1404,
+            "cached_tokens": 0,
+            "reasoning_tokens": 0
+          },
+          "cost_estimate": {
+            "configured": false,
+            "currency": "USD",
+            "estimated_cost": null,
+            "input_usd_per_million_tokens": null,
+            "output_usd_per_million_tokens": null,
+            "note": "Set provider or generic *_USD_PER_MILLION_TOKENS environment variables to compute cost."
+          }
+        }
+      }
+    },
     {
       "tool": "modelscope-llm",
       "command": [
@@ -87,14 +206,36 @@
         "deepseek-ai/DeepSeek-V4-Flash"
       ],
       "status": "completed",
-      "elapsed_seconds": 12.709,
-      "stdout_tail": "{\n  \"provider\": \"modelscope\",\n  \"model\": \"deepseek-ai/DeepSeek-V4-Flash\",\n  \"base_url\": \"https://api-inference.modelscope.cn/v1\",\n  \"analysis\": {\n    \"status\": \"completed\",\n    \"task_understanding\": \"解析一份由本地HTML结构化模块（native-html-extractor）提取的财务报告HTML fixture，报告为华东制造有限公司2026年一季度经营报表。任务包括：抽取报告日期、公司名称、表中关键数字（营业收入、营业成本、销售费用、管理费用、利润总额、合计项），验证合计行数值与明细项之和是否一致，并输出复核计划、目标提取schema、风险发现和恢复建议。输入为文档级溯源（无页面级），质量检查无错误，合计行已验证一致。\",\n    \"execution_plan\": [\n      \"确认输入来源为native-html-extractor，标注解析器类型并避免误写为MinerU CLI/API\",\n      \"从markdown_preview和section_titles抽取报告日期、公司名称\",\n      \"提取表格中所有数值行，包括明细项和合计行，记录每行每个数值单元格\",\n      \"对合计行进行独立性验算：将前5个明细项的2026Q1列和2025Q4列分别求和，与合计行对应数值比较（已由quality.issues验证一致，delta=0）\",\n      \"构建结构化schema，包含字段：报告日期、公司名称、项目、2026Q1值、2025Q4值、变动率、合计验证状态\",\n      \"生成验证重点清单，涵盖数字一致性、合计行正确性、溯源完整性\",\n      \"基于当前无质量错误的事实，输出info或warning级别的风险发现，不输出error级别\",\n      \"提出恢复建议，针对未来可能出现的OCR跨列、行数不匹配等场景准备预案\"\n    ],\n    \"risk_findings\": [\n      {\n        \"level\": \"info\",\n        \"message\": \"输入为HTML fixture，解析器为native-html-extractor，非MinerU CLI/API，溯源为文档级而非页面级。\",\n        \"evidence\": \"parser_context.actual_parser: native-html-extractor; source_counts.html: 8; provenance_level: document\"\n      },\n      {\n        \"level\": \"info\",\n        \"message\": \"合计行数值已验证与明细项之和完全匹配（delta=0），无数字不一致风险。\",\n        \"evidence\": \"quality.issues[1].level: info; numeric_total_verified: table_index=0, column_index=1 expected_total=25721.0 computed_total=25721.0 delta=0.0; column_index=2 expected_total=23804.2 computed_total=23804.2 delta=0.0\"\n      },\n      {\n        \"level\": \"warning\",\n        \"message\": \"异常提示字段虽注明'合计行需要与明细项重新核验'，但实际验算结果一致，提示可能为保守预设；建议后续处理时仍保留该提醒以防结构性变更。\",\n        \"evidence\": \"key_value_examples中异常提示内容与quality.issues不一致；markdown_preview中也包含该提示\"\n      },\n      {\n        \"level\": \"info\",\n        \"message\": \"表格仅包含5个明细行和1个合计行，变动率合计行未做与加权平均值的对比，仅提取原始值。\",\n        \"evidence\": \"numeric_fact_examples中合计行的变动率为8.05%，但明细项变动率分别为8.05%,6.43%,4.29%,2.77%,15.32%，合计行的变动率不简单等于明细项平均值\"\n      }\n    ]\n  }\n}",
-      "stderr_tail": ""
+      "elapsed_seconds": 13.654,
+      "stdout_tail": "{\n  \"provider\": \"modelscope\",\n  \"model\": \"deepseek-ai/DeepSeek-V4-Flash\",\n  \"base_url\": \"https://api-inference.modelscope.cn/v1\",\n  \"analysis\": {\n    \"status\": \"completed\",\n    \"task_understanding\": \"用户要求使用大模型预调度和复核机制，解析财报HTML文档，提取报告日期、公司名称和合计数字，验证表格总计的准确性，并提供可追溯的证据。输入来源是原生HTML（通过本地HTML提取器解析，非MinerU CLI/API），内容为单页财报，包含一个表格和元数据。当前已有提取结果，但需要LLM介入进行预调度（可能指任务分配）和复核（验证提取质量），确保数值一致性。任务核心是利用结构化数据验证表格合计行与明细行之和是否匹配。\",\n    \"execution_plan\": [\n      \"1. 确认输入类型为HTML，且由原生HTML提取器处理，非MinerU CLI/API。\",\n      \"2. 解析HTML内容，识别报告日期、公司名称、报表口径等元数据键值对。\",\n      \"3. 定位表格区域，解析表头（项目、2026Q1、2025Q4、变动率）与各行数据。\",\n      \"4. 提取合计行的数值（25,721.00 和 23,804.20）。\",\n      \"5. 分别对2026Q1和2025Q4列，从明细行（营业收入、营业成本、销售费用、管理费用、利润总额）求和，并与合计行比较。\",\n      \"6. 若一致，记录验证通过证据（来源行号、计算过程、delta=0）。\",\n      \"7. 若不一致，标记风险并生成计算差异报告。\",\n      \"8. 组织最终输出：报告日期、公司名称、合计数字、验证结果、证据切片。\"\n    ],\n    \"risk_findings\": [\n      {\n        \"level\": \"info\",\n        \"message\": \"文档级别来源：原生HTML输入只有文档级元数据，无页面级来源，可能导致跨页定位困难。\",\n        \"evidence\": \"content_summary.provenance_level = 'document', page_count = 0, item_count = 8, source_counts = {'html': 8}\"\n      },\n      {\n        \"level\": \"info\",\n        \"message\": \"数字总计已验证：合计行与明细行之和完全匹配，无差异。\",\n        \"evidence\": \"quality.issues[1].evidence: table_index=0, row_index=5, verified columns: col1 expected 25721.0 computed 25721.0 delta=0.0, col2 expected 23804.2 computed 23804.2 delta=0.0, mismatches=[], source_value_count=5\"\n      }\n    ]\n  }\n}",
+      "stderr_tail": "",
+      "metadata": {
+        "llm_usage": {
+          "provider": "modelscope",
+          "model": "deepseek-ai/DeepSeek-V4-Flash",
+          "usage": {
+            "prompt_tokens": 1685,
+            "completion_tokens": 1220,
+            "total_tokens": 2905,
+            "cached_tokens": 0,
+            "reasoning_tokens": 0
+          },
+          "cost_estimate": {
+            "configured": false,
+            "currency": "USD",
+            "estimated_cost": null,
+            "input_usd_per_million_tokens": null,
+            "output_usd_per_million_tokens": null,
+            "note": "Set provider or generic *_USD_PER_MILLION_TOKENS environment variables to compute cost."
+          }
+        }
+      }
     }
   ],
-  "run_id": "42f057700d90",
-  "task": "解析财报密集数字表格，抽取报告日期、公司名称、关键数字、检查合计行，并由大模型给出复核计划、目标schema和风险恢复建议。注意：HTML fixture 由本地 HTML 结构化模块解析，不要写成 MinerU CLI/API 已解析；没有质量错误时不要输出 error 级风险。",
+  "run_id": "293dc94f8705",
+  "task": "启用大模型预调度和复核，解析财报 HTML，抽取报告日期、公司名称、合计数字，检查表格总计并给出可验证证据。",
   "profile": "financial_report",
-  "result_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\summary.md"
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\live_llm_cases\\293dc94f8705\\summary.md"
 }

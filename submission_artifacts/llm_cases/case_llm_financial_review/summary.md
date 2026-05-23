@@ -1,7 +1,10 @@
-# MinerU Data Agent Run 42f057700d90
+# MinerU Data Agent Run 293dc94f8705
 
-- Task: 解析财报密集数字表格，抽取报告日期、公司名称、关键数字、检查合计行，并由大模型给出复核计划、目标schema和风险恢复建议。注意：HTML fixture 由本地 HTML 结构化模块解析，不要写成 MinerU CLI/API 已解析；没有质量错误时不要输出 error 级风险。
+- Task: 启用大模型预调度和复核，解析财报 HTML，抽取报告日期、公司名称、合计数字，检查表格总计并给出可验证证据。
 - Profile: financial_report
+- Execution method: auto
+- Execution backend: pipeline
+- LLM preplan applied changes: 0
 - Input: `<PROJECT_ROOT>\examples\cases\case_1_financial_report.html`
 - Quality: pass (100/100)
 - Content blocks: 8
@@ -10,12 +13,15 @@
 - Sections: 2
 - Tables: 1
 - Key-values: 5
+- Field evidence records: 5
 - Numeric facts: 7
 - Dates detected: 1
 - Recommendation signals: 2
 - Anomaly signals: 3
 - Retrieval chunks: 3
 - Recovery decision: accept
+- Recovery selected attempt: initial
+- Recovery attempts: 1
 - LLM analysis: enabled/completed
 
 ## Plan
@@ -26,20 +32,40 @@
 5. Run quality checks and produce traceable logs
 6. Prioritize dense table extraction and numeric consistency checks
 7. Flag subtotal/total rows and suspicious numeric cells
+8. LLM preplan: Load HTML file via CLI runner with pipeline backend
+9. LLM preplan: Extract report_date, company_name, and numeric totals using HTML structure and regex patterns
+10. LLM preplan: Validate extracted table totals by summing individual line items and comparing to reported totals
+11. LLM preplan: Generate verifiable evidence including source snippets and calculations
+
+## Planning Rationale
+- financial keywords or explicit profile require table and numeric consistency checks
+- HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU
+- backend=pipeline is used for MinerU parsing when the selected runner calls MinerU
+- method=auto balances automatic parsing with OCR fallback when quality gates require it
+- lang=ch is passed to MinerU or recorded for native extraction audit
+- Recovery policy:
+  - text_cleanup if mojibake or encoding noise is detected
+  - ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues
+  - cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available
+  - manual_numeric_review when subtotal/total consistency checks fail
 
 ## LLM Agent Analysis
 
-解析一份由本地HTML结构化模块（native-html-extractor）提取的财务报告HTML fixture，报告为华东制造有限公司2026年一季度经营报表。任务包括：抽取报告日期、公司名称、表中关键数字（营业收入、营业成本、销售费用、管理费用、利润总额、合计项），验证合计行数值与明细项之和是否一致，并输出复核计划、目标提取schema、风险发现和恢复建议。输入为文档级溯源（无页面级），质量检查无错误，合计行已验证一致。
+Pre-execution control: profile=financial_report, runner=cli, method=auto, backend=pipeline
+
+用户要求使用大模型预调度和复核机制，解析财报HTML文档，提取报告日期、公司名称和合计数字，验证表格总计的准确性，并提供可追溯的证据。输入来源是原生HTML（通过本地HTML提取器解析，非MinerU CLI/API），内容为单页财报，包含一个表格和元数据。当前已有提取结果，但需要LLM介入进行预调度（可能指任务分配）和复核（验证提取质量），确保数值一致性。任务核心是利用结构化数据验证表格合计行与明细行之和是否匹配。
+
+LLM usage: 4309 tokens across 2 call(s); estimated cost=None
 
 Suggested execution plan:
-1. 确认输入来源为native-html-extractor，标注解析器类型并避免误写为MinerU CLI/API
-2. 从markdown_preview和section_titles抽取报告日期、公司名称
-3. 提取表格中所有数值行，包括明细项和合计行，记录每行每个数值单元格
-4. 对合计行进行独立性验算：将前5个明细项的2026Q1列和2025Q4列分别求和，与合计行对应数值比较（已由quality.issues验证一致，delta=0）
-5. 构建结构化schema，包含字段：报告日期、公司名称、项目、2026Q1值、2025Q4值、变动率、合计验证状态
-6. 生成验证重点清单，涵盖数字一致性、合计行正确性、溯源完整性
-7. 基于当前无质量错误的事实，输出info或warning级别的风险发现，不输出error级别
-8. 提出恢复建议，针对未来可能出现的OCR跨列、行数不匹配等场景准备预案
+1. 1. 确认输入类型为HTML，且由原生HTML提取器处理，非MinerU CLI/API。
+2. 2. 解析HTML内容，识别报告日期、公司名称、报表口径等元数据键值对。
+3. 3. 定位表格区域，解析表头（项目、2026Q1、2025Q4、变动率）与各行数据。
+4. 4. 提取合计行的数值（25,721.00 和 23,804.20）。
+5. 5. 分别对2026Q1和2025Q4列，从明细行（营业收入、营业成本、销售费用、管理费用、利润总额）求和，并与合计行比较。
+6. 6. 若一致，记录验证通过证据（来源行号、计算过程、delta=0）。
+7. 7. 若不一致，标记风险并生成计算差异报告。
+8. 8. 组织最终输出：报告日期、公司名称、合计数字、验证结果、证据切片。
 
 ## Extracted Fields
 - 报告日期: 2026-04-30
@@ -47,6 +73,13 @@ Suggested execution plan:
 - 报表口径: 人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。
 - 异常提示: 合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。
 - 处理建议: 将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。
+
+## Field Evidence
+- 报告日期: confidence=0.86, location=3, evidence=报告日期：2026-04-30
+- 公司名称: confidence=0.86, location=5, evidence=公司名称：华东制造有限公司
+- 报表口径: confidence=0.86, location=7, evidence=报表口径：人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。
+- 异常提示: confidence=0.86, location=20, evidence=异常提示：合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。
+- 处理建议: confidence=0.86, location=22, evidence=处理建议：将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。
 
 ## Recommendation Evidence
 - 处理建议: 将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。
@@ -56,8 +89,11 @@ Suggested execution plan:
 - Decision: accept
 - Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit.
 
+Attempts:
+- initial: pass (100/100), selected
+
 ## Issues
-- [info] document_level_provenance: HTML input has document-level provenance rather than page-level provenance.
+- [info] document_level_provenance: Native document input has document-level provenance rather than page-level provenance.
 - [info] numeric_total_verified: A total/subtotal row matched the sum of comparable numeric rows.
 
 ## Markdown Preview

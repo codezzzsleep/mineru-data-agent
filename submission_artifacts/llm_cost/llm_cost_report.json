@@ -1,29 +1,56 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-23T17:59:33Z",
+  "generated_at": "2026-05-23T18:12:17Z",
   "scope": "LLM token and cost audit over saved submission artifacts.",
   "aggregate": {
     "llm_enabled_results": 2,
-    "llm_trace_tool_calls": 3,
-    "tool_calls_with_token_usage": 0,
-    "results_with_token_usage": 0,
-    "prompt_tokens": 0,
-    "completion_tokens": 0,
-    "total_tokens": 0,
+    "llm_trace_tool_calls": 4,
+    "tool_calls_with_token_usage": 2,
+    "results_with_token_usage": 1,
+    "prompt_tokens": 2092,
+    "completion_tokens": 2217,
+    "total_tokens": 4309,
     "cost_configured_tool_calls": 0,
     "estimated_cost_usd": null
   },
   "results": [
     {
       "result_path": "submission_artifacts/llm_cases/case_llm_financial_review/result.json",
-      "run_id": "42f057700d90",
+      "run_id": "293dc94f8705",
       "profile": "financial_report",
       "status": "completed",
-      "usage_summary": {},
-      "usage_item_count": 0,
-      "has_token_usage": false,
+      "usage_summary": {
+        "tool_call_count": 2,
+        "prompt_tokens": 2092,
+        "completion_tokens": 2217,
+        "total_tokens": 4309,
+        "cost_configured_calls": 0,
+        "estimated_cost_usd": null,
+        "providers": [
+          {
+            "provider": "modelscope",
+            "model": "deepseek-ai/DeepSeek-V4-Flash"
+          },
+          {
+            "provider": "modelscope",
+            "model": "deepseek-ai/DeepSeek-V4-Flash"
+          }
+        ],
+        "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+      },
+      "usage_item_count": 2,
+      "has_token_usage": true,
       "has_cost_estimate": false,
-      "providers": []
+      "providers": [
+        {
+          "provider": "modelscope",
+          "model": "deepseek-ai/DeepSeek-V4-Flash"
+        },
+        {
+          "provider": "modelscope",
+          "model": "deepseek-ai/DeepSeek-V4-Flash"
+        }
+      ]
     },
     {
       "result_path": "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json",
@@ -40,14 +67,27 @@
   "trace_tool_calls": [
     {
       "trace_path": "submission_artifacts/llm_cases/case_llm_financial_review/trace.json",
+      "tool": "modelscope-llm-preplan",
+      "status": "completed",
+      "elapsed_seconds": 8.534,
+      "provider": "modelscope",
+      "model": "deepseek-ai/DeepSeek-V4-Flash",
+      "prompt_tokens": 407,
+      "completion_tokens": 997,
+      "total_tokens": 1404,
+      "cost_configured": false,
+      "estimated_cost_usd": null
+    },
+    {
+      "trace_path": "submission_artifacts/llm_cases/case_llm_financial_review/trace.json",
       "tool": "modelscope-llm",
       "status": "completed",
-      "elapsed_seconds": 12.709,
-      "provider": null,
-      "model": null,
-      "prompt_tokens": 0,
-      "completion_tokens": 0,
-      "total_tokens": 0,
+      "elapsed_seconds": 13.654,
+      "provider": "modelscope",
+      "model": "deepseek-ai/DeepSeek-V4-Flash",
+      "prompt_tokens": 1685,
+      "completion_tokens": 1220,
+      "total_tokens": 2905,
       "cost_configured": false,
       "estimated_cost_usd": null
     },

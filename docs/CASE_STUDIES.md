@@ -138,7 +138,7 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 | `public_microsoft_annual_report` | U.S. SEC EDGAR | Microsoft 2024 Annual Report PDF exhibit | 公司、年报标题、财年、Revenue/Cash/Cloud 文本证据 | `pass_with_warnings` 76，48 个 retrieval chunks |
 | `public_cdc_vis_instructions` | Centers for Disease Control and Prevention | VIS 使用说明 PDF | 主题、机构、法律语境、Required Use 文本证据 | `pass_with_warnings` 84，5 个 retrieval chunks |
 
-边界说明：NIST 与 Microsoft 是长文档，当前通过在线 MinerU Agent API 跑前 20 页，`source_metadata.json` 中保留 `page_range`。4 个公开案例都因在线 API 轻量路径缺少页级 provenance 而保留 `no_page_provenance` warning，评审应把它看作外部真实材料兼容性证据，而不是页级审计能力的最终证明。
+边界说明：NIST 与 Microsoft 是长文档，公开真实样本包通过在线 MinerU Agent API 跑前 20 页，`source_metadata.json` 中保留 `page_range`。4 个公开案例都因在线 API 轻量路径缺少页级 provenance 而保留 `no_page_provenance` warning，评审应把它看作外部真实材料兼容性证据，而不是页级审计能力的最终证明。
 
 复跑方式：
 
@@ -146,11 +146,31 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 .\.venv\Scripts\python.exe .\scripts\run_public_real_cases.py
 ```
 
-## 8. LLM-Enabled 财报复核案例
+## 8. 长文档分片执行案例
+
+长文档证据位置：`submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/`
+
+该案例使用 NIST AI RMF 1.0 官方公开 PDF。在线 MinerU Agent API 对单次任务有 20 页上限；直接提交完整 PDF 会返回 `file page count exceeds API limit (20 pages)`。项目因此新增 `scripts/run_long_document_chunks.py`，由 Agent 自动计算页数并拆分 page ranges。本次保存结果为 48 页、3 个分片、3/3 成功、总耗时 42.418 秒、58 个 retrieval chunks。
+
+| Chunk | Pages | Status | Quality | Retrieval chunks | Seconds |
+| --- | --- | --- | --- | ---: | ---: |
+| `p001_020` | 1-20 | completed | `pass_with_warnings` 92 | 23 | 14.387 |
+| `p021_040` | 21-40 | completed | `pass_with_warnings` 92 | 26 | 20.174 |
+| `p041_048` | 41-48 | completed | `pass_with_warnings` 92 | 9 | 7.793 |
+
+复跑方式：
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\run_long_document_chunks.py
+```
+
+边界说明：这是在线 API 长文档分片编排证据，不是本地 MinerU CLI/GPU pages-per-second benchmark，也不是公网生产压测；在线 API 路径仍可能缺少页级 provenance。
+
+## 9. LLM-Enabled 财报复核案例
 
 LLM 案例位置：`submission_artifacts/llm_cases/case_llm_financial_review/`
 
-该案例使用 ModelScope OpenAI-compatible 接口调用 `deepseek-ai/DeepSeek-V4-Flash`。`trace.json` 中记录 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`。
+该案例使用 ModelScope OpenAI-compatible 接口调用 `deepseek-ai/DeepSeek-V4-Flash`。`trace.json` 中记录 `modelscope-llm-preplan completed` 与 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`，`usage_summary.total_tokens=4309`。
 
 LLM 在该案例中的职责是：
 
@@ -163,7 +183,7 @@ LLM 在该案例中的职责是：
 
 当前代码已把 LLM 从单纯解析后复核前移到解析前调度。开启 `--llm deepseek` 或 `--llm modelscope` 时，trace 会新增 `llm_pre_execution_planning`，结果会新增 `execution_control` 和 `llm_analysis.pre_execution_plan`，记录模型建议的 profile、runner、backend、method、语言、目标 schema 和恢复策略；系统只应用安全白名单内且未被用户显式锁定的建议。
 
-## 9. 带标注评测指标
+## 10. 带标注评测指标
 
 评测报告位置：`submission_artifacts/evaluation/`
 
@@ -181,7 +201,7 @@ LLM 在该案例中的职责是：
 
 该评测不是完整 OCR 字符级标注集，但能把关键字段、结构输出和可追溯性变成可复跑指标，补足“只有案例展示、没有指标”的短板。
 
-## 10. 稳定性、耗时与 API 并发 Smoke
+## 11. 稳定性、耗时与 API 并发 Smoke
 
 稳定性报告位置：`submission_artifacts/stability/`
 
@@ -210,13 +230,17 @@ API 并发 smoke 位置：`submission_artifacts/api_load_smoke/`
 
 该报告由 `scripts/run_http_load_test.py --requests 12 --concurrency 6 --endpoint mixed --keep-artifacts` 生成，先访问运行中的 `http://127.0.0.1:8080/health`，再通过真实 TCP loopback 混合调用同步 `/v1/parse` 和异步 `/v1/jobs`。当前保存结果显示 12/12 成功、12/12 均落盘 trace/result/summary，P95 延迟约 1.42 秒。它比 TestClient smoke 更接近评审脚本调用方式，但仍不是公网或 GPU 高并发压测。
 
+增强版 HTTP loopback 压测位置：`submission_artifacts/http_load_test_100/`
+
+该报告由 `scripts/run_http_load_test.py --requests 100 --concurrency 20 --endpoint mixed --output-dir submission_artifacts/http_load_test_100` 生成，同步 `/v1/parse` 与异步 `/v1/jobs` 各 50 次。当前保存结果显示 100/100 成功，P95 延迟约 4.21 秒，吞吐约 5.70 requests/s。该报告默认不保留 100 份 request artifact，以控制提交包体积。
+
 成本/速度/质量对比位置：`submission_artifacts/baseline_comparison/`
 
 该报告由 `scripts/build_baseline_comparison.py` 生成，复用 evaluation 与 stability 两份报告，把 17 个案例按 native HTML、MinerU CLI PDF、Office、LLM recovery、挑战 fixture 和官方公开 PDF 分组。当前保存结果显示每组轻量人工标注检查均通过，同时保留工具耗时、平均质量分、trace 步骤、页级 provenance 和 recovery 执行数量，用来回应评审关于“成本、速度、精度平衡没有量化”的追问。
 
-边界说明：稳定性报告是保存 artifact 的摘要；API 并发 smoke 是本地进程内接口验证；HTTP loopback 压测走真实本地 TCP 请求；成本/速度/质量对比基于保存 artifact 和轻量人工标注。它们仍不是外部公网、高 GPU 负载、第三方 OCR benchmark 或长文档 soak 压测。
+边界说明：稳定性报告是保存 artifact 的摘要；API 并发 smoke 是本地进程内接口验证；HTTP loopback 压测走真实本地 TCP 请求；长文档分片案例是单文档在线 API 编排验证；成本/速度/质量对比基于保存 artifact 和轻量人工标注。它们仍不是外部公网、高 GPU 负载、第三方 OCR benchmark 或长期长文档 soak 压测。
 
-## 11. 边界说明
+## 12. 边界说明
 
 当前证据已经能证明项目具备 HTML/网页结构化处理闭环、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出能力。
 

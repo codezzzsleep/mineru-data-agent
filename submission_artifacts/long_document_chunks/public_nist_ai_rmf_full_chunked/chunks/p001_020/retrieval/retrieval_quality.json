@@ -1,0 +1,69 @@
+{
+  "skipped_blocks": [
+    {
+      "block_id": "p1_b14",
+      "type": "heading",
+      "reason": "low_value_section",
+      "section_title": "Table of Contents"
+    },
+    {
+      "block_id": "p1_b15",
+      "type": "text",
+      "reason": "inside_low_value_section",
+      "section_title": "Table of Contents"
+    },
+    {
+      "block_id": "p1_b16",
+      "type": "text",
+      "reason": "inside_low_value_section",
+      "section_title": "Table of Contents"
+    },
+    {
+      "block_id": "p1_b17",
+      "type": "text",
+      "reason": "inside_low_value_section",
+      "section_title": "Table of Contents"
+    },
+    {
+      "block_id": "p1_b18",
+      "type": "heading",
+      "reason": "low_value_section",
+      "section_title": "List of Figures"
+    },
+    {
+      "block_id": "p1_b19",
+      "type": "text",
+      "reason": "inside_low_value_section",
+      "section_title": "List of Figures"
+    },
+    {
+      "block_id": "p1_b20",
+      "type": "text",
+      "reason": "inside_low_value_section",
+      "section_title": "List of Figures"
+    },
+    {
+      "block_id": "p1_b21",
+      "type": "text",
+      "reason": "inside_low_value_section",
+      "section_title": "List of Figures"
+    },
+    {
+      "block_id": "p1_b22",
+      "type": "text",
+      "reason": "inside_low_value_section",
+      "section_title": "List of Figures"
+    },
+    {
+      "block_id": "p1_b23",
+      "type": "text",
+      "reason": "inside_low_value_section",
+      "section_title": "List of Figures"
+    }
+  ],
+  "parse_errors": [],
+  "summary": {
+    "total_skipped_blocks": 10,
+    "total_parse_errors": 0
+  }
+}

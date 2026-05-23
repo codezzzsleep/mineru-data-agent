@@ -112,7 +112,15 @@ powershell -ExecutionPolicy Bypass -File .\scripts\collect_mineru_case.ps1 -RunD
 .\.venv\Scripts\python.exe .\scripts\run_public_real_cases.py
 ```
 
-当前结果位于 `submission_artifacts/public_real_cases/`，覆盖 IRS W-4、NIST AI RMF 1.0、Microsoft 2024 Annual Report SEC PDF exhibit 和 CDC VIS 使用说明。每个案例包含官方输入副本、source metadata、human labels、trace、result、summary 和 retrieval 导出；NIST 与 Microsoft 长文档按在线 Agent API 限制只跑前 20 页，并在 metadata 中写明。
+当前结果位于 `submission_artifacts/public_real_cases/`，覆盖 IRS W-4、NIST AI RMF 1.0、Microsoft 2024 Annual Report SEC PDF exhibit 和 CDC VIS 使用说明。每个案例包含官方输入副本、source metadata、human labels、trace、result、summary 和 retrieval 导出；NIST 与 Microsoft 长文档在该公开样本包中按在线 Agent API 限制只跑前 20 页，并在 metadata 中写明。
+
+长文档分片复跑：
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\run_long_document_chunks.py
+```
+
+当前结果位于 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/`。脚本会计算 PDF 页数，并按在线 MinerU Agent API 20 页上限拆分 page ranges。本次 NIST 48 页公开 PDF 保存 3 个分片、3/3 成功、42.418 秒、58 个 retrieval chunks；这证明长文档可通过 Agent 调度分片执行，但不是本地 CLI/GPU benchmark。
 
 ## 5. API 服务
 
@@ -210,7 +218,7 @@ curl -X POST http://127.0.0.1:8080/v1/parse \
   -F "llm_model=deepseek-v4-flash"
 ```
 
-本提交包保存了一次实际启用 ModelScope DeepSeek-V4-Flash 的运行证据，见 `submission_artifacts/llm_cases/`。该证据的 `trace.json` 记录了 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`。当前代码还会在解析前新增 `llm_pre_execution_planning` 步骤：LLM 建议 profile、runner、backend、method、语言、目标 schema 和恢复策略，系统把白名单内且未被显式锁定的建议写入 `execution_control.applied` 并用于本次解析。API key 只通过环境变量传入，不进入输出文件。
+本提交包保存了一次实际启用 ModelScope DeepSeek-V4-Flash 的运行证据，见 `submission_artifacts/llm_cases/`。该证据的 `trace.json` 记录了 `modelscope-llm-preplan completed` 和 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`，`usage_summary.total_tokens=4309`。当前代码还会在解析前新增 `llm_pre_execution_planning` 步骤：LLM 建议 profile、runner、backend、method、语言、目标 schema 和恢复策略，系统把白名单内且未被显式锁定的建议写入 `execution_control.applied` 并用于本次解析。API key 只通过环境变量传入，不进入输出文件。
 
 API 同样支持 provenance fallback 参数：`cli_fallback_on_no_page_provenance=true` 默认开启，`fallback_mineru_executable` 可指定本地 MinerU CLI 路径。实际 fallback runner 只有在显式路径、`MINERU_EXECUTABLE` 或系统 `mineru` 命令可用时才会创建。当前提交包的 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 已保存一个真实 PDF 的恢复演练：在线 API 首次解析后触发 `no_page_provenance`，随后选择 `cli_fallback`，最终 `recovery_decision.executed=true`。该案例在无真实 key/CLI 的当前环境下使用离线确定性预调度器和缓存 CLI artifact 回放，文档和 trace 已标注边界。
 
@@ -338,6 +346,14 @@ python scripts/run_http_load_test.py --requests 12 --concurrency 6 --endpoint mi
 
 当前报告位于 `submission_artifacts/http_load_test/http_load_test_report.json` 和 `submission_artifacts/http_load_test/http_load_test_report.md`。它通过真实 TCP loopback 请求访问 `http://127.0.0.1:8080`，混合调用 `/v1/parse` 与 `/v1/jobs`，保存 12 请求、并发 6、12/12 成功、12/12 trace/result/summary 落盘的证据。
 
+增强版本地 HTTP 压测：
+
+```bash
+python scripts/run_http_load_test.py --requests 100 --concurrency 20 --endpoint mixed --output-dir submission_artifacts/http_load_test_100
+```
+
+当前报告位于 `submission_artifacts/http_load_test_100/http_load_test_report.json` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`。它保存 100 请求、并发 20、同步/异步各 50、100/100 成功、P95 约 4.21 秒、100/100 trace/result/summary 在运行时落盘的证据。该增强版默认不保留 100 份请求 artifact，避免提交包体积过大；需要逐请求 artifact 时可加 `--keep-artifacts` 复跑。
+
 如果 API 跑在 Docker 容器内，而压测脚本跑在宿主机，文件系统路径不同，应加 `--no-output-root`，让容器使用自身的 `/app/runs/api`：
 
 ```bash
@@ -358,7 +374,7 @@ python scripts/build_baseline_comparison.py
 python scripts/build_llm_cost_report.py
 ```
 
-当前报告位于 `submission_artifacts/llm_cost/llm_cost_report.json` 和 `submission_artifacts/llm_cost/llm_cost_report.md`。新运行在 OpenAI-compatible 服务返回 `usage` 字段时会记录 prompt/completion/total tokens；若配置了以下环境变量，还会计算估算成本：
+当前报告位于 `submission_artifacts/llm_cost/llm_cost_report.json` 和 `submission_artifacts/llm_cost/llm_cost_report.md`。当前 live ModelScope LLM rerun 已记录 2 次调用、prompt tokens 2092、completion tokens 2217、total tokens 4309；若配置了以下环境变量，还会计算估算成本：
 
 ```bash
 export MINERU_DATA_AGENT_DEEPSEEK_INPUT_USD_PER_MILLION_TOKENS="<input-price>"
@@ -367,6 +383,6 @@ export MINERU_DATA_AGENT_MODELSCOPE_INPUT_USD_PER_MILLION_TOKENS="<input-price>"
 export MINERU_DATA_AGENT_MODELSCOPE_OUTPUT_USD_PER_MILLION_TOKENS="<output-price>"
 ```
 
-也可用通用变量 `MINERU_DATA_AGENT_LLM_INPUT_USD_PER_MILLION_TOKENS` 和 `MINERU_DATA_AGENT_LLM_OUTPUT_USD_PER_MILLION_TOKENS`。当前旧 LLM artifact 生成于 token instrumentation 之前，因此报告会如实标注缺少 provider token usage。
+也可用通用变量 `MINERU_DATA_AGENT_LLM_INPUT_USD_PER_MILLION_TOKENS` 和 `MINERU_DATA_AGENT_LLM_OUTPUT_USD_PER_MILLION_TOKENS`。当前 live ModelScope 案例已有 provider token usage；recovery 演练里的离线 LLM 回放仍会如实显示 0 tokens。
 
-边界：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证；HTTP load smoke 是本机 TCP loopback 验证；baseline comparison 是保存 artifact 的对比视图；LLM cost report 只统计 provider 返回或已保存的 usage。它们仍不是外部公网压测、GPU 长文档压力测试、云成本 benchmark 或第三方 OCR benchmark。若要宣称生产级高负载能力，需要额外提供公网并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。
+边界：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证；HTTP load smoke 是本机 TCP loopback 验证；long document chunk report 是在线 API 分片执行证据；baseline comparison 是保存 artifact 的对比视图；LLM cost report 只统计 provider 返回或已保存的 usage。它们仍不是外部公网压测、GPU 长文档压力测试、云成本 benchmark 或第三方 OCR benchmark。若要宣称生产级高负载能力，需要额外提供公网并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。

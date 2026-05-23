@@ -23,10 +23,12 @@
 - [x] 稳定性与工具耗时摘要已生成，见 `submission_artifacts/stability/`
 - [x] 成本、速度与质量分组对比已生成，见 `submission_artifacts/baseline_comparison/`
 - [x] LLM token 与成本审计报告已生成，见 `submission_artifacts/llm_cost/`
+- [x] Live ModelScope DeepSeek-V4-Flash 复跑已记录 provider token usage：4309 tokens
 - [x] 对标矩阵与后续 benchmark/roadmap 已写入 `docs/BENCHMARK_AND_ROADMAP.md`
 - [x] 至少 5 个典型任务案例，见 `submission_artifacts/cases/`
 - [x] 额外 4 个复杂挑战样本与人工标注表已生成，见 `submission_artifacts/challenge_cases/`
 - [x] 额外 4 个官方公开真实 PDF 样本、来源元数据和人工轻量标注已生成，见 `submission_artifacts/public_real_cases/`
+- [x] NIST 48 页长文档在线 API 分片执行证据已生成，见 `submission_artifacts/long_document_chunks/`
 - [x] 每个案例包含输入、输出、日志和关键 artifact
 - [x] API `/health` 可访问
 - [x] API `/v1/parse` 可上传文件并返回结构化 JSON
@@ -52,4 +54,5 @@
 - [x] 最终提交压缩包或项目链接前完成一次全流程复跑
 - [x] 本地 API 并发 smoke 已生成，见 `submission_artifacts/api_load_smoke/`
 - [x] 真实 HTTP loopback 压测已生成，见 `submission_artifacts/http_load_test/`
+- [x] 增强版 100 请求/并发 20 HTTP loopback 压测已生成，见 `submission_artifacts/http_load_test_100/`
 - [x] Dockerfile 与 docker-compose 已加入，支持一条命令启动 API

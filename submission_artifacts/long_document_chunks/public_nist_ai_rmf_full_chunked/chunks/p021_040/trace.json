@@ -1,0 +1,108 @@
+{
+  "created_at": "2026-05-23T18:25:33.775388+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-23T18:25:13.603726+00:00",
+      "ended_at": "2026-05-23T18:25:13.603726+00:00",
+      "detail": {
+        "task": "Parse the full public NIST AI RMF 1.0 PDF with long-document chunk orchestration; extract publication identity, framework functions, section structure, quality issues, trace, and retrieval chunks. Page range: 21-40.",
+        "input_file": "<PROJECT_ROOT>\\examples\\public_real_documents\\files\\nist_ai_rmf_1_0.pdf"
+      }
+    },
+    {
+      "name": "mineru_parse",
+      "status": "completed",
+      "started_at": "2026-05-23T18:25:13.603726+00:00",
+      "ended_at": "2026-05-23T18:25:33.746362+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "en"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-23T18:25:33.746362+00:00",
+      "ended_at": "2026-05-23T18:25:33.759478+00:00",
+      "detail": {
+        "item_count": 102,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "mineru-agent-api": 102
+        },
+        "section_count": 13,
+        "table_count": 7,
+        "key_value_count": 8,
+        "numeric_fact_count": 30,
+        "semantic_signal_counts": {
+          "dates": 0,
+          "recommendations": 6,
+          "anomaly_lines": 50
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-23T18:25:33.759478+00:00",
+      "ended_at": "2026-05-23T18:25:33.759478+00:00",
+      "detail": {
+        "profile": "standard_or_contract"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T18:25:33.759478+00:00",
+      "ended_at": "2026-05-23T18:25:33.759478+00:00",
+      "detail": {
+        "quality_status": "pass_with_warnings",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-23T18:25:33.759478+00:00",
+      "ended_at": "2026-05-23T18:25:33.771787+00:00",
+      "detail": {
+        "chunks_count": 26,
+        "by_type": {
+          "text": 17,
+          "table": 9
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p021_040\\06efcc5941fa\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p021_040\\06efcc5941fa\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p021_040\\06efcc5941fa\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "mineru-agent-api",
+      "command": [
+        "mineru-agent-api",
+        "parse-file",
+        "nist_ai_rmf_1_0.pdf"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 20.139,
+      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"bda2d66e-3a90-4115-8f77-c72761ab419305\",\n    \"trace_id\": \"07ace10c43c0b1be0dcf12a8d9e06b48\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"84472c70531c2ed9292e6e17e6cda917\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"c9e089b8d6d3d2b3e877b36993b14fe4\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"0c6c464f879ba07f71920ec430a5d803\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"3b0a15d2a6267aa4b853185ace0234c9\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"3ed2577d0df39b1de96371d1e7542dc1\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"9675ddfd9bae9108ee56044e1f62213b\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"f089f5fa1e687350caf115431496f9e9\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"bda2d66e-3a90-4115-8f77-c72761ab419305\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-24/a7160933-cd6d-4f2c-bb39-2d46c65cabec/full.md\"\n  }\n]",
+      "stderr_tail": "",
+      "metadata": {}
+    }
+  ],
+  "run_id": "06efcc5941fa",
+  "task": "Parse the full public NIST AI RMF 1.0 PDF with long-document chunk orchestration; extract publication identity, framework functions, section structure, quality issues, trace, and retrieval chunks. Page range: 21-40.",
+  "profile": "standard_or_contract",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p021_040\\06efcc5941fa\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p021_040\\06efcc5941fa\\summary.md"
+}

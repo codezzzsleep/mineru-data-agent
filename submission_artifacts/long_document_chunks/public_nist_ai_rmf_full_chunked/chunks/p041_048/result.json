@@ -1,0 +1,362 @@
+{
+  "run_id": "6ca973c318bb",
+  "task": "Parse the full public NIST AI RMF 1.0 PDF with long-document chunk orchestration; extract publication identity, framework functions, section structure, quality issues, trace, and retrieval chunks. Page range: 41-48.",
+  "profile": "standard_or_contract",
+  "input_file": "<PROJECT_ROOT>\\examples\\public_real_documents\\files\\nist_ai_rmf_1_0.pdf",
+  "output_dir": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize section hierarchy and clause-like paragraph extraction",
+    "Preserve source page or document heading evidence for each clause"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": false,
+    "requested": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "en"
+    },
+    "initial": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "en",
+      "runner": "agent-api"
+    },
+    "resolved": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "en",
+      "runner": "agent-api"
+    },
+    "planning_rationale": {
+      "source": "rules",
+      "file_family": "pdf_or_image",
+      "profile_reason": "standard/contract keywords or explicit profile require section and clause preservation",
+      "runner_reason": "online MinerU Agent API is selected for CPU-friendly PDF parsing and quick reproducibility",
+      "backend_reason": "backend=pipeline is used for MinerU parsing when the selected runner calls MinerU",
+      "method_reason": "method=auto balances automatic parsing with OCR fallback when quality gates require it",
+      "lang_reason": "lang=en is passed to MinerU or recorded for native extraction audit",
+      "recovery_policy": [
+        "text_cleanup if mojibake or encoding noise is detected",
+        "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+        "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+        "manual_numeric_review when subtotal/total consistency checks fail"
+      ]
+    },
+    "runner_class": "PageRangeAgentAPIRunner",
+    "applied": [],
+    "ignored": []
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 71,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "text": 49,
+        "heading": 8,
+        "list": 14
+      },
+      "source_counts": {
+        "mineru-agent-api": 71
+      },
+      "text_characters": 17570
+    },
+    "sections": [
+      {
+        "level": 2,
+        "title": "Additional AI Actors",
+        "line": 21,
+        "source": "heading",
+        "text": "Third-party entities include providers, developers, vendors, and evaluators of data, algorithms, models, and/or systems and related services for another organization or the organization’s customers or clients. Third-party entities are responsible for AI design and development tasks, in whole or in part. By definition, they are external to the design, development, or deployment team of the organization that acquires its technologies or services. The technologies acquired from third-party entities may be complex or opaque, and risk tolerances may not align with the deploying or operating organization.\n\nEnd users of an AI system are the individuals or groups that use the system for specific purposes. These individuals or groups interact with an AI system in a specific context. End users can range in competency from AI experts to first-time technology end users.\n\nAffected individuals/communities encompass all individuals, groups, communities, or organizations directly or indirectly affected by AI systems or decisions based on the output of AI systems. These individuals do not necessarily interact with the deployed system or application.\n\nOther AI actors may provide formal or quasi-formal norms or guidance for specifying and managing AI risks. They can include trade associations, standards developing organizations, advocacy groups, researchers, environmental groups, and civil society organizations.\n\nThe general public is most likely to directly experience positive and negative impacts of AI technologies. They may provide the motivation for actions taken by the AI actors. This group can include individuals, communities, and consumers associated with the context in which an AI system is developed or deployed."
+      },
+      {
+        "level": 2,
+        "title": "Appendix B:",
+        "line": 33,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 2,
+        "title": "How AI Risks Differ from Traditional Software Risks",
+        "line": 35,
+        "source": "heading",
+        "text": "As with traditional software, risks from AI-based technology can be bigger than an enterprise, span organizations, and lead to societal impacts. AI systems also bring a set of risks that are not comprehensively addressed by current risk frameworks and approaches. Some AI system features that present risks also can be beneficial. For example, pre-trained models and transfer learning can advance research and increase accuracy and resilience when compared to other models and approaches. Identifying contextual factors in the MAP function will assist AI actors in determining the level of risk and potential management efforts.\n\nCompared to traditional software, AI-specific risks that are new or increased include the following:\n\n• The data used for building an AI system may not be a true or appropriate representation of the context or intended use of the AI system, and the ground truth may either not exist or not be available. Additionally, harmful bias and other data quality issues can affect AI system trustworthiness, which could lead to negative impacts.\n\n• AI system dependency and reliance on data for training tasks, combined with increased volume and complexity typically associated with such data.\n\n• Intentional or unintentional changes during training may fundamentally alter AI system performance.\n\n• Datasets used to train AI systems may become detached from their original and intended context or may become stale or outdated relative to deployment context.\n\n• AI system scale and complexity (many systems contain billions or even trillions of decision points) housed within more traditional software applications.\n\n• Use of pre-trained models that can advance research and improve performance can also increase levels of statistical uncertainty and cause issues with bias management, scientific validity, and reproducibility.\n\n• Higher degree of difficulty in predicting failure modes for emergent properties of large-scale pre-trained models.\n\n• Privacy risk due to enhanced data aggregation capability for AI systems.\n\n• AI systems may require more frequent maintenance and triggers for conducting corrective maintenance due to data, model, or concept drift.\n\n• Increased opacity and concerns about reproducibility.\n\n• Underdeveloped software testing standards and inability to document AI-based practices to the standard expected of traditionally engineered software for all but the simplest of cases.\n\n• Difficulty in performing regular AI-based software testing, or determining what to test, since AI systems are not subject to the same controls as traditional code development.\n\n• Computational costs for developing AI systems and their impact on the environment and planet.\n\n• Inability to predict or detect the side effects of AI-based systems beyond statistical measures.\n\nPrivacy and cybersecurity risk management considerations and approaches are applicable in the design, development, deployment, evaluation, and use of AI systems. Privacy and cybersecurity risks are also considered as part of broader enterprise risk management considerations, which may incorporate AI risks. As part of the effort to address AI trustworthiness characteristics such as “Secure and Resilient” and “Privacy-Enhanced,” organizations may consider leveraging available standards and guidance that provide broad guidance to organizations to reduce security and privacy risks, such as, but not limited to, the NIST Cybersecurity Framework, the NIST Privacy Framework, the NIST Risk Management Framework, and the Secure Software Development Framework. These frameworks have some features in common with the AI RMF. Like most risk management approaches, they are outcome-based rather than prescriptive and are often structured around a Core set of functions, categories, and subcategories. While there are significant differences between these frameworks based on the domain addressed – and because AI risk management calls for addressing many other types of risks – frameworks like those mentioned above may inform security and privacy considerations in the MAP, MEASURE, and MANAGE functions of the AI RMF.\n\nAt the same time, guidance available before publication of this AI RMF does not comprehensively address many AI system risks. For example, existing frameworks and guidance are unable to:\n\n• adequately manage the problem of harmful bias in AI systems;\n\n• confront the challenging risks related to generative AI;\n\n• comprehensively address security concerns related to evasion, model extraction, membership inference, availability, or other machine learning attacks;\n\n• account for the complex attack surface of AI systems or other security abuses enabled by AI systems; and\n\n• consider risks associated with third-party AI technologies, transfer learning, and offlabel use where AI systems may be trained for decision-making outside an organization’s security controls or trained in one domain and then “fine-tuned” for another.\n\nBoth AI and traditional software technologies and systems are subject to rapid innovation. Technology advances should be monitored and deployed to take advantage of those developments and work towards a future of AI that is both trustworthy and responsible."
+      },
+      {
+        "level": 2,
+        "title": "Appendix C:",
+        "line": 85,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 2,
+        "title": "AI Risk Management and Human-AI Interaction",
+        "line": 87,
+        "source": "heading",
+        "text": "Organizations that design, develop, or deploy AI systems for use in operational settings may enhance their AI risk management by understanding current limitations of human-AI interaction. The AI RMF provides opportunities to clearly define and differentiate the various human roles and responsibilities when using, interacting with, or managing AI systems.\n\nMany of the data-driven approaches that AI systems rely on attempt to convert or represent individual and social observational and decision-making practices into measurable quantities. Representing complex human phenomena with mathematical models can come at the cost of removing necessary context. This loss of context may in turn make it difficult to understand individual and societal impacts that are key to AI risk management efforts.\n\nIssues that merit further consideration and research include:\n\n1. Human roles and responsibilities in decision making and overseeing AI systems need to be clearly defined and differentiated. Human-AI configurations can span from fully autonomous to fully manual. AI systems can autonomously make decisions, defer decision making to a human expert, or be used by a human decision maker as an additional opinion. Some AI systems may not require human oversight, such as models used to improve video compression. Other systems may specifically require human oversight.\n\n2. Decisions that go into the design, development, deployment, evaluation, and use of AI systems reflect systemic and human cognitive biases. AI actors bring their cognitive biases, both individual and group, into the process. Biases can stem from end-user decision-making tasks and be introduced across the AI lifecycle via human assumptions, expectations, and decisions during design and modeling tasks. These biases, which are not necessarily always harmful, may be exacerbated by AI system opacity and the resulting lack of transparency. Systemic biases at the organizational level can influence how teams are structured and who controls the decision-making processes throughout the AI lifecycle. These biases can also influence downstream decisions by end users, decision makers, and policy makers and may lead to negative impacts.\n\n3. Human-AI interaction results vary. Under certain conditions – for example, in perceptual-based judgment tasks – the AI part of the human-AI interaction can amplify human biases, leading to more biased decisions than the AI or human alone. When these variations are judiciously taken into account in organizing human-AI teams, however, they can result in complementarity and improved overall performance.\n\n4. Presenting AI system information to humans is complex. Humans perceive and derive meaning from AI system output and explanations in different ways, reflecting different individual preferences, traits, and skills.\n\nThe GOVERN function provides organizations with the opportunity to clarify and define the roles and responsibilities for the humans in the Human-AI team configurations and those who are overseeing the AI system performance. The GOVERN function also creates mechanisms for organizations to make their decision-making processes more explicit, to help counter systemic biases.\n\nThe MAP function suggests opportunities to define and document processes for operator and practitioner proficiency with AI system performance and trustworthiness concepts, and to define relevant technical standards and certifications. Implementing MAP function categories and subcategories may help organizations improve their internal competency for analyzing context, identifying procedural and system limitations, exploring and examining impacts of AI-based systems in the real world, and evaluating decision-making processes throughout the AI lifecycle.\n\nThe GOVERN and MAP functions describe the importance of interdisciplinarity and demographically diverse teams and utilizing feedback from potentially impacted individuals and communities. AI actors called out in the AI RMF who perform human factors tasks and activities can assist technical teams by anchoring in design and development practices to user intentions and representatives of the broader AI community, and societal values. These actors further help to incorporate context-specific norms and values in system design and evaluate end user experiences – in conjunction with AI systems.\n\nAI risk management approaches for human-AI configurations will be augmented by ongoing research and evaluation. For example, the degree to which humans are empowered and incentivized to challenge AI system output requires further studies. Data about the frequency and rationale with which humans overrule AI system output in deployed systems may be useful to collect and analyze."
+      },
+      {
+        "level": 2,
+        "title": "Appendix D:",
+        "line": 111,
+        "source": "heading",
+        "text": ""
+      },
+      {
+        "level": 2,
+        "title": "Attributes of the AI RMF",
+        "line": 113,
+        "source": "heading",
+        "text": "NIST described several key attributes of the AI RMF when work on the Framework first began. These attributes have remained intact and were used to guide the AI RMF’s development. They are provided here as a reference."
+      },
+      {
+        "level": 2,
+        "title": "The AI RMF strives to:",
+        "line": 117,
+        "source": "heading",
+        "text": "1. Be risk-based, resource-efficient, pro-innovation, and voluntary.\n\n2. Be consensus-driven and developed and regularly updated through an open, transparent process. All stakeholders should have the opportunity to contribute to the AI RMF’s development.\n\n3. Use clear and plain language that is understandable by a broad audience, including senior executives, government officials, non-governmental organization leadership, and those who are not AI professionals – while still of sufficient technical depth to be useful to practitioners. The AI RMF should allow for communication of AI risks across an organization, between organizations, with customers, and to the public at large.\n\n4. Provide common language and understanding to manage AI risks. The AI RMF should offer taxonomy, terminology, definitions, metrics, and characterizations for AI risk.\n\n5. Be easily usable and fit well with other aspects of risk management. Use of the Framework should be intuitive and readily adaptable as part of an organization’s broader risk management strategy and processes. It should be consistent or aligned with other approaches to managing AI risks.\n\n6. Be useful to a wide range of perspectives, sectors, and technology domains. The AI RMF should be universally applicable to any AI technology and to context-specific use cases.\n\n7. Be outcome-focused and non-prescriptive. The Framework should provide a catalog of outcomes and approaches rather than prescribe one-size-fits-all requirements.\n\n8. Take advantage of and foster greater awareness of existing standards, guidelines, best practices, methodologies, and tools for managing AI risks – as well as illustrate the need for additional, improved resources.\n\n9. Be law- and regulation-agnostic. The Framework should support organizations’ abilities to operate under applicable domestic and international legal or regulatory regimes.\n\n10. Be a living document. The AI RMF should be readily updated as technology, understanding, and approaches to AI trustworthiness and uses of AI change and as stakeholders learn from implementing AI risk management generally and this framework in particular.\n\nThis publication is available free of charge from: https://doi.org/10.6028/NIST.AI.100-1\n\nNST NATIONAL INSTITUTE OFSTANDARDS AND TECHNOLOGYU.S. DEPARTMENT OF COMMERCE"
+      }
+    ],
+    "tables": [],
+    "key_values": [],
+    "key_value_map": {},
+    "field_evidence": [],
+    "field_evidence_map": {},
+    "numeric_facts": [],
+    "semantic_signals": {
+      "dates": [],
+      "recommendations": [
+        {
+          "source": "line",
+          "text": "and validation tasks are distinct from those who perform test and evaluation actions. Tasks can be incorporated into a phase as early as design, where tests are planned in accordance with the design requirement."
+        },
+        {
+          "source": "line",
+          "text": "The general public is most likely to directly experience positive and negative impacts of AI technologies. They may provide the motivation for actions taken by the AI actors. This group can include individuals, communities, and consumers associated with the context in which an AI system is developed"
+        },
+        {
+          "source": "line",
+          "text": "• comprehensively address security concerns related to evasion, model extraction, membership inference, availability, or other machine learning attacks;"
+        },
+        {
+          "source": "line",
+          "text": "## AI Risk Management and Human-AI Interaction"
+        },
+        {
+          "source": "line",
+          "text": "Organizations that design, develop, or deploy AI systems for use in operational settings may enhance their AI risk management by understanding current limitations of human-AI interaction. The AI RMF provides opportunities to clearly define and differentiate the various human roles and responsibiliti"
+        },
+        {
+          "source": "line",
+          "text": "3. Human-AI interaction results vary. Under certain conditions – for example, in perceptual-based judgment tasks – the AI part of the human-AI interaction can amplify human biases, leading to more biased decisions than the AI or human alone. When these variations are judiciously taken into account i"
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 9,
+          "text": "• TEVV tasks for operations involve ongoing monitoring for periodic updates, testing, and subject matter expert (SME) recalibration of models, the tracking of incidents or errors reported and their management, the detection of emergent properties and related impacts, and processes for redress and re"
+        },
+        {
+          "line": 23,
+          "text": "Third-party entities include providers, developers, vendors, and evaluators of data, algorithms, models, and/or systems and related services for another organization or the organization’s customers or clients. Third-party entities are responsible for AI design and development tasks, in whole or in p"
+        },
+        {
+          "line": 29,
+          "text": "Other AI actors may provide formal or quasi-formal norms or guidance for specifying and managing AI risks. They can include trade associations, standards developing organizations, advocacy groups, researchers, environmental groups, and civil society organizations."
+        },
+        {
+          "line": 35,
+          "text": "## How AI Risks Differ from Traditional Software Risks"
+        },
+        {
+          "line": 37,
+          "text": "As with traditional software, risks from AI-based technology can be bigger than an enterprise, span organizations, and lead to societal impacts. AI systems also bring a set of risks that are not comprehensively addressed by current risk frameworks and approaches. Some AI system features that present"
+        },
+        {
+          "line": 39,
+          "text": "Compared to traditional software, AI-specific risks that are new or increased include the following:"
+        },
+        {
+          "line": 41,
+          "text": "• The data used for building an AI system may not be a true or appropriate representation of the context or intended use of the AI system, and the ground truth may either not exist or not be available. Additionally, harmful bias and other data quality issues can affect AI system trustworthiness, whi"
+        },
+        {
+          "line": 51,
+          "text": "• Use of pre-trained models that can advance research and improve performance can also increase levels of statistical uncertainty and cause issues with bias management, scientific validity, and reproducibility."
+        },
+        {
+          "line": 55,
+          "text": "• Privacy risk due to enhanced data aggregation capability for AI systems."
+        },
+        {
+          "line": 69,
+          "text": "Privacy and cybersecurity risk management considerations and approaches are applicable in the design, development, deployment, evaluation, and use of AI systems. Privacy and cybersecurity risks are also considered as part of broader enterprise risk management considerations, which may incorporate AI"
+        },
+        {
+          "line": 71,
+          "text": "At the same time, guidance available before publication of this AI RMF does not comprehensively address many AI system risks. For example, existing frameworks and guidance are unable to:"
+        },
+        {
+          "line": 75,
+          "text": "• confront the challenging risks related to generative AI;"
+        },
+        {
+          "line": 81,
+          "text": "• consider risks associated with third-party AI technologies, transfer learning, and offlabel use where AI systems may be trained for decision-making outside an organization’s security controls or trained in one domain and then “fine-tuned” for another."
+        },
+        {
+          "line": 87,
+          "text": "## AI Risk Management and Human-AI Interaction"
+        },
+        {
+          "line": 89,
+          "text": "Organizations that design, develop, or deploy AI systems for use in operational settings may enhance their AI risk management by understanding current limitations of human-AI interaction. The AI RMF provides opportunities to clearly define and differentiate the various human roles and responsibiliti"
+        },
+        {
+          "line": 91,
+          "text": "Many of the data-driven approaches that AI systems rely on attempt to convert or represent individual and social observational and decision-making practices into measurable quantities. Representing complex human phenomena with mathematical models can come at the cost of removing necessary context. T"
+        },
+        {
+          "line": 93,
+          "text": "Issues that merit further consideration and research include:"
+        },
+        {
+          "line": 109,
+          "text": "AI risk management approaches for human-AI configurations will be augmented by ongoing research and evaluation. For example, the degree to which humans are empowered and incentivized to challenge AI system output requires further studies. Data about the frequency and rationale with which humans over"
+        },
+        {
+          "line": 119,
+          "text": "1. Be risk-based, resource-efficient, pro-innovation, and voluntary."
+        },
+        {
+          "line": 123,
+          "text": "3. Use clear and plain language that is understandable by a broad audience, including senior executives, government officials, non-governmental organization leadership, and those who are not AI professionals – while still of sufficient technical depth to be useful to practitioners. The AI RMF should"
+        },
+        {
+          "line": 125,
+          "text": "4. Provide common language and understanding to manage AI risks. The AI RMF should offer taxonomy, terminology, definitions, metrics, and characterizations for AI risk."
+        },
+        {
+          "line": 127,
+          "text": "5. Be easily usable and fit well with other aspects of risk management. Use of the Framework should be intuitive and readily adaptable as part of an organization’s broader risk management strategy and processes. It should be consistent or aligned with other approaches to managing AI risks."
+        },
+        {
+          "line": 133,
+          "text": "8. Take advantage of and foster greater awareness of existing standards, guidelines, best practices, methodologies, and tools for managing AI risks – as well as illustrate the need for additional, improved resources."
+        },
+        {
+          "line": 137,
+          "text": "10. Be a living document. The AI RMF should be readily updated as technology, understanding, and approaches to AI trustworthiness and uses of AI change and as stakeholders learn from implementing AI risk management generally and this framework in particular."
+        }
+      ],
+      "field_coverage": {
+        "has_date": false,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 8,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "and validation tasks are distinct from those who perform test and evaluation actions. Tasks can be incorporated into a phase as early as design, where tests are planned in accordance with the design requirement.\n\n• TEVV tasks for design, planning, and data may center on internal and external validation of assumptions for system design, data collection, and measurements relative to the intended context of deployment or application.\n\n• TEVV tasks for development (i.e., model building) include model validation and assessment.\n\n• TEVV tasks for deployment include system validation and integration in production, with testing, and recalibration for systems and process integration, user experience, and compliance with existing legal, regulatory, and ethical specifications.\n\n• TEVV tasks for operations involve ongoing monitoring for periodic updates, testing, and subject matter expert (SME) recalibration of models, the tracking of incidents or errors reported and their management, the detection of emergent properties and related impacts, and processes for redress and response.\n\nHuman Factors tasks and activities are found throughout the dimensions of the AI lifecycle. They include human-centered design practices and methodologies, promoting the active involvement of end users and other interested parties and relevant AI actors, incorporating context-specific norms and values in system design, evaluating and adapting end user experiences, and broad integration of humans and human dynamics in all phases of the AI lifecycle. Human factors professionals provide multidisciplinary skills and perspectives to understand context of use, inform interdisciplinary and demographic diversity, engage in consultative processes, design and evaluate user experience, perform human-centered evaluation and testing, and inform impact assessments.\n\nDomain Expert tasks involve input from multidisciplinary practitioners or scholars who provide knowledge or expertise in – and about – an industry sec"
+  },
+  "quality": {
+    "score": 92,
+    "status": "pass_with_warnings",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 1,
+      "info": 0
+    },
+    "issues": [
+      {
+        "code": "no_page_provenance",
+        "level": "warning",
+        "message": "Content blocks were extracted, but no page-level provenance is available.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 71
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "accept_with_review_notes",
+    "actions": [
+      "Use local MinerU CLI when page-level provenance is required."
+    ],
+    "issue_codes": [
+      "no_page_provenance"
+    ],
+    "initial_issue_codes": [
+      "no_page_provenance"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass_with_warnings",
+        "score": 92,
+        "issue_codes": [
+          "no_page_provenance"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\mineru\\nist_ai_rmf_1_0\\agent_api\\nist_ai_rmf_1_0.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\mineru\\nist_ai_rmf_1_0\\agent_api\\nist_ai_rmf_1_0_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\mineru\\nist_ai_rmf_1_0\\agent_api\\nist_ai_rmf_1_0_agent_response.json",
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 9,
+      "by_type": {
+        "text": 9
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\mineru\\nist_ai_rmf_1_0\\agent_api\\nist_ai_rmf_1_0.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\mineru\\nist_ai_rmf_1_0\\agent_api\\nist_ai_rmf_1_0_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\mineru\\nist_ai_rmf_1_0\\agent_api\\nist_ai_rmf_1_0_agent_response.json",
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\long_document_chunks\\public_nist_ai_rmf_full_chunked\\p041_048\\6ca973c318bb\\summary.md"
+}

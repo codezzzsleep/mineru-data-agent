@@ -1,0 +1,77 @@
+{
+  "schema_version": "2026-05-24",
+  "document": {
+    "input_file": "examples/public_real_documents/files/nist_ai_rmf_1_0.pdf",
+    "case_id": "public_nist_ai_rmf_full_chunked",
+    "page_count": 48,
+    "chunk_size": 20
+  },
+  "aggregate": {
+    "total_chunks": 3,
+    "completed_chunks": 3,
+    "failed_chunks": 0,
+    "success_rate": 1.0,
+    "elapsed_seconds": 42.418,
+    "total_retrieval_chunks": 58,
+    "quality_status_counts": {
+      "pass_with_warnings": 3
+    },
+    "provenance_level_counts": {
+      "document": 3
+    }
+  },
+  "chunks": [
+    {
+      "chunk_id": "p001_020",
+      "page_range": "1-20",
+      "status": "completed",
+      "run_id": "a9370f880cf5",
+      "elapsed_seconds": 14.387,
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "issue_codes": [
+        "no_page_provenance"
+      ],
+      "retrieval_chunks": 23,
+      "provenance_level": "document",
+      "result_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/result.json",
+      "trace_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/trace.json",
+      "summary_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/summary.md"
+    },
+    {
+      "chunk_id": "p021_040",
+      "page_range": "21-40",
+      "status": "completed",
+      "run_id": "06efcc5941fa",
+      "elapsed_seconds": 20.174,
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "issue_codes": [
+        "no_page_provenance"
+      ],
+      "retrieval_chunks": 26,
+      "provenance_level": "document",
+      "result_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/result.json",
+      "trace_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/trace.json",
+      "summary_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/summary.md"
+    },
+    {
+      "chunk_id": "p041_048",
+      "page_range": "41-48",
+      "status": "completed",
+      "run_id": "6ca973c318bb",
+      "elapsed_seconds": 7.793,
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "issue_codes": [
+        "no_page_provenance"
+      ],
+      "retrieval_chunks": 9,
+      "provenance_level": "document",
+      "result_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/result.json",
+      "trace_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/trace.json",
+      "summary_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/summary.md"
+    }
+  ],
+  "boundary": "This is a real online MinerU Agent API long-document chunking smoke. The API enforces a 20-page maximum per call, so the Data Agent splits page ranges and records each chunk's artifacts. It is not a local MinerU CLI/GPU benchmark or public internet production load test."
+}
