@@ -55,6 +55,7 @@ class AgentResult:
     input_file: str
     output_dir: str
     plan: list[str]
+    execution_control: dict[str, Any]
     extracted: dict[str, Any]
     quality: dict[str, Any]
     recovery_decision: dict[str, Any]

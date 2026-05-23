@@ -26,6 +26,7 @@ $items = @(
   "LICENSE",
   ".gitignore",
   ".gitattributes",
+  ".github",
   "pyproject.toml",
   "src",
   "docs",

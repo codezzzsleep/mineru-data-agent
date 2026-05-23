@@ -170,7 +170,7 @@ curl -X POST http://127.0.0.1:8080/v1/parse \
   -F "llm_model=deepseek-v4-flash"
 ```
 
-本提交包保存了一次实际启用 ModelScope DeepSeek-V4-Flash 的运行证据，见 `submission_artifacts/llm_cases/`。该证据的 `trace.json` 记录了 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`。API key 只通过环境变量传入，不进入输出文件。
+本提交包保存了一次实际启用 ModelScope DeepSeek-V4-Flash 的运行证据，见 `submission_artifacts/llm_cases/`。该证据的 `trace.json` 记录了 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`。当前代码还会在解析前新增 `llm_pre_execution_planning` 步骤：LLM 建议 profile、runner、backend、method、语言、目标 schema 和恢复策略，系统把白名单内且未被显式锁定的建议写入 `execution_control.applied` 并用于本次解析。API key 只通过环境变量传入，不进入输出文件。
 
 ## 6. 返回结果
 
@@ -178,11 +178,12 @@ curl -X POST http://127.0.0.1:8080/v1/parse \
 
 - `run_id`：本次运行编号
 - `plan`：Agent 任务计划
+- `execution_control`：解析前调度控制记录，包含 requested、initial、LLM recommendation、applied、ignored 和 resolved 参数
 - `extracted`：章节、表格、键值对、键值字典、数字事实、日期/建议/异常信号等结构化视图
 - `quality`：质量评分与风险列表
 - `recovery_decision`：根据质量报告、文件类型和 profile 给出的接受、复核、重试或人工处理建议；包含 `attempts`、`selected_attempt`、`executed` 和 `initial_issue_codes`。恢复尝试失败时会记录 failed attempt，并保留初始可用结果继续输出。
 - `retrieval_export`：检索 chunks、manifest 和质量报告路径
-- `llm_analysis`：可选大模型任务理解、建议计划、目标 schema、复核重点、恢复建议和服务返回的 reasoning 内容
+- `llm_analysis`：可选大模型解析前调度、解析后复核、目标 schema、复核重点、恢复建议和服务返回的 reasoning 内容
 - `artifacts`：MinerU 原始输出或在线 API 输出
 - `trace_path`：可追溯执行日志
 - `summary_path`：人工可读摘要
@@ -215,10 +216,22 @@ runs/api/<run_id>/
 - 自动恢复尝试，例如 `auto_recovery_text_cleanup` 或 `auto_recovery_ocr_retry`
 - 耗时、状态和错误摘要
 
-如果解析失败，系统仍会写出失败态 `trace.json`，其中 `status=failed`，并记录失败步骤和错误摘要。
+如果解析失败，系统仍会写出失败态 `trace.json`，其中 `status=failed`，并记录失败步骤和错误摘要。通过 API 调用时，失败响应的 `detail` 也会返回 `run_id`、`output_dir`、`trace_path`、`result_path` 和 `summary_path`，方便评审脚本直接定位失败证据。
 
 `batch_report.json` 包含：
 
 - 批处理总任务数
 - 成功/失败数量
 - 每个任务的 run id、输出路径、质量评分和错误信息
+
+## 8. 带标注评测
+
+标注文件位于 `examples/evaluation/labels.json`，覆盖 HTML、PDF/MinerU CLI 和 Office 案例的关键字段、profile、结构门槛、质量门槛和 provenance 门槛。
+
+生成评测报告：
+
+```bash
+python scripts/build_evaluation_report.py
+```
+
+当前报告位于 `submission_artifacts/evaluation/evaluation_metrics.json` 和 `submission_artifacts/evaluation/evaluation_metrics.md`。已保存结果显示 8 个案例、24 个标注字段、profile、结构、质量和 provenance 门槛均通过。该指标不是完整 OCR 字符级准确率，而是面向本赛题可复查结构化输出的提交级评测面。

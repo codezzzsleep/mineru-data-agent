@@ -18,6 +18,31 @@ from .validators import build_quality_report
 HTML_SUFFIXES = {".html", ".htm"}
 DOCX_SUFFIXES = {".docx"}
 PPTX_SUFFIXES = {".pptx"}
+NATIVE_SUFFIXES = HTML_SUFFIXES | DOCX_SUFFIXES | PPTX_SUFFIXES
+PROFILE_CHOICES = {"financial_report", "standard_or_contract", "workflow_or_diagram", "low_quality_ocr", "general_document"}
+RUNNER_CHOICES = {"cli", "agent-api", "native"}
+BACKEND_CHOICES = {"pipeline", "vlm-transformers", "vlm-sglang-engine", "vlm-sglang-client"}
+METHOD_CHOICES = {"auto", "ocr", "txt"}
+LANG_CHOICES = {"ch", "en"}
+
+
+class AgentRunError(RuntimeError):
+    def __init__(
+        self,
+        message: str,
+        *,
+        run_id: str,
+        output_dir: Path,
+        trace_path: Path,
+        result_path: Path,
+        summary_path: Path,
+    ) -> None:
+        super().__init__(message)
+        self.run_id = run_id
+        self.output_dir = str(output_dir)
+        self.trace_path = str(trace_path)
+        self.result_path = str(result_path)
+        self.summary_path = str(summary_path)
 
 
 class MinerUDataAgent:
@@ -47,16 +72,62 @@ class MinerUDataAgent:
         result_path = output_dir / "result.json"
         summary_path = output_dir / "summary.md"
         trace_path = output_dir / "trace.json"
+        suffix = input_path.suffix.lower()
+        llm_preplan: dict[str, Any] = {"enabled": False}
+        execution_control: dict[str, Any] = {}
 
         try:
             with trace.step("infer_task_profile", task=task, input_file=str(input_path)):
                 resolved_profile = infer_profile(task, input_path.name) if profile == "auto" else profile
                 plan = build_plan(task, resolved_profile)
+            execution_control = _initial_execution_control(
+                requested_profile=profile,
+                resolved_profile=resolved_profile,
+                backend=backend,
+                method=method,
+                lang=lang,
+                suffix=suffix,
+                runner_name=self.mineru_runner.__class__.__name__,
+            )
+
+            if self.llm_client:
+                with trace.step(
+                    "llm_pre_execution_planning",
+                    requested_profile=profile,
+                    inferred_profile=resolved_profile,
+                    backend=backend,
+                    method=method,
+                    lang=lang,
+                ) as pre_step:
+                    llm_preplan, llm_pre_call = self.llm_client.plan_execution(
+                        task=task,
+                        input_metadata=_input_metadata(input_path),
+                        inferred_profile=resolved_profile,
+                        requested_profile=profile,
+                        requested_backend=backend,
+                        requested_method=method,
+                        requested_lang=lang,
+                        current_runner=_runner_kind(self.mineru_runner),
+                    )
+                    llm_preplan["enabled"] = True
+                    trace.add_tool_call(llm_pre_call.__dict__)
+                    resolved_profile, backend, method, lang, execution_control = _apply_llm_preplan(
+                        preplan=llm_preplan,
+                        requested_profile=profile,
+                        initial_profile=resolved_profile,
+                        backend=backend,
+                        method=method,
+                        lang=lang,
+                        suffix=suffix,
+                        runner_kind=_runner_kind(self.mineru_runner),
+                        runner_name=self.mineru_runner.__class__.__name__,
+                    )
+                    plan = _merge_plan(build_plan(task, resolved_profile), llm_preplan.get("execution_plan", []))
+                    pre_step.detail["execution_control"] = execution_control
 
             artifacts = ParseArtifacts()
             markdown = ""
             content_list: list[dict[str, Any]] = []
-            suffix = input_path.suffix.lower()
 
             if suffix in HTML_SUFFIXES:
                 with trace.step("extract_html", input_file=str(input_path)):
@@ -209,14 +280,21 @@ class MinerUDataAgent:
 
             llm_analysis: dict[str, Any] = {"enabled": False}
             if self.llm_client:
+                llm_analysis = {
+                    "enabled": True,
+                    "pre_execution_plan": llm_preplan,
+                    "execution_control": execution_control,
+                }
                 with trace.step("llm_agent_analysis"):
-                    llm_analysis, llm_call = self.llm_client.analyze(
+                    post_llm_analysis, llm_call = self.llm_client.analyze(
                         task=task,
                         profile=resolved_profile,
                         plan=plan,
                         extracted=extracted,
                         quality=quality,
                     )
+                    llm_analysis["post_parse_analysis"] = post_llm_analysis
+                    llm_analysis.update(post_llm_analysis)
                     llm_analysis["enabled"] = True
                     trace.add_tool_call(llm_call.__dict__)
 
@@ -227,6 +305,7 @@ class MinerUDataAgent:
                 input_file=str(input_path),
                 output_dir=str(output_dir),
                 plan=plan,
+                execution_control=execution_control,
                 extracted=extracted,
                 quality=quality,
                 recovery_decision=recovery_decision,
@@ -264,7 +343,222 @@ class MinerUDataAgent:
                     "error": repr(exc),
                 },
             )
-            raise
+            raise AgentRunError(
+                f"Agent run failed: {exc}",
+                run_id=run_id,
+                output_dir=output_dir,
+                trace_path=trace_path,
+                result_path=result_path,
+                summary_path=summary_path,
+            ) from exc
+
+
+def _input_metadata(input_path: Path) -> dict[str, Any]:
+    stat = input_path.stat()
+    return {
+        "filename": input_path.name,
+        "suffix": input_path.suffix.lower(),
+        "size_bytes": stat.st_size,
+        "is_native_extractor_input": input_path.suffix.lower() in NATIVE_SUFFIXES,
+    }
+
+
+def _runner_kind(runner: Any) -> str:
+    name = runner.__class__.__name__.lower()
+    if "agentapi" in name or "agent_api" in name or "agent" in name and "api" in name:
+        return "agent-api"
+    return "cli"
+
+
+def _initial_execution_control(
+    *,
+    requested_profile: str,
+    resolved_profile: str,
+    backend: str,
+    method: str,
+    lang: str,
+    suffix: str,
+    runner_name: str,
+) -> dict[str, Any]:
+    runner_kind = "native" if suffix in NATIVE_SUFFIXES else ("agent-api" if "AgentAPI" in runner_name else "cli")
+    return {
+        "llm_preplan_enabled": False,
+        "requested": {
+            "profile": requested_profile,
+            "backend": backend,
+            "method": method,
+            "lang": lang,
+        },
+        "initial": {
+            "profile": resolved_profile,
+            "backend": backend,
+            "method": method,
+            "lang": lang,
+            "runner": runner_kind,
+        },
+        "resolved": {
+            "profile": resolved_profile,
+            "backend": backend,
+            "method": method,
+            "lang": lang,
+            "runner": runner_kind,
+        },
+        "runner_class": runner_name,
+        "applied": [],
+        "ignored": [],
+    }
+
+
+def _apply_llm_preplan(
+    *,
+    preplan: dict[str, Any],
+    requested_profile: str,
+    initial_profile: str,
+    backend: str,
+    method: str,
+    lang: str,
+    suffix: str,
+    runner_kind: str,
+    runner_name: str,
+) -> tuple[str, str, str, str, dict[str, Any]]:
+    resolved_profile = initial_profile
+    resolved_backend = backend
+    resolved_method = method
+    resolved_lang = lang
+    control = _initial_execution_control(
+        requested_profile=requested_profile,
+        resolved_profile=initial_profile,
+        backend=backend,
+        method=method,
+        lang=lang,
+        suffix=suffix,
+        runner_name=runner_name,
+    )
+    control["llm_preplan_enabled"] = True
+    control["llm_preplan_status"] = preplan.get("status")
+    control["llm_recommendation"] = {
+        "profile": preplan.get("recommended_profile"),
+        "runner": preplan.get("recommended_runner"),
+        "backend": preplan.get("recommended_backend"),
+        "method": preplan.get("recommended_method"),
+        "lang": preplan.get("recommended_lang"),
+        "confidence": preplan.get("confidence"),
+    }
+    if preplan.get("status") != "completed":
+        control["ignored"].append({"field": "*", "reason": "llm_preplan_failed_or_unavailable"})
+        return resolved_profile, resolved_backend, resolved_method, resolved_lang, control
+
+    requested_runner = _safe_choice(preplan.get("recommended_runner"), RUNNER_CHOICES)
+    if requested_runner and requested_runner != runner_kind and suffix not in NATIVE_SUFFIXES:
+        control["ignored"].append(
+            {
+                "field": "runner",
+                "recommended": requested_runner,
+                "current": runner_kind,
+                "reason": "runner is fixed by the constructed runner; choose --runner before execution",
+            }
+        )
+
+    recommended_profile = _safe_choice(preplan.get("recommended_profile"), PROFILE_CHOICES)
+    if recommended_profile and requested_profile == "auto" and recommended_profile != resolved_profile:
+        control["applied"].append(
+            {"field": "profile", "from": resolved_profile, "to": recommended_profile, "reason": "llm_preplan"}
+        )
+        resolved_profile = recommended_profile
+    elif recommended_profile and requested_profile != "auto" and recommended_profile != resolved_profile:
+        control["ignored"].append(
+            {
+                "field": "profile",
+                "recommended": recommended_profile,
+                "current": resolved_profile,
+                "reason": "explicit profile was supplied",
+            }
+        )
+
+    if suffix in NATIVE_SUFFIXES:
+        for field in ["backend", "method"]:
+            value = preplan.get(f"recommended_{field}")
+            if value:
+                control["ignored"].append(
+                    {
+                        "field": field,
+                        "recommended": value,
+                        "current": backend if field == "backend" else method,
+                        "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser",
+                    }
+                )
+    else:
+        recommended_backend = _safe_choice(preplan.get("recommended_backend"), BACKEND_CHOICES)
+        if recommended_backend and backend == "pipeline" and recommended_backend != resolved_backend:
+            control["applied"].append(
+                {"field": "backend", "from": resolved_backend, "to": recommended_backend, "reason": "llm_preplan"}
+            )
+            resolved_backend = recommended_backend
+        elif recommended_backend and backend != "pipeline" and recommended_backend != resolved_backend:
+            control["ignored"].append(
+                {
+                    "field": "backend",
+                    "recommended": recommended_backend,
+                    "current": resolved_backend,
+                    "reason": "explicit backend was supplied",
+                }
+            )
+
+        recommended_method = _safe_choice(preplan.get("recommended_method"), METHOD_CHOICES)
+        if recommended_method and method == "auto" and recommended_method != resolved_method:
+            control["applied"].append(
+                {"field": "method", "from": resolved_method, "to": recommended_method, "reason": "llm_preplan"}
+            )
+            resolved_method = recommended_method
+        elif recommended_method and method != "auto" and recommended_method != resolved_method:
+            control["ignored"].append(
+                {
+                    "field": "method",
+                    "recommended": recommended_method,
+                    "current": resolved_method,
+                    "reason": "explicit method was supplied",
+                }
+            )
+
+    recommended_lang = _safe_choice(preplan.get("recommended_lang"), LANG_CHOICES)
+    if recommended_lang and lang == "ch" and recommended_lang != resolved_lang:
+        control["applied"].append(
+            {"field": "lang", "from": resolved_lang, "to": recommended_lang, "reason": "llm_preplan"}
+        )
+        resolved_lang = recommended_lang
+    elif recommended_lang and lang != "ch" and recommended_lang != resolved_lang:
+        control["ignored"].append(
+            {
+                "field": "lang",
+                "recommended": recommended_lang,
+                "current": resolved_lang,
+                "reason": "explicit language was supplied",
+            }
+        )
+
+    control["resolved"] = {
+        "profile": resolved_profile,
+        "backend": resolved_backend,
+        "method": resolved_method,
+        "lang": resolved_lang,
+        "runner": "native" if suffix in NATIVE_SUFFIXES else runner_kind,
+    }
+    return resolved_profile, resolved_backend, resolved_method, resolved_lang, control
+
+
+def _safe_choice(value: Any, allowed: set[str]) -> str:
+    text = str(value or "").strip().lower()
+    return text if text in allowed else ""
+
+
+def _merge_plan(base_plan: list[str], llm_plan: Any) -> list[str]:
+    merged = list(base_plan)
+    if isinstance(llm_plan, list):
+        for raw_step in llm_plan:
+            step = str(raw_step).strip()
+            if step and step not in merged:
+                merged.append(f"LLM preplan: {step}")
+    return merged
 
 
 def _build_summary(result: AgentResult) -> str:
@@ -278,6 +572,9 @@ def _build_summary(result: AgentResult) -> str:
         "",
         f"- Task: {result.task}",
         f"- Profile: {result.profile}",
+        f"- Execution method: {result.execution_control.get('resolved', {}).get('method', 'unknown')}",
+        f"- Execution backend: {result.execution_control.get('resolved', {}).get('backend', 'unknown')}",
+        f"- LLM preplan applied changes: {len(result.execution_control.get('applied', []))}",
         f"- Input: `{result.input_file}`",
         f"- Quality: {result.quality.get('status')} ({result.quality.get('score')}/100)",
         f"- Content blocks: {summary.get('item_count', 0)}",
@@ -302,6 +599,22 @@ def _build_summary(result: AgentResult) -> str:
     if result.llm_analysis.get("enabled"):
         llm_plan = result.llm_analysis.get("execution_plan", [])
         lines.extend(["", "## LLM Agent Analysis", ""])
+        preplan = result.llm_analysis.get("pre_execution_plan", {})
+        if isinstance(preplan, dict):
+            lines.append(
+                "Pre-execution control: "
+                f"profile={preplan.get('recommended_profile', '')}, "
+                f"runner={preplan.get('recommended_runner', '')}, "
+                f"method={preplan.get('recommended_method', '')}, "
+                f"backend={preplan.get('recommended_backend', '')}"
+            )
+            applied = result.execution_control.get("applied", [])
+            if applied:
+                lines.append("Applied LLM control changes:")
+                for item in applied[:8]:
+                    if isinstance(item, dict):
+                        lines.append(f"- {item.get('field')}: {item.get('from')} -> {item.get('to')}")
+            lines.append("")
         understanding = result.llm_analysis.get("task_understanding")
         if understanding:
             lines.append(str(understanding))

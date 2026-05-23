@@ -8,7 +8,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 
 from . import __version__
-from .agent import MinerUDataAgent
+from .agent import AgentRunError, MinerUDataAgent
 from .llm_client import DeepSeekLLMClient, ModelScopeLLMClient
 from .mineru_client import MinerUAgentAPIRunner, MinerURunner
 
@@ -80,6 +80,19 @@ async def parse_document(
             method=method,
             lang=lang,
         )
+    except AgentRunError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "parse_failed",
+                "message": str(exc)[-1000:],
+                "run_id": exc.run_id,
+                "output_dir": exc.output_dir,
+                "trace_path": exc.trace_path,
+                "result_path": exc.result_path,
+                "summary_path": exc.summary_path,
+            },
+        ) from exc
     except Exception as exc:
         raise HTTPException(status_code=500, detail={"error": "parse_failed", "message": str(exc)[-1000:]}) from exc
     response = result.to_jsonable()

@@ -70,6 +70,27 @@ def test_parse_api_rejects_oversized_upload(tmp_path: Path, monkeypatch) -> None
     assert response.json()["detail"]["error"] == "upload_too_large"
 
 
+def test_parse_api_failure_returns_trace_path(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE", str(tmp_path))
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    client = TestClient(app)
+    response = client.post(
+        "/v1/parse",
+        data={
+            "task": "解析文档",
+            "llm": "deepseek",
+            "output_root": str(tmp_path / "api_runs"),
+        },
+        files={"file": ("report.html", "<html><body>ok</body></html>", "text/html")},
+    )
+
+    assert response.status_code == 500
+    detail = response.json()["detail"]
+    assert detail["error"] == "parse_failed"
+    assert Path(detail["trace_path"]).exists()
+    assert detail["run_id"]
+
+
 def test_parse_api_rejects_output_root_outside_allowed_base(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE", str(tmp_path / "allowed"))
     client = TestClient(app)

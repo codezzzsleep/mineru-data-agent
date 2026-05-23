@@ -98,6 +98,33 @@ def test_ocr_retry_failure_keeps_initial_result_and_audit_record(tmp_path: Path)
     assert "recovery_error" in retry_step["detail"]
 
 
+def test_llm_preplan_controls_profile_method_and_trace(tmp_path: Path) -> None:
+    input_path = tmp_path / "scan.pdf"
+    input_path.write_bytes(b"%PDF-1.4\n% scanned")
+    runner = _RetryRunner()
+    llm = _PreplanningLLM()
+
+    result = MinerUDataAgent(mineru_runner=runner, llm_client=llm).run(
+        input_path,
+        tmp_path / "runs",
+        task="解析低质量扫描 PDF，抽取报告日期并保留质量日志",
+        profile="auto",
+        method="auto",
+    )
+
+    assert runner.methods == ["ocr"]
+    assert result.profile == "low_quality_ocr"
+    assert "LLM preplan: Force OCR parsing for scanned input" in result.plan
+    assert result.execution_control["resolved"]["method"] == "ocr"
+    assert {"field": "method", "from": "auto", "to": "ocr", "reason": "llm_preplan"} in result.execution_control["applied"]
+    assert result.llm_analysis["pre_execution_plan"]["target_schema"]["报告日期"] == "date"
+    assert llm.post_parse_profile == "low_quality_ocr"
+    trace = json.loads(Path(result.trace_path).read_text(encoding="utf-8"))
+    step_names = [step["name"] for step in trace["steps"]]
+    assert step_names.index("llm_pre_execution_planning") < step_names.index("mineru_parse")
+    assert trace["tool_calls"][0]["tool"] == "fake-llm-preplan"
+
+
 class _RetryRunner:
     def __init__(self) -> None:
         self.methods: list[str] = []
@@ -176,3 +203,53 @@ class _RetryFailingRunner(_RetryRunner):
             )
             raise MinerUParseError("simulated OCR retry failure", call)
         return super().parse(input_path, output_dir, backend=backend, method=method, lang=lang)
+
+
+class _PreplanningLLM:
+    def __init__(self) -> None:
+        self.post_parse_profile = ""
+
+    def plan_execution(self, **kwargs: object) -> tuple[dict, ToolCall]:
+        return (
+            {
+                "enabled": True,
+                "status": "completed",
+                "task_understanding": "scanned low quality pdf",
+                "recommended_profile": "low_quality_ocr",
+                "recommended_runner": "cli",
+                "recommended_backend": "pipeline",
+                "recommended_method": "ocr",
+                "recommended_lang": "ch",
+                "execution_plan": ["Force OCR parsing for scanned input"],
+                "target_schema": {"报告日期": "date"},
+                "verification_focus": ["date coverage"],
+                "recovery_policy": ["manual review if OCR is sparse"],
+                "confidence": 0.9,
+            },
+            ToolCall(
+                tool="fake-llm-preplan",
+                command=["fake-llm", "preplan"],
+                status="completed",
+                elapsed_seconds=0.01,
+            ),
+        )
+
+    def analyze(self, **kwargs: object) -> tuple[dict, ToolCall]:
+        self.post_parse_profile = str(kwargs.get("profile"))
+        return (
+            {
+                "status": "completed",
+                "task_understanding": "post parse review",
+                "execution_plan": ["review OCR quality"],
+                "target_schema": {"报告日期": "date"},
+                "verification_focus": ["trace"],
+                "risk_findings": [],
+                "recovery_suggestions": [],
+            },
+            ToolCall(
+                tool="fake-llm",
+                command=["fake-llm", "analyze"],
+                status="completed",
+                elapsed_seconds=0.01,
+            ),
+        )

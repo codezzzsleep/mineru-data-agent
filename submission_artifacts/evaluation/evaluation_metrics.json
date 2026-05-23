@@ -1,0 +1,471 @@
+{
+  "schema_version": "2026-05-23",
+  "labels_path": "examples\\evaluation\\labels.json",
+  "project_root": "<PROJECT_ROOT>",
+  "case_count": 8,
+  "aggregate": {
+    "expected_fields": 24,
+    "matched_fields": 24,
+    "field_accuracy": 1.0,
+    "profile_checks": 8,
+    "profile_matches": 8,
+    "profile_accuracy": 1.0,
+    "structure_gates": 8,
+    "structure_gates_passed": 8,
+    "structure_gate_pass_rate": 1.0,
+    "quality_gates": 8,
+    "quality_gates_passed": 8,
+    "quality_gate_pass_rate": 1.0,
+    "provenance_gates": 8,
+    "provenance_gates_passed": 8,
+    "provenance_gate_pass_rate": 1.0
+  },
+  "cases": [
+    {
+      "id": "html_financial_report",
+      "result_path": "submission_artifacts\\cases\\case_1_financial_report\\result.json",
+      "profile": "financial_report",
+      "expected_profile": "financial_report",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "报告日期",
+          "expected": "2026-04-30",
+          "actual": "2026-04-30",
+          "matched": true
+        },
+        {
+          "field": "公司名称",
+          "expected": "华东制造有限公司",
+          "actual": "华东制造有限公司",
+          "matched": true
+        },
+        {
+          "field": "处理建议",
+          "expected": {
+            "contains": "合计行"
+          },
+          "actual": "将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 2,
+          "tables": 1,
+          "numeric_facts": 7,
+          "retrieval_chunks": 3
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      }
+    },
+    {
+      "id": "html_low_quality_ocr",
+      "result_path": "submission_artifacts\\cases\\case_2_low_quality_ocr\\result.json",
+      "profile": "low_quality_ocr",
+      "expected_profile": "low_quality_ocr",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "报告日期",
+          "expected": "2026-05-18",
+          "actual": "2026-05-18",
+          "matched": true
+        },
+        {
+          "field": "文档来源",
+          "expected": {
+            "contains": "拍照件"
+          },
+          "actual": "车间安全巡检拍照件，存在轻微倾斜、局部反光、签章覆盖和手写批注。",
+          "matched": true
+        },
+        {
+          "field": "处理建议",
+          "expected": {
+            "contains": "VLM"
+          },
+          "actual": "对低清晰度区域启用更高分辨率重扫或 VLM 复核，并把噪声行写入质量报告。",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 2,
+          "tables": 0,
+          "numeric_facts": 2,
+          "retrieval_chunks": 2
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      }
+    },
+    {
+      "id": "html_contract",
+      "result_path": "submission_artifacts\\cases\\case_3_standard_contract\\result.json",
+      "profile": "standard_or_contract",
+      "expected_profile": "standard_or_contract",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "合同编号",
+          "expected": "DPA-2026-0519",
+          "actual": "DPA-2026-0519",
+          "matched": true
+        },
+        {
+          "field": "签署日期",
+          "expected": "2026-05-19",
+          "actual": "2026-05-19",
+          "matched": true
+        },
+        {
+          "field": "处理建议",
+          "expected": {
+            "contains": "合规审计"
+          },
+          "actual": "保留章节标题、条款编号和源文件证据，便于合规审计。",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 5,
+          "tables": 0,
+          "numeric_facts": 1,
+          "retrieval_chunks": 5
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      }
+    },
+    {
+      "id": "html_workflow",
+      "result_path": "submission_artifacts\\cases\\case_4_workflow_diagram\\result.json",
+      "profile": "workflow_or_diagram",
+      "expected_profile": "workflow_or_diagram",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "报告日期",
+          "expected": "2026-05-20",
+          "actual": "2026-05-20",
+          "matched": true
+        },
+        {
+          "field": "流程名称",
+          "expected": "正极浆料涂布与烘干流程",
+          "actual": "正极浆料涂布与烘干流程",
+          "matched": true
+        },
+        {
+          "field": "异常提示",
+          "expected": {
+            "contains": "温区 3"
+          },
+          "actual": "若温区 3 连续 5 分钟超过 92 摄氏度，需暂停收卷并复核传感器。",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 2,
+          "tables": 0,
+          "numeric_facts": 4,
+          "retrieval_chunks": 2
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      }
+    },
+    {
+      "id": "mineru_cli_financial_pdf",
+      "result_path": "submission_artifacts\\mineru_cases\\case_mineru_cli_financial_pdf\\result.json",
+      "profile": "financial_report",
+      "expected_profile": "financial_report",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Document ID",
+          "expected": "FIN-2026-CASE-01",
+          "actual": "FIN-2026-CASE-01",
+          "matched": true
+        },
+        {
+          "field": "Reporting Period",
+          "expected": "2024-01-01 to 2024-12-31",
+          "actual": "2024-01-01 to 2024-12-31",
+          "matched": true
+        },
+        {
+          "field": "Owner",
+          "expected": "Finance Data Office",
+          "actual": "Finance Data Office",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 4,
+          "tables": 1,
+          "numeric_facts": 1,
+          "retrieval_chunks": 2
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "page",
+        "actual": "page",
+        "failures": []
+      }
+    },
+    {
+      "id": "mineru_cli_contract_pdf",
+      "result_path": "submission_artifacts\\mineru_cases\\case_mineru_cli_contract_pdf\\result.json",
+      "profile": "standard_or_contract",
+      "expected_profile": "standard_or_contract",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Contract No",
+          "expected": "STD-2026-MINERU-07",
+          "actual": "STD-2026-MINERU-07",
+          "matched": true
+        },
+        {
+          "field": "Effective Date",
+          "expected": "2026-05-20",
+          "actual": "2026-05-20",
+          "matched": true
+        },
+        {
+          "field": "Signed by",
+          "expected": "Data Governance Office / Vendor Engineering Lead",
+          "actual": "Data Governance Office / Vendor Engineering Lead",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 6,
+          "tables": 1,
+          "numeric_facts": 1,
+          "retrieval_chunks": 2
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "page",
+        "actual": "page",
+        "failures": []
+      }
+    },
+    {
+      "id": "office_docx_standard",
+      "result_path": "submission_artifacts\\office_cases\\case_docx_standard_review\\result.json",
+      "profile": "standard_or_contract",
+      "expected_profile": "standard_or_contract",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Document ID",
+          "expected": "DOCX-2026-STD-02",
+          "actual": "DOCX-2026-STD-02",
+          "matched": true
+        },
+        {
+          "field": "Effective Date",
+          "expected": "2026-05-23",
+          "actual": "2026-05-23",
+          "matched": true
+        },
+        {
+          "field": "Owner",
+          "expected": "Data Governance Office",
+          "actual": "Data Governance Office",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 3,
+          "tables": 1,
+          "numeric_facts": 3,
+          "retrieval_chunks": 3
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      }
+    },
+    {
+      "id": "office_pptx_workflow",
+      "result_path": "submission_artifacts\\office_cases\\case_pptx_workflow_review\\result.json",
+      "profile": "workflow_or_diagram",
+      "expected_profile": "workflow_or_diagram",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Inspection Date",
+          "expected": "2026-05-23",
+          "actual": "2026-05-23",
+          "matched": true
+        },
+        {
+          "field": "Goal",
+          "expected": {
+            "contains": "slide-level provenance"
+          },
+          "actual": "verify slide-level provenance, execution matrices, and recovery notes.",
+          "matched": true
+        },
+        {
+          "field": "Risk",
+          "expected": {
+            "contains": "visual model"
+          },
+          "actual": "charts still require a visual model follow-up.",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 3,
+          "tables": 1,
+          "numeric_facts": 6,
+          "retrieval_chunks": 4
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "page",
+        "actual": "page",
+        "failures": []
+      }
+    }
+  ]
+}

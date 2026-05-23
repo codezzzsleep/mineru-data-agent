@@ -2,6 +2,7 @@ from mineru_data_agent.llm_client import (
     _chat_completions_url,
     _extract_message_parts,
     _normalize_analysis,
+    _normalize_preplan,
     _parse_json_object,
     _parser_context,
     _sanitize_error_text,
@@ -53,6 +54,24 @@ def test_normalize_analysis_downgrades_llm_error_without_quality_error() -> None
     analysis = {"risk_findings": [{"level": "error", "message": "model overcalled this"}]}
     normalized = _normalize_analysis(analysis, {"issues": [{"level": "info", "code": "document_level_provenance"}]})
     assert normalized["risk_findings"][0]["level"] == "warning"
+
+
+def test_normalize_preplan_coerces_scheduler_fields() -> None:
+    plan = _normalize_preplan(
+        {
+            "recommended_profile": " low_quality_ocr ",
+            "recommended_method": "ocr",
+            "execution_plan": ["parse", 2],
+            "target_schema": {"报告日期": "date"},
+            "verification_focus": "bad",
+            "confidence": "1.7",
+        }
+    )
+    assert plan["recommended_profile"] == "low_quality_ocr"
+    assert plan["execution_plan"] == ["parse", "2"]
+    assert plan["verification_focus"] == []
+    assert plan["target_schema"] == {"报告日期": "date"}
+    assert plan["confidence"] == 1.0
 
 
 def test_sanitize_error_text_removes_api_key_and_bearer_token() -> None:

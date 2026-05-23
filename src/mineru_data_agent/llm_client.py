@@ -164,6 +164,131 @@ class OpenAICompatibleLLMClient:
         )
         return analysis, call
 
+    def plan_execution(
+        self,
+        *,
+        task: str,
+        input_metadata: dict[str, Any],
+        inferred_profile: str,
+        requested_profile: str,
+        requested_backend: str,
+        requested_method: str,
+        requested_lang: str,
+        current_runner: str,
+    ) -> tuple[dict[str, Any], ToolCall]:
+        if not self.api_key:
+            raise RuntimeError(f"{self.key_env_name} is required when {self.provider} LLM mode is enabled.")
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "You are the pre-execution scheduler for a MinerU Data Agent. "
+                        "You must decide a safe parsing strategy before any document parsing happens. "
+                        "Return strict JSON only. Do not include markdown fences."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        {
+                            "objective": (
+                                "Classify the task, choose a parsing profile, recommend runner/backend/method/lang, "
+                                "define a target schema, and list validation and recovery actions. "
+                                "Only recommend method values from auto, ocr, txt. Prefer ocr for scanned or low quality "
+                                "PDF/image tasks, and keep auto when uncertain."
+                            ),
+                            "required_json_schema": {
+                                "task_understanding": "string",
+                                "recommended_profile": (
+                                    "financial_report|standard_or_contract|workflow_or_diagram|low_quality_ocr|general_document"
+                                ),
+                                "recommended_runner": "cli|agent-api|native",
+                                "recommended_backend": "pipeline|vlm-transformers|vlm-sglang-engine|vlm-sglang-client",
+                                "recommended_method": "auto|ocr|txt",
+                                "recommended_lang": "ch|en",
+                                "execution_plan": ["step strings"],
+                                "target_schema": {"field_name": "description"},
+                                "verification_focus": ["check strings"],
+                                "recovery_policy": ["recovery action strings"],
+                                "confidence": "0.0-1.0",
+                            },
+                            "task": task,
+                            "input_metadata": input_metadata,
+                            "inferred_profile": inferred_profile,
+                            "requested_profile": requested_profile,
+                            "requested_backend": requested_backend,
+                            "requested_method": requested_method,
+                            "requested_lang": requested_lang,
+                            "current_runner": current_runner,
+                        },
+                        ensure_ascii=False,
+                    ),
+                },
+            ],
+            "temperature": 0.1,
+        }
+        start = perf_counter()
+        try:
+            with httpx.Client(timeout=self.timeout_seconds) as client:
+                response = client.post(
+                    _chat_completions_url(self.base_url),
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json=payload,
+                )
+                response.raise_for_status()
+                data = response.json()
+            content, reasoning_content = _extract_message_parts(data)
+            plan = _normalize_preplan(_parse_json_object(content))
+            if reasoning_content:
+                plan["reasoning_content"] = reasoning_content
+            status = "completed"
+            plan.setdefault("status", status)
+            stderr = ""
+        except Exception as exc:
+            error_text = _sanitize_error_text(str(exc), self.api_key)
+            plan = {
+                "status": "failed",
+                "error": error_text,
+                "task_understanding": "",
+                "recommended_profile": "",
+                "recommended_runner": "",
+                "recommended_backend": "",
+                "recommended_method": "",
+                "recommended_lang": "",
+                "execution_plan": [],
+                "target_schema": {},
+                "verification_focus": [],
+                "recovery_policy": [],
+                "confidence": 0.0,
+            }
+            status = "failed"
+            stderr = error_text[-4000:]
+
+        call = ToolCall(
+            tool=f"{self.provider}-llm-preplan",
+            command=[f"{self.provider}-chat-completions", self.model, "pre-execution"],
+            status=status,
+            elapsed_seconds=round(perf_counter() - start, 3),
+            stdout_tail=json.dumps(
+                {
+                    "provider": self.provider,
+                    "model": self.model,
+                    "base_url": self.base_url,
+                    "preplan": _safe_preplan_preview(plan),
+                },
+                ensure_ascii=False,
+                indent=2,
+            )[-4000:],
+            stderr_tail=stderr,
+        )
+        return plan, call
+
 
 class DeepSeekLLMClient(OpenAICompatibleLLMClient):
     def __init__(self, **kwargs: Any) -> None:
@@ -255,6 +380,32 @@ def _normalize_analysis(analysis: dict[str, Any], quality: dict[str, Any]) -> di
     return analysis
 
 
+def _normalize_preplan(plan: dict[str, Any]) -> dict[str, Any]:
+    clean = dict(plan)
+    for key in ["execution_plan", "verification_focus", "recovery_policy"]:
+        raw_items = clean.get(key, [])
+        clean[key] = [str(item) for item in raw_items if isinstance(item, (str, int, float))] if isinstance(raw_items, list) else []
+    if not isinstance(clean.get("target_schema"), dict):
+        clean["target_schema"] = {}
+    else:
+        clean["target_schema"] = {str(key): str(value) for key, value in clean["target_schema"].items()}
+    for key in [
+        "task_understanding",
+        "recommended_profile",
+        "recommended_runner",
+        "recommended_backend",
+        "recommended_method",
+        "recommended_lang",
+    ]:
+        clean[key] = str(clean.get(key, "")).strip()
+    try:
+        confidence = float(clean.get("confidence", 0.0))
+    except (TypeError, ValueError):
+        confidence = 0.0
+    clean["confidence"] = max(0.0, min(1.0, confidence))
+    return clean
+
+
 def _safe_analysis_preview(analysis: dict[str, Any]) -> dict[str, Any]:
     return {
         "status": analysis.get("status", "completed"),
@@ -265,6 +416,22 @@ def _safe_analysis_preview(analysis: dict[str, Any]) -> dict[str, Any]:
         "risk_findings": analysis.get("risk_findings", [])[:10]
         if isinstance(analysis.get("risk_findings"), list)
         else [],
+    }
+
+
+def _safe_preplan_preview(plan: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "status": plan.get("status", "completed"),
+        "recommended_profile": plan.get("recommended_profile"),
+        "recommended_runner": plan.get("recommended_runner"),
+        "recommended_backend": plan.get("recommended_backend"),
+        "recommended_method": plan.get("recommended_method"),
+        "recommended_lang": plan.get("recommended_lang"),
+        "execution_plan": plan.get("execution_plan", [])[:10] if isinstance(plan.get("execution_plan"), list) else [],
+        "target_schema_keys": list(plan.get("target_schema", {}).keys())[:20]
+        if isinstance(plan.get("target_schema"), dict)
+        else [],
+        "confidence": plan.get("confidence"),
     }
 
 

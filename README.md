@@ -10,6 +10,7 @@
 - DOCX/PPTX 文档的轻量结构化适配，保留 Word 章节/表格与 PPT slide-level provenance
 - Markdown、内容块、表格、键值对、数字事实、日期/建议/异常信号抽取
 - 文本质量、页码溯源、财报数字、合同/规范结构等校验
+- 可选 DeepSeek/ModelScope 预执行调度：在解析前建议 profile、runner、backend、method、语言、目标 schema 和恢复策略，并把安全白名单内的建议实际应用到本次运行
 - 质量异常后的自动恢复执行：编码噪声清理二次 pass，以及 PDF/图片类低质量结果的 OCR 重试择优
 - 面向检索/评测入库的 `retrieval_chunks.jsonl` 导出
 - `result.json`、`trace.json`、`summary.md` 三类可复查输出
@@ -169,7 +170,7 @@ $env:MINERU_ROOT\.venv\Scripts\python.exe .\scripts\generate_office_fixtures.py
 
 ### 5. 可选大模型增强
 
-项目支持接入 DeepSeek 官方 OpenAI-compatible API，也支持 ModelScope 的 OpenAI-compatible 推理入口。默认关闭，不影响基础复现；开启后会增强任务理解、执行计划建议、动态 schema、结果复核和异常恢复建议。
+项目支持接入 DeepSeek 官方 OpenAI-compatible API，也支持 ModelScope 的 OpenAI-compatible 推理入口。默认关闭，不影响基础复现；开启后会先执行 `llm_pre_execution_planning`，在解析前建议 profile、runner、backend、method、语言、目标 schema 和恢复策略。系统只会应用白名单内且未被用户显式锁定的建议，例如把低质量扫描 PDF 的 `method=auto` 调整为 `method=ocr`；runner 建议会被记录，但实际 runner 仍由 `--runner` 或 API 参数控制。解析后还会继续生成任务理解、动态 schema、复核重点和异常恢复建议。
 
 先设置环境变量，不要把 key 写进代码或提交包：
 
@@ -217,7 +218,7 @@ data-agent run \
   --task "解析财报 PDF，抽取关键数字并检查合计行"
 ```
 
-API 调用时传 `llm=deepseek` 或 `llm=modelscope` 即可。输出中的 `llm_analysis` 会记录任务理解、建议计划、目标 schema、复核重点和恢复建议。如果服务返回 `reasoning_content`，也会进入 `llm_analysis`。
+API 调用时传 `llm=deepseek` 或 `llm=modelscope` 即可。输出中的 `execution_control` 会记录 LLM 预调度建议、实际应用/忽略的参数变更和最终解析参数；`llm_analysis.pre_execution_plan` 会保留解析前计划，`llm_analysis.post_parse_analysis` 会保留解析后复核。如果服务返回 `reasoning_content`，也会进入 `llm_analysis`。
 
 本提交包保存了一次实际启用 ModelScope DeepSeek-V4-Flash 的证据，见 `submission_artifacts/llm_cases/`。该案例的 `trace.json` 记录 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`。API key 只通过环境变量传入，没有写入输出文件。
 
@@ -238,6 +239,14 @@ runs/<run_id>/
 ```
 
 在线 Agent API 后端会生成 `mineru/<file>/agent_api/`，包含 Markdown、轻量内容块和 API 响应日志；本地 CLI 后端会保留 MinerU 的完整 artifact。
+
+带标注评测指标可通过以下命令生成：
+
+```bash
+python scripts/build_evaluation_report.py
+```
+
+当前报告位于 `submission_artifacts/evaluation/`，覆盖 8 个提交案例、24 个标注字段、profile 命中、结构门槛、质量门槛和 provenance 门槛。
 
 ## Recommended HeyWhale Setup
 
@@ -273,7 +282,7 @@ runs/<run_id>/
 - `--runner agent-api`：调用 MinerU 在线 Agent API，免 Token、资源轻、启动快，适合先完成比赛演示闭环。
 - 在线 Agent API 的轻量 Markdown 路径不保证页级 provenance；系统会在 `quality.issues` 中用 `no_page_provenance` 显式提示。
 - `--runner cli`：调用本地 MinerU CLI，适合 GPU 镜像、大文件、完整中间结果和可视化 PDF artifact。
-- `--llm deepseek`：可选 DeepSeek v4-flash 官方推理层，增强 Agent 规划和结果复核；不开启时项目仍可完整运行。
+- `--llm deepseek`：可选 DeepSeek v4-flash 官方推理层，参与解析前调度和解析后复核；不开启时项目仍可完整运行。
 - `--llm modelscope`：可选 ModelScope 推理入口，默认模型 `deepseek-ai/DeepSeek-V4-Flash`。
 
-当前提交包内的强复现证据分为五类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通真实 PDF；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议。合成 PDF/Office 样本不能替代真实客户材料的长期泛化评测。
+当前提交包内的强复现证据分为六类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通真实 PDF；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议；1 份带标注评测报告证明 8 个案例的 24 个标注字段、profile、结构门槛、质量门槛和 provenance 门槛均可复查。合成 PDF/Office 样本不能替代真实客户材料的长期泛化评测。

@@ -4,6 +4,7 @@
 - [x] 压缩包提交路径已完整，可用 `dist/mineru-data-agent-submission.zip` 提交
 - [x] 开源发布材料已准备：`LICENSE`、`.gitignore`、`docs/OPEN_SOURCE_RELEASE.md`
 - [x] GitHub 公开仓库已创建：https://github.com/codezzzsleep/mineru-data-agent
+- [x] GitHub Actions 测试工作流已加入，push/PR 会运行 pytest
 - [x] README 写清安装、CLI、API 和输出说明
 - [x] 技术报告包含系统架构、执行机制、质量控制、应用价值
 - [x] 赛题对齐说明包含官方 MDIC2026 要求、项目实现映射和在线 API 边界
@@ -11,7 +12,9 @@
 - [x] 部署与 API 文档写清环境、启动、接口、参数、返回格式和日志路径
 - [x] 明确说明在线 Agent API 后端与本地 MinerU CLI 后端的适用边界
 - [x] 明确说明 DeepSeek/ModelScope 大模型是可选增强，API key 通过环境变量配置且不进入提交包
+- [x] LLM 已接入解析前调度，输出 `execution_control`、`llm_analysis.pre_execution_plan` 和 `llm_pre_execution_planning` trace 步骤
 - [x] 至少 1 个提交级结果实际启用 LLM，见 `submission_artifacts/llm_cases/`
+- [x] 带标注评测指标已生成，见 `submission_artifacts/evaluation/`
 - [x] 至少 5 个典型任务案例，见 `submission_artifacts/cases/`
 - [x] 每个案例包含输入、输出、日志和关键 artifact
 - [x] API `/health` 可访问
@@ -19,6 +22,7 @@
 - [x] API 返回的 `trace_path`、`summary_path` 和 artifact 路径在请求结束后仍存在
 - [x] trace 中包含任务输入、执行步骤、工具调用、最终输出
 - [x] 失败路径也会写出 `trace.json`，记录失败步骤和错误摘要
+- [x] API 失败响应会返回失败 run 的 `trace_path`，便于评审脚本定位证据
 - [x] `result.json` 包含章节、表格、键值对、数字事实、日期/建议/异常语义信号
 - [x] 批处理 `batch_report.json` 可证明失败不中断和多任务调度能力
 - [x] `retrieval/retrieval_chunks.jsonl` 可用于检索/向量库入库

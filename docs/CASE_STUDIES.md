@@ -104,11 +104,27 @@ LLM 在该案例中的职责是：
 
 该案例输入仍是 HTML fixture，由本地 HTML 结构化模块解析。LLM 输出明确记录了这一点，避免把该案例包装成 MinerU PDF 解析证据。
 
-## 6. 边界说明
+当前代码已把 LLM 从单纯解析后复核前移到解析前调度。开启 `--llm deepseek` 或 `--llm modelscope` 时，trace 会新增 `llm_pre_execution_planning`，结果会新增 `execution_control` 和 `llm_analysis.pre_execution_plan`，记录模型建议的 profile、runner、backend、method、语言、目标 schema 和恢复策略；系统只应用安全白名单内且未被用户显式锁定的建议。
+
+## 6. 带标注评测指标
+
+评测报告位置：`submission_artifacts/evaluation/`
+
+该报告由 `examples/evaluation/labels.json` 和 `scripts/build_evaluation_report.py` 生成，覆盖 8 个提交案例、24 个标注字段、profile 命中、结构门槛、质量门槛和 provenance 门槛。当前已保存结果：
+
+- Expected-field accuracy: 100.0% (24/24)
+- Profile accuracy: 100.0% (8/8)
+- Structure gate pass rate: 100.0% (8/8)
+- Quality gate pass rate: 100.0% (8/8)
+- Provenance gate pass rate: 100.0% (8/8)
+
+该评测不是完整 OCR 字符级标注集，但能把关键字段、结构输出和可追溯性变成可复跑指标，补足“只有案例展示、没有指标”的短板。
+
+## 7. 边界说明
 
 当前证据已经能证明项目具备 HTML/网页结构化处理闭环、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出能力。
 
 但目前仍有明确缺口：
 
 - PDF 文件级证据已扩展到 4 个，Office 文件级证据已扩展到 2 个，但其中多个样本是可公开提交的合成业务样本，还不足以证明真实客户材料的长期泛化能力。
-- Agent 规划目前仍以规则 profile 为主；虽然已补 LLM-enabled 证据和规则驱动自动恢复，但大模型还没有接入关键后端选择或 schema 驱动二次校验分支。
+- LLM 预调度已接入 profile/method/backend/lang 的安全控制，但 runner 的实际选择仍由部署参数控制，避免模型在运行中切换到当前环境不可用的后端。
