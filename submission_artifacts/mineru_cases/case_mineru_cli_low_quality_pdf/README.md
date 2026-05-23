@@ -2,6 +2,8 @@
 
 This directory preserves a real MinerU CLI run for a low-quality scanned PDF scenario.
 
+Boundary statement: `small_ocr.pdf` is a MinerU demo fixture referenced from the local MinerU demo directory, not customer material. The quality score is rule-based and should not be read as OCR character accuracy.
+
 - Source run: runs\mineru_cli_refresh\4568109b3cc5
 - Input copied: True
 - Original input path: <MINERU_ROOT>\demo\pdfs\small_ocr.pdf

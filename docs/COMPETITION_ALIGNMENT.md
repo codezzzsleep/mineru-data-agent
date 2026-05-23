@@ -1,5 +1,9 @@
 # 赛题对齐说明
 
+## 0. 证据边界
+
+本项目提交材料中的质量分是规则校验分，不是字段级、表格逐格或 OCR 字符级准确率。HTML/网页案例为自构造 fixture，用来验证 Data Agent 的规划、抽取、校验、恢复、trace 和 retrieval 产出；PDF 文件级 MinerU 证据另列在 `submission_artifacts/mineru_cases/`。财报、合同和流程图 PDF 为本项目生成的可公开提交样本，低质量扫描 PDF 为 MinerU demo fixture；这些样本证明工程链路和 artifact 可复查性，但不能等同于真实客户材料泛化评测。
+
 ## 1. 官方赛题定位
 
 官方 MDIC2026 页面将本项目对应到「赛道二：智能进化·Agent 能力评测赛道」，赛题名称为「数据智能体 Data Agent 构建」。

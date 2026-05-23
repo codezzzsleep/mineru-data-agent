@@ -1,7 +1,7 @@
 {
   "doc_id": "case_2_low_quality_ocr",
   "source_file": "<PROJECT_ROOT>\\examples\\cases\\case_2_low_quality_ocr.html",
-  "created_at": "2026-05-22T21:05:22.819973+00:00",
+  "created_at": "2026-05-23T05:05:22.819973+08:00",
   "output_files": {
     "chunks_jsonl": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\retrieval\\retrieval_chunks.jsonl",
     "manifest": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\retrieval\\retrieval_manifest.json",
@@ -10,6 +10,7 @@
   "schema": [
     "chunk_id",
     "page_no",
+    "pages",
     "content_type",
     "section_title",
     "chunk_text",
@@ -30,7 +31,7 @@
       "page_number"
     ],
     "skip_low_value_sections": true,
-    "merge_short_text": true,
+    "merge_short_text": "same-page only",
     "target_chunk_chars": "1200-3600"
   },
   "stats": {

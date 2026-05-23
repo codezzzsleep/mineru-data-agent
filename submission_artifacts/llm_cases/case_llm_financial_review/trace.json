@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-22T19:16:11.576728+00:00",
+  "created_at": "2026-05-23T03:16:11.576728+08:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-22T19:15:58.790971+00:00",
-      "ended_at": "2026-05-22T19:15:58.790971+00:00",
+      "started_at": "2026-05-23T03:15:58.790971+08:00",
+      "ended_at": "2026-05-23T03:15:58.790971+08:00",
       "detail": {
         "task": "解析财报密集数字表格，抽取报告日期、公司名称、关键数字、检查合计行，并由大模型给出复核计划、目标schema和风险恢复建议。注意：HTML fixture 由本地 HTML 结构化模块解析，不要写成 MinerU CLI/API 已解析；没有质量错误时不要输出 error 级风险。",
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html"
@@ -14,8 +14,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-22T19:15:58.790971+00:00",
-      "ended_at": "2026-05-22T19:15:58.861616+00:00",
+      "started_at": "2026-05-23T03:15:58.790971+08:00",
+      "ended_at": "2026-05-23T03:15:58.861616+08:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html"
       }
@@ -23,15 +23,31 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-22T19:15:58.861616+00:00",
-      "ended_at": "2026-05-22T19:15:58.861616+00:00",
-      "detail": {}
+      "started_at": "2026-05-23T03:15:58.861616+08:00",
+      "ended_at": "2026-05-23T03:15:58.861616+08:00",
+      "detail": {
+        "item_count": 8,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "html": 8
+        },
+        "section_count": 2,
+        "table_count": 1,
+        "key_value_count": 5,
+        "numeric_fact_count": 7,
+        "semantic_signal_counts": {
+          "dates": 1,
+          "recommendations": 2,
+          "anomaly_lines": 3
+        }
+      }
     },
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-22T19:15:58.861616+00:00",
-      "ended_at": "2026-05-22T19:15:58.862133+00:00",
+      "started_at": "2026-05-23T03:15:58.861616+08:00",
+      "ended_at": "2026-05-23T03:15:58.862133+08:00",
       "detail": {
         "profile": "financial_report"
       }
@@ -39,15 +55,27 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-22T19:15:58.862133+00:00",
-      "ended_at": "2026-05-22T19:15:58.865182+00:00",
-      "detail": {}
+      "started_at": "2026-05-23T03:15:58.862133+08:00",
+      "ended_at": "2026-05-23T03:15:58.865182+08:00",
+      "detail": {
+        "chunks_count": 3,
+        "by_type": {
+          "text": 2,
+          "table": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_quality.json"
+      }
     },
     {
       "name": "llm_agent_analysis",
       "status": "completed",
-      "started_at": "2026-05-22T19:15:58.865182+00:00",
-      "ended_at": "2026-05-22T19:16:11.573490+00:00",
+      "started_at": "2026-05-23T03:15:58.865182+08:00",
+      "ended_at": "2026-05-23T03:16:11.57349+08:00",
       "detail": {}
     }
   ],

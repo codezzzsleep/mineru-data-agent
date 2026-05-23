@@ -1,5 +1,9 @@
 # Technical Report
 
+## 0. 证据边界与评分口径
+
+本文中的 `quality.score` 是规则校验分：表示本次运行是否触发空结果、乱码、页级 provenance 缺失、profile 预期缺失、合计行不一致等阻断或警告规则。它不是字段级准确率、表格逐格准确率或 OCR 字符准确率。HTML/网页案例是自构造 fixture，用于验证 Agent 管线、恢复、trace 和 retrieval 导出；PDF 文件级证据见 `submission_artifacts/mineru_cases/`，其中多数 PDF 为合成公开提交样本，不能被表述为真实客户材料的长期泛化评测。
+
 ## 1. 背景与问题定义
 
 真实语料生产中，PDF、扫描件、行业标准、财报和网页材料往往包含复杂版面、跨页上下文、密集数字、表格和低质量 OCR 场景。单一模型直接抽取容易出现幻觉、漏页、数字错误和不可追溯的问题。
@@ -13,7 +17,7 @@
 1. Task Planner：根据任务描述和文件名推断场景 profile，例如财报、合同/规范、流程图、低质量 OCR。可选接入 DeepSeek v4-flash 或 ModelScope 上的 `deepseek-ai/DeepSeek-V4-Flash` 执行解析前调度，建议 profile、runner、backend、method、语言、目标 schema、复核重点和恢复策略。
 2. MinerU Adapter：支持在线 Agent API 与本地 MinerU CLI 两种后端。在线 API 用于低成本快速验证，本地 CLI 用于保留 Markdown、content list、middle json、layout pdf 等完整 artifact。在线 API 的轻量 Markdown 路径若缺少页级 provenance，会被质量校验明确标注。
 3. Structured Extractor：从 Markdown 与内容块中生成章节、表格、键值对、键值字典、数字事实、日期/建议/异常语义信号和页级溯源摘要。HTML 输入会保留标题层级、段落、列表和表格，避免网页语料被压平成不可复用纯文本。
-4. Retrieval Exporter：把解析结果整理为 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`，便于检索、向量库入库与评审复查。
+4. Retrieval Exporter：把解析结果整理为 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`，便于检索、向量库入库与评审复查。跨页文本不会再合并到第一页；chunk 保留 `page_no` 起始页和 `pages` 覆盖页列表。
 5. Quality Validator：检查空结果、编码噪声、页码覆盖、profile 预期、表格合计行等风险。
 6. API/CLI Layer：提供命令行、批处理和 FastAPI 接口，便于评审脚本调用和复现实验。
 
@@ -52,7 +56,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 
 在和鲸 MinerU GPU 镜像中，可根据资源情况切换为更强后端。项目通过 `MINERU_EXECUTABLE` 和 `MINERU_MODEL_SOURCE` 环境变量适配不同部署环境。
 
-本提交包内已纳入六类证据：5 个可复跑 HTML/网页 fixture 案例，用于稳定验证 Data Agent 的任务规划、结构化抽取、质量校验、自动恢复、trace 和检索导出；4 个 PDF 文件级本地 MinerU CLI 案例，位于 `submission_artifacts/mineru_cases/`，覆盖低质量扫描件、财报密集数字表、合同/标准条款和流程图文档，均包含 `mineru-cli` 工具调用、页级 provenance、MinerU 中间文件和 retrieval 导出；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例，位于 `submission_artifacts/agent_api_cases/`，证明无 GPU 条件下也能处理真实 PDF；2 个 DOCX/PPTX 文件级 native extractor 案例，位于 `submission_artifacts/office_cases/`，覆盖 Word 合规矩阵和 PowerPoint 工作流汇报；1 个 LLM-enabled 财报复核案例，位于 `submission_artifacts/llm_cases/case_llm_financial_review/`，包含 `modelscope-llm completed` 的 trace 和 `llm_analysis.enabled=true` 的结果；1 份带标注评测报告，位于 `submission_artifacts/evaluation/`，覆盖 8 个案例、24 个标注字段、profile 命中、结构门槛、质量门槛和 provenance 门槛。当前仍不能宣称已经覆盖真实客户材料的长期泛化评测。
+本提交包内已纳入六类证据：5 个可复跑 HTML/网页 fixture 案例，用于稳定验证 Data Agent 的任务规划、结构化抽取、质量校验、自动恢复、trace 和检索导出；4 个 PDF 文件级本地 MinerU CLI 案例，位于 `submission_artifacts/mineru_cases/`，覆盖低质量扫描件、财报密集数字表、合同/标准条款和流程图文档，均包含 `mineru-cli` 工具调用、页级 provenance、MinerU 中间文件和 retrieval 导出；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例，位于 `submission_artifacts/agent_api_cases/`，证明无 GPU 条件下也能处理 PDF fixture；2 个 DOCX/PPTX 文件级 native extractor 案例，位于 `submission_artifacts/office_cases/`，覆盖 Word 合规矩阵和 PowerPoint 工作流汇报；1 个 LLM-enabled 财报复核案例，位于 `submission_artifacts/llm_cases/case_llm_financial_review/`，包含 `modelscope-llm completed` 的 trace 和 `llm_analysis.enabled=true` 的结果；1 份带标注评测报告，位于 `submission_artifacts/evaluation/`，覆盖 8 个案例、24 个标注字段、profile 命中、结构门槛、质量门槛和 provenance 门槛。当前仍不能宣称已经覆盖真实客户材料的长期泛化评测。
 
 ## 5. 质量控制
 
@@ -67,6 +71,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - 任务显式要求日期、建议、异常/风险时，检查对应语义信号是否存在
 - 长文本缺少标题、键值对和表格时提示结构化信号不足
 - 表格总计/小计行核验，区分 `numeric_total_verified`、`numeric_total_mismatch` 和 `numeric_total_needs_review`
+- 财报案例附带 `human_spot_check.md` 与 `mismatch_drill/`，分别保存样本级人工核对和故意改错触发 `numeric_total_mismatch` 的证据
 - MinerU Markdown 中的 HTML `<table>` 表格解析，避免真实 PDF 表格被误判为普通文本
 - 质量恢复决策 `recovery_decision`，根据 warning/error、文件类型和 profile 给出重试、人工复核或接受策略
 - 自动恢复执行记录 `recovery_decision.attempts`，包括 initial、text_cleanup 或 ocr_retry 尝试、失败恢复尝试、最终选中的 `selected_attempt` 和初始风险保留字段
@@ -102,3 +107,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - `submission_artifacts/office_cases/` 中包含 2 个 DOCX/PPTX 文件级运行证据
 - `submission_artifacts/llm_cases/` 中包含 1 个实际启用 DeepSeek-V4-Flash 的 LLM 运行证据
 - `submission_artifacts/evaluation/` 中包含 8 个案例的带标注评测指标
+
+## 8. 日志脱敏策略
+
+LLM API key 只从环境变量读取，不写入 `result.json`、`trace.json` 或 summary。DeepSeek/ModelScope 调用失败时，错误摘要会过滤 API key、Bearer token 和 `api_key=` 参数。MinerU 在线 Agent API 的重试事件和下载 URL 会过滤 `token=`、`access_token=`、`signature=`、`X-Amz-*` 等签名字段。提交材料收集脚本会把本机路径替换成 `<PROJECT_ROOT>`、`<USER_HOME>` 或 `<MINERU_ROOT>` 风格占位，避免泄露本地用户目录。

@@ -1,3 +1,4 @@
+from mineru_data_agent.mineru_client import _markdown_to_content_blocks
 from mineru_data_agent.retrieval_exporter import build_retrieval_chunks
 
 
@@ -36,10 +37,11 @@ def test_build_retrieval_chunks_supports_nested_mineru_v2_pages() -> None:
 
     chunks, _ = build_retrieval_chunks(markdown="", content_list=content_list, doc_id="nested")
 
-    assert len(chunks) == 1
-    assert chunks[0].page_no == 1
+    assert len(chunks) == 2
+    assert [chunk.page_no for chunk in chunks] == [1, 2]
+    assert [chunk.pages for chunk in chunks] == [[1], [2]]
     assert "First page paragraph" in chunks[0].chunk_text
-    assert "Second page paragraph" in chunks[0].chunk_text
+    assert "Second page paragraph" in chunks[1].chunk_text
 
 
 def test_build_retrieval_chunks_uses_html_heading_blocks() -> None:
@@ -65,3 +67,16 @@ def test_build_retrieval_chunks_falls_back_to_markdown() -> None:
     assert report["parse_errors"] == []
     assert [chunk.section_title for chunk in chunks] == ["Main", "Detail"]
     assert chunks[0].chunk_id.startswith("md:p1:text:")
+
+
+def test_agent_api_markdown_table_becomes_retrieval_table_chunk() -> None:
+    markdown = "# Contract\n\nText before table.\n\n| Field | Value |\n| --- | --- |\n| Amount | 100 |\n"
+    content_list = _markdown_to_content_blocks(markdown, source="mineru-agent-api")
+
+    chunks, report = build_retrieval_chunks(markdown=markdown, content_list=content_list, doc_id="agent-api")
+
+    assert report["parse_errors"] == []
+    assert {chunk.content_type for chunk in chunks} == {"text", "table"}
+    table_chunk = next(chunk for chunk in chunks if chunk.content_type == "table")
+    assert "Amount" in table_chunk.chunk_text
+    assert table_chunk.pages == [1]

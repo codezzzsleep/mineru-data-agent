@@ -100,7 +100,9 @@ uvicorn mineru_data_agent.api:app --host 0.0.0.0 --port 8080
 curl http://127.0.0.1:8080/health
 ```
 
-本提交包保存了一次本地 API 冒烟测试证据，见 `submission_artifacts/api_smoke/`。该证据覆盖 `/health` 和一次 HTML 文件上传解析，返回的 `trace_path`、`summary_path` 和 retrieval 输出均已落盘。另保存 1 个 CPU 环境下 `--runner agent-api` 真实 PDF 复跑证据，见 `submission_artifacts/agent_api_cases/`。
+本提交包保存了本地 API 冒烟测试证据，见 `submission_artifacts/api_smoke/`。该证据覆盖 `/health`、一次 HTML 文件上传解析和一次 PDF 文件上传解析，返回的 `trace_path`、`summary_path` 和 retrieval 输出均已落盘。另保存 1 个 CPU 环境下 `--runner agent-api` PDF 复跑证据，见 `submission_artifacts/agent_api_cases/`。
+
+当前提交提供本地可启动 API 与本地烟测证据，尚未提供长期公网服务地址。评审若需要联网调用，可按本节命令在 HeyWhale 或自有服务器启动服务；公开部署属于加分项，不是当前提交包已完成的事实。
 
 解析接口：
 
@@ -215,6 +217,13 @@ runs/api/<run_id>/
 - 在线 API 重试事件
 - 自动恢复尝试，例如 `auto_recovery_text_cleanup` 或 `auto_recovery_ocr_retry`
 - 耗时、状态和错误摘要
+
+日志脱敏策略：
+
+- DeepSeek/ModelScope API key 只通过环境变量或请求参数进入运行时，不写入输出文件。
+- LLM 调用失败摘要会过滤真实 key、Bearer token 和 `api_key=` 参数。
+- MinerU 在线 Agent API 的重试事件、异常文本和保存的事件 JSON 会过滤 `token=`、`access_token=`、`signature=`、`X-Amz-*` 等签名字段。
+- 提交材料收集脚本会对本机路径做 `<PROJECT_ROOT>`、`<USER_HOME>`、`<MINERU_ROOT>` 一类占位替换，减少本地环境泄露。
 
 如果解析失败，系统仍会写出失败态 `trace.json`，其中 `status=failed`，并记录失败步骤和错误摘要。通过 API 调用时，失败响应的 `detail` 也会返回 `run_id`、`output_dir`、`trace_path`、`result_path` 和 `summary_path`，方便评审脚本直接定位失败证据。
 

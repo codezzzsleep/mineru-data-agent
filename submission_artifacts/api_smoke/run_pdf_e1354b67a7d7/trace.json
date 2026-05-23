@@ -1,0 +1,107 @@
+{
+  "created_at": "2026-05-23T10:22:20.746499+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-23T10:22:12.976989+00:00",
+      "ended_at": "2026-05-23T10:22:12.976989+00:00",
+      "detail": {
+        "task": "API smoke: parse contract PDF and return structured result, trace, summary, and retrieval files",
+        "input_file": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\_uploads\\8828ab01efa846f98d524719bb9d8b69.pdf"
+      }
+    },
+    {
+      "name": "mineru_parse",
+      "status": "completed",
+      "started_at": "2026-05-23T10:22:12.976989+00:00",
+      "ended_at": "2026-05-23T10:22:20.667615+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-23T10:22:20.667615+00:00",
+      "ended_at": "2026-05-23T10:22:20.740527+00:00",
+      "detail": {
+        "item_count": 15,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "mineru-agent-api": 15
+        },
+        "section_count": 6,
+        "table_count": 1,
+        "key_value_count": 6,
+        "numeric_fact_count": 1,
+        "semantic_signal_counts": {
+          "dates": 1,
+          "recommendations": 1,
+          "anomaly_lines": 2
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-23T10:22:20.740527+00:00",
+      "ended_at": "2026-05-23T10:22:20.740527+00:00",
+      "detail": {
+        "profile": "standard_or_contract"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T10:22:20.740527+00:00",
+      "ended_at": "2026-05-23T10:22:20.740527+00:00",
+      "detail": {
+        "quality_status": "pass_with_warnings",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-23T10:22:20.740527+00:00",
+      "ended_at": "2026-05-23T10:22:20.744532+00:00",
+      "detail": {
+        "chunks_count": 6,
+        "by_type": {
+          "text": 5,
+          "table": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "mineru-agent-api",
+      "command": [
+        "mineru-agent-api",
+        "parse-file",
+        "8828ab01efa846f98d524719bb9d8b69.pdf"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 7.688,
+      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"ddebb676-499d-4791-a555-3e8eeb87ca8905\",\n    \"trace_id\": \"292f24c5a2326d1d5c95ef1abbdce67c\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"386e7173adb56b13fb354b2982099893\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"67dc7faea620abcf7eb14f10f3b83eae\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"a679bf04a1183b32e1e57ab282a06989\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"ddebb676-499d-4791-a555-3e8eeb87ca8905\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-23/d0665ae6-2add-49ac-ad97-678396dd2e08/full.md\"\n  }\n]",
+      "stderr_tail": ""
+    }
+  ],
+  "run_id": "e1354b67a7d7",
+  "task": "API smoke: parse contract PDF and return structured result, trace, summary, and retrieval files",
+  "profile": "standard_or_contract",
+  "status": "completed",
+  "result_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\result.json",
+  "summary_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\summary.md"
+}

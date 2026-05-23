@@ -123,6 +123,13 @@ def test_llm_preplan_controls_profile_method_and_trace(tmp_path: Path) -> None:
     step_names = [step["name"] for step in trace["steps"]]
     assert step_names.index("llm_pre_execution_planning") < step_names.index("mineru_parse")
     assert trace["tool_calls"][0]["tool"] == "fake-llm-preplan"
+    structured_step = next(step for step in trace["steps"] if step["name"] == "build_structured_view")
+    retrieval_step = next(step for step in trace["steps"] if step["name"] == "build_retrieval_export")
+    assert structured_step["detail"]["item_count"] >= 1
+    assert structured_step["detail"]["page_count"] >= 1
+    assert "table_count" in structured_step["detail"]
+    assert retrieval_step["detail"]["chunks_count"] >= 1
+    assert retrieval_step["detail"]["by_type"]["text"] >= 1
 
 
 class _RetryRunner:

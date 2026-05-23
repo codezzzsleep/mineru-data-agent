@@ -50,6 +50,35 @@ def test_html_document_provenance_is_informational() -> None:
     assert report["issue_counts"] == {"error": 0, "warning": 0, "info": 1}
 
 
+def test_short_general_html_document_does_not_warn_as_ocr_failure() -> None:
+    extracted = {
+        "content_summary": {
+            "item_count": 2,
+            "page_count": 0,
+            "provenance_level": "document",
+            "source_counts": {"html": 2},
+        },
+        "tables": [],
+        "numeric_facts": [],
+        "sections": [{"title": "A", "text": "短日报"}],
+    }
+    report = build_quality_report("报告日期：2026-05-23\n结论：正常，无需整改。", extracted, "general_document")
+    codes = {item["code"] for item in report["issues"]}
+    assert "short_text" not in codes
+    assert report["status"] == "pass"
+
+
+def test_short_pdf_page_text_still_warns_for_ocr_review() -> None:
+    extracted = {
+        "content_summary": {"item_count": 1, "page_count": 1, "provenance_level": "page", "source_counts": {"native": 1}},
+        "tables": [],
+        "numeric_facts": [],
+        "sections": [{"title": "A", "text": "too short"}],
+    }
+    report = build_quality_report("too short", extracted, "general_document")
+    assert any(item["code"] == "short_text" for item in report["issues"])
+
+
 def test_total_row_is_verified() -> None:
     extracted = {
         "content_summary": {"item_count": 5, "page_count": 2},

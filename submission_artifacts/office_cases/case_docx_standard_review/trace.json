@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-22T20:29:28.109942+00:00",
+  "created_at": "2026-05-23T04:29:28.109942+08:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-22T20:29:28.096381+00:00",
-      "ended_at": "2026-05-22T20:29:28.096381+00:00",
+      "started_at": "2026-05-23T04:29:28.096381+08:00",
+      "ended_at": "2026-05-23T04:29:28.096381+08:00",
       "detail": {
         "task": "Parse a Word standard review packet, extract clauses, compliance table, dates, risks, recommendations, quality logs, recovery decision, and retrieval chunks.",
         "input_file": "<PROJECT_ROOT>\\examples\\office_files\\industry_standard_review.docx"
@@ -14,8 +14,8 @@
     {
       "name": "extract_docx",
       "status": "completed",
-      "started_at": "2026-05-22T20:29:28.096381+00:00",
-      "ended_at": "2026-05-22T20:29:28.103981+00:00",
+      "started_at": "2026-05-23T04:29:28.096381+08:00",
+      "ended_at": "2026-05-23T04:29:28.103981+08:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\office_files\\industry_standard_review.docx"
       }
@@ -23,15 +23,31 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-22T20:29:28.103981+00:00",
-      "ended_at": "2026-05-22T20:29:28.104865+00:00",
-      "detail": {}
+      "started_at": "2026-05-23T04:29:28.103981+08:00",
+      "ended_at": "2026-05-23T04:29:28.104865+08:00",
+      "detail": {
+        "item_count": 10,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "docx": 10
+        },
+        "section_count": 3,
+        "table_count": 1,
+        "key_value_count": 6,
+        "numeric_fact_count": 3,
+        "semantic_signal_counts": {
+          "dates": 1,
+          "recommendations": 2,
+          "anomaly_lines": 4
+        }
+      }
     },
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-22T20:29:28.104865+00:00",
-      "ended_at": "2026-05-22T20:29:28.104865+00:00",
+      "started_at": "2026-05-23T04:29:28.104865+08:00",
+      "ended_at": "2026-05-23T04:29:28.104865+08:00",
       "detail": {
         "profile": "standard_or_contract"
       }
@@ -39,8 +55,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-22T20:29:28.104865+00:00",
-      "ended_at": "2026-05-22T20:29:28.104865+00:00",
+      "started_at": "2026-05-23T04:29:28.104865+08:00",
+      "ended_at": "2026-05-23T04:29:28.104865+08:00",
       "detail": {
         "quality_status": "pass"
       }
@@ -48,9 +64,21 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-22T20:29:28.104865+00:00",
-      "ended_at": "2026-05-22T20:29:28.107945+00:00",
-      "detail": {}
+      "started_at": "2026-05-23T04:29:28.104865+08:00",
+      "ended_at": "2026-05-23T04:29:28.107945+08:00",
+      "detail": {
+        "chunks_count": 3,
+        "by_type": {
+          "text": 2,
+          "table": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\retrieval\\retrieval_quality.json"
+      }
     }
   ],
   "tool_calls": [],

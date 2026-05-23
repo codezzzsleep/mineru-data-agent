@@ -440,5 +440,11 @@ def _sanitize_error_text(text: str, api_key: str | None = None) -> str:
     if api_key:
         clean = clean.replace(api_key, "***")
     clean = re.sub(r"Bearer\s+[A-Za-z0-9._\-]+", "Bearer ***", clean)
-    clean = re.sub(r"(api[_-]?key=)[^&\s]+", r"\1***", clean, flags=re.IGNORECASE)
+    clean = re.sub(
+        r"((?:api[_-]?key|access[_-]?token|token|secret|signature)=)[^&\s\"']+",
+        r"\1***",
+        clean,
+        flags=re.IGNORECASE,
+    )
+    clean = re.sub(r"(X-Amz-[A-Za-z0-9_-]+=)[^&\s\"']+", r"\1***", clean, flags=re.IGNORECASE)
     return clean

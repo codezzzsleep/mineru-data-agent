@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -38,6 +38,7 @@ class RetrievalChunk:
     section_title: str
     chunk_text: str
     image_path: str = ""
+    pages: list[int] = field(default_factory=list)
 
     def to_jsonable(self) -> dict[str, Any]:
         return asdict(self)
@@ -74,12 +75,12 @@ def build_retrieval_export(
             "manifest": str(manifest_path),
             "quality_report": str(quality_path),
         },
-        "schema": ["chunk_id", "page_no", "content_type", "section_title", "chunk_text", "image_path"],
+        "schema": ["chunk_id", "page_no", "pages", "content_type", "section_title", "chunk_text", "image_path"],
         "chunking_policy": {
             "source_priority": ["content_list", "markdown"],
             "skip_noise_blocks": sorted(NOISE_TYPES),
             "skip_low_value_sections": True,
-            "merge_short_text": True,
+            "merge_short_text": "same-page only",
             "target_chunk_chars": "1200-3600",
         },
         "stats": stats,
@@ -143,12 +144,13 @@ def _chunks_from_blocks(
         if not text_buffer:
             return
         merged = "\n".join(item["text"] for item in text_buffer if item["text"]).strip()
-        page_no = text_buffer[0]["page_no"]
+        pages = sorted({int(item["page_no"]) for item in text_buffer})
+        page_no = pages[0]
         title = text_buffer[0]["section_title"]
         text_buffer = []
         for part in _split_long_text(merged):
             if part.strip():
-                chunks.append(_make_chunk(doc_id, chunks, page_no, "text", title, part))
+                chunks.append(_make_chunk(doc_id, chunks, page_no, "text", title, part, pages=pages))
 
     for block in blocks:
         raw_type = str(block.get("type", "unknown"))
@@ -181,6 +183,8 @@ def _chunks_from_blocks(
             if not text:
                 error_report["skipped_blocks"].append({"block_id": block_id, "type": raw_type, "reason": "empty_text"})
                 continue
+            if text_buffer and page_no != text_buffer[-1]["page_no"]:
+                flush_text()
             text_buffer.append({"text": text, "page_no": page_no, "section_title": section_title})
             if _estimate_tokens("\n".join(item["text"] for item in text_buffer)) >= 650:
                 flush_text()
@@ -241,11 +245,14 @@ def _make_chunk(
     section_title: str,
     chunk_text: str,
     image_path: str = "",
+    pages: list[int] | None = None,
 ) -> RetrievalChunk:
     sequence = len(chunks) + 1
+    chunk_pages = sorted({int(page) for page in (pages or [page_no]) if int(page) >= 1})
     return RetrievalChunk(
         chunk_id=f"{_slug_doc_id(doc_id)}:p{page_no}:{content_type}:{sequence}",
         page_no=page_no,
+        pages=chunk_pages or [page_no],
         content_type=content_type,
         section_title=_clean_section_title(section_title),
         chunk_text=_clean_text(chunk_text),
@@ -416,7 +423,8 @@ def _estimate_tokens(text: str) -> int:
 
 
 def _looks_like_markdown_heading(text: str) -> bool:
-    return bool(re.match(r"^#{1,6}\s+\S+", text.strip()))
+    stripped = text.strip()
+    return "\n" not in stripped and bool(re.match(r"^#{1,6}\s+\S+", stripped))
 
 
 def _strip_heading_marks(text: str) -> str:
@@ -444,8 +452,9 @@ def _chunk_stats(chunks: list[RetrievalChunk]) -> dict[str, Any]:
     by_type: dict[str, int] = {}
     for chunk in chunks:
         by_type[chunk.content_type] = by_type.get(chunk.content_type, 0) + 1
+    pages = sorted({page for chunk in chunks for page in (chunk.pages or [chunk.page_no])})
     return {
         "total_chunks": len(chunks),
         "by_type": by_type,
-        "pages": sorted({chunk.page_no for chunk in chunks}),
+        "pages": pages,
     }

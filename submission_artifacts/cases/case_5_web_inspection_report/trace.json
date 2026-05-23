@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-22T21:05:22.854465+00:00",
+  "created_at": "2026-05-23T05:05:22.854465+08:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-22T21:05:22.846498+00:00",
-      "ended_at": "2026-05-22T21:05:22.846498+00:00",
+      "started_at": "2026-05-23T05:05:22.846498+08:00",
+      "ended_at": "2026-05-23T05:05:22.846498+08:00",
       "detail": {
         "task": "清洗网页巡检日报，抽取日期、异常数量、异常表格和处理建议。",
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_5_web_inspection_report.html"
@@ -14,8 +14,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-22T21:05:22.846498+00:00",
-      "ended_at": "2026-05-22T21:05:22.849496+00:00",
+      "started_at": "2026-05-23T05:05:22.846498+08:00",
+      "ended_at": "2026-05-23T05:05:22.849496+08:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_5_web_inspection_report.html"
       }
@@ -23,15 +23,31 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-22T21:05:22.849496+00:00",
-      "ended_at": "2026-05-22T21:05:22.849496+00:00",
-      "detail": {}
+      "started_at": "2026-05-23T05:05:22.849496+08:00",
+      "ended_at": "2026-05-23T05:05:22.849496+08:00",
+      "detail": {
+        "item_count": 8,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "html": 8
+        },
+        "section_count": 2,
+        "table_count": 1,
+        "key_value_count": 3,
+        "numeric_fact_count": 4,
+        "semantic_signal_counts": {
+          "dates": 1,
+          "recommendations": 2,
+          "anomaly_lines": 7
+        }
+      }
     },
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-22T21:05:22.849496+00:00",
-      "ended_at": "2026-05-22T21:05:22.850496+00:00",
+      "started_at": "2026-05-23T05:05:22.849496+08:00",
+      "ended_at": "2026-05-23T05:05:22.850496+08:00",
       "detail": {
         "profile": "general_document"
       }
@@ -39,8 +55,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-22T21:05:22.850496+00:00",
-      "ended_at": "2026-05-22T21:05:22.850496+00:00",
+      "started_at": "2026-05-23T05:05:22.850496+08:00",
+      "ended_at": "2026-05-23T05:05:22.850496+08:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "initial"
@@ -49,9 +65,21 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-22T21:05:22.850496+00:00",
-      "ended_at": "2026-05-22T21:05:22.852495+00:00",
-      "detail": {}
+      "started_at": "2026-05-23T05:05:22.850496+08:00",
+      "ended_at": "2026-05-23T05:05:22.852495+08:00",
+      "detail": {
+        "chunks_count": 3,
+        "by_type": {
+          "text": 2,
+          "table": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\submission_cases\\e0f566f95db8\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\submission_cases\\e0f566f95db8\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\submission_cases\\e0f566f95db8\\retrieval\\retrieval_quality.json"
+      }
     }
   ],
   "tool_calls": [],

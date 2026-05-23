@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -242,13 +243,14 @@ class MinerUAgentAPIRunner:
                 markdown = markdown_response.content.decode("utf-8", errors="replace")
         except Exception as exc:
             elapsed = round(perf_counter() - start, 3)
+            error_text = _redact_sensitive_text(str(exc))
             call = ToolCall(
                 tool="mineru-agent-api",
                 command=command,
                 status="failed",
                 elapsed_seconds=elapsed,
                 stdout_tail=_tail_json(events),
-                stderr_tail=str(exc)[-4000:],
+                stderr_tail=error_text[-4000:],
             )
             raise MinerUParseError(f"MinerU Agent API failed. {call.stderr_tail}", call) from exc
 
@@ -341,7 +343,7 @@ class MinerUAgentAPIRunner:
                         "event": "request_retry",
                         "action": action,
                         "attempt": attempt + 1,
-                        "error": str(exc)[-500:],
+                        "error": _redact_sensitive_text(str(exc))[-500:],
                     }
                 )
                 time.sleep(self.retry_backoff_seconds * (attempt + 1))
@@ -373,13 +375,130 @@ def _ensure_api_success(data: dict[str, Any], action: str) -> None:
 
 def _markdown_to_content_blocks(markdown: str, *, source: str) -> list[dict[str, Any]]:
     blocks: list[dict[str, Any]] = []
-    for index, paragraph in enumerate(markdown.split("\n\n")):
-        text = paragraph.strip()
-        if not text:
+    lines = markdown.splitlines()
+    index = 0
+
+    def append_block(block_type: str, text: str) -> None:
+        clean = text.strip()
+        if clean:
+            blocks.append({"type": block_type, "text": clean, "block_idx": len(blocks), "source": source})
+
+    while index < len(lines):
+        line = lines[index]
+        stripped = line.strip()
+        if not stripped:
+            index += 1
             continue
-        blocks.append({"type": "text", "text": text, "block_idx": index, "source": source})
+
+        if _looks_like_markdown_heading(stripped):
+            append_block("heading", stripped)
+            index += 1
+            continue
+
+        if _looks_like_html_table_start(stripped):
+            table_lines = [line]
+            index += 1
+            if "</table" not in stripped.lower():
+                while index < len(lines):
+                    table_lines.append(lines[index])
+                    if "</table" in lines[index].lower():
+                        index += 1
+                        break
+                    index += 1
+            append_block("table", "\n".join(table_lines))
+            continue
+
+        if _starts_markdown_table(lines, index):
+            table_lines = [line]
+            index += 1
+            while index < len(lines) and _is_markdown_table_line(lines[index]):
+                table_lines.append(lines[index])
+                index += 1
+            append_block("table", "\n".join(table_lines))
+            continue
+
+        if _looks_like_markdown_list(stripped):
+            list_lines = [line]
+            index += 1
+            while index < len(lines):
+                next_stripped = lines[index].strip()
+                if not next_stripped:
+                    break
+                if not _looks_like_markdown_list(next_stripped):
+                    break
+                list_lines.append(lines[index])
+                index += 1
+            append_block("list", "\n".join(list_lines))
+            continue
+
+        paragraph_lines = [line]
+        index += 1
+        while index < len(lines):
+            next_line = lines[index]
+            next_stripped = next_line.strip()
+            if not next_stripped:
+                break
+            if (
+                _looks_like_markdown_heading(next_stripped)
+                or _looks_like_html_table_start(next_stripped)
+                or _starts_markdown_table(lines, index)
+                or _looks_like_markdown_list(next_stripped)
+            ):
+                break
+            paragraph_lines.append(next_line)
+            index += 1
+        append_block("text", "\n".join(paragraph_lines))
     return blocks
 
 
 def _tail_json(value: Any) -> str:
-    return json.dumps(value, ensure_ascii=False, indent=2)[-4000:]
+    return _redact_sensitive_text(json.dumps(value, ensure_ascii=False, indent=2))[-4000:]
+
+
+def _looks_like_markdown_heading(text: str) -> bool:
+    return bool(re.match(r"^#{1,6}\s+\S+", text))
+
+
+def _looks_like_html_table_start(text: str) -> bool:
+    return bool(re.search(r"<table(?:\s|>|$)", text, flags=re.IGNORECASE))
+
+
+def _is_markdown_table_line(line: str) -> bool:
+    stripped = line.strip()
+    return stripped.startswith("|") and stripped.count("|") >= 2
+
+
+def _is_markdown_table_separator(line: str) -> bool:
+    stripped = line.strip()
+    return bool(re.fullmatch(r"\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?", stripped))
+
+
+def _starts_markdown_table(lines: list[str], index: int) -> bool:
+    if index >= len(lines) or not _is_markdown_table_line(lines[index]):
+        return False
+    if index + 1 < len(lines) and _is_markdown_table_separator(lines[index + 1]):
+        return True
+    return False
+
+
+def _looks_like_markdown_list(text: str) -> bool:
+    return bool(re.match(r"(?:[-*+]\s+|\d+[.)]\s+)\S+", text))
+
+
+def _redact_sensitive_text(text: str) -> str:
+    clean = text
+    clean = re.sub(r"Bearer\s+[A-Za-z0-9._~+/=\-]+", "Bearer ***", clean, flags=re.IGNORECASE)
+    clean = re.sub(
+        r"((?:api[_-]?key|access[_-]?token|token|secret|signature)=)[^&\s\"']+",
+        r"\1***",
+        clean,
+        flags=re.IGNORECASE,
+    )
+    clean = re.sub(r"(X-Amz-[A-Za-z0-9_-]+=)[^&\s\"']+", r"\1***", clean, flags=re.IGNORECASE)
+    clean = re.sub(
+        r"(Authorization:\s*)(?:Bearer\s+)?[A-Za-z0-9._~+/=\-]+",
+        r"\1Bearer ***",
+        clean,
+        flags=re.IGNORECASE,
+    )
+    return clean

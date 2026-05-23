@@ -6,6 +6,8 @@
 
 这 5 个案例统一由 `examples/batch_manifest_5cases.json` 驱动，并通过 `scripts/run_submission_cases.ps1` 生成。每个案例目录都包含输入 fixture、`result.json`、`trace.json`、`summary.md` 和 `retrieval/` 导出文件。
 
+边界说明：这些 HTML/网页案例是自构造 fixture，目标是验证 Agent 管线、质量校验、自动恢复、trace 和 retrieval 导出，不代表真实 PDF 的字段级或表格逐格准确率。表格中的 100 分是规则校验分，不是人工标注准确率。
+
 案例输出位置：`submission_artifacts/cases/`
 
 | Case | Profile | 质量 | 章节 | 表格 | 键值对 | 关键风险/亮点 |
@@ -51,6 +53,8 @@ PDF 文件级案例位置：`submission_artifacts/mineru_cases/`
 - `mineru/`：保留 MinerU 原始 Markdown、content list、middle/model JSON、layout/span/origin PDF 和图片 artifact。
 - `retrieval/`：保留 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`。
 - `input.pdf`：保留本次案例输入副本，便于复查。
+- `case_mineru_cli_financial_pdf/human_spot_check.md`：对财报 fixture 的关键行和合计行做 8/8 样本级人工核对。
+- `case_mineru_cli_financial_pdf/mismatch_drill/`：故意把合计行改错，保存 `numeric_total_mismatch` 触发证据，证明规则不是永远报通过。
 
 收集方式：
 
@@ -128,3 +132,5 @@ LLM 在该案例中的职责是：
 
 - PDF 文件级证据已扩展到 4 个，Office 文件级证据已扩展到 2 个，但其中多个样本是可公开提交的合成业务样本，还不足以证明真实客户材料的长期泛化能力。
 - LLM 预调度已接入 profile/method/backend/lang 的安全控制，但 runner 的实际选择仍由部署参数控制，避免模型在运行中切换到当前环境不可用的后端。
+- 当前 LLM 保存案例是 HTML fixture 的解析后复核证据；代码已支持解析前调度，但还缺少“真实 PDF + LLM 启用 + recovery executed=true”的强证据 artifact。
+- 当前 API smoke 已覆盖本地 HTML 上传和 PDF 上传；PDF 路径使用在线 Agent API，因此仍会保留 `no_page_provenance` 边界提示。

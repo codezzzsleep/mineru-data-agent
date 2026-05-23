@@ -76,9 +76,11 @@ def test_normalize_preplan_coerces_scheduler_fields() -> None:
 
 def test_sanitize_error_text_removes_api_key_and_bearer_token() -> None:
     bearer = "Bearer abc.def-123"
-    text = f"request failed Authorization: {bearer} api_key=secret-key"
+    text = f"request failed Authorization: {bearer} api_key=secret-key X-Amz-Signature=deadbeef"
     clean = _sanitize_error_text(text, api_key="secret-key")
     assert "secret-key" not in clean
     assert bearer not in clean
+    assert "deadbeef" not in clean
     assert "Bearer ***" in clean
     assert "api_key=***" in clean
+    assert "X-Amz-Signature=***" in clean

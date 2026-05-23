@@ -12,7 +12,7 @@ MOJIBAKE_RE = re.compile(r"(?:�|����|锟斤拷|Ã.|Â.)")
 
 def build_quality_report(markdown: str, extracted: dict[str, Any], profile: str, task: str = "") -> dict[str, Any]:
     issues: list[QualityIssue] = []
-    issues.extend(_check_text_integrity(markdown))
+    issues.extend(_check_text_integrity(markdown, extracted, profile))
     issues.extend(_check_page_coverage(extracted))
     issues.extend(_check_profile_expectations(extracted, profile))
     issues.extend(_check_task_expected_fields(extracted, task))
@@ -38,7 +38,7 @@ def build_quality_report(markdown: str, extracted: dict[str, Any], profile: str,
     }
 
 
-def _check_text_integrity(markdown: str) -> list[QualityIssue]:
+def _check_text_integrity(markdown: str, extracted: dict[str, Any], profile: str) -> list[QualityIssue]:
     issues: list[QualityIssue] = []
     if not markdown.strip():
         issues.append(QualityIssue("empty_markdown", "error", "No markdown text was extracted."))
@@ -55,7 +55,7 @@ def _check_text_integrity(markdown: str) -> list[QualityIssue]:
                 {"pattern_count": len(matches), "ratio": round(ratio, 4)},
             )
         )
-    if len(markdown) < 200:
+    if len(markdown) < 200 and _should_warn_short_text(markdown, extracted, profile):
         issues.append(
             QualityIssue(
                 "short_text",
@@ -65,6 +65,23 @@ def _check_text_integrity(markdown: str) -> list[QualityIssue]:
             )
         )
     return issues
+
+
+def _should_warn_short_text(markdown: str, extracted: dict[str, Any], profile: str) -> bool:
+    summary = extracted.get("content_summary", {}) if isinstance(extracted, dict) else {}
+    provenance_level = str(summary.get("provenance_level") or "none")
+    source_counts = summary.get("source_counts", {})
+    native_document_sources = {"html", "docx", "pptx"}
+    is_native_document = (
+        provenance_level == "document"
+        and isinstance(source_counts, dict)
+        and any(int(source_counts.get(source) or 0) > 0 for source in native_document_sources)
+    )
+    if is_native_document and profile == "general_document" and markdown.strip():
+        return False
+    if is_native_document and len(markdown.strip()) >= 80:
+        return False
+    return True
 
 
 def _check_page_coverage(extracted: dict[str, Any]) -> list[QualityIssue]:

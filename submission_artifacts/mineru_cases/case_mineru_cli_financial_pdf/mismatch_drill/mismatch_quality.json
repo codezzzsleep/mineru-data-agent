@@ -1,0 +1,35 @@
+{
+  "score": 92,
+  "status": "pass_with_warnings",
+  "issue_count": 1,
+  "issue_counts": {
+    "error": 0,
+    "warning": 1,
+    "info": 0
+  },
+  "issues": [
+    {
+      "code": "numeric_total_mismatch",
+      "level": "warning",
+      "message": "A total/subtotal row does not match the sum of comparable numeric rows.",
+      "evidence": {
+        "table_index": 0,
+        "row_index": 2,
+        "row_preview": [
+          "Total",
+          "150"
+        ],
+        "verified": [],
+        "mismatches": [
+          {
+            "column_index": 1,
+            "expected_total": 150.0,
+            "computed_total": 160.0,
+            "delta": 10.0,
+            "source_value_count": 2
+          }
+        ]
+      }
+    }
+  ]
+}

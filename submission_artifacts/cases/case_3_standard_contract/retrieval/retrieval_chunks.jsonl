@@ -1,5 +1,5 @@
-{"chunk_id": "case_3_standard_contract:p1:text:1", "page_no": 1, "content_type": "text", "section_title": "数据处理服务合同关键条款", "chunk_text": "合同编号：DPA-2026-0519\n签署日期：2026-05-19", "image_path": ""}
-{"chunk_id": "case_3_standard_contract:p1:text:2", "page_no": 1, "content_type": "text", "section_title": "第一条 服务范围", "chunk_text": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。", "image_path": ""}
-{"chunk_id": "case_3_standard_contract:p1:text:3", "page_no": 1, "content_type": "text", "section_title": "第二条 数据安全", "chunk_text": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。", "image_path": ""}
-{"chunk_id": "case_3_standard_contract:p1:text:4", "page_no": 1, "content_type": "text", "section_title": "第三条 验收标准", "chunk_text": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。", "image_path": ""}
-{"chunk_id": "case_3_standard_contract:p1:text:5", "page_no": 1, "content_type": "text", "section_title": "第四条 异常处理", "chunk_text": "异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。\n处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。", "image_path": ""}
+{"chunk_id":"case_3_standard_contract:p1:text:1","page_no":1,"content_type":"text","section_title":"数据处理服务合同关键条款","chunk_text":"合同编号：DPA-2026-0519\n签署日期：2026-05-19","image_path":"","pages":[1]}
+{"chunk_id":"case_3_standard_contract:p1:text:2","page_no":1,"content_type":"text","section_title":"第一条 服务范围","chunk_text":"乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。","image_path":"","pages":[1]}
+{"chunk_id":"case_3_standard_contract:p1:text:3","page_no":1,"content_type":"text","section_title":"第二条 数据安全","chunk_text":"乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。","image_path":"","pages":[1]}
+{"chunk_id":"case_3_standard_contract:p1:text:4","page_no":1,"content_type":"text","section_title":"第三条 验收标准","chunk_text":"验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。","image_path":"","pages":[1]}
+{"chunk_id":"case_3_standard_contract:p1:text:5","page_no":1,"content_type":"text","section_title":"第四条 异常处理","chunk_text":"异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。\n处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。","image_path":"","pages":[1]}

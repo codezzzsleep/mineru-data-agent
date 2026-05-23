@@ -158,8 +158,9 @@ class MinerUDataAgent:
                     markdown = read_markdown(artifacts.markdown_path)
                     content_list = read_content_list(artifacts.content_list_path)
 
-            with trace.step("build_structured_view"):
+            with trace.step("build_structured_view") as structured_step:
                 extracted = build_extracted_view(markdown, content_list)
+                structured_step.detail.update(_structured_trace_detail(extracted))
 
             with trace.step("quality_validation", profile=resolved_profile):
                 quality = build_quality_report(markdown, extracted, resolved_profile, task=task)
@@ -269,7 +270,7 @@ class MinerUDataAgent:
                     selected_attempt=selected_attempt,
                 )
 
-            with trace.step("build_retrieval_export"):
+            with trace.step("build_retrieval_export") as retrieval_step:
                 retrieval_export = build_retrieval_export(
                     markdown=markdown,
                     content_list=content_list,
@@ -277,6 +278,7 @@ class MinerUDataAgent:
                     doc_id=input_path.stem,
                     source_file=input_path,
                 )
+                retrieval_step.detail.update(_retrieval_trace_detail(retrieval_export))
 
             llm_analysis: dict[str, Any] = {"enabled": False}
             if self.llm_client:
@@ -360,6 +362,38 @@ def _input_metadata(input_path: Path) -> dict[str, Any]:
         "suffix": input_path.suffix.lower(),
         "size_bytes": stat.st_size,
         "is_native_extractor_input": input_path.suffix.lower() in NATIVE_SUFFIXES,
+    }
+
+
+def _structured_trace_detail(extracted: dict[str, Any]) -> dict[str, Any]:
+    summary = extracted.get("content_summary", {}) if isinstance(extracted, dict) else {}
+    semantic = extracted.get("semantic_signals", {}) if isinstance(extracted, dict) else {}
+    return {
+        "item_count": int(summary.get("item_count") or 0),
+        "page_count": int(summary.get("page_count") or 0),
+        "provenance_level": summary.get("provenance_level", "unknown"),
+        "source_counts": summary.get("source_counts", {}),
+        "section_count": len(extracted.get("sections", [])),
+        "table_count": len(extracted.get("tables", [])),
+        "key_value_count": len(extracted.get("key_values", [])),
+        "numeric_fact_count": len(extracted.get("numeric_facts", [])),
+        "semantic_signal_counts": {
+            "dates": len(semantic.get("dates", [])) if isinstance(semantic, dict) else 0,
+            "recommendations": len(semantic.get("recommendations", [])) if isinstance(semantic, dict) else 0,
+            "anomaly_lines": len(semantic.get("anomaly_lines", [])) if isinstance(semantic, dict) else 0,
+        },
+    }
+
+
+def _retrieval_trace_detail(retrieval_export: dict[str, Any]) -> dict[str, Any]:
+    stats = retrieval_export.get("stats", {}) if isinstance(retrieval_export, dict) else {}
+    return {
+        "chunks_count": int(stats.get("total_chunks") or 0),
+        "by_type": stats.get("by_type", {}),
+        "pages": stats.get("pages", []),
+        "chunks_path": retrieval_export.get("chunks_path"),
+        "manifest_path": retrieval_export.get("manifest_path"),
+        "quality_report_path": retrieval_export.get("quality_report_path"),
     }
 
 
