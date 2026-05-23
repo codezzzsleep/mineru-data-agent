@@ -1,0 +1,439 @@
+{
+  "run_id": "58d40cd48116",
+  "task": "Parse a cross-page-style financial control pack, extract document id, owner, tables, subtotal/total evidence, risks, recommendations, trace, and retrieval chunks.",
+  "profile": "financial_report",
+  "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize dense table extraction and numeric consistency checks",
+    "Flag subtotal/total rows and suspicious numeric cells"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": false,
+    "requested": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch"
+    },
+    "initial": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "resolved": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "runner_class": "MinerURunner",
+    "applied": [],
+    "ignored": []
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 12,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 4,
+        "text": 6,
+        "table": 2
+      },
+      "source_counts": {
+        "html": 12
+      },
+      "text_characters": 1010
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "Cross Page Financial Control Pack",
+        "line": 1,
+        "source": "heading",
+        "text": "Document ID: FIN-CROSS-2026-06\n\nReporting Period: 2026-01-01 to 2026-03-31\n\nOwner: Finance Shared Service Center"
+      },
+      {
+        "level": 2,
+        "title": "Page 1 - Revenue Detail",
+        "line": 9,
+        "source": "heading",
+        "text": "Scenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.\n\n| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Hardware Subscription | 18400 | invoice batch A17 |\n| Maintenance Service | 7250 | invoice batch B04 |\n| Channel Rebate | -1380 | manual confirmation required |\n| Subtotal Revenue | 24270 | first-page subtotal |"
+      },
+      {
+        "level": 2,
+        "title": "Page 2 - Cost Detail",
+        "line": 20,
+        "source": "heading",
+        "text": "| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Cloud Cost | -6410 | usage statement U23 |\n| Delivery Labor | -3890 | timesheet rollup |\n| Support Expense | -2160 | ticket group S11 |\n| Total Operating Result | 11810 | 24270 - 6410 - 3890 - 2160 |"
+      },
+      {
+        "level": 2,
+        "title": "Audit Notes",
+        "line": 29,
+        "source": "heading",
+        "text": "Risk: subtotal and total rows are separated by a page break in the source PDF.\n\nRecommendation: verify that retrieval chunks preserve both page labels and table context."
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 13,
+        "headers": [
+          "Line Item",
+          "Q1 Amount",
+          "Evidence Note"
+        ],
+        "rows": [
+          [
+            "Hardware Subscription",
+            "18400",
+            "invoice batch A17"
+          ],
+          [
+            "Maintenance Service",
+            "7250",
+            "invoice batch B04"
+          ],
+          [
+            "Channel Rebate",
+            "-1380",
+            "manual confirmation required"
+          ],
+          [
+            "Subtotal Revenue",
+            "24270",
+            "first-page subtotal"
+          ]
+        ],
+        "row_count": 4,
+        "column_count": 3
+      },
+      {
+        "start_line": 22,
+        "headers": [
+          "Line Item",
+          "Q1 Amount",
+          "Evidence Note"
+        ],
+        "rows": [
+          [
+            "Cloud Cost",
+            "-6410",
+            "usage statement U23"
+          ],
+          [
+            "Delivery Labor",
+            "-3890",
+            "timesheet rollup"
+          ],
+          [
+            "Support Expense",
+            "-2160",
+            "ticket group S11"
+          ],
+          [
+            "Total Operating Result",
+            "11810",
+            "24270 - 6410 - 3890 - 2160"
+          ]
+        ],
+        "row_count": 4,
+        "column_count": 3
+      }
+    ],
+    "key_values": [
+      {
+        "key": "Document ID",
+        "value": "FIN-CROSS-2026-06"
+      },
+      {
+        "key": "Reporting Period",
+        "value": "2026-01-01 to 2026-03-31"
+      },
+      {
+        "key": "Owner",
+        "value": "Finance Shared Service Center"
+      },
+      {
+        "key": "Scenario",
+        "value": "the table is designed to mimic a PDF where the header and subtotal continue across pages."
+      },
+      {
+        "key": "Risk",
+        "value": "subtotal and total rows are separated by a page break in the source PDF."
+      },
+      {
+        "key": "Recommendation",
+        "value": "verify that retrieval chunks preserve both page labels and table context."
+      }
+    ],
+    "key_value_map": {
+      "Document ID": "FIN-CROSS-2026-06",
+      "Reporting Period": "2026-01-01 to 2026-03-31",
+      "Owner": "Finance Shared Service Center",
+      "Scenario": "the table is designed to mimic a PDF where the header and subtotal continue across pages.",
+      "Risk": "subtotal and total rows are separated by a page break in the source PDF.",
+      "Recommendation": "verify that retrieval chunks preserve both page labels and table context."
+    },
+    "numeric_facts": [
+      {
+        "line": 9,
+        "text": "## Page 1 - Revenue Detail",
+        "numbers": [
+          "1"
+        ]
+      },
+      {
+        "line": 15,
+        "text": "| Hardware Subscription | 18400 | invoice batch A17 |",
+        "numbers": [
+          "18400"
+        ]
+      },
+      {
+        "line": 16,
+        "text": "| Maintenance Service | 7250 | invoice batch B04 |",
+        "numbers": [
+          "7250"
+        ]
+      },
+      {
+        "line": 17,
+        "text": "| Channel Rebate | -1380 | manual confirmation required |",
+        "numbers": [
+          "-1380"
+        ]
+      },
+      {
+        "line": 18,
+        "text": "| Subtotal Revenue | 24270 | first-page subtotal |",
+        "numbers": [
+          "24270"
+        ]
+      },
+      {
+        "line": 20,
+        "text": "## Page 2 - Cost Detail",
+        "numbers": [
+          "2"
+        ]
+      },
+      {
+        "line": 24,
+        "text": "| Cloud Cost | -6410 | usage statement U23 |",
+        "numbers": [
+          "-6410"
+        ]
+      },
+      {
+        "line": 25,
+        "text": "| Delivery Labor | -3890 | timesheet rollup |",
+        "numbers": [
+          "-3890"
+        ]
+      },
+      {
+        "line": 26,
+        "text": "| Support Expense | -2160 | ticket group S11 |",
+        "numbers": [
+          "-2160"
+        ]
+      },
+      {
+        "line": 27,
+        "text": "| Total Operating Result | 11810 | 24270 - 6410 - 3890 - 2160 |",
+        "numbers": [
+          "11810",
+          "24270",
+          "6410",
+          "3890",
+          "2160"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-01-01",
+        "2026-03-31"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "Recommendation: verify that retrieval chunks preserve both page labels and table context."
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 31,
+          "text": "Risk: subtotal and total rows are separated by a page break in the source PDF."
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 4,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# Cross Page Financial Control Pack\n\nDocument ID: FIN-CROSS-2026-06\n\nReporting Period: 2026-01-01 to 2026-03-31\n\nOwner: Finance Shared Service Center\n\n## Page 1 - Revenue Detail\n\nScenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.\n\n| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Hardware Subscription | 18400 | invoice batch A17 |\n| Maintenance Service | 7250 | invoice batch B04 |\n| Channel Rebate | -1380 | manual confirmation required |\n| Subtotal Revenue | 24270 | first-page subtotal |\n\n## Page 2 - Cost Detail\n\n| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Cloud Cost | -6410 | usage statement U23 |\n| Delivery Labor | -3890 | timesheet rollup |\n| Support Expense | -2160 | ticket group S11 |\n| Total Operating Result | 11810 | 24270 - 6410 - 3890 - 2160 |\n\n## Audit Notes\n\nRisk: subtotal and total rows are separated by a page break in the source PDF.\n\nRecommendation: verify that retrieval chunks preserve both page labels and table context."
+  },
+  "quality": {
+    "score": 92,
+    "status": "pass_with_warnings",
+    "issue_count": 3,
+    "issue_counts": {
+      "error": 0,
+      "warning": 1,
+      "info": 2
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 12,
+          "source_counts": {
+            "html": 12
+          }
+        }
+      },
+      {
+        "code": "numeric_total_verified",
+        "level": "info",
+        "message": "A total/subtotal row matched the sum of comparable numeric rows.",
+        "evidence": {
+          "table_index": 0,
+          "row_index": 3,
+          "row_preview": [
+            "Subtotal Revenue",
+            "24270",
+            "first-page subtotal"
+          ],
+          "verified": [
+            {
+              "column_index": 1,
+              "expected_total": 24270.0,
+              "computed_total": 24270.0,
+              "delta": 0.0,
+              "source_value_count": 3
+            }
+          ],
+          "mismatches": []
+        }
+      },
+      {
+        "code": "numeric_total_mismatch",
+        "level": "warning",
+        "message": "A total/subtotal row does not match the sum of comparable numeric rows.",
+        "evidence": {
+          "table_index": 1,
+          "row_index": 3,
+          "row_preview": [
+            "Total Operating Result",
+            "11810",
+            "24270 - 6410 - 3890 - 2160"
+          ],
+          "verified": [],
+          "mismatches": [
+            {
+              "column_index": 1,
+              "expected_total": 11810.0,
+              "computed_total": -12460.0,
+              "delta": -24270.0,
+              "source_value_count": 3
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "manual_numeric_review",
+    "actions": [
+      "Route total/subtotal mismatches to numeric review before downstream use.",
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit."
+    ],
+    "issue_codes": [
+      "document_level_provenance",
+      "numeric_total_verified",
+      "numeric_total_mismatch"
+    ],
+    "initial_issue_codes": [
+      "document_level_provenance",
+      "numeric_total_verified",
+      "numeric_total_mismatch"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass_with_warnings",
+        "score": 92,
+        "issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified",
+          "numeric_total_mismatch"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\html\\case_6_cross_page_financial_table.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\html\\case_6_cross_page_financial_table_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 5,
+      "by_type": {
+        "text": 3,
+        "table": 2
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\html\\case_6_cross_page_financial_table.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\html\\case_6_cross_page_financial_table_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\summary.md"
+}

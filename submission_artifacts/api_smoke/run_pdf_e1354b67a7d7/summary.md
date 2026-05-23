@@ -5,7 +5,7 @@
 - Execution method: auto
 - Execution backend: pipeline
 - LLM preplan applied changes: 0
-- Input: `F:\data_agent\mineru-data-agent\runs\api_pdf_smoke\_uploads\8828ab01efa846f98d524719bb9d8b69.pdf`
+- Input: `<PROJECT_ROOT>\runs\api_pdf_smoke\_uploads\8828ab01efa846f98d524719bb9d8b69.pdf`
 - Quality: pass_with_warnings (92/100)
 - Content blocks: 15
 - Pages with provenance: 0

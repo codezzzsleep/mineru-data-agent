@@ -46,9 +46,15 @@ class AgentRunError(RuntimeError):
 
 
 class MinerUDataAgent:
-    def __init__(self, mineru_runner: MinerURunner | None = None, llm_client: Any | None = None) -> None:
+    def __init__(
+        self,
+        mineru_runner: MinerURunner | None = None,
+        llm_client: Any | None = None,
+        fallback_mineru_runner: MinerURunner | None = None,
+    ) -> None:
         self.mineru_runner = mineru_runner or MinerURunner()
         self.llm_client = llm_client
+        self.fallback_mineru_runner = fallback_mineru_runner
 
     def run(
         self,
@@ -257,6 +263,70 @@ class MinerUDataAgent:
                             quality = retry_quality
                             artifacts = retry_artifacts
                             selected_attempt = "ocr_retry"
+
+            if _should_fallback_to_cli(quality, suffix, self.mineru_runner, self.fallback_mineru_runner):
+                with trace.step(
+                    "auto_recovery_cli_fallback",
+                    from_runner=_runner_kind(self.mineru_runner),
+                    fallback_runner=_runner_kind(self.fallback_mineru_runner),
+                    from_status=quality.get("status"),
+                    issue_codes=_issue_codes(quality),
+                ) as fallback_step:
+                    try:
+                        fallback_artifacts, fallback_call = self.fallback_mineru_runner.parse(
+                            input_path,
+                            output_dir / "mineru_fallback_cli",
+                            backend=backend,
+                            method=method,
+                            lang=lang,
+                        )
+                    except Exception as exc:
+                        _record_tool_call_from_exception(trace, exc)
+                        fallback_step.detail["recovery_error"] = repr(exc)
+                        fallback_step.detail["fallback_to_attempt"] = selected_attempt
+                        recovery_attempts.append(
+                            _failed_attempt_summary(
+                                name="cli_fallback",
+                                backend=backend,
+                                method=method,
+                                error=repr(exc),
+                            )
+                        )
+                    else:
+                        trace.add_tool_call(fallback_call.__dict__)
+                        fallback_markdown = read_markdown(fallback_artifacts.markdown_path)
+                        fallback_content = read_content_list(fallback_artifacts.content_list_path)
+                        fallback_extracted = build_extracted_view(fallback_markdown, fallback_content)
+                        fallback_quality = build_quality_report(
+                            fallback_markdown,
+                            fallback_extracted,
+                            resolved_profile,
+                            task=task,
+                        )
+                        recovery_attempts.append(
+                            _attempt_summary(
+                                name="cli_fallback",
+                                quality=fallback_quality,
+                                artifacts=fallback_artifacts,
+                                backend=backend,
+                                method=method,
+                                selected=False,
+                            )
+                        )
+                        fallback_step.detail["fallback_quality"] = {
+                            "status": fallback_quality.get("status"),
+                            "score": fallback_quality.get("score"),
+                            "issue_codes": _issue_codes(fallback_quality),
+                            "page_count": fallback_extracted.get("content_summary", {}).get("page_count"),
+                            "provenance_level": fallback_extracted.get("content_summary", {}).get("provenance_level"),
+                        }
+                        if _is_better_quality(fallback_quality, quality):
+                            markdown = fallback_markdown
+                            content_list = fallback_content
+                            extracted = fallback_extracted
+                            quality = fallback_quality
+                            artifacts = fallback_artifacts
+                            selected_attempt = "cli_fallback"
 
             _mark_selected_attempt(recovery_attempts, selected_attempt)
 
@@ -904,3 +974,18 @@ def _should_retry_with_ocr(quality: dict[str, Any], suffix: str, method: str) ->
         "expected_anomaly_signal_missing",
     }
     return quality.get("status") == "needs_review" or bool(set(_issue_codes(quality)) & retry_codes)
+
+
+def _should_fallback_to_cli(
+    quality: dict[str, Any],
+    suffix: str,
+    runner: Any,
+    fallback_runner: Any | None,
+) -> bool:
+    if fallback_runner is None:
+        return False
+    if suffix in HTML_SUFFIXES | DOCX_SUFFIXES | PPTX_SUFFIXES:
+        return False
+    if _runner_kind(runner) == "cli":
+        return False
+    return "no_page_provenance" in _issue_codes(quality)

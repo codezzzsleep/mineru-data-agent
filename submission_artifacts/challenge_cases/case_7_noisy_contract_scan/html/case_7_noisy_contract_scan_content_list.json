@@ -1,0 +1,87 @@
+[
+  {
+    "type": "heading",
+    "text": "# Noisy Contract Scan Review",
+    "source": "html",
+    "level": 1,
+    "title": "Noisy Contract Scan Review"
+  },
+  {
+    "type": "text",
+    "text": "Contract No: OCR-NOISE-2026-17",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Effective Date: 2026-05-21",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Parties: North Data Plant / Edge Review Vendor",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 1. OCR Observations",
+    "source": "html",
+    "level": 2,
+    "title": "1. OCR Observations"
+  },
+  {
+    "type": "text",
+    "text": "Scanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: 锟斤拷 ��� Â®.",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Clause 2.1 requires every page to keep parse logs and reviewer notes.",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Clause 2.2 requires recovery suggestions when provenance is weak.",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 2. Risk Table",
+    "source": "html",
+    "level": 2,
+    "title": "2. Risk Table"
+  },
+  {
+    "type": "table",
+    "text": "| Risk ID | Description | Expected Handling |\n| --- | --- | --- |\n| R-01 | stamp overlaps signature field | manual review |\n| R-02 | encoding noise appears in clause text | text cleanup recovery |\n| R-03 | watermark repeated in footer | noise filtering |",
+    "source": "html",
+    "headers": [
+      "Risk ID",
+      "Description",
+      "Expected Handling"
+    ],
+    "rows": [
+      [
+        "R-01",
+        "stamp overlaps signature field",
+        "manual review"
+      ],
+      [
+        "R-02",
+        "encoding noise appears in clause text",
+        "text cleanup recovery"
+      ],
+      [
+        "R-03",
+        "watermark repeated in footer",
+        "noise filtering"
+      ]
+    ],
+    "row_count": 3,
+    "column_count": 3
+  },
+  {
+    "type": "text",
+    "text": "Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.",
+    "source": "html"
+  }
+]

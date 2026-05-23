@@ -1,0 +1,103 @@
+[
+  {
+    "type": "heading",
+    "text": "# Incident Workflow Report",
+    "source": "html",
+    "level": 1,
+    "title": "Incident Workflow Report"
+  },
+  {
+    "type": "text",
+    "text": "Incident ID: OPS-INC-2026-0519",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Report Date: 2026-05-23",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "System: document ingestion and validation pipeline",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 1. Timeline",
+    "source": "html",
+    "level": 2,
+    "title": "1. Timeline"
+  },
+  {
+    "type": "table",
+    "text": "| Time | Event | Owner | Action |\n| --- | --- | --- | --- |\n| 09:10 | API parser returned document-level provenance | Agent | trigger fallback policy |\n| 09:12 | CLI artifact restored page-level evidence | Parser | select cli_fallback attempt |\n| 09:15 | quality gate passed | Validator | archive result and trace |",
+    "source": "html",
+    "headers": [
+      "Time",
+      "Event",
+      "Owner",
+      "Action"
+    ],
+    "rows": [
+      [
+        "09:10",
+        "API parser returned document-level provenance",
+        "Agent",
+        "trigger fallback policy"
+      ],
+      [
+        "09:12",
+        "CLI artifact restored page-level evidence",
+        "Parser",
+        "select cli_fallback attempt"
+      ],
+      [
+        "09:15",
+        "quality gate passed",
+        "Validator",
+        "archive result and trace"
+      ]
+    ],
+    "row_count": 3,
+    "column_count": 4
+  },
+  {
+    "type": "heading",
+    "text": "## 2. Root Cause",
+    "source": "html",
+    "level": 2,
+    "title": "2. Root Cause"
+  },
+  {
+    "type": "text",
+    "text": "Risk: online API Markdown can be structurally useful but insufficient for page-level audit.",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Recommendation: route no_page_provenance to CLI fallback when a CLI environment is available.",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 3. Verification Targets",
+    "source": "html",
+    "level": 2,
+    "title": "3. Verification Targets"
+  },
+  {
+    "type": "list_item",
+    "text": "- the separate PDF recovery evidence must show recovery_decision.executed=true",
+    "source": "html"
+  },
+  {
+    "type": "list_item",
+    "text": "- the separate PDF recovery evidence must show selected_attempt=cli_fallback",
+    "source": "html"
+  },
+  {
+    "type": "list_item",
+    "text": "- the separate PDF recovery trace must keep both parser attempts",
+    "source": "html"
+  }
+]

@@ -1,0 +1,128 @@
+[
+  {
+    "type": "heading",
+    "text": "# Cross Page Financial Control Pack",
+    "source": "html",
+    "level": 1,
+    "title": "Cross Page Financial Control Pack"
+  },
+  {
+    "type": "text",
+    "text": "Document ID: FIN-CROSS-2026-06",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Reporting Period: 2026-01-01 to 2026-03-31",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Owner: Finance Shared Service Center",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## Page 1 - Revenue Detail",
+    "source": "html",
+    "level": 2,
+    "title": "Page 1 - Revenue Detail"
+  },
+  {
+    "type": "text",
+    "text": "Scenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.",
+    "source": "html"
+  },
+  {
+    "type": "table",
+    "text": "| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Hardware Subscription | 18400 | invoice batch A17 |\n| Maintenance Service | 7250 | invoice batch B04 |\n| Channel Rebate | -1380 | manual confirmation required |\n| Subtotal Revenue | 24270 | first-page subtotal |",
+    "source": "html",
+    "headers": [
+      "Line Item",
+      "Q1 Amount",
+      "Evidence Note"
+    ],
+    "rows": [
+      [
+        "Hardware Subscription",
+        "18400",
+        "invoice batch A17"
+      ],
+      [
+        "Maintenance Service",
+        "7250",
+        "invoice batch B04"
+      ],
+      [
+        "Channel Rebate",
+        "-1380",
+        "manual confirmation required"
+      ],
+      [
+        "Subtotal Revenue",
+        "24270",
+        "first-page subtotal"
+      ]
+    ],
+    "row_count": 4,
+    "column_count": 3
+  },
+  {
+    "type": "heading",
+    "text": "## Page 2 - Cost Detail",
+    "source": "html",
+    "level": 2,
+    "title": "Page 2 - Cost Detail"
+  },
+  {
+    "type": "table",
+    "text": "| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Cloud Cost | -6410 | usage statement U23 |\n| Delivery Labor | -3890 | timesheet rollup |\n| Support Expense | -2160 | ticket group S11 |\n| Total Operating Result | 11810 | 24270 - 6410 - 3890 - 2160 |",
+    "source": "html",
+    "headers": [
+      "Line Item",
+      "Q1 Amount",
+      "Evidence Note"
+    ],
+    "rows": [
+      [
+        "Cloud Cost",
+        "-6410",
+        "usage statement U23"
+      ],
+      [
+        "Delivery Labor",
+        "-3890",
+        "timesheet rollup"
+      ],
+      [
+        "Support Expense",
+        "-2160",
+        "ticket group S11"
+      ],
+      [
+        "Total Operating Result",
+        "11810",
+        "24270 - 6410 - 3890 - 2160"
+      ]
+    ],
+    "row_count": 4,
+    "column_count": 3
+  },
+  {
+    "type": "heading",
+    "text": "## Audit Notes",
+    "source": "html",
+    "level": 2,
+    "title": "Audit Notes"
+  },
+  {
+    "type": "text",
+    "text": "Risk: subtotal and total rows are separated by a page break in the source PDF.",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Recommendation: verify that retrieval chunks preserve both page labels and table context.",
+    "source": "html"
+  }
+]

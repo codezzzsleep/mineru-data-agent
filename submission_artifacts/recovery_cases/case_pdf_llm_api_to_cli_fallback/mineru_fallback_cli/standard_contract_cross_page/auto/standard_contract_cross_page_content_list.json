@@ -1,0 +1,176 @@
+[
+    {
+        "type": "text",
+        "text": "Data Processing Service Agreement",
+        "text_level": 1,
+        "bbox": [
+            236,
+            63,
+            761,
+            87
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "Contract No: STD-2026-MINERU-07",
+        "bbox": [
+            90,
+            93,
+            369,
+            109
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "Effective Date: 2026-05-20",
+        "bbox": [
+            90,
+            114,
+            299,
+            130
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "Parties: Corpus Producer A and Processing Vendor B",
+        "bbox": [
+            90,
+            136,
+            497,
+            152
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "1. Scope",
+        "text_level": 2,
+        "bbox": [
+            92,
+            162,
+            221,
+            186
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "The vendor provides a traceable document parsing agent for PDF, scanned files, web pages, and structured exports.",
+        "bbox": [
+            90,
+            193,
+            900,
+            222
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "2. Compliance Clauses",
+        "text_level": 2,
+        "bbox": [
+            90,
+            225,
+            426,
+            248
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "table",
+        "img_path": "images/5b7740d43e7690d08ebb43084ea8667ffdee0bb6cf846cc14d8acc91bd1ef059.jpg",
+        "table_caption": [],
+        "table_footnote": [],
+        "table_body": "<table><tr><td rowspan=1 colspan=1>Clause</td><td rowspan=1 colspan=1>Requirement</td><td rowspan=1 colspan=1>Evidence Field</td></tr><tr><td rowspan=1 colspan=1>2.1</td><td rowspan=1 colspan=1>Supplier must keep trace logs for every parsing run.</td><td rowspan=1 colspan=1>trace_path</td></tr><tr><td rowspan=1 colspan=1>2.2</td><td rowspan=1 colspan=1>Output JSON must include structured sections and tables.</td><td rowspan=1 colspan=1>result.json</td></tr><tr><td rowspan=1 colspan=1>3.1</td><td rowspan=1 colspan=1>Failures must be recoverable without stopping the batch.</td><td rowspan=1 colspan=1>batch_report.json</td></tr><tr><td rowspan=1 colspan=1>4.1</td><td rowspan=1 colspan=1>Keys and tokens must not be written to public artifacts.</td><td rowspan=1 colspan=1>secret_scan</td></tr></table>",
+        "bbox": [
+            267,
+            254,
+            731,
+            340
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "3. Service Level",
+        "text_level": 2,
+        "bbox": [
+            90,
+            64,
+            326,
+            85
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "Batch tasks must continue after a single item failure and must record the error message.",
+        "bbox": [
+            90,
+            93,
+            752,
+            110
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "4. Exception Handling",
+        "text_level": 2,
+        "bbox": [
+            90,
+            112,
+            413,
+            134
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "Risk: missing page provenance must be reported as a quality issue instead of being hidden.",
+        "bbox": [
+            90,
+            141,
+            779,
+            158
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "Recommendation: the reviewer should inspect trace.json and retrieval\\_quality.json.",
+        "bbox": [
+            90,
+            162,
+            715,
+            179
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "5. Signature",
+        "text_level": 2,
+        "bbox": [
+            92,
+            180,
+            272,
+            203
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "Signed by: Data Governance Office / Vendor Engineering Lead",
+        "bbox": [
+            90,
+            210,
+            568,
+            227
+        ],
+        "page_idx": 1
+    }
+]

@@ -14,13 +14,16 @@
 - 文本质量、页码溯源、财报数字、合同/规范结构等校验
 - 可选 DeepSeek/ModelScope 预执行调度：在解析前建议 profile、runner、backend、method、语言、目标 schema 和恢复策略，并把安全白名单内的建议实际应用到本次运行
 - 质量异常后的自动恢复执行：编码噪声清理二次 pass，以及 PDF/图片类低质量结果的 OCR 重试择优
+- 在线 Agent API 缺少页级 provenance 时，可自动触发本地 MinerU CLI fallback，并把初始问题码、两次尝试和最终择优结果写入 `recovery_decision`
 - 面向检索/评测入库的 `retrieval_chunks.jsonl` 导出
 - `result.json`、`trace.json`、`summary.md` 三类可复查输出
 - FastAPI 接口，方便组委会或评审脚本调用
 - 5 个可复跑 HTML/网页 fixture artifact，覆盖财报、低质量 OCR、合同条款、流程说明和网页巡检
 - 4 个 PDF 文件级本地 MinerU CLI artifact，覆盖扫描版、财报表格、合同条款和流程图文档，包含 MinerU 中间文件和页级 provenance
 - 1 个 CPU 友好的 MinerU 在线 Agent API PDF artifact，证明无需本地 GPU 也可跑通 PDF fixture 主流程
+- 1 个真实 PDF recovery 证据：在线 API 先跑、缺少页级 provenance 后自动 fallback 到 CLI artifact，`recovery_decision.executed=true`
 - 2 个 Office 文件级 artifact，覆盖 Word 合规矩阵和 PowerPoint 工作流汇报
+- 4 个更贴近评审挑战的复杂文档 fixture，并附人工标注表，覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流
 - 1 个实际启用 DeepSeek-V4-Flash 的 LLM 证据案例，用于任务理解、schema 建议、复核重点和恢复建议
 
 ## Quick Start
@@ -145,6 +148,17 @@ powershell -ExecutionPolicy Bypass -File .\scripts\collect_mineru_case.ps1 -RunD
 
 当前证据位于 `submission_artifacts/mineru_cases/case_mineru_cli_low_quality_pdf/`，包含原始输入 PDF、副本、`mineru-cli` trace、MinerU `middle/model/layout/span/origin` 等 artifact 和 retrieval 导出。
 
+在线 API 缺少页级 provenance 时的自动 CLI fallback 可保持默认开启；如需指定 fallback 使用的本地 MinerU 可执行文件：
+
+```bash
+data-agent run \
+  --runner agent-api \
+  --fallback-mineru-executable /path/to/mineru \
+  --input /path/to/input.pdf \
+  --out runs \
+  --task "先用在线 API 解析 PDF，缺少页级 provenance 时自动切换本地 CLI"
+```
+
 生成并复跑额外 PDF 文件级样本：
 
 ```powershell
@@ -224,6 +238,8 @@ API 调用时传 `llm=deepseek` 或 `llm=modelscope` 即可。输出中的 `exec
 
 本提交包保存了一次实际启用 ModelScope DeepSeek-V4-Flash 的证据，见 `submission_artifacts/llm_cases/`。该案例的 `trace.json` 记录 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`。API key 只通过环境变量传入，没有写入输出文件。
 
+另有 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 保存真实 PDF 的解析前调度和 API-to-CLI fallback 证据。当前环境没有 DeepSeek/ModelScope key，也没有可直接调用的 MinerU CLI 可执行文件，因此该案例使用离线确定性预调度器和已保存的本地 CLI artifact 回放来证明代码级恢复路径；`README.md`、`trace.json` 和 `result.json` 都明确标注了这个边界。配置真实 LLM key 与 MinerU CLI 后，同一机制可转为在线全链路运行。
+
 ## Output
 
 每次运行会生成一个独立 run 目录：
@@ -248,7 +264,7 @@ runs/<run_id>/
 python scripts/build_evaluation_report.py
 ```
 
-当前报告位于 `submission_artifacts/evaluation/`，覆盖 8 个提交案例、24 个标注字段、profile 命中、结构门槛、质量门槛和 provenance 门槛。
+当前报告位于 `submission_artifacts/evaluation/`，覆盖 13 个提交案例、39 个标注字段、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。
 
 ## Recommended HeyWhale Setup
 
@@ -282,9 +298,9 @@ python scripts/build_evaluation_report.py
 ## Backend Strategy
 
 - `--runner agent-api`：调用 MinerU 在线 Agent API，免 Token、资源轻、启动快，适合先完成比赛演示闭环。
-- 在线 Agent API 的轻量 Markdown 路径不保证页级 provenance；系统会在 `quality.issues` 中用 `no_page_provenance` 显式提示。
+- 在线 Agent API 的轻量 Markdown 路径不保证页级 provenance；系统会在 `quality.issues` 中用 `no_page_provenance` 显式提示，并在配置了 CLI fallback 时自动尝试本地 MinerU CLI。
 - `--runner cli`：调用本地 MinerU CLI，适合 GPU 镜像、大文件、完整中间结果和可视化 PDF artifact。
 - `--llm deepseek`：可选 DeepSeek v4-flash 官方推理层，参与解析前调度和解析后复核；不开启时项目仍可完整运行。
 - `--llm modelscope`：可选 ModelScope 推理入口，默认模型 `deepseek-ai/DeepSeek-V4-Flash`。
 
-当前提交包内的强复现证据分为六类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议；1 份带标注评测报告证明 8 个案例的 24 个标注字段、profile、结构门槛、质量门槛和 provenance 门槛均可复查。合成 PDF/Office 样本不能替代真实客户材料的长期泛化评测。
+当前提交包内的强复现证据分为八类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；1 个 PDF recovery 案例证明在线 API 缺少页级 provenance 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；4 个挑战 fixture 与人工标注表覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议；1 份带标注评测报告证明 13 个案例的 39 个标注字段、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛均可复查。合成 PDF/Office/挑战样本不能替代真实客户材料的长期泛化评测。

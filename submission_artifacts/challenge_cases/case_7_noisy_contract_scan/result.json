@@ -1,0 +1,302 @@
+{
+  "run_id": "ee0d71622431",
+  "task": "Parse an OCR-noisy contract scan review, clean mojibake fragments, preserve initial quality issues, extract contract metadata, risk table, recommendations, trace, and retrieval chunks.",
+  "profile": "low_quality_ocr",
+  "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize OCR confidence proxies and mojibake/noise checks",
+    "Flag pages with sparse extracted text for manual or VLM fallback"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": false,
+    "requested": {
+      "profile": "low_quality_ocr",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch"
+    },
+    "initial": {
+      "profile": "low_quality_ocr",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "resolved": {
+      "profile": "low_quality_ocr",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "runner_class": "MinerURunner",
+    "applied": [],
+    "ignored": []
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 11,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 3,
+        "text": 7,
+        "table": 1
+      },
+      "source_counts": {
+        "html": 11
+      },
+      "text_characters": 770
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "Noisy Contract Scan Review",
+        "line": 1,
+        "source": "heading",
+        "text": "Contract No: OCR-NOISE-2026-17\n\nEffective Date: 2026-05-21\n\nParties: North Data Plant / Edge Review Vendor"
+      },
+      {
+        "level": 2,
+        "title": "1. OCR Observations",
+        "line": 9,
+        "source": "heading",
+        "text": "Scanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: ®.\n\nClause 2.1 requires every page to keep parse logs and reviewer notes.\n\nClause 2.2 requires recovery suggestions when provenance is weak."
+      },
+      {
+        "level": 2,
+        "title": "2. Risk Table",
+        "line": 17,
+        "source": "heading",
+        "text": "| Risk ID | Description | Expected Handling |\n| --- | --- | --- |\n| R-01 | stamp overlaps signature field | manual review |\n| R-02 | encoding noise appears in clause text | text cleanup recovery |\n| R-03 | watermark repeated in footer | noise filtering |\n\nRecommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes."
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 19,
+        "headers": [
+          "Risk ID",
+          "Description",
+          "Expected Handling"
+        ],
+        "rows": [
+          [
+            "R-01",
+            "stamp overlaps signature field",
+            "manual review"
+          ],
+          [
+            "R-02",
+            "encoding noise appears in clause text",
+            "text cleanup recovery"
+          ],
+          [
+            "R-03",
+            "watermark repeated in footer",
+            "noise filtering"
+          ]
+        ],
+        "row_count": 3,
+        "column_count": 3
+      }
+    ],
+    "key_values": [
+      {
+        "key": "Contract No",
+        "value": "OCR-NOISE-2026-17"
+      },
+      {
+        "key": "Effective Date",
+        "value": "2026-05-21"
+      },
+      {
+        "key": "Parties",
+        "value": "North Data Plant / Edge Review Vendor"
+      },
+      {
+        "key": "Recommendation",
+        "value": "run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes."
+      }
+    ],
+    "key_value_map": {
+      "Contract No": "OCR-NOISE-2026-17",
+      "Effective Date": "2026-05-21",
+      "Parties": "North Data Plant / Edge Review Vendor",
+      "Recommendation": "run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes."
+    },
+    "numeric_facts": [
+      {
+        "line": 13,
+        "text": "Clause 2.1 requires every page to keep parse logs and reviewer notes.",
+        "numbers": [
+          "2.1"
+        ]
+      },
+      {
+        "line": 15,
+        "text": "Clause 2.2 requires recovery suggestions when provenance is weak.",
+        "numbers": [
+          "2.2"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-21"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes."
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 17,
+          "text": "## 2. Risk Table"
+        },
+        {
+          "line": 19,
+          "text": "| Risk ID | Description | Expected Handling |"
+        },
+        {
+          "line": 25,
+          "text": "Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes."
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 3,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# Noisy Contract Scan Review\n\nContract No: OCR-NOISE-2026-17\n\nEffective Date: 2026-05-21\n\nParties: North Data Plant / Edge Review Vendor\n\n## 1. OCR Observations\n\nScanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: ®.\n\nClause 2.1 requires every page to keep parse logs and reviewer notes.\n\nClause 2.2 requires recovery suggestions when provenance is weak.\n\n## 2. Risk Table\n\n| Risk ID | Description | Expected Handling |\n| --- | --- | --- |\n| R-01 | stamp overlaps signature field | manual review |\n| R-02 | encoding noise appears in clause text | text cleanup recovery |\n| R-03 | watermark repeated in footer | noise filtering |\n\nRecommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes."
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 11,
+          "source_counts": {
+            "html": 11
+          }
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "recovered_accept",
+    "actions": [
+      "Executed 1 automatic recovery attempt(s); selected `text_cleanup`.",
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit.",
+      "Initial quality issues were preserved for audit: possible_mojibake, document_level_provenance."
+    ],
+    "issue_codes": [
+      "document_level_provenance"
+    ],
+    "initial_issue_codes": [
+      "possible_mojibake",
+      "document_level_provenance"
+    ],
+    "selected_attempt": "text_cleanup",
+    "executed": true,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass_with_warnings",
+        "score": 92,
+        "issue_codes": [
+          "possible_mojibake",
+          "document_level_provenance"
+        ],
+        "selected": false,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\html\\case_7_noisy_contract_scan.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\html\\case_7_noisy_contract_scan_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      },
+      {
+        "name": "text_cleanup",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 4,
+      "by_type": {
+        "text": 3,
+        "table": 1
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\summary.md"
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Cross Page Financial Control Pack</title></head>
+<body>
+<article>
+  <h1>Cross Page Financial Control Pack</h1>
+  <p>Document ID: FIN-CROSS-2026-06</p>
+  <p>Reporting Period: 2026-01-01 to 2026-03-31</p>
+  <p>Owner: Finance Shared Service Center</p>
+  <h2>Page 1 - Revenue Detail</h2>
+  <p>Scenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.</p>
+  <table>
+    <tr><th>Line Item</th><th>Q1 Amount</th><th>Evidence Note</th></tr>
+    <tr><td>Hardware Subscription</td><td>18400</td><td>invoice batch A17</td></tr>
+    <tr><td>Maintenance Service</td><td>7250</td><td>invoice batch B04</td></tr>
+    <tr><td>Channel Rebate</td><td>-1380</td><td>manual confirmation required</td></tr>
+    <tr><td>Subtotal Revenue</td><td>24270</td><td>first-page subtotal</td></tr>
+  </table>
+  <h2>Page 2 - Cost Detail</h2>
+  <table>
+    <tr><th>Line Item</th><th>Q1 Amount</th><th>Evidence Note</th></tr>
+    <tr><td>Cloud Cost</td><td>-6410</td><td>usage statement U23</td></tr>
+    <tr><td>Delivery Labor</td><td>-3890</td><td>timesheet rollup</td></tr>
+    <tr><td>Support Expense</td><td>-2160</td><td>ticket group S11</td></tr>
+    <tr><td>Total Operating Result</td><td>11810</td><td>24270 - 6410 - 3890 - 2160</td></tr>
+  </table>
+  <h2>Audit Notes</h2>
+  <p>Risk: subtotal and total rows are separated by a page break in the source PDF.</p>
+  <p>Recommendation: verify that retrieval chunks preserve both page labels and table context.</p>
+</article>
+</body>
+</html>

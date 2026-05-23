@@ -1,6 +1,6 @@
 # Case Studies
 
-本提交包把案例证据分成五类，避免把轻量 fixture 或合成文件的结果包装成真实客户材料的广泛评测。
+本提交包把案例证据分成八类，避免把轻量 fixture、合成文件或离线恢复演练结果包装成真实客户材料的广泛评测。
 
 ## 1. HTML/网页 Fixture 案例
 
@@ -75,7 +75,24 @@ $env:MINERU_ROOT\.venv\Scripts\python.exe .\scripts\generate_complex_pdf_fixture
 
 该案例在 CPU 环境调用 MinerU 在线 Agent API 解析 `standard_contract_cross_page.pdf`，输出 Markdown、结构化章节、HTML 表格解析、质量报告、trace 和 retrieval chunks。由于在线 API 轻量路径不提供页级 provenance，质量状态为 `pass_with_warnings`，并在 `recovery_decision` 中明确建议需要页级审计时切换本地 MinerU CLI。
 
-## 4. DOCX/PPTX 文件级案例
+## 4. PDF LLM 预调度 + API-to-CLI Fallback 证据
+
+Recovery 案例位置：`submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/`
+
+该案例使用真实 PDF fixture `examples/real_pdfs/standard_contract_cross_page.pdf`，执行顺序为：解析前调度、在线 Agent API 首次解析、质量校验发现 `no_page_provenance`、自动触发 CLI fallback、选择页级 provenance 更完整的 `cli_fallback` 尝试。关键证据如下：
+
+| 证据项 | 当前结果 |
+| --- | --- |
+| `llm_preplan_enabled` | `true` |
+| 初始问题码 | `no_page_provenance` |
+| `recovery_decision.executed` | `true` |
+| `selected_attempt` | `cli_fallback` |
+| 最终质量 | `pass` 100 |
+| 最终 provenance | `page` |
+
+边界必须如实说明：当前运行环境没有可用的 DeepSeek/ModelScope key，也没有可直接调用的本地 MinerU CLI 可执行文件，所以这个案例使用离线确定性预调度器和已保存的本地 CLI artifact 回放。它证明的是代码级自动 fallback、attempt 记录、择优和证据链闭合；若要做现场全链路演示，需要配置真实 LLM key 和 MinerU CLI。
+
+## 5. DOCX/PPTX 文件级案例
 
 Office 案例位置：`submission_artifacts/office_cases/`
 
@@ -93,7 +110,22 @@ Office 案例位置：`submission_artifacts/office_cases/`
 
 DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆盖赛题提到的 Word/PPT 文件类型；若评审需要版面级视觉 artifact，应优先参考 PDF/MinerU CLI 案例。
 
-## 5. LLM-Enabled 财报复核案例
+## 6. 挑战样本与人工标注表
+
+挑战样本位置：`submission_artifacts/challenge_cases/`
+
+这些样本由 `examples/challenge_manifest.json` 与 `scripts/run_challenge_cases.py` 生成，并额外保存 `human_annotation_table.md`。它们比基础 HTML fixture 更偏向评审会质疑的复杂形态，但仍是可公开提交的合成样本。
+
+| Case | 场景 | 标注重点 | 当前结果 |
+| --- | --- | --- | --- |
+| `case_6_cross_page_financial_table` | 跨页风格财报明细，小计与总计分离 | Document ID、期间、Owner、合计/不一致风险 | `pass_with_warnings` 92，命中 `numeric_total_verified` 与 `numeric_total_mismatch` |
+| `case_7_noisy_contract_scan` | OCR 噪声合同与编码污染 | Contract No、日期、cleanup recovery | `pass` 100，`recovery_decision.executed=true`，选中 `text_cleanup` |
+| `case_8_industry_standard_matrix` | 行业标准合规矩阵 | Standard ID、Review Date、Owner、关键要求 | `pass` 100 |
+| `case_9_incident_workflow_report` | 故障处置工作流与 fallback 时间线 | Incident ID、Report Date、System、fallback 动作 | `pass` 100 |
+
+这些样本已纳入 `examples/evaluation/labels.json` 和 `submission_artifacts/evaluation/`，用于评测 13 个提交案例中的新增挑战维度。
+
+## 7. LLM-Enabled 财报复核案例
 
 LLM 案例位置：`submission_artifacts/llm_cases/case_llm_financial_review/`
 
@@ -110,27 +142,28 @@ LLM 在该案例中的职责是：
 
 当前代码已把 LLM 从单纯解析后复核前移到解析前调度。开启 `--llm deepseek` 或 `--llm modelscope` 时，trace 会新增 `llm_pre_execution_planning`，结果会新增 `execution_control` 和 `llm_analysis.pre_execution_plan`，记录模型建议的 profile、runner、backend、method、语言、目标 schema 和恢复策略；系统只应用安全白名单内且未被用户显式锁定的建议。
 
-## 6. 带标注评测指标
+## 8. 带标注评测指标
 
 评测报告位置：`submission_artifacts/evaluation/`
 
-该报告由 `examples/evaluation/labels.json` 和 `scripts/build_evaluation_report.py` 生成，覆盖 8 个提交案例、24 个标注字段、profile 命中、结构门槛、质量门槛和 provenance 门槛。当前已保存结果：
+该报告由 `examples/evaluation/labels.json` 和 `scripts/build_evaluation_report.py` 生成，覆盖 13 个提交案例、39 个标注字段、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。当前已保存结果：
 
-- Expected-field accuracy: 100.0% (24/24)
-- Profile accuracy: 100.0% (8/8)
-- Structure gate pass rate: 100.0% (8/8)
-- Quality gate pass rate: 100.0% (8/8)
-- Provenance gate pass rate: 100.0% (8/8)
+- Expected-field accuracy: 100.0% (39/39)
+- Profile accuracy: 100.0% (13/13)
+- Structure gate pass rate: 100.0% (13/13)
+- Quality gate pass rate: 100.0% (13/13)
+- Provenance gate pass rate: 100.0% (13/13)
+- Recovery gate pass rate: 100.0% (2/2)
 
 该评测不是完整 OCR 字符级标注集，但能把关键字段、结构输出和可追溯性变成可复跑指标，补足“只有案例展示、没有指标”的短板。
 
-## 7. 边界说明
+## 9. 边界说明
 
 当前证据已经能证明项目具备 HTML/网页结构化处理闭环、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出能力。
 
 但目前仍有明确缺口：
 
-- PDF 文件级证据已扩展到 4 个，Office 文件级证据已扩展到 2 个，但其中多个样本是可公开提交的合成业务样本，还不足以证明真实客户材料的长期泛化能力。
+- PDF 文件级证据已扩展到 4 个，Office 文件级证据已扩展到 2 个，挑战 fixture 已扩展到 4 个，但其中多个样本是可公开提交的合成业务样本，还不足以证明真实客户材料的长期泛化能力。
 - LLM 预调度已接入 profile/method/backend/lang 的安全控制，但 runner 的实际选择仍由部署参数控制，避免模型在运行中切换到当前环境不可用的后端。
-- 当前 LLM 保存案例是 HTML fixture 的解析后复核证据；代码已支持解析前调度，但还缺少“真实 PDF + LLM 启用 + recovery executed=true”的强证据 artifact。
+- 已补“真实 PDF + 解析前调度 + recovery executed=true”的证据 artifact，但当前环境使用离线确定性预调度器和缓存 CLI artifact 回放；直播式全链路证据仍需要真实 DeepSeek/ModelScope key 和可调用 MinerU CLI。
 - 当前 API smoke 已覆盖本地 HTML 上传和 PDF 上传；PDF 路径使用在线 Agent API，因此仍会保留 `no_page_provenance` 边界提示。

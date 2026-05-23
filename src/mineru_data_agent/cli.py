@@ -27,6 +27,14 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--api-timeout", type=int, default=300, help="Online API task timeout in seconds.")
     run.add_argument("--api-poll-interval", type=float, default=3.0, help="Online API polling interval in seconds.")
     run.add_argument("--api-max-retries", type=int, default=2, help="Retry transient online API failures.")
+    run.add_argument(
+        "--no-cli-fallback-on-no-page-provenance",
+        dest="cli_fallback_on_no_page_provenance",
+        action="store_false",
+        default=True,
+        help="Disable automatic local MinerU CLI fallback when the online API lacks page provenance.",
+    )
+    run.add_argument("--fallback-mineru-executable", default=None, help="Path to mineru executable for CLI fallback.")
     _add_llm_args(run)
 
     batch = subparsers.add_parser("batch", help="Run multiple tasks from a JSON manifest and write a batch report.")
@@ -41,6 +49,14 @@ def build_parser() -> argparse.ArgumentParser:
     batch.add_argument("--api-timeout", type=int, default=300, help="Online API task timeout in seconds.")
     batch.add_argument("--api-poll-interval", type=float, default=3.0, help="Online API polling interval in seconds.")
     batch.add_argument("--api-max-retries", type=int, default=2, help="Retry transient online API failures.")
+    batch.add_argument(
+        "--no-cli-fallback-on-no-page-provenance",
+        dest="cli_fallback_on_no_page_provenance",
+        action="store_false",
+        default=True,
+        help="Disable automatic local MinerU CLI fallback when the online API lacks page provenance.",
+    )
+    batch.add_argument("--fallback-mineru-executable", default=None, help="Path to mineru executable for CLI fallback.")
     _add_llm_args(batch)
     return parser
 
@@ -49,7 +65,11 @@ def main() -> None:
     args = build_parser().parse_args()
     if args.command in {"run", "batch"}:
         runner = _build_runner(args)
-        agent = MinerUDataAgent(runner, llm_client=_build_llm_client(args))
+        agent = MinerUDataAgent(
+            runner,
+            llm_client=_build_llm_client(args),
+            fallback_mineru_runner=_build_fallback_runner(args),
+        )
     if args.command == "run":
         result = agent.run(
             Path(args.input),
@@ -84,6 +104,12 @@ def _build_runner(args: argparse.Namespace) -> MinerURunner | MinerUAgentAPIRunn
             max_retries=args.api_max_retries,
         )
     return MinerURunner(executable=args.mineru_executable)
+
+
+def _build_fallback_runner(args: argparse.Namespace) -> MinerURunner | None:
+    if args.runner != "agent-api" or not args.cli_fallback_on_no_page_provenance:
+        return None
+    return MinerURunner(executable=args.fallback_mineru_executable or args.mineru_executable)
 
 
 def _add_llm_args(parser: argparse.ArgumentParser) -> None:

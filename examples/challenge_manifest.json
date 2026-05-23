@@ -1,0 +1,28 @@
+{
+  "tasks": [
+    {
+      "id": "case_6_cross_page_financial_table",
+      "input": "examples/challenge_cases/case_6_cross_page_financial_table.html",
+      "task": "Parse a cross-page-style financial control pack, extract document id, owner, tables, subtotal/total evidence, risks, recommendations, trace, and retrieval chunks.",
+      "profile": "financial_report"
+    },
+    {
+      "id": "case_7_noisy_contract_scan",
+      "input": "examples/challenge_cases/case_7_noisy_contract_scan.html",
+      "task": "Parse an OCR-noisy contract scan review, clean mojibake fragments, preserve initial quality issues, extract contract metadata, risk table, recommendations, trace, and retrieval chunks.",
+      "profile": "low_quality_ocr"
+    },
+    {
+      "id": "case_8_industry_standard_matrix",
+      "input": "examples/challenge_cases/case_8_industry_standard_matrix.html",
+      "task": "Parse an industry standard compliance matrix, extract standard id, owner, requirements, severity, exception rules, quality logs, and retrieval chunks.",
+      "profile": "standard_or_contract"
+    },
+    {
+      "id": "case_9_incident_workflow_report",
+      "input": "examples/challenge_cases/case_9_incident_workflow_report.html",
+      "task": "Parse an incident workflow report, extract incident id, timeline, fallback actions, risks, recommendations, recovery verification targets, trace, and retrieval chunks.",
+      "profile": "workflow_or_diagram"
+    }
+  ]
+}

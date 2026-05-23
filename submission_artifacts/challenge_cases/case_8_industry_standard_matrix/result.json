@@ -1,0 +1,276 @@
+{
+  "run_id": "c62b72d418ea",
+  "task": "Parse an industry standard compliance matrix, extract standard id, owner, requirements, severity, exception rules, quality logs, and retrieval chunks.",
+  "profile": "standard_or_contract",
+  "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_8_industry_standard_matrix.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize section hierarchy and clause-like paragraph extraction",
+    "Preserve source page or document heading evidence for each clause"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": false,
+    "requested": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch"
+    },
+    "initial": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "resolved": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "runner_class": "MinerURunner",
+    "applied": [],
+    "ignored": []
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 11,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 4,
+        "text": 6,
+        "table": 1
+      },
+      "source_counts": {
+        "html": 11
+      },
+      "text_characters": 923
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "Industry Standard Compliance Matrix",
+        "line": 1,
+        "source": "heading",
+        "text": "Standard ID: STD-MATRIX-2026-09\n\nReview Date: 2026-05-22\n\nOwner: Quality Engineering Office"
+      },
+      {
+        "level": 2,
+        "title": "1. Scope",
+        "line": 9,
+        "source": "heading",
+        "text": "This standard defines traceability requirements for document parsing agents used in corpus production."
+      },
+      {
+        "level": 2,
+        "title": "2. Compliance Matrix",
+        "line": 13,
+        "source": "heading",
+        "text": "| Requirement | Mandatory Evidence | Severity | Review Note |\n| --- | --- | --- | --- |\n| REQ-1 | trace.json includes every tool call | high | must include retries |\n| REQ-2 | result.json includes structured sections | high | must include tables |\n| REQ-3 | retrieval manifest includes page coverage | medium | pages field required |\n| REQ-4 | secret scan excludes API keys | critical | block release if failed |"
+      },
+      {
+        "level": 2,
+        "title": "3. Exception Rule",
+        "line": 22,
+        "source": "heading",
+        "text": "Risk: if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.\n\nRecommendation: link this standard check to the PDF recovery evidence where executed=true is already recorded."
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 15,
+        "headers": [
+          "Requirement",
+          "Mandatory Evidence",
+          "Severity",
+          "Review Note"
+        ],
+        "rows": [
+          [
+            "REQ-1",
+            "trace.json includes every tool call",
+            "high",
+            "must include retries"
+          ],
+          [
+            "REQ-2",
+            "result.json includes structured sections",
+            "high",
+            "must include tables"
+          ],
+          [
+            "REQ-3",
+            "retrieval manifest includes page coverage",
+            "medium",
+            "pages field required"
+          ],
+          [
+            "REQ-4",
+            "secret scan excludes API keys",
+            "critical",
+            "block release if failed"
+          ]
+        ],
+        "row_count": 4,
+        "column_count": 4
+      }
+    ],
+    "key_values": [
+      {
+        "key": "Standard ID",
+        "value": "STD-MATRIX-2026-09"
+      },
+      {
+        "key": "Review Date",
+        "value": "2026-05-22"
+      },
+      {
+        "key": "Owner",
+        "value": "Quality Engineering Office"
+      },
+      {
+        "key": "Risk",
+        "value": "if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only."
+      },
+      {
+        "key": "Recommendation",
+        "value": "link this standard check to the PDF recovery evidence where executed=true is already recorded."
+      }
+    ],
+    "key_value_map": {
+      "Standard ID": "STD-MATRIX-2026-09",
+      "Review Date": "2026-05-22",
+      "Owner": "Quality Engineering Office",
+      "Risk": "if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.",
+      "Recommendation": "link this standard check to the PDF recovery evidence where executed=true is already recorded."
+    },
+    "numeric_facts": [],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-22"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "Recommendation: link this standard check to the PDF recovery evidence where executed=true is already recorded."
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 24,
+          "text": "Risk: if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only."
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 4,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# Industry Standard Compliance Matrix\n\nStandard ID: STD-MATRIX-2026-09\n\nReview Date: 2026-05-22\n\nOwner: Quality Engineering Office\n\n## 1. Scope\n\nThis standard defines traceability requirements for document parsing agents used in corpus production.\n\n## 2. Compliance Matrix\n\n| Requirement | Mandatory Evidence | Severity | Review Note |\n| --- | --- | --- | --- |\n| REQ-1 | trace.json includes every tool call | high | must include retries |\n| REQ-2 | result.json includes structured sections | high | must include tables |\n| REQ-3 | retrieval manifest includes page coverage | medium | pages field required |\n| REQ-4 | secret scan excludes API keys | critical | block release if failed |\n\n## 3. Exception Rule\n\nRisk: if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.\n\nRecommendation: link this standard check to the PDF recovery evidence where executed=true is already recorded."
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 11,
+          "source_counts": {
+            "html": 11
+          }
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "accept",
+    "actions": [
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit."
+    ],
+    "issue_codes": [
+      "document_level_provenance"
+    ],
+    "initial_issue_codes": [
+      "document_level_provenance"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\html\\case_8_industry_standard_matrix.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\html\\case_8_industry_standard_matrix_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 4,
+      "by_type": {
+        "text": 3,
+        "table": 1
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\html\\case_8_industry_standard_matrix.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\html\\case_8_industry_standard_matrix_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\summary.md"
+}

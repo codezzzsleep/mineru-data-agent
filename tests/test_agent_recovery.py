@@ -132,6 +132,33 @@ def test_llm_preplan_controls_profile_method_and_trace(tmp_path: Path) -> None:
     assert retrieval_step["detail"]["by_type"]["text"] >= 1
 
 
+def test_agent_api_no_page_provenance_falls_back_to_cli_attempt(tmp_path: Path) -> None:
+    input_path = tmp_path / "contract.pdf"
+    input_path.write_bytes(b"%PDF-1.4\n% contract")
+    primary = _AgentAPIRunnerNoProvenance()
+    fallback = _CLIFallbackRunner()
+
+    result = MinerUDataAgent(mineru_runner=primary, fallback_mineru_runner=fallback).run(
+        input_path,
+        tmp_path / "runs",
+        task="解析合同 PDF，缺少页级 provenance 时自动切换本地 CLI",
+        profile="standard_or_contract",
+    )
+
+    assert primary.calls == ["auto"]
+    assert fallback.calls == ["auto"]
+    assert result.quality["status"] == "pass"
+    assert result.recovery_decision["executed"] is True
+    assert result.recovery_decision["selected_attempt"] == "cli_fallback"
+    assert result.recovery_decision["attempts"][0]["issue_codes"] == ["no_page_provenance"]
+    assert result.recovery_decision["attempts"][1]["quality_status"] == "pass"
+    trace = json.loads(Path(result.trace_path).read_text(encoding="utf-8"))
+    step = next(item for item in trace["steps"] if item["name"] == "auto_recovery_cli_fallback")
+    assert step["detail"]["fallback_quality"]["provenance_level"] == "page"
+    assert trace["tool_calls"][0]["tool"] == "fake-agent-api"
+    assert trace["tool_calls"][1]["tool"] == "fake-mineru-cli"
+
+
 class _RetryRunner:
     def __init__(self) -> None:
         self.methods: list[str] = []
@@ -162,6 +189,82 @@ class _RetryRunner:
             ParseArtifacts(markdown_path=markdown_path, content_list_path=content_path),
             ToolCall(
                 tool="fake-mineru",
+                command=["fake-mineru", method],
+                status="completed",
+                elapsed_seconds=0.01,
+            ),
+        )
+
+
+class _AgentAPIRunnerNoProvenance:
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+
+    def parse(
+        self,
+        input_path: Path,
+        output_dir: Path,
+        *,
+        backend: str = "pipeline",
+        method: str = "auto",
+        lang: str = "ch",
+    ) -> tuple[ParseArtifacts, ToolCall]:
+        self.calls.append(method)
+        base = output_dir / input_path.stem / "agent_api"
+        base.mkdir(parents=True, exist_ok=True)
+        markdown_path = base / f"{input_path.stem}.md"
+        content_path = base / f"{input_path.stem}_content_list.json"
+        markdown = "# Contract\n\nContract No: API-ONLY-01\n\n## Risk\n\n" + ("Needs page provenance. " * 20)
+        content = [
+            {"type": "heading", "text": "# Contract", "source": "mineru-agent-api"},
+            {"type": "text", "text": "Contract No: API-ONLY-01", "source": "mineru-agent-api"},
+            {"type": "heading", "text": "## Risk", "source": "mineru-agent-api"},
+            {"type": "text", "text": "Needs page provenance. " * 20, "source": "mineru-agent-api"},
+        ]
+        markdown_path.write_text(markdown, encoding="utf-8")
+        content_path.write_text(json.dumps(content, ensure_ascii=False), encoding="utf-8")
+        return (
+            ParseArtifacts(markdown_path=markdown_path, content_list_path=content_path),
+            ToolCall(
+                tool="fake-agent-api",
+                command=["fake-agent-api", method],
+                status="completed",
+                elapsed_seconds=0.01,
+            ),
+        )
+
+
+class _CLIFallbackRunner:
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+
+    def parse(
+        self,
+        input_path: Path,
+        output_dir: Path,
+        *,
+        backend: str = "pipeline",
+        method: str = "auto",
+        lang: str = "ch",
+    ) -> tuple[ParseArtifacts, ToolCall]:
+        self.calls.append(method)
+        base = output_dir / input_path.stem / "auto"
+        base.mkdir(parents=True, exist_ok=True)
+        markdown_path = base / f"{input_path.stem}.md"
+        content_path = base / f"{input_path.stem}_content_list.json"
+        markdown = "# Contract\n\nContract No: CLI-RECOVERED-01\n\n## Scope\n\n" + ("Recovered page-level text. " * 20)
+        content = [
+            {"type": "heading", "text": "# Contract", "page_idx": 0, "source": "native"},
+            {"type": "text", "text": "Contract No: CLI-RECOVERED-01", "page_idx": 0, "source": "native"},
+            {"type": "heading", "text": "## Scope", "page_idx": 0, "source": "native"},
+            {"type": "text", "text": "Recovered page-level text. " * 20, "page_idx": 0, "source": "native"},
+        ]
+        markdown_path.write_text(markdown, encoding="utf-8")
+        content_path.write_text(json.dumps(content, ensure_ascii=False), encoding="utf-8")
+        return (
+            ParseArtifacts(markdown_path=markdown_path, content_list_path=content_path),
+            ToolCall(
+                tool="fake-mineru-cli",
                 command=["fake-mineru", method],
                 status="completed",
                 elapsed_seconds=0.01,

@@ -1,0 +1,92 @@
+{
+  "created_at": "2026-05-23T12:06:06.794373+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.709092+00:00",
+      "ended_at": "2026-05-23T12:06:06.709092+00:00",
+      "detail": {
+        "task": "Parse a cross-page-style financial control pack, extract document id, owner, tables, subtotal/total evidence, risks, recommendations, trace, and retrieval chunks.",
+        "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html"
+      }
+    },
+    {
+      "name": "extract_html",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.709092+00:00",
+      "ended_at": "2026-05-23T12:06:06.787367+00:00",
+      "detail": {
+        "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.787367+00:00",
+      "ended_at": "2026-05-23T12:06:06.788372+00:00",
+      "detail": {
+        "item_count": 12,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "html": 12
+        },
+        "section_count": 4,
+        "table_count": 2,
+        "key_value_count": 6,
+        "numeric_fact_count": 10,
+        "semantic_signal_counts": {
+          "dates": 2,
+          "recommendations": 1,
+          "anomaly_lines": 1
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.788372+00:00",
+      "ended_at": "2026-05-23T12:06:06.788372+00:00",
+      "detail": {
+        "profile": "financial_report"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.788372+00:00",
+      "ended_at": "2026-05-23T12:06:06.788372+00:00",
+      "detail": {
+        "quality_status": "pass_with_warnings",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.788372+00:00",
+      "ended_at": "2026-05-23T12:06:06.792374+00:00",
+      "detail": {
+        "chunks_count": 5,
+        "by_type": {
+          "text": 3,
+          "table": 2
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [],
+  "run_id": "58d40cd48116",
+  "task": "Parse a cross-page-style financial control pack, extract document id, owner, tables, subtotal/total evidence, risks, recommendations, trace, and retrieval chunks.",
+  "profile": "financial_report",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\58d40cd48116\\summary.md"
+}

@@ -34,6 +34,8 @@ async def parse_document(
     lang: str = Form("ch"),
     runner: str = Form("cli"),
     mineru_executable: str | None = Form(None),
+    cli_fallback_on_no_page_provenance: bool = Form(True),
+    fallback_mineru_executable: str | None = Form(None),
     api_max_retries: int = Form(2),
     llm: str = Form("none"),
     llm_model: str | None = Form(None),
@@ -64,6 +66,11 @@ async def parse_document(
         if runner == "agent-api"
         else MinerURunner(executable=mineru_executable)
     )
+    fallback_runner = (
+        MinerURunner(executable=fallback_mineru_executable or mineru_executable)
+        if runner == "agent-api" and cli_fallback_on_no_page_provenance
+        else None
+    )
     if llm == "modelscope":
         llm_client = ModelScopeLLMClient(model=llm_model, base_url=llm_base_url, timeout_seconds=llm_timeout)
     elif llm == "deepseek":
@@ -71,7 +78,7 @@ async def parse_document(
     else:
         llm_client = None
     try:
-        result = MinerUDataAgent(parser_runner, llm_client=llm_client).run(
+        result = MinerUDataAgent(parser_runner, llm_client=llm_client, fallback_mineru_runner=fallback_runner).run(
             input_path,
             root,
             task=task,

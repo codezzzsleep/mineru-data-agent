@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Noisy Contract Scan Review</title></head>
+<body>
+<article>
+  <h1>Noisy Contract Scan Review</h1>
+  <p>Contract No: OCR-NOISE-2026-17</p>
+  <p>Effective Date: 2026-05-21</p>
+  <p>Parties: North Data Plant / Edge Review Vendor</p>
+  <h2>1. OCR Observations</h2>
+  <p>Scanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: 锟斤拷 ��� Â®.</p>
+  <p>Clause 2.1 requires every page to keep parse logs and reviewer notes.</p>
+  <p>Clause 2.2 requires recovery suggestions when provenance is weak.</p>
+  <h2>2. Risk Table</h2>
+  <table>
+    <tr><th>Risk ID</th><th>Description</th><th>Expected Handling</th></tr>
+    <tr><td>R-01</td><td>stamp overlaps signature field</td><td>manual review</td></tr>
+    <tr><td>R-02</td><td>encoding noise appears in clause text</td><td>text cleanup recovery</td></tr>
+    <tr><td>R-03</td><td>watermark repeated in footer</td><td>noise filtering</td></tr>
+  </table>
+  <p>Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.</p>
+</article>
+</body>
+</html>

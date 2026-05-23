@@ -1,0 +1,99 @@
+[
+  {
+    "type": "heading",
+    "text": "# Industry Standard Compliance Matrix",
+    "source": "html",
+    "level": 1,
+    "title": "Industry Standard Compliance Matrix"
+  },
+  {
+    "type": "text",
+    "text": "Standard ID: STD-MATRIX-2026-09",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Review Date: 2026-05-22",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Owner: Quality Engineering Office",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 1. Scope",
+    "source": "html",
+    "level": 2,
+    "title": "1. Scope"
+  },
+  {
+    "type": "text",
+    "text": "This standard defines traceability requirements for document parsing agents used in corpus production.",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 2. Compliance Matrix",
+    "source": "html",
+    "level": 2,
+    "title": "2. Compliance Matrix"
+  },
+  {
+    "type": "table",
+    "text": "| Requirement | Mandatory Evidence | Severity | Review Note |\n| --- | --- | --- | --- |\n| REQ-1 | trace.json includes every tool call | high | must include retries |\n| REQ-2 | result.json includes structured sections | high | must include tables |\n| REQ-3 | retrieval manifest includes page coverage | medium | pages field required |\n| REQ-4 | secret scan excludes API keys | critical | block release if failed |",
+    "source": "html",
+    "headers": [
+      "Requirement",
+      "Mandatory Evidence",
+      "Severity",
+      "Review Note"
+    ],
+    "rows": [
+      [
+        "REQ-1",
+        "trace.json includes every tool call",
+        "high",
+        "must include retries"
+      ],
+      [
+        "REQ-2",
+        "result.json includes structured sections",
+        "high",
+        "must include tables"
+      ],
+      [
+        "REQ-3",
+        "retrieval manifest includes page coverage",
+        "medium",
+        "pages field required"
+      ],
+      [
+        "REQ-4",
+        "secret scan excludes API keys",
+        "critical",
+        "block release if failed"
+      ]
+    ],
+    "row_count": 4,
+    "column_count": 4
+  },
+  {
+    "type": "heading",
+    "text": "## 3. Exception Rule",
+    "source": "html",
+    "level": 2,
+    "title": "3. Exception Rule"
+  },
+  {
+    "type": "text",
+    "text": "Risk: if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "Recommendation: link this standard check to the PDF recovery evidence where executed=true is already recorded.",
+    "source": "html"
+  }
+]

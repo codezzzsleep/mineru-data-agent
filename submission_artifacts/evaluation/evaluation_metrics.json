@@ -2,23 +2,26 @@
   "schema_version": "2026-05-23",
   "labels_path": "examples\\evaluation\\labels.json",
   "project_root": "<PROJECT_ROOT>",
-  "case_count": 8,
+  "case_count": 13,
   "aggregate": {
-    "expected_fields": 24,
-    "matched_fields": 24,
+    "expected_fields": 39,
+    "matched_fields": 39,
     "field_accuracy": 1.0,
-    "profile_checks": 8,
-    "profile_matches": 8,
+    "profile_checks": 13,
+    "profile_matches": 13,
     "profile_accuracy": 1.0,
-    "structure_gates": 8,
-    "structure_gates_passed": 8,
+    "structure_gates": 13,
+    "structure_gates_passed": 13,
     "structure_gate_pass_rate": 1.0,
-    "quality_gates": 8,
-    "quality_gates_passed": 8,
+    "quality_gates": 13,
+    "quality_gates_passed": 13,
     "quality_gate_pass_rate": 1.0,
-    "provenance_gates": 8,
-    "provenance_gates_passed": 8,
-    "provenance_gate_pass_rate": 1.0
+    "provenance_gates": 13,
+    "provenance_gates_passed": 13,
+    "provenance_gate_pass_rate": 1.0,
+    "recovery_gates": 2,
+    "recovery_gates_passed": 2,
+    "recovery_gate_pass_rate": 1.0
   },
   "cases": [
     {
@@ -74,6 +77,12 @@
         "passed": true,
         "expected": "document",
         "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
         "failures": []
       }
     },
@@ -133,6 +142,12 @@
         "expected": "document",
         "actual": "document",
         "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
       }
     },
     {
@@ -188,6 +203,12 @@
         "passed": true,
         "expected": "document",
         "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
         "failures": []
       }
     },
@@ -245,6 +266,12 @@
         "expected": "document",
         "actual": "document",
         "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
       }
     },
     {
@@ -298,6 +325,12 @@
         "passed": true,
         "expected": "page",
         "actual": "page",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
         "failures": []
       }
     },
@@ -353,6 +386,12 @@
         "expected": "page",
         "actual": "page",
         "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
       }
     },
     {
@@ -406,6 +445,12 @@
         "passed": true,
         "expected": "document",
         "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
         "failures": []
       }
     },
@@ -464,6 +509,345 @@
         "passed": true,
         "expected": "page",
         "actual": "page",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
+      }
+    },
+    {
+      "id": "pdf_llm_api_to_cli_fallback",
+      "result_path": "submission_artifacts\\recovery_cases\\case_pdf_llm_api_to_cli_fallback\\result.json",
+      "profile": "standard_or_contract",
+      "expected_profile": "standard_or_contract",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Contract No",
+          "expected": "STD-2026-MINERU-07",
+          "actual": "STD-2026-MINERU-07",
+          "matched": true
+        },
+        {
+          "field": "Effective Date",
+          "expected": "2026-05-20",
+          "actual": "2026-05-20",
+          "matched": true
+        },
+        {
+          "field": "Signed by",
+          "expected": {
+            "contains": "Vendor Engineering Lead"
+          },
+          "actual": "Data Governance Office / Vendor Engineering Lead",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 6,
+          "tables": 1,
+          "numeric_facts": 1,
+          "retrieval_chunks": 2
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "page",
+        "actual": "page",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": {
+          "executed": true,
+          "selected_attempt": "cli_fallback",
+          "decision": "recovered_accept",
+          "initial_issue_codes": [
+            "no_page_provenance"
+          ]
+        },
+        "actual": {
+          "executed": true,
+          "selected_attempt": "cli_fallback",
+          "decision": "recovered_accept",
+          "initial_issue_codes": [
+            "no_page_provenance"
+          ]
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "challenge_cross_page_financial",
+      "result_path": "submission_artifacts\\challenge_cases\\case_6_cross_page_financial_table\\result.json",
+      "profile": "financial_report",
+      "expected_profile": "financial_report",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Document ID",
+          "expected": "FIN-CROSS-2026-06",
+          "actual": "FIN-CROSS-2026-06",
+          "matched": true
+        },
+        {
+          "field": "Reporting Period",
+          "expected": "2026-01-01 to 2026-03-31",
+          "actual": "2026-01-01 to 2026-03-31",
+          "matched": true
+        },
+        {
+          "field": "Owner",
+          "expected": "Finance Shared Service Center",
+          "actual": "Finance Shared Service Center",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 4,
+          "tables": 2,
+          "numeric_facts": 10,
+          "retrieval_chunks": 5
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass_with_warnings",
+          "score": 92
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
+      }
+    },
+    {
+      "id": "challenge_noisy_contract_scan",
+      "result_path": "submission_artifacts\\challenge_cases\\case_7_noisy_contract_scan\\result.json",
+      "profile": "low_quality_ocr",
+      "expected_profile": "low_quality_ocr",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Contract No",
+          "expected": "OCR-NOISE-2026-17",
+          "actual": "OCR-NOISE-2026-17",
+          "matched": true
+        },
+        {
+          "field": "Effective Date",
+          "expected": "2026-05-21",
+          "actual": "2026-05-21",
+          "matched": true
+        },
+        {
+          "field": "Recommendation",
+          "expected": {
+            "contains": "cleanup"
+          },
+          "actual": "run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 3,
+          "tables": 1,
+          "numeric_facts": 2,
+          "retrieval_chunks": 4
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": {
+          "executed": true,
+          "selected_attempt": "text_cleanup",
+          "decision": "recovered_accept",
+          "initial_issue_codes": [
+            "possible_mojibake"
+          ]
+        },
+        "actual": {
+          "executed": true,
+          "selected_attempt": "text_cleanup",
+          "decision": "recovered_accept",
+          "initial_issue_codes": [
+            "possible_mojibake",
+            "document_level_provenance"
+          ]
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "challenge_industry_standard_matrix",
+      "result_path": "submission_artifacts\\challenge_cases\\case_8_industry_standard_matrix\\result.json",
+      "profile": "standard_or_contract",
+      "expected_profile": "standard_or_contract",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Standard ID",
+          "expected": "STD-MATRIX-2026-09",
+          "actual": "STD-MATRIX-2026-09",
+          "matched": true
+        },
+        {
+          "field": "Review Date",
+          "expected": "2026-05-22",
+          "actual": "2026-05-22",
+          "matched": true
+        },
+        {
+          "field": "Owner",
+          "expected": "Quality Engineering Office",
+          "actual": "Quality Engineering Office",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 4,
+          "tables": 1,
+          "numeric_facts": 0,
+          "retrieval_chunks": 4
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
+        "failures": []
+      }
+    },
+    {
+      "id": "challenge_incident_workflow_report",
+      "result_path": "submission_artifacts\\challenge_cases\\case_9_incident_workflow_report\\result.json",
+      "profile": "workflow_or_diagram",
+      "expected_profile": "workflow_or_diagram",
+      "profile_match": true,
+      "field_accuracy": 1.0,
+      "matched_fields": 3,
+      "expected_fields": 3,
+      "field_checks": [
+        {
+          "field": "Incident ID",
+          "expected": "OPS-INC-2026-0519",
+          "actual": "OPS-INC-2026-0519",
+          "matched": true
+        },
+        {
+          "field": "Report Date",
+          "expected": "2026-05-23",
+          "actual": "2026-05-23",
+          "matched": true
+        },
+        {
+          "field": "System",
+          "expected": "document ingestion and validation pipeline",
+          "actual": "document ingestion and validation pipeline",
+          "matched": true
+        }
+      ],
+      "structure_gate": {
+        "passed": true,
+        "actual": {
+          "sections": 4,
+          "tables": 1,
+          "numeric_facts": 3,
+          "retrieval_chunks": 4
+        },
+        "failures": []
+      },
+      "quality_gate": {
+        "passed": true,
+        "actual": {
+          "status": "pass",
+          "score": 100
+        },
+        "failures": []
+      },
+      "provenance_gate": {
+        "passed": true,
+        "expected": "document",
+        "actual": "document",
+        "failures": []
+      },
+      "recovery_gate": {
+        "passed": true,
+        "expected": null,
+        "actual": null,
         "failures": []
       }
     }

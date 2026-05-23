@@ -1,0 +1,317 @@
+{
+  "run_id": "591a12766ed6",
+  "task": "Parse an incident workflow report, extract incident id, timeline, fallback actions, risks, recommendations, recovery verification targets, trace, and retrieval chunks.",
+  "profile": "workflow_or_diagram",
+  "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_9_incident_workflow_report.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize figure/image references and ordered procedural statements",
+    "Flag pages that need visual model follow-up"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": false,
+    "requested": {
+      "profile": "workflow_or_diagram",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch"
+    },
+    "initial": {
+      "profile": "workflow_or_diagram",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "resolved": {
+      "profile": "workflow_or_diagram",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "runner_class": "MinerURunner",
+    "applied": [],
+    "ignored": []
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 13,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 4,
+        "text": 5,
+        "table": 1,
+        "list_item": 3
+      },
+      "source_counts": {
+        "html": 13
+      },
+      "text_characters": 902
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "Incident Workflow Report",
+        "line": 1,
+        "source": "heading",
+        "text": "Incident ID: OPS-INC-2026-0519\n\nReport Date: 2026-05-23\n\nSystem: document ingestion and validation pipeline"
+      },
+      {
+        "level": 2,
+        "title": "1. Timeline",
+        "line": 9,
+        "source": "heading",
+        "text": "| Time | Event | Owner | Action |\n| --- | --- | --- | --- |\n| 09:10 | API parser returned document-level provenance | Agent | trigger fallback policy |\n| 09:12 | CLI artifact restored page-level evidence | Parser | select cli_fallback attempt |\n| 09:15 | quality gate passed | Validator | archive result and trace |"
+      },
+      {
+        "level": 2,
+        "title": "2. Root Cause",
+        "line": 17,
+        "source": "heading",
+        "text": "Risk: online API Markdown can be structurally useful but insufficient for page-level audit.\n\nRecommendation: route no_page_provenance to CLI fallback when a CLI environment is available."
+      },
+      {
+        "level": 2,
+        "title": "3. Verification Targets",
+        "line": 23,
+        "source": "heading",
+        "text": "- the separate PDF recovery evidence must show recovery_decision.executed=true\n\n- the separate PDF recovery evidence must show selected_attempt=cli_fallback\n\n- the separate PDF recovery trace must keep both parser attempts"
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 11,
+        "headers": [
+          "Time",
+          "Event",
+          "Owner",
+          "Action"
+        ],
+        "rows": [
+          [
+            "09:10",
+            "API parser returned document-level provenance",
+            "Agent",
+            "trigger fallback policy"
+          ],
+          [
+            "09:12",
+            "CLI artifact restored page-level evidence",
+            "Parser",
+            "select cli_fallback attempt"
+          ],
+          [
+            "09:15",
+            "quality gate passed",
+            "Validator",
+            "archive result and trace"
+          ]
+        ],
+        "row_count": 3,
+        "column_count": 4
+      }
+    ],
+    "key_values": [
+      {
+        "key": "Incident ID",
+        "value": "OPS-INC-2026-0519"
+      },
+      {
+        "key": "Report Date",
+        "value": "2026-05-23"
+      },
+      {
+        "key": "System",
+        "value": "document ingestion and validation pipeline"
+      },
+      {
+        "key": "| 09",
+        "value": "10 | API parser returned document-level provenance | Agent | trigger fallback policy |"
+      },
+      {
+        "key": "| 09",
+        "value": "12 | CLI artifact restored page-level evidence | Parser | select cli_fallback attempt |"
+      },
+      {
+        "key": "| 09",
+        "value": "15 | quality gate passed | Validator | archive result and trace |"
+      },
+      {
+        "key": "Risk",
+        "value": "online API Markdown can be structurally useful but insufficient for page-level audit."
+      },
+      {
+        "key": "Recommendation",
+        "value": "route no_page_provenance to CLI fallback when a CLI environment is available."
+      }
+    ],
+    "key_value_map": {
+      "Incident ID": "OPS-INC-2026-0519",
+      "Report Date": "2026-05-23",
+      "System": "document ingestion and validation pipeline",
+      "| 09": [
+        "10 | API parser returned document-level provenance | Agent | trigger fallback policy |",
+        "12 | CLI artifact restored page-level evidence | Parser | select cli_fallback attempt |",
+        "15 | quality gate passed | Validator | archive result and trace |"
+      ],
+      "Risk": "online API Markdown can be structurally useful but insufficient for page-level audit.",
+      "Recommendation": "route no_page_provenance to CLI fallback when a CLI environment is available."
+    },
+    "numeric_facts": [
+      {
+        "line": 13,
+        "text": "| 09:10 | API parser returned document-level provenance | Agent | trigger fallback policy |",
+        "numbers": [
+          "09",
+          "10"
+        ]
+      },
+      {
+        "line": 14,
+        "text": "| 09:12 | CLI artifact restored page-level evidence | Parser | select cli_fallback attempt |",
+        "numbers": [
+          "09",
+          "12"
+        ]
+      },
+      {
+        "line": 15,
+        "text": "| 09:15 | quality gate passed | Validator | archive result and trace |",
+        "numbers": [
+          "09",
+          "15"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-23"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "Recommendation: route no_page_provenance to CLI fallback when a CLI environment is available."
+        },
+        {
+          "source": "line",
+          "text": "| Time | Event | Owner | Action |"
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 19,
+          "text": "Risk: online API Markdown can be structurally useful but insufficient for page-level audit."
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 4,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# Incident Workflow Report\n\nIncident ID: OPS-INC-2026-0519\n\nReport Date: 2026-05-23\n\nSystem: document ingestion and validation pipeline\n\n## 1. Timeline\n\n| Time | Event | Owner | Action |\n| --- | --- | --- | --- |\n| 09:10 | API parser returned document-level provenance | Agent | trigger fallback policy |\n| 09:12 | CLI artifact restored page-level evidence | Parser | select cli_fallback attempt |\n| 09:15 | quality gate passed | Validator | archive result and trace |\n\n## 2. Root Cause\n\nRisk: online API Markdown can be structurally useful but insufficient for page-level audit.\n\nRecommendation: route no_page_provenance to CLI fallback when a CLI environment is available.\n\n## 3. Verification Targets\n\n- the separate PDF recovery evidence must show recovery_decision.executed=true\n\n- the separate PDF recovery evidence must show selected_attempt=cli_fallback\n\n- the separate PDF recovery trace must keep both parser attempts"
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 13,
+          "source_counts": {
+            "html": 13
+          }
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "accept",
+    "actions": [
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit."
+    ],
+    "issue_codes": [
+      "document_level_provenance"
+    ],
+    "initial_issue_codes": [
+      "document_level_provenance"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\html\\case_9_incident_workflow_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\html\\case_9_incident_workflow_report_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 4,
+      "by_type": {
+        "text": 3,
+        "table": 1
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\html\\case_9_incident_workflow_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\html\\case_9_incident_workflow_report_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\summary.md"
+}

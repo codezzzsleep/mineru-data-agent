@@ -22,6 +22,12 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
                     "score": 100,
                     "issues": [{"code": "numeric_total_verified"}],
                 },
+                "recovery_decision": {
+                    "executed": True,
+                    "selected_attempt": "text_cleanup",
+                    "decision": "recovered_accept",
+                    "initial_issue_codes": ["possible_mojibake"],
+                },
                 "retrieval_export": {"stats": {"total_chunks": 2}},
             },
             ensure_ascii=False,
@@ -47,6 +53,12 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
                         },
                         "expected_quality": {"status": "pass", "min_score": 95},
                         "expected_provenance": "page",
+                        "expected_recovery": {
+                            "executed": True,
+                            "selected_attempt": "text_cleanup",
+                            "decision": "recovered_accept",
+                            "initial_issue_codes": ["possible_mojibake"],
+                        },
                     }
                 ]
             },
@@ -60,4 +72,6 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
     assert report["aggregate"]["field_accuracy"] == 1.0
     assert report["aggregate"]["profile_accuracy"] == 1.0
     assert report["aggregate"]["structure_gate_pass_rate"] == 1.0
+    assert report["aggregate"]["recovery_gate_pass_rate"] == 1.0
     assert "Expected-field accuracy: 100.0%" in render_markdown_report(report)
+    assert "Recovery gate pass rate: 100.0%" in render_markdown_report(report)

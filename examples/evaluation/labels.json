@@ -182,6 +182,131 @@
         "min_score": 95
       },
       "expected_provenance": "page"
+    },
+    {
+      "id": "pdf_llm_api_to_cli_fallback",
+      "result_path": "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json",
+      "expected_profile": "standard_or_contract",
+      "expected_fields": {
+        "Contract No": "STD-2026-MINERU-07",
+        "Effective Date": "2026-05-20",
+        "Signed by": {
+          "contains": "Vendor Engineering Lead"
+        }
+      },
+      "minimums": {
+        "sections": 5,
+        "tables": 1,
+        "retrieval_chunks": 2
+      },
+      "expected_quality": {
+        "status": "pass",
+        "min_score": 95
+      },
+      "expected_provenance": "page",
+      "expected_recovery": {
+        "executed": true,
+        "selected_attempt": "cli_fallback",
+        "decision": "recovered_accept",
+        "initial_issue_codes": [
+          "no_page_provenance"
+        ]
+      }
+    },
+    {
+      "id": "challenge_cross_page_financial",
+      "result_path": "submission_artifacts/challenge_cases/case_6_cross_page_financial_table/result.json",
+      "expected_profile": "financial_report",
+      "expected_fields": {
+        "Document ID": "FIN-CROSS-2026-06",
+        "Reporting Period": "2026-01-01 to 2026-03-31",
+        "Owner": "Finance Shared Service Center"
+      },
+      "minimums": {
+        "sections": 4,
+        "tables": 2,
+        "numeric_facts": 8,
+        "retrieval_chunks": 5,
+        "issue_codes": [
+          "numeric_total_verified",
+          "numeric_total_mismatch"
+        ]
+      },
+      "expected_quality": {
+        "status": "pass_with_warnings",
+        "min_score": 90
+      },
+      "expected_provenance": "document"
+    },
+    {
+      "id": "challenge_noisy_contract_scan",
+      "result_path": "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/result.json",
+      "expected_profile": "low_quality_ocr",
+      "expected_fields": {
+        "Contract No": "OCR-NOISE-2026-17",
+        "Effective Date": "2026-05-21",
+        "Recommendation": {
+          "contains": "cleanup"
+        }
+      },
+      "minimums": {
+        "sections": 3,
+        "tables": 1,
+        "retrieval_chunks": 4
+      },
+      "expected_quality": {
+        "status": "pass",
+        "min_score": 95
+      },
+      "expected_provenance": "document",
+      "expected_recovery": {
+        "executed": true,
+        "selected_attempt": "text_cleanup",
+        "decision": "recovered_accept",
+        "initial_issue_codes": [
+          "possible_mojibake"
+        ]
+      }
+    },
+    {
+      "id": "challenge_industry_standard_matrix",
+      "result_path": "submission_artifacts/challenge_cases/case_8_industry_standard_matrix/result.json",
+      "expected_profile": "standard_or_contract",
+      "expected_fields": {
+        "Standard ID": "STD-MATRIX-2026-09",
+        "Review Date": "2026-05-22",
+        "Owner": "Quality Engineering Office"
+      },
+      "minimums": {
+        "sections": 4,
+        "tables": 1,
+        "retrieval_chunks": 4
+      },
+      "expected_quality": {
+        "status": "pass",
+        "min_score": 95
+      },
+      "expected_provenance": "document"
+    },
+    {
+      "id": "challenge_incident_workflow_report",
+      "result_path": "submission_artifacts/challenge_cases/case_9_incident_workflow_report/result.json",
+      "expected_profile": "workflow_or_diagram",
+      "expected_fields": {
+        "Incident ID": "OPS-INC-2026-0519",
+        "Report Date": "2026-05-23",
+        "System": "document ingestion and validation pipeline"
+      },
+      "minimums": {
+        "sections": 4,
+        "tables": 1,
+        "retrieval_chunks": 4
+      },
+      "expected_quality": {
+        "status": "pass",
+        "min_score": 95
+      },
+      "expected_provenance": "document"
     }
   ]
 }

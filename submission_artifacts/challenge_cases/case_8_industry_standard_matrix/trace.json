@@ -1,0 +1,92 @@
+{
+  "created_at": "2026-05-23T12:06:06.895901+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.864342+00:00",
+      "ended_at": "2026-05-23T12:06:06.864342+00:00",
+      "detail": {
+        "task": "Parse an industry standard compliance matrix, extract standard id, owner, requirements, severity, exception rules, quality logs, and retrieval chunks.",
+        "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_8_industry_standard_matrix.html"
+      }
+    },
+    {
+      "name": "extract_html",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.864342+00:00",
+      "ended_at": "2026-05-23T12:06:06.888388+00:00",
+      "detail": {
+        "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_8_industry_standard_matrix.html"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.888388+00:00",
+      "ended_at": "2026-05-23T12:06:06.888388+00:00",
+      "detail": {
+        "item_count": 11,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "html": 11
+        },
+        "section_count": 4,
+        "table_count": 1,
+        "key_value_count": 5,
+        "numeric_fact_count": 0,
+        "semantic_signal_counts": {
+          "dates": 1,
+          "recommendations": 1,
+          "anomaly_lines": 1
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.888388+00:00",
+      "ended_at": "2026-05-23T12:06:06.888388+00:00",
+      "detail": {
+        "profile": "standard_or_contract"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.888388+00:00",
+      "ended_at": "2026-05-23T12:06:06.888388+00:00",
+      "detail": {
+        "quality_status": "pass",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-23T12:06:06.888388+00:00",
+      "ended_at": "2026-05-23T12:06:06.891389+00:00",
+      "detail": {
+        "chunks_count": 4,
+        "by_type": {
+          "text": 3,
+          "table": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [],
+  "run_id": "c62b72d418ea",
+  "task": "Parse an industry standard compliance matrix, extract standard id, owner, requirements, severity, exception rules, quality logs, and retrieval chunks.",
+  "profile": "standard_or_contract",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\summary.md"
+}

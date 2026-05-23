@@ -45,22 +45,25 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         f"({aggregate['quality_gates_passed']}/{aggregate['quality_gates']})",
         f"- Provenance gate pass rate: {_pct(aggregate['provenance_gate_pass_rate'])} "
         f"({aggregate['provenance_gates_passed']}/{aggregate['provenance_gates']})",
+        f"- Recovery gate pass rate: {_pct(aggregate['recovery_gate_pass_rate'])} "
+        f"({aggregate['recovery_gates_passed']}/{aggregate['recovery_gates']})",
         "",
         "## Cases",
         "",
-        "| Case | Field Accuracy | Profile | Structure | Quality | Provenance | Result |",
-        "| --- | ---: | --- | --- | --- | --- | --- |",
+        "| Case | Field Accuracy | Profile | Structure | Quality | Provenance | Recovery | Result |",
+        "| --- | ---: | --- | --- | --- | --- | --- | --- |",
     ]
     for item in report["cases"]:
         result_path = item.get("result_path", "")
         lines.append(
-            "| {case_id} | {field_accuracy} | {profile} | {structure} | {quality} | {provenance} | `{result}` |".format(
+            "| {case_id} | {field_accuracy} | {profile} | {structure} | {quality} | {provenance} | {recovery} | `{result}` |".format(
                 case_id=item["id"],
                 field_accuracy=_pct(item["field_accuracy"]),
                 profile=_ok(item["profile_match"]),
                 structure=_ok(item["structure_gate"]["passed"]),
                 quality=_ok(item["quality_gate"]["passed"]),
                 provenance=_ok(item["provenance_gate"]["passed"]),
+                recovery=_ok(item["recovery_gate"]["passed"]),
                 result=result_path,
             )
         )
@@ -71,6 +74,7 @@ def render_markdown_report(report: dict[str, Any]) -> str:
             "",
             "- Field accuracy here measures labeled key-value expectations, not full OCR character accuracy.",
             "- Structure gates check minimum sections, tables, numeric facts, retrieval chunks, and issue codes where labels define them.",
+            "- Recovery gates check executed recovery decisions, selected attempts, final decisions, and preserved initial issue codes when labels define them.",
             "- This complements the trace/artifact evidence and gives reviewers a reproducible scoring surface.",
         ]
     )
@@ -86,12 +90,14 @@ def _evaluate_case(raw_case: Any, project_root: Path) -> dict[str, Any]:
     extracted = result.get("extracted", {})
     quality = result.get("quality", {})
     retrieval = result.get("retrieval_export", {})
+    recovery = result.get("recovery_decision", {})
 
     field_checks = _check_fields(raw_case.get("expected_fields", {}), extracted.get("key_value_map", {}))
     profile_match = result.get("profile") == raw_case.get("expected_profile")
     structure_gate = _check_structure(raw_case.get("minimums", {}), extracted, retrieval, quality)
     quality_gate = _check_quality(raw_case.get("expected_quality", {}), quality)
     provenance_gate = _check_provenance(raw_case.get("expected_provenance"), extracted)
+    recovery_gate = _check_recovery(raw_case.get("expected_recovery"), recovery)
     expected_count = len(field_checks)
     matched_count = sum(1 for item in field_checks if item["matched"])
     return {
@@ -107,6 +113,7 @@ def _evaluate_case(raw_case: Any, project_root: Path) -> dict[str, Any]:
         "structure_gate": structure_gate,
         "quality_gate": quality_gate,
         "provenance_gate": provenance_gate,
+        "recovery_gate": recovery_gate,
     }
 
 
@@ -178,6 +185,36 @@ def _check_provenance(expected: Any, extracted: dict[str, Any]) -> dict[str, Any
     return {"passed": not failures, "expected": expected, "actual": actual, "failures": failures}
 
 
+def _check_recovery(expected: Any, recovery: Any) -> dict[str, Any]:
+    if not expected:
+        return {"passed": True, "expected": None, "actual": None, "failures": []}
+    expected = expected if isinstance(expected, dict) else {}
+    recovery = recovery if isinstance(recovery, dict) else {}
+    actual = {
+        "executed": recovery.get("executed"),
+        "selected_attempt": recovery.get("selected_attempt"),
+        "decision": recovery.get("decision"),
+        "initial_issue_codes": recovery.get("initial_issue_codes") or [],
+    }
+    failures = []
+    for key in ("executed", "selected_attempt", "decision"):
+        if key in expected and actual.get(key) != expected.get(key):
+            failures.append({"metric": key, "expected": expected.get(key), "actual": actual.get(key)})
+    expected_issue_codes = expected.get("initial_issue_codes")
+    if isinstance(expected_issue_codes, list):
+        actual_issue_codes = {str(code) for code in actual["initial_issue_codes"]}
+        for code in expected_issue_codes:
+            if str(code) not in actual_issue_codes:
+                failures.append(
+                    {
+                        "metric": "initial_issue_codes",
+                        "expected": code,
+                        "actual": sorted(actual_issue_codes),
+                    }
+                )
+    return {"passed": not failures, "expected": expected, "actual": actual, "failures": failures}
+
+
 def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
     expected_fields = sum(item["expected_fields"] for item in cases)
     matched_fields = sum(item["matched_fields"] for item in cases)
@@ -190,6 +227,10 @@ def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
     provenance_gates = sum(1 for item in cases if item["provenance_gate"]["expected"])
     provenance_gates_passed = sum(
         1 for item in cases if item["provenance_gate"]["expected"] and item["provenance_gate"]["passed"]
+    )
+    recovery_gates = sum(1 for item in cases if item["recovery_gate"]["expected"])
+    recovery_gates_passed = sum(
+        1 for item in cases if item["recovery_gate"]["expected"] and item["recovery_gate"]["passed"]
     )
     return {
         "expected_fields": expected_fields,
@@ -207,6 +248,9 @@ def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
         "provenance_gates": provenance_gates,
         "provenance_gates_passed": provenance_gates_passed,
         "provenance_gate_pass_rate": provenance_gates_passed / provenance_gates if provenance_gates else 1.0,
+        "recovery_gates": recovery_gates,
+        "recovery_gates_passed": recovery_gates_passed,
+        "recovery_gate_pass_rate": recovery_gates_passed / recovery_gates if recovery_gates else 1.0,
     }
 
 

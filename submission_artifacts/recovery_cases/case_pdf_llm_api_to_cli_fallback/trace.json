@@ -1,0 +1,232 @@
+{
+  "created_at": "2026-05-23T11:49:34.946738+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-23T11:49:26.430339+00:00",
+      "ended_at": "2026-05-23T11:49:26.430339+00:00",
+      "detail": {
+        "task": "Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.",
+        "input_file": "<PROJECT_ROOT>\\examples\\real_pdfs\\standard_contract_cross_page.pdf"
+      }
+    },
+    {
+      "name": "llm_pre_execution_planning",
+      "status": "completed",
+      "started_at": "2026-05-23T11:49:26.430339+00:00",
+      "ended_at": "2026-05-23T11:49:26.430339+00:00",
+      "detail": {
+        "requested_profile": "auto",
+        "inferred_profile": "standard_or_contract",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch",
+        "execution_control": {
+          "llm_preplan_enabled": true,
+          "requested": {
+            "profile": "auto",
+            "backend": "pipeline",
+            "method": "auto",
+            "lang": "ch"
+          },
+          "initial": {
+            "profile": "standard_or_contract",
+            "backend": "pipeline",
+            "method": "auto",
+            "lang": "ch",
+            "runner": "agent-api"
+          },
+          "resolved": {
+            "profile": "standard_or_contract",
+            "backend": "pipeline",
+            "method": "auto",
+            "lang": "en",
+            "runner": "agent-api"
+          },
+          "runner_class": "MinerUAgentAPIRunner",
+          "applied": [
+            {
+              "field": "lang",
+              "from": "ch",
+              "to": "en",
+              "reason": "llm_preplan"
+            }
+          ],
+          "ignored": [
+            {
+              "field": "runner",
+              "recommended": "cli",
+              "current": "agent-api",
+              "reason": "runner is fixed by the constructed runner; choose --runner before execution"
+            }
+          ],
+          "llm_preplan_status": "completed",
+          "llm_recommendation": {
+            "profile": "standard_or_contract",
+            "runner": "cli",
+            "backend": "pipeline",
+            "method": "auto",
+            "lang": "en",
+            "confidence": 0.88
+          }
+        }
+      }
+    },
+    {
+      "name": "mineru_parse",
+      "status": "completed",
+      "started_at": "2026-05-23T11:49:26.430339+00:00",
+      "ended_at": "2026-05-23T11:49:34.809500+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "en"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-23T11:49:34.809500+00:00",
+      "ended_at": "2026-05-23T11:49:34.874363+00:00",
+      "detail": {
+        "item_count": 15,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "mineru-agent-api": 15
+        },
+        "section_count": 6,
+        "table_count": 1,
+        "key_value_count": 6,
+        "numeric_fact_count": 1,
+        "semantic_signal_counts": {
+          "dates": 1,
+          "recommendations": 1,
+          "anomaly_lines": 2
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-23T11:49:34.874363+00:00",
+      "ended_at": "2026-05-23T11:49:34.874363+00:00",
+      "detail": {
+        "profile": "standard_or_contract"
+      }
+    },
+    {
+      "name": "auto_recovery_cli_fallback",
+      "status": "completed",
+      "started_at": "2026-05-23T11:49:34.874363+00:00",
+      "ended_at": "2026-05-23T11:49:34.941023+00:00",
+      "detail": {
+        "from_runner": "agent-api",
+        "fallback_runner": "cli",
+        "from_status": "pass_with_warnings",
+        "issue_codes": [
+          "no_page_provenance"
+        ],
+        "fallback_quality": {
+          "status": "pass",
+          "score": 100,
+          "issue_codes": [],
+          "page_count": 2,
+          "provenance_level": "page"
+        }
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T11:49:34.941023+00:00",
+      "ended_at": "2026-05-23T11:49:34.942027+00:00",
+      "detail": {
+        "quality_status": "pass",
+        "selected_attempt": "cli_fallback"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-23T11:49:34.942027+00:00",
+      "ended_at": "2026-05-23T11:49:34.944216+00:00",
+      "detail": {
+        "chunks_count": 2,
+        "by_type": {
+          "text": 2
+        },
+        "pages": [
+          1,
+          2
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\52c948b82c48\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\52c948b82c48\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\52c948b82c48\\retrieval\\retrieval_quality.json"
+      }
+    },
+    {
+      "name": "llm_agent_analysis",
+      "status": "completed",
+      "started_at": "2026-05-23T11:49:34.944216+00:00",
+      "ended_at": "2026-05-23T11:49:34.944216+00:00",
+      "detail": {}
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "offline-llm-preplan",
+      "command": [
+        "offline-preplanner",
+        "standard_contract_cross_page.pdf"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 0.001,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "tool": "mineru-agent-api",
+      "command": [
+        "mineru-agent-api",
+        "parse-file",
+        "standard_contract_cross_page.pdf"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 8.377,
+      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"671ec3a2-a85e-48c8-a909-5cd51aa7bd5c05\",\n    \"trace_id\": \"689ae08fd3bd56d4aefabb1046ce83bd\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"39513daa23676ab7b5ab7f4087941e5f\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"15f1235e822ebe970df0f5d59449e853\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"1576625f345b03ff04bf5c3e79cc1105\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"28fcf4ebb7a0cf2ce389480ff36df09f\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"671ec3a2-a85e-48c8-a909-5cd51aa7bd5c05\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-23/b156b890-c4b8-4b9b-bb02-86efef83737d/full.md\"\n  }\n]",
+      "stderr_tail": ""
+    },
+    {
+      "tool": "cached-mineru-cli-fallback",
+      "command": [
+        "cached-mineru-cli",
+        "<PROJECT_ROOT>\\submission_artifacts\\mineru_cases\\case_mineru_cli_contract_pdf\\mineru\\standard_contract_cross_page\\auto",
+        "->",
+        "<PROJECT_ROOT>\\runs\\recovery_evidence\\52c948b82c48\\mineru_fallback_cli\\standard_contract_cross_page\\auto"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 0.001,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "tool": "offline-llm",
+      "command": [
+        "offline-preplanner",
+        "post-parse-review"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 0.001,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    }
+  ],
+  "run_id": "52c948b82c48",
+  "task": "Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.",
+  "profile": "standard_or_contract",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\52c948b82c48\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\52c948b82c48\\summary.md"
+}

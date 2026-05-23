@@ -15,7 +15,7 @@
 系统由六层组成：
 
 1. Task Planner：根据任务描述和文件名推断场景 profile，例如财报、合同/规范、流程图、低质量 OCR。可选接入 DeepSeek v4-flash 或 ModelScope 上的 `deepseek-ai/DeepSeek-V4-Flash` 执行解析前调度，建议 profile、runner、backend、method、语言、目标 schema、复核重点和恢复策略。
-2. MinerU Adapter：支持在线 Agent API 与本地 MinerU CLI 两种后端。在线 API 用于低成本快速验证，本地 CLI 用于保留 Markdown、content list、middle json、layout pdf 等完整 artifact。在线 API 的轻量 Markdown 路径若缺少页级 provenance，会被质量校验明确标注。
+2. MinerU Adapter：支持在线 Agent API 与本地 MinerU CLI 两种后端。在线 API 用于低成本快速验证，本地 CLI 用于保留 Markdown、content list、middle json、layout pdf 等完整 artifact。在线 API 的轻量 Markdown 路径若缺少页级 provenance，会被质量校验明确标注；当配置 fallback runner 时，系统会自动执行本地 CLI fallback 并择优。
 3. Structured Extractor：从 Markdown 与内容块中生成章节、表格、键值对、键值字典、数字事实、日期/建议/异常语义信号和页级溯源摘要。HTML 输入会保留标题层级、段落、列表和表格，避免网页语料被压平成不可复用纯文本。
 4. Retrieval Exporter：把解析结果整理为 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`，便于检索、向量库入库与评审复查。跨页文本不会再合并到第一页；chunk 保留 `page_no` 起始页和 `pages` 覆盖页列表。
 5. Quality Validator：检查空结果、编码噪声、页码覆盖、profile 预期、表格合计行等风险。
@@ -31,14 +31,14 @@
 4. 对 PDF、图片调用 MinerU 在线 API 或本地 CLI；对 HTML、DOCX 和 PPTX 使用轻量结构化提取器。
 5. 读取 MinerU 输出，构造结构化视图，包括 `sections`、`tables`、`key_values`、`key_value_map`、`numeric_facts` 和 `semantic_signals`。
 6. 生成检索友好的知识库 chunks，过滤页眉页脚、页码、目录等低价值内容。
-7. 运行质量校验；若命中可恢复风险，执行文本清理二次 pass 或 PDF/图片 OCR 重试，并按质量评分择优。若恢复尝试失败，失败尝试会进入 `recovery_decision.attempts` 与 trace，系统保留初始可用结果继续输出。
+7. 运行质量校验；若命中可恢复风险，执行文本清理二次 pass、PDF/图片 OCR 重试，或在在线 API 缺页级 provenance 时执行本地 CLI fallback，并按质量评分择优。若恢复尝试失败，失败尝试会进入 `recovery_decision.attempts` 与 trace，系统保留初始可用结果继续输出。
 8. 生成 `result.json`、`summary.md`、`trace.json`。
 
 每一步都会写入 trace，包含步骤状态、时间、工具命令、耗时、stdout/stderr 摘要，满足可追溯性要求。若解析或工具调用失败，系统也会写出失败态 `trace.json`，避免异常链路只停留在控制台错误里。
 
 对于生产化稳定性，系统提供批处理 manifest 入口。批处理中单个任务失败不会中断整批，最终生成 `batch_report.json`，记录每个任务的状态、run id、输出路径、质量评分和错误信息。在线 API 调用对 429、5xx 和网络异常等瞬时错误提供重试，并把重试事件写入工具调用日志。
 
-大模型层采用可选增强设计。没有 `DEEPSEEK_API_KEY` 或 `MODELSCOPE_API_KEY` 时，系统仍能依赖 MinerU 与规则模块完成端到端流程；配置 DeepSeek 官方或 ModelScope 推理入口后，系统会先让 LLM 参与解析前调度，再进行解析后复核。解析前调度的结果保存在 `execution_control` 与 `llm_analysis.pre_execution_plan`，解析后复核保存在 `llm_analysis.post_parse_analysis`。该设计避免评审复现时因密钥或网络问题导致主流程不可用。本提交包已保存 1 个实际启用 ModelScope `deepseek-ai/DeepSeek-V4-Flash` 的案例，见 `submission_artifacts/llm_cases/`；新增调度逻辑由单元测试覆盖，重新配置 key 后即可生成包含 `llm_pre_execution_planning` 的新运行证据。
+大模型层采用可选增强设计。没有 `DEEPSEEK_API_KEY` 或 `MODELSCOPE_API_KEY` 时，系统仍能依赖 MinerU 与规则模块完成端到端流程；配置 DeepSeek 官方或 ModelScope 推理入口后，系统会先让 LLM 参与解析前调度，再进行解析后复核。解析前调度的结果保存在 `execution_control` 与 `llm_analysis.pre_execution_plan`，解析后复核保存在 `llm_analysis.post_parse_analysis`。该设计避免评审复现时因密钥或网络问题导致主流程不可用。本提交包已保存 1 个实际启用 ModelScope `deepseek-ai/DeepSeek-V4-Flash` 的案例，见 `submission_artifacts/llm_cases/`；另保存 1 个真实 PDF 的解析前调度 + API-to-CLI fallback recovery 演练，见 `submission_artifacts/recovery_cases/`。后者当前使用离线确定性预调度器和缓存 CLI artifact 回放，不冒充现场 LLM/CLI 全链路。
 
 ## 4. MinerU 使用方式
 
@@ -56,7 +56,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 
 在和鲸 MinerU GPU 镜像中，可根据资源情况切换为更强后端。项目通过 `MINERU_EXECUTABLE` 和 `MINERU_MODEL_SOURCE` 环境变量适配不同部署环境。
 
-本提交包内已纳入六类证据：5 个可复跑 HTML/网页 fixture 案例，用于稳定验证 Data Agent 的任务规划、结构化抽取、质量校验、自动恢复、trace 和检索导出；4 个 PDF 文件级本地 MinerU CLI 案例，位于 `submission_artifacts/mineru_cases/`，覆盖低质量扫描件、财报密集数字表、合同/标准条款和流程图文档，均包含 `mineru-cli` 工具调用、页级 provenance、MinerU 中间文件和 retrieval 导出；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例，位于 `submission_artifacts/agent_api_cases/`，证明无 GPU 条件下也能处理 PDF fixture；2 个 DOCX/PPTX 文件级 native extractor 案例，位于 `submission_artifacts/office_cases/`，覆盖 Word 合规矩阵和 PowerPoint 工作流汇报；1 个 LLM-enabled 财报复核案例，位于 `submission_artifacts/llm_cases/case_llm_financial_review/`，包含 `modelscope-llm completed` 的 trace 和 `llm_analysis.enabled=true` 的结果；1 份带标注评测报告，位于 `submission_artifacts/evaluation/`，覆盖 8 个案例、24 个标注字段、profile 命中、结构门槛、质量门槛和 provenance 门槛。当前仍不能宣称已经覆盖真实客户材料的长期泛化评测。
+本提交包内已纳入八类证据：5 个可复跑 HTML/网页 fixture 案例，用于稳定验证 Data Agent 的任务规划、结构化抽取、质量校验、自动恢复、trace 和检索导出；4 个 PDF 文件级本地 MinerU CLI 案例，位于 `submission_artifacts/mineru_cases/`，覆盖低质量扫描件、财报密集数字表、合同/标准条款和流程图文档，均包含 `mineru-cli` 工具调用、页级 provenance、MinerU 中间文件和 retrieval 导出；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例，位于 `submission_artifacts/agent_api_cases/`，证明无 GPU 条件下也能处理 PDF fixture；1 个真实 PDF 的 recovery 演练，位于 `submission_artifacts/recovery_cases/`，证明 `no_page_provenance` 后可自动 fallback 到 CLI artifact 且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级 native extractor 案例，位于 `submission_artifacts/office_cases/`，覆盖 Word 合规矩阵和 PowerPoint 工作流汇报；4 个挑战 fixture 与人工标注表，位于 `submission_artifacts/challenge_cases/`，覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；1 个 LLM-enabled 财报复核案例，位于 `submission_artifacts/llm_cases/case_llm_financial_review/`，包含 `modelscope-llm completed` 的 trace 和 `llm_analysis.enabled=true` 的结果；1 份带标注评测报告，位于 `submission_artifacts/evaluation/`，覆盖 13 个案例、39 个标注字段、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。当前仍不能宣称已经覆盖真实客户材料的长期泛化评测。
 
 ## 5. 质量控制
 
@@ -74,7 +74,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - 财报案例附带 `human_spot_check.md` 与 `mismatch_drill/`，分别保存样本级人工核对和故意改错触发 `numeric_total_mismatch` 的证据
 - MinerU Markdown 中的 HTML `<table>` 表格解析，避免真实 PDF 表格被误判为普通文本
 - 质量恢复决策 `recovery_decision`，根据 warning/error、文件类型和 profile 给出重试、人工复核或接受策略
-- 自动恢复执行记录 `recovery_decision.attempts`，包括 initial、text_cleanup 或 ocr_retry 尝试、失败恢复尝试、最终选中的 `selected_attempt` 和初始风险保留字段
+- 自动恢复执行记录 `recovery_decision.attempts`，包括 initial、text_cleanup、ocr_retry 或 cli_fallback 尝试、失败恢复尝试、最终选中的 `selected_attempt` 和初始风险保留字段
 
 这些检查不会替代人工评审，但能把不可见风险转化为可审计字段。质量状态区分 `pass`、`pass_with_warnings` 和 `needs_review`，避免把存在 warning 的结果包装成完全通过。
 
@@ -104,9 +104,11 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - `submission_artifacts/cases/` 中包含 5 个 HTML fixture 案例的输入、结果、trace、summary 和 retrieval 输出
 - `submission_artifacts/mineru_cases/` 中包含 4 个 PDF 文件级本地 MinerU CLI 运行证据
 - `submission_artifacts/agent_api_cases/` 中包含 1 个 CPU 在线 Agent API PDF 运行证据
+- `submission_artifacts/recovery_cases/` 中包含 1 个真实 PDF 的解析前调度与 API-to-CLI fallback 证据，最终 `recovery_decision.executed=true`
 - `submission_artifacts/office_cases/` 中包含 2 个 DOCX/PPTX 文件级运行证据
+- `submission_artifacts/challenge_cases/` 中包含 4 个挑战 fixture、结果日志和人工标注表
 - `submission_artifacts/llm_cases/` 中包含 1 个实际启用 DeepSeek-V4-Flash 的 LLM 运行证据
-- `submission_artifacts/evaluation/` 中包含 8 个案例的带标注评测指标
+- `submission_artifacts/evaluation/` 中包含 13 个案例的带标注评测指标
 
 ## 8. 日志脱敏策略
 
