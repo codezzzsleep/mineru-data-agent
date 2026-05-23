@@ -59,7 +59,7 @@ Stable top-level fields:
 | `output_dir` | Persistent run directory. |
 | `plan` | Ordered execution plan. |
 | `execution_control` | Requested, initial, resolved, applied/ignored LLM control changes, and planning rationale. |
-| `extracted` | Structured output: sections, tables, key-values, numeric facts, semantic signals, content summary. |
+| `extracted` | Structured output: sections, tables, key-values, field evidence, numeric facts, semantic signals, content summary. |
 | `quality` | Rule-based quality status, score, issue list, and issue counts. |
 | `recovery_decision` | Decision, actions, attempts, selected attempt, and initial issue codes. |
 | `retrieval_export` | Paths and stats for `retrieval_chunks.jsonl`, manifest, and retrieval quality report. |
@@ -72,11 +72,42 @@ Evidence fields reviewers should inspect:
 
 - `execution_control.planning_rationale`: why profile, runner, backend, method, language, and recovery policy were selected.
 - `extracted.content_summary.provenance_level`: `page`, `document`, or `none`.
+- `extracted.field_evidence[*]`: key, value, confidence proxy, evidence text, and line/page/block provenance when available.
 - `extracted.tables[*]`: headers, rows, `row_count`, `column_count`, source marker.
 - `extracted.numeric_facts[*]`: line, text snippet, number tokens.
 - `quality.issues[*].code`: machine-readable risk flags.
 - `recovery_decision.attempts[*]`: initial/retry/fallback quality and artifact paths.
 - `trace_path`: authoritative step/tool audit trail.
+
+## Async Jobs
+
+Use this path for longer documents or committee scripts that prefer polling.
+
+`POST /v1/jobs` accepts the same `multipart/form-data` fields as `/v1/parse`.
+
+Response:
+
+```json
+{
+  "job_id": "abc123",
+  "status": "queued",
+  "status_url": "/v1/jobs/abc123"
+}
+```
+
+`GET /v1/jobs/{job_id}` returns:
+
+| Field | Meaning |
+| --- | --- |
+| `job_id` | Stable async job identifier. |
+| `status` | `queued`, `running`, `completed`, or `failed`. |
+| `created_at` / `started_at` / `ended_at` | UTC timestamps. |
+| `input_path` | Saved upload path. |
+| `output_root` | Persistent output root. |
+| `config` | Non-secret parse configuration. |
+| `result` | Full parse response when completed. |
+| `error` | Structured error detail when failed. |
+| `job_path` | Persisted job record path. |
 
 ## Error Responses
 
@@ -89,6 +120,7 @@ Evidence fields reviewers should inspect:
 | 400 | `output_root_outside_allowed_base` | requested output directory violates `MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE`. |
 | 400 | `empty_upload` | uploaded file has zero bytes. |
 | 413 | `upload_too_large` | upload exceeds configured limit. |
+| 404 | `job_not_found` | async job id was not found. |
 | 500 | `parse_failed` | parser or agent execution failed. Includes `run_id`, `output_dir`, `trace_path`, `result_path`, and `summary_path` when available. |
 
 ## Review-Friendly cURL

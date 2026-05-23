@@ -56,6 +56,10 @@ def test_build_extracted_view() -> None:
     assert view["content_summary"]["provenance_level"] == "page"
     assert view["sections"][0]["title"] == "A"
     assert view["key_value_map"]["value"] == "1"
+    assert view["field_evidence"][0]["key"] == "value"
+    assert view["field_evidence"][0]["confidence"] == 0.95
+    assert view["field_evidence"][0]["provenance"]["page_no"] == 1
+    assert view["field_evidence_map"]["value"][0]["value"] == "1"
 
 
 def test_numeric_facts_do_not_split_dates() -> None:

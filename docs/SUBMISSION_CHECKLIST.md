@@ -27,12 +27,14 @@
 - [x] 每个案例包含输入、输出、日志和关键 artifact
 - [x] API `/health` 可访问
 - [x] API `/v1/parse` 可上传文件并返回结构化 JSON
+- [x] API `/v1/jobs` 和 `/v1/jobs/{job_id}` 可提交异步任务并轮询状态
 - [x] API 返回的 `trace_path`、`summary_path` 和 artifact 路径在请求结束后仍存在
 - [x] trace 中包含任务输入、执行步骤、工具调用、最终输出
 - [x] 新运行的 `execution_control.planning_rationale` 会解释 profile、runner、backend、method、语言和恢复策略选择
 - [x] 失败路径也会写出 `trace.json`，记录失败步骤和错误摘要
 - [x] API 失败响应会返回失败 run 的 `trace_path`，便于评审脚本定位证据
 - [x] `result.json` 包含章节、表格、键值对、数字事实、日期/建议/异常语义信号
+- [x] 新运行的 `result.json` 包含 `field_evidence` 和 `field_evidence_map`，记录字段 confidence proxy、证据文本和 provenance
 - [x] 批处理 `batch_report.json` 可证明失败不中断和多任务调度能力
 - [x] `retrieval/retrieval_chunks.jsonl` 可用于检索/向量库入库
 - [x] `retrieval/retrieval_manifest.json` 和 `retrieval/retrieval_quality.json` 记录检索导出统计和过滤情况
@@ -45,3 +47,4 @@
 - [x] 在线 API 缺页级 provenance 后自动 CLI fallback 的代码路径有单元测试和提交 artifact
 - [x] 无本地 CLI 环境下不会盲目创建 fallback runner，避免 CPU 评审环境产生无意义失败记录
 - [x] 最终提交压缩包或项目链接前完成一次全流程复跑
+- [x] 本地 API 并发 smoke 已生成，见 `submission_artifacts/api_load_smoke/`

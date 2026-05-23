@@ -17,7 +17,7 @@
 - 在线 Agent API 缺少页级 provenance 时，如果检测到本地 MinerU CLI 或显式配置了 CLI 路径，可自动触发 CLI fallback，并把初始问题码、两次尝试和最终择优结果写入 `recovery_decision`
 - 面向检索/评测入库的 `retrieval_chunks.jsonl` 导出
 - `result.json`、`trace.json`、`summary.md` 三类可复查输出
-- FastAPI 接口，方便组委会或评审脚本调用
+- FastAPI 同步接口与异步 job/polling 接口，方便组委会或评审脚本调用
 - 5 个可复跑 HTML/网页 fixture artifact，覆盖财报、低质量 OCR、合同条款、流程说明和网页巡检
 - 4 个 PDF 文件级本地 MinerU CLI artifact，覆盖扫描版、财报表格、合同条款和流程图文档，包含 MinerU 中间文件和页级 provenance
 - 1 个 CPU 友好的 MinerU 在线 Agent API PDF artifact，证明无需本地 GPU 也可跑通 PDF fixture 主流程
@@ -103,6 +103,8 @@ curl -X POST http://127.0.0.1:8080/v1/parse \
 API 默认把输出持久化到 `runs/api`，也可以通过 `MINERU_DATA_AGENT_OUTPUT_DIR` 或表单字段 `output_root` 指定目录，确保返回的 `trace_path`、`summary_path` 和 artifact 路径在请求结束后仍可复查。公开部署时建议设置 `MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE` 约束 `output_root` 可写范围，并通过 `MINERU_DATA_AGENT_MAX_UPLOAD_MB` 或 `MINERU_DATA_AGENT_MAX_UPLOAD_BYTES` 限制上传大小。
 
 本提交包内保存了本地 API 冒烟测试证据：`submission_artifacts/api_smoke/`。该测试覆盖 `/health`、一次 HTML 上传解析和一次 PDF 上传解析，证明 FastAPI 服务能返回结构化结果、trace、summary 和 retrieval 路径；当前尚未提供公网服务地址。
+
+异步接口使用 `POST /v1/jobs` 提交同样的 multipart 表单，随后用 `GET /v1/jobs/{job_id}` 查询 `queued/running/completed/failed` 状态；完成后 `result` 字段与 `/v1/parse` 返回一致。并发 smoke 证据位于 `submission_artifacts/api_load_smoke/`，当前保存 8 请求、并发 4 的本地 FastAPI TestClient 结果，8/8 成功且每次都落盘 trace/result/summary。它是本地接口稳定性证据，不是外部公网或 GPU 压测。
 
 本地 MinerU CLI API 调用：
 
@@ -312,6 +314,6 @@ python scripts/build_evaluation_report.py
 - `--llm deepseek`：可选 DeepSeek v4-flash 官方推理层，参与解析前调度和解析后复核；不开启时项目仍可完整运行。
 - `--llm modelscope`：可选 ModelScope 推理入口，默认模型 `deepseek-ai/DeepSeek-V4-Flash`。
 
-当前提交包内的强复现证据分为九类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；1 个 PDF recovery 案例证明在线 API 缺少页级 provenance 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；4 个挑战 fixture 与人工标注表覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；4 个官方公开真实 PDF 案例证明系统能处理外部公开材料，并通过文本、数字和表格证据门槛；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议；1 份带标注评测报告证明 17 个案例的 45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛均可复查；1 份稳定性报告汇总 17 个保存案例的 trace、工具调用、耗时、质量状态和恢复执行。公开真实文档证据包仍是轻量人工标注，不等同于完整 OCR 字符级 benchmark。
+当前提交包内的强复现证据分为十类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；1 个 PDF recovery 案例证明在线 API 缺少页级 provenance 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；4 个挑战 fixture 与人工标注表覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；4 个官方公开真实 PDF 案例证明系统能处理外部公开材料，并通过文本、数字和表格证据门槛；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议；1 份带标注评测报告证明 17 个案例的 45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛均可复查；1 份稳定性报告汇总 17 个保存案例的 trace、工具调用、耗时、质量状态和恢复执行；1 份 API 并发 smoke 报告证明本地接口在 8 请求、并发 4 下能稳定落盘结果。新运行还会输出 `extracted.field_evidence`，为键值字段提供 confidence proxy、证据文本和行/页/块级 provenance。公开真实文档证据包仍是轻量人工标注，不等同于完整 OCR 字符级 benchmark。
 
-针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 稳定接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；稳定性与成本/速度/质量摘要见 `submission_artifacts/stability/stability_report.md`。
+针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；稳定性与成本/速度/质量摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`。

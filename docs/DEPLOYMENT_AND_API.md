@@ -206,6 +206,25 @@ curl -X POST http://127.0.0.1:8080/v1/parse \
 
 API 同样支持 provenance fallback 参数：`cli_fallback_on_no_page_provenance=true` 默认开启，`fallback_mineru_executable` 可指定本地 MinerU CLI 路径。实际 fallback runner 只有在显式路径、`MINERU_EXECUTABLE` 或系统 `mineru` 命令可用时才会创建。当前提交包的 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 已保存一个真实 PDF 的恢复演练：在线 API 首次解析后触发 `no_page_provenance`，随后选择 `cli_fallback`，最终 `recovery_decision.executed=true`。该案例在无真实 key/CLI 的当前环境下使用离线确定性预调度器和缓存 CLI artifact 回放，文档和 trace 已标注边界。
 
+### 异步 Job 接口
+
+长文档或评审脚本可使用异步接口：
+
+```bash
+curl -X POST http://127.0.0.1:8080/v1/jobs \
+  -F "file=@examples/cases/case_1_financial_report.html" \
+  -F "task=抽取字段、表格和可验证证据" \
+  -F "profile=financial_report"
+```
+
+返回 `job_id` 后轮询：
+
+```bash
+curl http://127.0.0.1:8080/v1/jobs/<job_id>
+```
+
+状态为 `completed` 时，`result` 字段与 `/v1/parse` 的成功返回一致；状态为 `failed` 时，`error` 字段保存结构化错误。job 记录会写入输出目录的 `_jobs/<job_id>.json`。
+
 ## 6. 返回结果
 
 核心字段：
@@ -221,6 +240,13 @@ API 同样支持 provenance fallback 参数：`cli_fallback_on_no_page_provenanc
 - `artifacts`：MinerU 原始输出或在线 API 输出
 - `trace_path`：可追溯执行日志
 - `summary_path`：人工可读摘要
+
+`extracted.field_evidence` 会为键值字段输出：
+
+- `key` / `value`：字段名和值
+- `confidence`：基于证据密度的确定性置信度 proxy，不是校准后的模型概率
+- `evidence_text`：命中的原始行或内容块文本
+- `provenance`：可用时包含 `line`、`page_idx/page_no`、`block_idx`、`source` 和上游 `bbox`
 
 若在线 API 或轻量 Markdown 路径无法提供页级信息，`quality.issues` 会出现 `no_page_provenance`，提示评审该结果只有块级或文档级溯源。HTML fixture 会记录 `document_level_provenance` 信息项，表示它只有文档级来源，不冒充 PDF 页级 provenance。需要完整页级 artifact 时，应使用本地 MinerU CLI 后端。
 
@@ -277,7 +303,7 @@ python scripts/build_evaluation_report.py
 
 当前报告位于 `submission_artifacts/evaluation/evaluation_metrics.json` 和 `submission_artifacts/evaluation/evaluation_metrics.md`。已保存结果显示 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile、结构、质量、provenance 和 recovery 门槛均通过。该指标不是完整 OCR 字符级准确率，而是面向本赛题可复查结构化输出的提交级评测面。
 
-## 9. 稳定性与耗时摘要
+## 9. 稳定性、耗时与并发 Smoke
 
 生成稳定性报告：
 
@@ -287,4 +313,12 @@ python scripts/build_stability_report.py
 
 当前报告位于 `submission_artifacts/stability/stability_report.json` 和 `submission_artifacts/stability/stability_report.md`。它检查 `examples/evaluation/labels.json` 覆盖的 17 个保存案例，汇总 result/trace 存在性、trace 步骤数、工具调用次数、工具耗时、质量状态分布、provenance 分布和自动恢复执行数量。
 
-边界：该报告是保存 artifact 的工程稳定性摘要，不是高并发压测。若要宣称生产级高负载能力，需要额外提供并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。
+生成本地 API 并发 smoke：
+
+```bash
+python scripts/run_api_load_smoke.py --requests 8 --concurrency 4 --keep-runs
+```
+
+当前报告位于 `submission_artifacts/api_load_smoke/api_load_smoke_report.json` 和 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`。它使用 FastAPI TestClient 在本地进程内发起 8 个请求、并发 4，检查每次请求的响应、质量状态、field evidence 数量以及 trace/result/summary 是否落盘。
+
+边界：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证。二者仍不是外部公网压测、GPU 长文档压力测试或云成本 benchmark。若要宣称生产级高负载能力，需要额外提供并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。

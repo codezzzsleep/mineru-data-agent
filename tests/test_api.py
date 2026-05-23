@@ -1,4 +1,5 @@
 from pathlib import Path
+import time
 
 from fastapi.testclient import TestClient
 
@@ -31,6 +32,50 @@ def test_parse_api_keeps_trace_files(tmp_path: Path, monkeypatch) -> None:
     assert Path(data["summary_path"]).exists()
     assert Path(data["artifacts"]["markdown_path"]).exists()
     assert data["api_output_root"] == str((tmp_path / "api_runs").resolve())
+
+
+def test_async_parse_job_exposes_status_and_result(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE", str(tmp_path))
+    client = TestClient(app)
+    response = client.post(
+        "/v1/jobs",
+        data={
+            "task": "异步抽取报告日期",
+            "profile": "general_document",
+            "output_root": str(tmp_path / "api_jobs"),
+        },
+        files={
+            "file": (
+                "report.html",
+                "<html><body><h1>日报</h1><p>报告日期：2026-05-23</p></body></html>",
+                "text/html",
+            )
+        },
+    )
+
+    assert response.status_code == 202
+    job_id = response.json()["job_id"]
+    status = {}
+    for _ in range(30):
+        status_response = client.get(f"/v1/jobs/{job_id}")
+        assert status_response.status_code == 200
+        status = status_response.json()
+        if status["status"] == "completed":
+            break
+        time.sleep(0.05)
+
+    assert status["status"] == "completed"
+    assert status["result"]["extracted"]["key_value_map"]["报告日期"] == "2026-05-23"
+    assert Path(status["result"]["trace_path"]).exists()
+    assert Path(status["job_path"]).exists()
+
+
+def test_async_parse_job_reports_not_found() -> None:
+    client = TestClient(app)
+    response = client.get("/v1/jobs/missing-job")
+
+    assert response.status_code == 404
+    assert response.json()["detail"]["error"] == "job_not_found"
 
 
 def test_parse_api_rejects_invalid_runner() -> None:

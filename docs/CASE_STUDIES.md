@@ -181,7 +181,7 @@ LLM 在该案例中的职责是：
 
 该评测不是完整 OCR 字符级标注集，但能把关键字段、结构输出和可追溯性变成可复跑指标，补足“只有案例展示、没有指标”的短板。
 
-## 10. 稳定性与耗时摘要
+## 10. 稳定性、耗时与 API 并发 Smoke
 
 稳定性报告位置：`submission_artifacts/stability/`
 
@@ -195,7 +195,18 @@ LLM 在该案例中的职责是：
 - Recovery executed cases: 4
 - Quality status counts: 12 个 `pass`，5 个 `pass_with_warnings`
 
-边界说明：这是保存 artifact 的稳定性摘要，不是高并发压测。
+API 并发 smoke 位置：`submission_artifacts/api_load_smoke/`
+
+该报告由 `scripts/run_api_load_smoke.py --requests 8 --concurrency 4 --keep-runs` 生成，使用本地 FastAPI TestClient 并发调用 `/v1/parse`，每次上传同一个财报 HTML fixture，并检查响应、质量状态、field evidence 数量以及 trace/result/summary 落盘。当前保存结果显示：
+
+- Requests: 8
+- Success: 8
+- Failed: 0
+- Complete artifact sets: 8/8
+- Quality status counts: 8 个 `pass`
+- Minimum field evidence count: 5
+
+边界说明：稳定性报告是保存 artifact 的摘要；API 并发 smoke 是本地进程内接口验证。它们仍不是外部公网、高 GPU 负载或长文档 soak 压测。
 
 ## 11. 边界说明
 
@@ -206,4 +217,4 @@ LLM 在该案例中的职责是：
 - PDF 文件级证据已扩展到 4 个，Office 文件级证据已扩展到 2 个，挑战 fixture 已扩展到 4 个，并新增 4 个官方公开真实 PDF 案例；但公开真实案例仍是轻量人工标注，还不足以证明真实客户材料的长期泛化能力。
 - LLM 预调度已接入 profile/method/backend/lang 的安全控制，但 runner 的实际选择仍由部署参数控制，避免模型在运行中切换到当前环境不可用的后端。
 - 已补“真实 PDF + 解析前调度 + recovery executed=true”的证据 artifact，但当前环境使用离线确定性预调度器和缓存 CLI artifact 回放；直播式全链路证据仍需要真实 DeepSeek/ModelScope key 和可调用 MinerU CLI。
-- 当前 API smoke 已覆盖本地 HTML 上传和 PDF 上传；PDF 路径使用在线 Agent API，因此仍会保留 `no_page_provenance` 边界提示。
+- 当前 API smoke 已覆盖本地 HTML 上传、PDF 上传、异步 job 接口和本地并发 smoke；PDF 路径使用在线 Agent API，因此仍会保留 `no_page_provenance` 边界提示。

@@ -19,7 +19,7 @@
 3. Structured Extractor：从 Markdown 与内容块中生成章节、表格、键值对、键值字典、数字事实、日期/建议/异常语义信号和页级溯源摘要。HTML 输入会保留标题层级、段落、列表和表格，避免网页语料被压平成不可复用纯文本。
 4. Retrieval Exporter：把解析结果整理为 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`，便于检索、向量库入库与评审复查。跨页文本不会再合并到第一页；chunk 保留 `page_no` 起始页和 `pages` 覆盖页列表。
 5. Quality Validator：检查空结果、编码噪声、页码覆盖、profile 预期、表格合计行等风险。
-6. API/CLI Layer：提供命令行、批处理和 FastAPI 接口，便于评审脚本调用和复现实验。
+6. API/CLI Layer：提供命令行、批处理、FastAPI 同步接口和异步 job/polling 接口，便于评审脚本调用和复现实验。
 
 ## 3. Agent 执行机制
 
@@ -56,7 +56,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 
 在和鲸 MinerU GPU 镜像中，可根据资源情况切换为更强后端。项目通过 `MINERU_EXECUTABLE` 和 `MINERU_MODEL_SOURCE` 环境变量适配不同部署环境。
 
-本提交包内已纳入九类证据：5 个可复跑 HTML/网页 fixture 案例，用于稳定验证 Data Agent 的任务规划、结构化抽取、质量校验、自动恢复、trace 和检索导出；4 个 PDF 文件级本地 MinerU CLI 案例，位于 `submission_artifacts/mineru_cases/`，覆盖低质量扫描件、财报密集数字表、合同/标准条款和流程图文档，均包含 `mineru-cli` 工具调用、页级 provenance、MinerU 中间文件和 retrieval 导出；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例，位于 `submission_artifacts/agent_api_cases/`，证明无 GPU 条件下也能处理 PDF fixture；1 个真实 PDF 的 recovery 演练，位于 `submission_artifacts/recovery_cases/`，证明 `no_page_provenance` 后可自动 fallback 到 CLI artifact 且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级 native extractor 案例，位于 `submission_artifacts/office_cases/`，覆盖 Word 合规矩阵和 PowerPoint 工作流汇报；4 个挑战 fixture 与人工标注表，位于 `submission_artifacts/challenge_cases/`，覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；4 个官方公开真实 PDF 案例，位于 `submission_artifacts/public_real_cases/`，覆盖 IRS W-4、NIST AI RMF 1.0、Microsoft 2024 Annual Report SEC PDF exhibit 和 CDC VIS 使用说明，均保存 source metadata、human labels、trace、result 和 retrieval 导出；1 个 LLM-enabled 财报复核案例，位于 `submission_artifacts/llm_cases/case_llm_financial_review/`，包含 `modelscope-llm completed` 的 trace 和 `llm_analysis.enabled=true` 的结果；1 份带标注评测报告，位于 `submission_artifacts/evaluation/`，覆盖 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛；1 份稳定性报告，位于 `submission_artifacts/stability/`，汇总 17 个保存案例的 trace 完整性、工具调用、耗时、质量状态、provenance 分布和恢复执行。当前仍不能宣称已经覆盖真实客户材料的长期泛化评测，也不把该稳定性报告包装为高并发压测。
+本提交包内已纳入十类证据：5 个可复跑 HTML/网页 fixture 案例，用于稳定验证 Data Agent 的任务规划、结构化抽取、质量校验、自动恢复、trace 和检索导出；4 个 PDF 文件级本地 MinerU CLI 案例，位于 `submission_artifacts/mineru_cases/`，覆盖低质量扫描件、财报密集数字表、合同/标准条款和流程图文档，均包含 `mineru-cli` 工具调用、页级 provenance、MinerU 中间文件和 retrieval 导出；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例，位于 `submission_artifacts/agent_api_cases/`，证明无 GPU 条件下也能处理 PDF fixture；1 个真实 PDF 的 recovery 演练，位于 `submission_artifacts/recovery_cases/`，证明 `no_page_provenance` 后可自动 fallback 到 CLI artifact 且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级 native extractor 案例，位于 `submission_artifacts/office_cases/`，覆盖 Word 合规矩阵和 PowerPoint 工作流汇报；4 个挑战 fixture 与人工标注表，位于 `submission_artifacts/challenge_cases/`，覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；4 个官方公开真实 PDF 案例，位于 `submission_artifacts/public_real_cases/`，覆盖 IRS W-4、NIST AI RMF 1.0、Microsoft 2024 Annual Report SEC PDF exhibit 和 CDC VIS 使用说明，均保存 source metadata、human labels、trace、result 和 retrieval 导出；1 个 LLM-enabled 财报复核案例，位于 `submission_artifacts/llm_cases/case_llm_financial_review/`，包含 `modelscope-llm completed` 的 trace 和 `llm_analysis.enabled=true` 的结果；1 份带标注评测报告，位于 `submission_artifacts/evaluation/`，覆盖 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛；1 份稳定性报告，位于 `submission_artifacts/stability/`，汇总 17 个保存案例的 trace 完整性、工具调用、耗时、质量状态、provenance 分布和恢复执行；1 份 API 并发 smoke 报告，位于 `submission_artifacts/api_load_smoke/`，保存 8 请求、并发 4 的本地 FastAPI 接口验证。当前仍不能宣称已经覆盖真实客户材料的长期泛化评测，也不把该本地 smoke 包装为外部公网或 GPU 高并发压测。
 
 ## 5. 质量控制
 
@@ -75,6 +75,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - MinerU Markdown 中的 HTML `<table>` 表格解析，避免真实 PDF 表格被误判为普通文本
 - 质量恢复决策 `recovery_decision`，根据 warning/error、文件类型和 profile 给出重试、人工复核或接受策略
 - 自动恢复执行记录 `recovery_decision.attempts`，包括 initial、text_cleanup、ocr_retry 或 cli_fallback 尝试、失败恢复尝试、最终选中的 `selected_attempt` 和初始风险保留字段
+- 新运行输出 `extracted.field_evidence`，为键值字段保留 confidence proxy、证据文本和行/页/块级 provenance；若上游提供 bbox，则一并透传
 
 这些检查不会替代人工评审，但能把不可见风险转化为可审计字段。质量状态区分 `pass`、`pass_with_warnings` 和 `needs_review`，避免把存在 warning 的结果包装成完全通过。
 
@@ -99,6 +100,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - 每次运行的 trace 文件
 - 失败运行也会保留 trace 文件
 - API 输出默认持久化到 `runs/api`，请求结束后仍可查看 `trace_path`、`summary_path` 和 artifact
+- API 提供 `/v1/jobs` 与 `/v1/jobs/{job_id}`，支持长任务异步提交和状态轮询
 - MinerU 原始输出 artifact 路径
 - 单元测试覆盖核心抽取和校验逻辑
 - `submission_artifacts/cases/` 中包含 5 个 HTML fixture 案例的输入、结果、trace、summary 和 retrieval 输出
@@ -111,6 +113,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - `submission_artifacts/llm_cases/` 中包含 1 个实际启用 DeepSeek-V4-Flash 的 LLM 运行证据
 - `submission_artifacts/evaluation/` 中包含 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据和 6 条表格证据的带标注评测指标
 - `submission_artifacts/stability/` 中包含 17 个保存案例的 trace、工具耗时、质量状态和恢复统计
+- `submission_artifacts/api_load_smoke/` 中包含 8 请求、并发 4 的本地 FastAPI smoke 报告和对应落盘 artifact
 
 ## 8. 日志脱敏策略
 

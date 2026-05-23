@@ -1,0 +1,47 @@
+{
+  "doc_id": "f45b466aa8044f3eab26d78b48590fc0",
+  "source_file": "<PROJECT_ROOT>\\submission_artifacts\\api_load_smoke\\request_artifacts\\request_000\\_uploads\\f45b466aa8044f3eab26d78b48590fc0.html",
+  "created_at": "2026-05-23T15:47:26.602598+00:00",
+  "output_files": {
+    "chunks_jsonl": "<PROJECT_ROOT>\\submission_artifacts\\api_load_smoke\\request_artifacts\\request_000\\04ce87ad9a2b\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\submission_artifacts\\api_load_smoke\\request_artifacts\\request_000\\04ce87ad9a2b\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\submission_artifacts\\api_load_smoke\\request_artifacts\\request_000\\04ce87ad9a2b\\retrieval\\retrieval_quality.json"
+  },
+  "schema": [
+    "chunk_id",
+    "page_no",
+    "pages",
+    "content_type",
+    "section_title",
+    "chunk_text",
+    "image_path"
+  ],
+  "chunking_policy": {
+    "source_priority": [
+      "content_list",
+      "markdown"
+    ],
+    "skip_noise_blocks": [
+      "aside_text",
+      "footer",
+      "header",
+      "page_aside_text",
+      "page_footer",
+      "page_header",
+      "page_number"
+    ],
+    "skip_low_value_sections": true,
+    "merge_short_text": "same-page only",
+    "target_chunk_chars": "1200-3600"
+  },
+  "stats": {
+    "total_chunks": 3,
+    "by_type": {
+      "text": 2,
+      "table": 1
+    },
+    "pages": [
+      1
+    ]
+  }
+}

@@ -32,5 +32,5 @@ git push -u origin main
 - 最后提交 commit hash
 - 测试命令与通过结果
 - 提交压缩包文件名和生成时间
-- 典型案例目录：`submission_artifacts/cases/`、`submission_artifacts/mineru_cases/`、`submission_artifacts/agent_api_cases/`、`submission_artifacts/recovery_cases/`、`submission_artifacts/office_cases/`、`submission_artifacts/challenge_cases/`、`submission_artifacts/public_real_cases/`、`submission_artifacts/llm_cases/`、`submission_artifacts/evaluation/`、`submission_artifacts/stability/`
+- 典型案例目录：`submission_artifacts/cases/`、`submission_artifacts/mineru_cases/`、`submission_artifacts/agent_api_cases/`、`submission_artifacts/recovery_cases/`、`submission_artifacts/office_cases/`、`submission_artifacts/challenge_cases/`、`submission_artifacts/public_real_cases/`、`submission_artifacts/llm_cases/`、`submission_artifacts/evaluation/`、`submission_artifacts/stability/`、`submission_artifacts/api_load_smoke/`
 - 开源协作材料：`CONTRIBUTING.md`、`.github/ISSUE_TEMPLATE/bug_report.md`、`.github/ISSUE_TEMPLATE/evidence_gap.md`

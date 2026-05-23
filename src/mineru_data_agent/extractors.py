@@ -176,6 +176,47 @@ def extract_key_value_map(candidates: list[dict[str, str]]) -> dict[str, str | l
     return mapped
 
 
+def extract_field_evidence(markdown: str, key_values: list[dict[str, str]], content_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    evidence: list[dict[str, Any]] = []
+    lines = markdown.splitlines()
+    for index, item in enumerate(key_values):
+        key = item["key"]
+        value = item["value"]
+        line_no = _find_markdown_line(lines, key, value)
+        block = _find_content_block(content_list, key, value)
+        provenance = _field_provenance(line_no=line_no, block=block)
+        confidence, reason = _field_confidence(line_no=line_no, block=block, value=value)
+        evidence.append(
+            {
+                "key": key,
+                "value": value,
+                "confidence": confidence,
+                "confidence_reason": reason,
+                "evidence_text": _field_evidence_text(lines, line_no, block, key, value),
+                "provenance": provenance,
+                "candidate_index": index,
+            }
+        )
+    return evidence
+
+
+def build_field_evidence_map(field_evidence: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    mapped: dict[str, list[dict[str, Any]]] = {}
+    for item in field_evidence:
+        key = str(item.get("key", ""))
+        if not key:
+            continue
+        mapped.setdefault(key, []).append(
+            {
+                "value": item.get("value"),
+                "confidence": item.get("confidence"),
+                "provenance": item.get("provenance"),
+                "evidence_text": item.get("evidence_text"),
+            }
+        )
+    return mapped
+
+
 def extract_numeric_facts(markdown: str) -> list[dict[str, Any]]:
     facts: list[dict[str, Any]] = []
     for line_no, line in enumerate(markdown.splitlines(), start=1):
@@ -583,15 +624,81 @@ def _unique_keep_order(items: list[str]) -> list[str]:
     return unique
 
 
+def _find_markdown_line(lines: list[str], key: str, value: str) -> int | None:
+    for line_no, line in enumerate(lines, start=1):
+        if key in line and value in line:
+            return line_no
+    return None
+
+
+def _find_content_block(content_list: list[dict[str, Any]], key: str, value: str) -> dict[str, Any] | None:
+    for item in content_list:
+        text = str(item.get("text", ""))
+        if key in text and value in text:
+            return item
+    for item in content_list:
+        text = str(item.get("text", ""))
+        if key in text or value in text:
+            return item
+    return None
+
+
+def _field_provenance(line_no: int | None, block: dict[str, Any] | None) -> dict[str, Any]:
+    provenance: dict[str, Any] = {"line": line_no, "level": "markdown_line" if line_no else "unknown"}
+    if block:
+        source = block.get("source")
+        if source is not None:
+            provenance["source"] = source
+        block_idx = block.get("block_idx")
+        if block_idx is not None:
+            provenance["block_idx"] = block_idx
+        page_idx = block.get("page_idx")
+        if page_idx is not None:
+            provenance["page_idx"] = page_idx
+            provenance["page_no"] = int(page_idx) + 1 if isinstance(page_idx, int) else page_idx
+            provenance["level"] = "page"
+        elif source:
+            provenance["level"] = "document"
+        bbox = block.get("bbox") or block.get("box") or block.get("poly")
+        if bbox is not None:
+            provenance["bbox"] = bbox
+    return provenance
+
+
+def _field_confidence(line_no: int | None, block: dict[str, Any] | None, value: str) -> tuple[float, str]:
+    if block and block.get("page_idx") is not None:
+        return 0.95, "exact key/value match in page-level content block"
+    if block:
+        return 0.86, "exact key/value match in document-level content block"
+    if line_no is not None and len(value) >= 2:
+        return 0.72, "key/value found in markdown line without block provenance"
+    return 0.45, "low evidence density; downstream review recommended"
+
+
+def _field_evidence_text(
+    lines: list[str], line_no: int | None, block: dict[str, Any] | None, key: str, value: str
+) -> str:
+    if block:
+        text = _normalize_inline_text(str(block.get("text", "")))
+        if text:
+            return text[:300]
+    if line_no is not None and 1 <= line_no <= len(lines):
+        return _normalize_inline_text(lines[line_no - 1])[:300]
+    return f"{key}: {value}"[:300]
+
+
 def build_extracted_view(markdown: str, content_list: list[dict[str, Any]]) -> dict[str, Any]:
     key_values = extract_key_value_candidates(markdown)
     sections = extract_sections(markdown)
+    field_evidence = extract_field_evidence(markdown, key_values, content_list)
     return {
         "content_summary": summarize_content_blocks(content_list),
         "sections": sections,
         "tables": extract_markdown_tables(markdown),
         "key_values": key_values,
         "key_value_map": extract_key_value_map(key_values),
+        "field_evidence": field_evidence,
+        "field_evidence_map": build_field_evidence_map(field_evidence),
         "numeric_facts": extract_numeric_facts(markdown),
         "semantic_signals": extract_semantic_signals(markdown, key_values),
         "structure_quality": {

@@ -728,8 +728,10 @@ def _build_summary(result: AgentResult) -> str:
     summary = result.extracted.get("content_summary", {})
     issues = result.quality.get("issues", [])
     key_values = result.extracted.get("key_values", [])
+    field_evidence = result.extracted.get("field_evidence", [])
     semantic = result.extracted.get("semantic_signals", {})
     top_pairs = key_values[:8] if isinstance(key_values, list) else []
+    top_evidence = field_evidence[:5] if isinstance(field_evidence, list) else []
     lines = [
         f"# MinerU Data Agent Run {result.run_id}",
         "",
@@ -746,6 +748,7 @@ def _build_summary(result: AgentResult) -> str:
         f"- Sections: {len(result.extracted.get('sections', []))}",
         f"- Tables: {len(result.extracted.get('tables', []))}",
         f"- Key-values: {len(key_values)}",
+        f"- Field evidence records: {len(field_evidence) if isinstance(field_evidence, list) else 0}",
         f"- Numeric facts: {len(result.extracted.get('numeric_facts', []))}",
         f"- Dates detected: {len(semantic.get('dates', []))}",
         f"- Recommendation signals: {len(semantic.get('recommendations', []))}",
@@ -798,6 +801,15 @@ def _build_summary(result: AgentResult) -> str:
     if top_pairs:
         lines.extend(["", "## Extracted Fields"])
         lines.extend([f"- {item.get('key')}: {item.get('value')}" for item in top_pairs])
+    if top_evidence:
+        lines.extend(["", "## Field Evidence"])
+        for item in top_evidence:
+            provenance = item.get("provenance", {}) if isinstance(item.get("provenance"), dict) else {}
+            location = provenance.get("page_no") or provenance.get("line") or provenance.get("level", "unknown")
+            lines.append(
+                f"- {item.get('key')}: confidence={item.get('confidence')}, "
+                f"location={location}, evidence={item.get('evidence_text')}"
+            )
     if semantic.get("recommendations"):
         lines.extend(["", "## Recommendation Evidence"])
         for item in semantic.get("recommendations", [])[:5]:

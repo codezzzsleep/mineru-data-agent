@@ -1,0 +1,163 @@
+{
+  "generated_at": "2026-05-23T15:47:26.669209Z",
+  "scope": "Local in-process FastAPI concurrency smoke test; not an external production load test.",
+  "input": "examples/cases/case_1_financial_report.html",
+  "output_dir": "submission_artifacts/api_load_smoke",
+  "parameters": {
+    "requests": 8,
+    "concurrency": 4
+  },
+  "aggregate": {
+    "requests": 8,
+    "success": 8,
+    "failed": 0,
+    "success_rate": 1.0,
+    "total_elapsed_seconds": 0.184157,
+    "throughput_requests_per_second": 43.441265,
+    "latency_seconds": {
+      "min": 0.038978,
+      "p50": 0.084756,
+      "p95": 0.131173,
+      "max": 0.13208
+    },
+    "artifact_complete": 8,
+    "quality_status_counts": {
+      "pass": 8
+    },
+    "field_evidence_min": 5
+  },
+  "results": [
+    {
+      "index": 0,
+      "status_code": 200,
+      "elapsed_seconds": 0.13208,
+      "output_root": "submission_artifacts/api_load_smoke/request_artifacts/request_000",
+      "run_id": "04ce87ad9a2b",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "field_evidence_count": 5,
+      "trace_path": "submission_artifacts/api_load_smoke/request_artifacts/request_000/04ce87ad9a2b/trace.json",
+      "result_path": "submission_artifacts/api_load_smoke/request_artifacts/request_000/04ce87ad9a2b/result.json",
+      "summary_path": "submission_artifacts/api_load_smoke/request_artifacts/request_000/04ce87ad9a2b/summary.md",
+      "trace_exists": true,
+      "result_exists": true,
+      "summary_exists": true
+    },
+    {
+      "index": 1,
+      "status_code": 200,
+      "elapsed_seconds": 0.129031,
+      "output_root": "submission_artifacts/api_load_smoke/request_artifacts/request_001",
+      "run_id": "758f19538332",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "field_evidence_count": 5,
+      "trace_path": "submission_artifacts/api_load_smoke/request_artifacts/request_001/758f19538332/trace.json",
+      "result_path": "submission_artifacts/api_load_smoke/request_artifacts/request_001/758f19538332/result.json",
+      "summary_path": "submission_artifacts/api_load_smoke/request_artifacts/request_001/758f19538332/summary.md",
+      "trace_exists": true,
+      "result_exists": true,
+      "summary_exists": true
+    },
+    {
+      "index": 2,
+      "status_code": 200,
+      "elapsed_seconds": 0.129489,
+      "output_root": "submission_artifacts/api_load_smoke/request_artifacts/request_002",
+      "run_id": "b9ccd275782a",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "field_evidence_count": 5,
+      "trace_path": "submission_artifacts/api_load_smoke/request_artifacts/request_002/b9ccd275782a/trace.json",
+      "result_path": "submission_artifacts/api_load_smoke/request_artifacts/request_002/b9ccd275782a/result.json",
+      "summary_path": "submission_artifacts/api_load_smoke/request_artifacts/request_002/b9ccd275782a/summary.md",
+      "trace_exists": true,
+      "result_exists": true,
+      "summary_exists": true
+    },
+    {
+      "index": 3,
+      "status_code": 200,
+      "elapsed_seconds": 0.125497,
+      "output_root": "submission_artifacts/api_load_smoke/request_artifacts/request_003",
+      "run_id": "1890b1ff8267",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "field_evidence_count": 5,
+      "trace_path": "submission_artifacts/api_load_smoke/request_artifacts/request_003/1890b1ff8267/trace.json",
+      "result_path": "submission_artifacts/api_load_smoke/request_artifacts/request_003/1890b1ff8267/result.json",
+      "summary_path": "submission_artifacts/api_load_smoke/request_artifacts/request_003/1890b1ff8267/summary.md",
+      "trace_exists": true,
+      "result_exists": true,
+      "summary_exists": true
+    },
+    {
+      "index": 4,
+      "status_code": 200,
+      "elapsed_seconds": 0.044015,
+      "output_root": "submission_artifacts/api_load_smoke/request_artifacts/request_004",
+      "run_id": "5e6788125f86",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "field_evidence_count": 5,
+      "trace_path": "submission_artifacts/api_load_smoke/request_artifacts/request_004/5e6788125f86/trace.json",
+      "result_path": "submission_artifacts/api_load_smoke/request_artifacts/request_004/5e6788125f86/result.json",
+      "summary_path": "submission_artifacts/api_load_smoke/request_artifacts/request_004/5e6788125f86/summary.md",
+      "trace_exists": true,
+      "result_exists": true,
+      "summary_exists": true
+    },
+    {
+      "index": 5,
+      "status_code": 200,
+      "elapsed_seconds": 0.04291,
+      "output_root": "submission_artifacts/api_load_smoke/request_artifacts/request_005",
+      "run_id": "3e130236ddfd",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "field_evidence_count": 5,
+      "trace_path": "submission_artifacts/api_load_smoke/request_artifacts/request_005/3e130236ddfd/trace.json",
+      "result_path": "submission_artifacts/api_load_smoke/request_artifacts/request_005/3e130236ddfd/result.json",
+      "summary_path": "submission_artifacts/api_load_smoke/request_artifacts/request_005/3e130236ddfd/summary.md",
+      "trace_exists": true,
+      "result_exists": true,
+      "summary_exists": true
+    },
+    {
+      "index": 6,
+      "status_code": 200,
+      "elapsed_seconds": 0.038978,
+      "output_root": "submission_artifacts/api_load_smoke/request_artifacts/request_006",
+      "run_id": "15f79c59702b",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "field_evidence_count": 5,
+      "trace_path": "submission_artifacts/api_load_smoke/request_artifacts/request_006/15f79c59702b/trace.json",
+      "result_path": "submission_artifacts/api_load_smoke/request_artifacts/request_006/15f79c59702b/result.json",
+      "summary_path": "submission_artifacts/api_load_smoke/request_artifacts/request_006/15f79c59702b/summary.md",
+      "trace_exists": true,
+      "result_exists": true,
+      "summary_exists": true
+    },
+    {
+      "index": 7,
+      "status_code": 200,
+      "elapsed_seconds": 0.04011,
+      "output_root": "submission_artifacts/api_load_smoke/request_artifacts/request_007",
+      "run_id": "b6f546d491fd",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "field_evidence_count": 5,
+      "trace_path": "submission_artifacts/api_load_smoke/request_artifacts/request_007/b6f546d491fd/trace.json",
+      "result_path": "submission_artifacts/api_load_smoke/request_artifacts/request_007/b6f546d491fd/result.json",
+      "summary_path": "submission_artifacts/api_load_smoke/request_artifacts/request_007/b6f546d491fd/summary.md",
+      "trace_exists": true,
+      "result_exists": true,
+      "summary_exists": true
+    }
+  ],
+  "boundary": [
+    "This uses FastAPI TestClient in-process to verify concurrent request handling and artifact persistence.",
+    "It does not replace an external network load test, GPU stress test, or long-document soak test."
+  ]
+}
