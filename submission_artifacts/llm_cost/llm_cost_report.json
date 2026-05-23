@@ -1,0 +1,99 @@
+{
+  "schema_version": "2026-05-24",
+  "generated_at": "2026-05-23T17:59:33Z",
+  "scope": "LLM token and cost audit over saved submission artifacts.",
+  "aggregate": {
+    "llm_enabled_results": 2,
+    "llm_trace_tool_calls": 3,
+    "tool_calls_with_token_usage": 0,
+    "results_with_token_usage": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0,
+    "cost_configured_tool_calls": 0,
+    "estimated_cost_usd": null
+  },
+  "results": [
+    {
+      "result_path": "submission_artifacts/llm_cases/case_llm_financial_review/result.json",
+      "run_id": "42f057700d90",
+      "profile": "financial_report",
+      "status": "completed",
+      "usage_summary": {},
+      "usage_item_count": 0,
+      "has_token_usage": false,
+      "has_cost_estimate": false,
+      "providers": []
+    },
+    {
+      "result_path": "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json",
+      "run_id": "52c948b82c48",
+      "profile": "standard_or_contract",
+      "status": "completed",
+      "usage_summary": {},
+      "usage_item_count": 0,
+      "has_token_usage": false,
+      "has_cost_estimate": false,
+      "providers": []
+    }
+  ],
+  "trace_tool_calls": [
+    {
+      "trace_path": "submission_artifacts/llm_cases/case_llm_financial_review/trace.json",
+      "tool": "modelscope-llm",
+      "status": "completed",
+      "elapsed_seconds": 12.709,
+      "provider": null,
+      "model": null,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "cost_configured": false,
+      "estimated_cost_usd": null
+    },
+    {
+      "trace_path": "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/trace.json",
+      "tool": "offline-llm-preplan",
+      "status": "completed",
+      "elapsed_seconds": 0.001,
+      "provider": null,
+      "model": null,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "cost_configured": false,
+      "estimated_cost_usd": null
+    },
+    {
+      "trace_path": "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/trace.json",
+      "tool": "offline-llm",
+      "status": "completed",
+      "elapsed_seconds": 0.001,
+      "provider": null,
+      "model": null,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0,
+      "cost_configured": false,
+      "estimated_cost_usd": null
+    }
+  ],
+  "pricing_configuration": {
+    "provider_specific": [
+      "MINERU_DATA_AGENT_DEEPSEEK_INPUT_USD_PER_MILLION_TOKENS",
+      "MINERU_DATA_AGENT_DEEPSEEK_OUTPUT_USD_PER_MILLION_TOKENS",
+      "MINERU_DATA_AGENT_MODELSCOPE_INPUT_USD_PER_MILLION_TOKENS",
+      "MINERU_DATA_AGENT_MODELSCOPE_OUTPUT_USD_PER_MILLION_TOKENS"
+    ],
+    "generic": [
+      "MINERU_DATA_AGENT_LLM_INPUT_USD_PER_MILLION_TOKENS",
+      "MINERU_DATA_AGENT_LLM_OUTPUT_USD_PER_MILLION_TOKENS"
+    ]
+  },
+  "boundary": [
+    "New LLM runs record provider-returned token usage when the OpenAI-compatible API includes a usage object.",
+    "Cost is computed only when token prices are configured through environment variables.",
+    "Older saved LLM artifacts may show enabled LLM execution but missing token usage because they were generated before this instrumentation existed.",
+    "This report does not claim a live DeepSeek/ModelScope cost benchmark unless saved artifacts contain provider usage."
+  ]
+}

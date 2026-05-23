@@ -125,6 +125,12 @@ class OpenAICompatibleLLMClient:
             content, reasoning_content = _extract_message_parts(data)
             analysis = _parse_json_object(content)
             analysis = _normalize_analysis(analysis, quality)
+            usage_payload = _usage_payload(
+                provider=self.provider,
+                model=self.model,
+                raw_usage=_extract_usage(data),
+            )
+            analysis["llm_usage"] = usage_payload
             if reasoning_content:
                 analysis["reasoning_content"] = reasoning_content
             status = "completed"
@@ -135,6 +141,7 @@ class OpenAICompatibleLLMClient:
             analysis = {
                 "status": "failed",
                 "error": error_text,
+                "llm_usage": _usage_payload(provider=self.provider, model=self.model, raw_usage={}),
                 "task_understanding": "",
                 "execution_plan": [],
                 "target_schema": {},
@@ -161,6 +168,7 @@ class OpenAICompatibleLLMClient:
                 indent=2,
             )[-4000:],
             stderr_tail=stderr,
+            metadata={"llm_usage": analysis.get("llm_usage", {})},
         )
         return analysis, call
 
@@ -245,6 +253,12 @@ class OpenAICompatibleLLMClient:
                 data = response.json()
             content, reasoning_content = _extract_message_parts(data)
             plan = _normalize_preplan(_parse_json_object(content))
+            usage_payload = _usage_payload(
+                provider=self.provider,
+                model=self.model,
+                raw_usage=_extract_usage(data),
+            )
+            plan["llm_usage"] = usage_payload
             if reasoning_content:
                 plan["reasoning_content"] = reasoning_content
             status = "completed"
@@ -266,6 +280,7 @@ class OpenAICompatibleLLMClient:
                 "verification_focus": [],
                 "recovery_policy": [],
                 "confidence": 0.0,
+                "llm_usage": _usage_payload(provider=self.provider, model=self.model, raw_usage={}),
             }
             status = "failed"
             stderr = error_text[-4000:]
@@ -286,6 +301,7 @@ class OpenAICompatibleLLMClient:
                 indent=2,
             )[-4000:],
             stderr_tail=stderr,
+            metadata={"llm_usage": plan.get("llm_usage", {})},
         )
         return plan, call
 
@@ -318,6 +334,96 @@ def _extract_message_parts(data: dict[str, Any]) -> tuple[str, str]:
         raise RuntimeError(f"LLM response has no message content: {data!r}")
     reasoning = message.get("reasoning_content")
     return message["content"], reasoning if isinstance(reasoning, str) else ""
+
+
+def _extract_usage(data: dict[str, Any]) -> dict[str, Any]:
+    usage = data.get("usage")
+    if not isinstance(usage, dict):
+        return {}
+    prompt_tokens = _int_or_zero(usage.get("prompt_tokens"))
+    completion_tokens = _int_or_zero(usage.get("completion_tokens"))
+    total_tokens = _int_or_zero(usage.get("total_tokens")) or prompt_tokens + completion_tokens
+    prompt_details = usage.get("prompt_tokens_details") if isinstance(usage.get("prompt_tokens_details"), dict) else {}
+    completion_details = (
+        usage.get("completion_tokens_details") if isinstance(usage.get("completion_tokens_details"), dict) else {}
+    )
+    return {
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "total_tokens": total_tokens,
+        "cached_tokens": _int_or_zero(prompt_details.get("cached_tokens")),
+        "reasoning_tokens": _int_or_zero(completion_details.get("reasoning_tokens")),
+        "raw": usage,
+    }
+
+
+def _usage_payload(*, provider: str, model: str, raw_usage: dict[str, Any]) -> dict[str, Any]:
+    usage = {
+        "prompt_tokens": _int_or_zero(raw_usage.get("prompt_tokens")),
+        "completion_tokens": _int_or_zero(raw_usage.get("completion_tokens")),
+        "total_tokens": _int_or_zero(raw_usage.get("total_tokens")),
+        "cached_tokens": _int_or_zero(raw_usage.get("cached_tokens")),
+        "reasoning_tokens": _int_or_zero(raw_usage.get("reasoning_tokens")),
+    }
+    return {
+        "provider": provider,
+        "model": model,
+        "usage": usage,
+        "cost_estimate": _estimate_llm_cost(provider=provider, usage=usage),
+    }
+
+
+def _estimate_llm_cost(*, provider: str, usage: dict[str, Any]) -> dict[str, Any]:
+    input_price = _read_price(
+        f"MINERU_DATA_AGENT_{provider.upper()}_INPUT_USD_PER_MILLION_TOKENS",
+        f"{provider.upper()}_INPUT_USD_PER_MILLION_TOKENS",
+        "MINERU_DATA_AGENT_LLM_INPUT_USD_PER_MILLION_TOKENS",
+    )
+    output_price = _read_price(
+        f"MINERU_DATA_AGENT_{provider.upper()}_OUTPUT_USD_PER_MILLION_TOKENS",
+        f"{provider.upper()}_OUTPUT_USD_PER_MILLION_TOKENS",
+        "MINERU_DATA_AGENT_LLM_OUTPUT_USD_PER_MILLION_TOKENS",
+    )
+    if input_price is None or output_price is None:
+        return {
+            "configured": False,
+            "currency": "USD",
+            "estimated_cost": None,
+            "input_usd_per_million_tokens": input_price,
+            "output_usd_per_million_tokens": output_price,
+            "note": "Set provider or generic *_USD_PER_MILLION_TOKENS environment variables to compute cost.",
+        }
+    prompt_tokens = _int_or_zero(usage.get("prompt_tokens"))
+    completion_tokens = _int_or_zero(usage.get("completion_tokens"))
+    cost = (prompt_tokens * input_price + completion_tokens * output_price) / 1_000_000
+    return {
+        "configured": True,
+        "currency": "USD",
+        "estimated_cost": round(cost, 8),
+        "input_usd_per_million_tokens": input_price,
+        "output_usd_per_million_tokens": output_price,
+    }
+
+
+def _read_price(*names: str) -> float | None:
+    for name in names:
+        raw = os.getenv(name)
+        if raw is None or raw == "":
+            continue
+        try:
+            value = float(raw)
+        except ValueError:
+            continue
+        if value >= 0:
+            return value
+    return None
+
+
+def _int_or_zero(value: Any) -> int:
+    try:
+        return max(0, int(value))
+    except (TypeError, ValueError):
+        return 0
 
 
 def _parse_json_object(content: str) -> dict[str, Any]:

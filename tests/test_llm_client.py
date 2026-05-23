@@ -1,6 +1,8 @@
 from mineru_data_agent.llm_client import (
     _chat_completions_url,
+    _estimate_llm_cost,
     _extract_message_parts,
+    _extract_usage,
     _normalize_analysis,
     _normalize_preplan,
     _parse_json_object,
@@ -42,6 +44,35 @@ def test_extract_message_parts_reads_reasoning_content() -> None:
     )
     assert reasoning == "think"
     assert content == '{"task_understanding": "ok"}'
+
+
+def test_extract_usage_reads_openai_compatible_token_counts() -> None:
+    usage = _extract_usage(
+        {
+            "usage": {
+                "prompt_tokens": 120,
+                "completion_tokens": 30,
+                "total_tokens": 150,
+                "prompt_tokens_details": {"cached_tokens": 12},
+                "completion_tokens_details": {"reasoning_tokens": 7},
+            }
+        }
+    )
+    assert usage["prompt_tokens"] == 120
+    assert usage["completion_tokens"] == 30
+    assert usage["cached_tokens"] == 12
+    assert usage["reasoning_tokens"] == 7
+
+
+def test_estimate_llm_cost_uses_configured_token_prices(monkeypatch) -> None:
+    monkeypatch.setenv("MINERU_DATA_AGENT_DEEPSEEK_INPUT_USD_PER_MILLION_TOKENS", "0.10")
+    monkeypatch.setenv("MINERU_DATA_AGENT_DEEPSEEK_OUTPUT_USD_PER_MILLION_TOKENS", "0.30")
+    cost = _estimate_llm_cost(
+        provider="deepseek",
+        usage={"prompt_tokens": 1000, "completion_tokens": 2000},
+    )
+    assert cost["configured"] is True
+    assert cost["estimated_cost"] == 0.0007
 
 
 def test_parser_context_marks_html_extractor() -> None:

@@ -368,6 +368,7 @@ class MinerUDataAgent:
                     llm_analysis["post_parse_analysis"] = post_llm_analysis
                     llm_analysis.update(post_llm_analysis)
                     llm_analysis["enabled"] = True
+                    llm_analysis["usage_summary"] = _summarize_llm_usage(llm_preplan, post_llm_analysis)
                     trace.add_tool_call(llm_call.__dict__)
 
             result = AgentResult(
@@ -795,6 +796,15 @@ def _build_summary(result: AgentResult) -> str:
         if understanding:
             lines.append(str(understanding))
             lines.append("")
+        usage_summary = result.llm_analysis.get("usage_summary")
+        if isinstance(usage_summary, dict) and usage_summary.get("tool_call_count"):
+            lines.append(
+                "LLM usage: "
+                f"{usage_summary.get('total_tokens', 0)} tokens across "
+                f"{usage_summary.get('tool_call_count', 0)} call(s); "
+                f"estimated cost={usage_summary.get('estimated_cost_usd')}"
+            )
+            lines.append("")
         if isinstance(llm_plan, list) and llm_plan:
             lines.append("Suggested execution plan:")
             lines.extend([f"{index}. {step}" for index, step in enumerate(llm_plan[:12], start=1)])
@@ -843,6 +853,45 @@ def _llm_status_label(llm_analysis: dict[str, Any]) -> str:
     if not llm_analysis.get("enabled"):
         return "disabled"
     return f"enabled/{llm_analysis.get('status', 'completed')}"
+
+
+def _summarize_llm_usage(*items: dict[str, Any]) -> dict[str, Any]:
+    usage_items = [
+        item.get("llm_usage")
+        for item in items
+        if isinstance(item, dict) and isinstance(item.get("llm_usage"), dict)
+    ]
+    total_prompt = 0
+    total_completion = 0
+    total_tokens = 0
+    total_cost = 0.0
+    configured_costs = 0
+    providers = []
+    for item in usage_items:
+        usage = item.get("usage", {}) if isinstance(item.get("usage"), dict) else {}
+        total_prompt += int(usage.get("prompt_tokens") or 0)
+        total_completion += int(usage.get("completion_tokens") or 0)
+        total_tokens += int(usage.get("total_tokens") or 0)
+        provider = item.get("provider")
+        model = item.get("model")
+        if provider or model:
+            providers.append({"provider": provider, "model": model})
+        cost = item.get("cost_estimate", {}) if isinstance(item.get("cost_estimate"), dict) else {}
+        if cost.get("configured") and cost.get("estimated_cost") is not None:
+            configured_costs += 1
+            total_cost += float(cost.get("estimated_cost") or 0)
+    return {
+        "tool_call_count": len(usage_items),
+        "prompt_tokens": total_prompt,
+        "completion_tokens": total_completion,
+        "total_tokens": total_tokens,
+        "cost_configured_calls": configured_costs,
+        "estimated_cost_usd": round(total_cost, 8) if configured_costs else None,
+        "providers": providers,
+        "boundary": (
+            "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+        ),
+    }
 
 
 def _write_native_parse_artifacts(

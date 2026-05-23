@@ -120,6 +120,8 @@ def test_llm_preplan_controls_profile_method_and_trace(tmp_path: Path) -> None:
     assert "OCR" in result.execution_control["planning_rationale"]["profile_reason"]
     assert {"field": "method", "from": "auto", "to": "ocr", "reason": "llm_preplan"} in result.execution_control["applied"]
     assert result.llm_analysis["pre_execution_plan"]["target_schema"]["报告日期"] == "date"
+    assert result.llm_analysis["usage_summary"]["total_tokens"] == 430
+    assert result.llm_analysis["usage_summary"]["estimated_cost_usd"] == 0.003
     assert llm.post_parse_profile == "low_quality_ocr"
     trace = json.loads(Path(result.trace_path).read_text(encoding="utf-8"))
     step_names = [step["name"] for step in trace["steps"]]
@@ -337,12 +339,19 @@ class _PreplanningLLM:
                 "verification_focus": ["date coverage"],
                 "recovery_policy": ["manual review if OCR is sparse"],
                 "confidence": 0.9,
+                "llm_usage": {
+                    "provider": "fake",
+                    "model": "fake-preplan",
+                    "usage": {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150},
+                    "cost_estimate": {"configured": True, "estimated_cost": 0.001, "currency": "USD"},
+                },
             },
             ToolCall(
                 tool="fake-llm-preplan",
                 command=["fake-llm", "preplan"],
                 status="completed",
                 elapsed_seconds=0.01,
+                metadata={"llm_usage": {"usage": {"total_tokens": 150}}},
             ),
         )
 
@@ -357,11 +366,18 @@ class _PreplanningLLM:
                 "verification_focus": ["trace"],
                 "risk_findings": [],
                 "recovery_suggestions": [],
+                "llm_usage": {
+                    "provider": "fake",
+                    "model": "fake-post",
+                    "usage": {"prompt_tokens": 200, "completion_tokens": 80, "total_tokens": 280},
+                    "cost_estimate": {"configured": True, "estimated_cost": 0.002, "currency": "USD"},
+                },
             },
             ToolCall(
                 tool="fake-llm",
                 command=["fake-llm", "analyze"],
                 status="completed",
                 elapsed_seconds=0.01,
+                metadata={"llm_usage": {"usage": {"total_tokens": 280}}},
             ),
         )

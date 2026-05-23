@@ -22,6 +22,7 @@ class ToolCall:
     elapsed_seconds: float
     stdout_tail: str = ""
     stderr_tail: str = ""
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass

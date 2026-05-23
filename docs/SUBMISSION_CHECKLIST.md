@@ -22,6 +22,8 @@
 - [x] 评测指标已覆盖 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据和 2 个 recovery gate
 - [x] 稳定性与工具耗时摘要已生成，见 `submission_artifacts/stability/`
 - [x] 成本、速度与质量分组对比已生成，见 `submission_artifacts/baseline_comparison/`
+- [x] LLM token 与成本审计报告已生成，见 `submission_artifacts/llm_cost/`
+- [x] 对标矩阵与后续 benchmark/roadmap 已写入 `docs/BENCHMARK_AND_ROADMAP.md`
 - [x] 至少 5 个典型任务案例，见 `submission_artifacts/cases/`
 - [x] 额外 4 个复杂挑战样本与人工标注表已生成，见 `submission_artifacts/challenge_cases/`
 - [x] 额外 4 个官方公开真实 PDF 样本、来源元数据和人工轻量标注已生成，见 `submission_artifacts/public_real_cases/`

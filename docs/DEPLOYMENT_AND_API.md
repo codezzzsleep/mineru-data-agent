@@ -352,4 +352,21 @@ python scripts/build_baseline_comparison.py
 
 当前报告位于 `submission_artifacts/baseline_comparison/baseline_comparison.json` 和 `submission_artifacts/baseline_comparison/baseline_comparison.md`。它把 17 个带标注案例按 native HTML、MinerU CLI PDF、Office、LLM recovery、挑战 fixture 和官方公开 PDF 分组，汇总标注通过率、工具耗时、平均质量分、trace 步骤、页级 provenance 与 recovery 执行情况。
 
-边界：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证；HTTP load smoke 是本机 TCP loopback 验证；baseline comparison 是保存 artifact 的对比视图。它们仍不是外部公网压测、GPU 长文档压力测试、云成本 benchmark 或第三方 OCR benchmark。若要宣称生产级高负载能力，需要额外提供公网并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。
+生成 LLM token 与成本审计：
+
+```bash
+python scripts/build_llm_cost_report.py
+```
+
+当前报告位于 `submission_artifacts/llm_cost/llm_cost_report.json` 和 `submission_artifacts/llm_cost/llm_cost_report.md`。新运行在 OpenAI-compatible 服务返回 `usage` 字段时会记录 prompt/completion/total tokens；若配置了以下环境变量，还会计算估算成本：
+
+```bash
+export MINERU_DATA_AGENT_DEEPSEEK_INPUT_USD_PER_MILLION_TOKENS="<input-price>"
+export MINERU_DATA_AGENT_DEEPSEEK_OUTPUT_USD_PER_MILLION_TOKENS="<output-price>"
+export MINERU_DATA_AGENT_MODELSCOPE_INPUT_USD_PER_MILLION_TOKENS="<input-price>"
+export MINERU_DATA_AGENT_MODELSCOPE_OUTPUT_USD_PER_MILLION_TOKENS="<output-price>"
+```
+
+也可用通用变量 `MINERU_DATA_AGENT_LLM_INPUT_USD_PER_MILLION_TOKENS` 和 `MINERU_DATA_AGENT_LLM_OUTPUT_USD_PER_MILLION_TOKENS`。当前旧 LLM artifact 生成于 token instrumentation 之前，因此报告会如实标注缺少 provider token usage。
+
+边界：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证；HTTP load smoke 是本机 TCP loopback 验证；baseline comparison 是保存 artifact 的对比视图；LLM cost report 只统计 provider 返回或已保存的 usage。它们仍不是外部公网压测、GPU 长文档压力测试、云成本 benchmark 或第三方 OCR benchmark。若要宣称生产级高负载能力，需要额外提供公网并发请求、长文档批量任务、资源占用和失败重试的现场压测记录。
