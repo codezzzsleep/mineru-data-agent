@@ -34,3 +34,38 @@
 4. 强化一个主攻难点场景：建议优先选择财报密集数字或低质量 OCR。
 
 不建议把精力分散到大量 UI 或大型模型微调上。赛题页更看重 Agent 的任务拆解、工具调用、可复现和真实场景落地。
+
+## 4. 保守自评清单（按五维度）
+
+基于当前仓库证据（重点参考 `submission_artifacts/evaluation/evaluation_metrics.md`）给出一版保守自评：
+
+| 评分维度 | 权重 | 现状自评分 | 关键证据 | 主要短板 |
+| --- | ---: | ---: | --- | --- |
+| 复杂文档理解与结构化处理能力 | 20 | 18 | `submission_artifacts/cases/`、`submission_artifacts/mineru_cases/`、`submission_artifacts/public_real_cases/`、`submission_artifacts/office_cases/` | 真实复杂样本与细粒度标注仍偏少 |
+| 难点场景攻克与技术创新性 | 15 | 12 | `submission_artifacts/challenge_cases/`、`submission_artifacts/recovery_cases/`、LLM 预调度链路 | 创新点有，但不可替代性与难点深度还可强化 |
+| Agent 任务规划与自动执行能力 | 30 | 26 | `trace.json`、`execution_control`、batch 流程、API→CLI fallback | 多轮任务闭环与更强自治策略证据可再补 |
+| 系统稳定性与工程可复现性 | 20 | 17 | `.github/workflows/tests.yml`、API smoke、提交产物完整 | 长时、高并发、极限输入稳定性证据不足 |
+| 代码开源共享与产业生态价值 | 15 | 13 | README、部署/API 文档、MIT、案例产物 | 产业落地叙事与外部可复用性展示可加强 |
+
+总分（保守自评）：86 / 100。
+
+## 5. 补强优先级清单
+
+### P0（立即补强，直接影响评审观感与得分）
+
+- [ ] 增加真实复杂文档样本数量与覆盖面（扫描件、跨页表、复杂图表）并补标签。
+- [ ] 对 1 个主攻难点做深打穿证据包（建议财报密集数字或低质量 OCR）。
+- [ ] 增加稳定性压测记录（批处理连续运行、失败恢复率、耗时分布）。
+- [ ] 补 Agent 自主决策价值对照证据（无预调度 vs 有预调度、无恢复 vs 有恢复）。
+
+### P1（中优先级，提升说服力）
+
+- [ ] 细化评测口径：补字段级/表格格级抽样核验（小规模人工集即可）。
+- [ ] 增加跨后端一致性报告（agent-api 与 cli 结果差异解释）。
+- [ ] 增加 Office/HTML/PDF 三类统一指标对齐表（便于评委横向比较）。
+
+### P2（锦上添花）
+
+- [ ] 增加产业场景落地说明（输入成本、运行成本、交付流程）。
+- [ ] 增加演示脚本与一键复现实验入口（降低评委复跑门槛）。
+- [ ] 增加 roadmap（后续可扩展能力与风险边界）。
