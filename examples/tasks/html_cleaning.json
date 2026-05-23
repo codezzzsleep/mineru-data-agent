@@ -1,0 +1,6 @@
+{
+  "task": "清洗 HTML 网页语料，抽取正文、链接、键值对和结构化内容块。",
+  "profile": "general_document",
+  "backend": "pipeline",
+  "method": "auto"
+}

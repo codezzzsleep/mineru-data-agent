@@ -1,0 +1,232 @@
+{
+  "run_id": "6eebecbf0e8a",
+  "task": "结构化合同条款，抽取合同编号、签署日期、章节条款、异常处理和处理建议。",
+  "profile": "standard_or_contract",
+  "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_3_standard_contract.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize section hierarchy and clause-like paragraph extraction",
+    "Preserve source page or document heading evidence for each clause"
+  ],
+  "extracted": {
+    "content_summary": {
+      "item_count": 12,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 5,
+        "text": 7
+      },
+      "source_counts": {
+        "html": 12
+      },
+      "text_characters": 302
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "数据处理服务合同关键条款",
+        "line": 1,
+        "source": "heading",
+        "text": "合同编号：DPA-2026-0519\n\n签署日期：2026-05-19"
+      },
+      {
+        "level": 2,
+        "title": "第一条 服务范围",
+        "line": 7,
+        "source": "heading",
+        "text": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。"
+      },
+      {
+        "level": 2,
+        "title": "第二条 数据安全",
+        "line": 11,
+        "source": "heading",
+        "text": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。"
+      },
+      {
+        "level": 2,
+        "title": "第三条 验收标准",
+        "line": 15,
+        "source": "heading",
+        "text": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。"
+      },
+      {
+        "level": 2,
+        "title": "第四条 异常处理",
+        "line": 19,
+        "source": "heading",
+        "text": "异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。\n\n处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。"
+      }
+    ],
+    "tables": [],
+    "key_values": [
+      {
+        "key": "合同编号",
+        "value": "DPA-2026-0519"
+      },
+      {
+        "key": "签署日期",
+        "value": "2026-05-19"
+      },
+      {
+        "key": "异常提示",
+        "value": "跨页表格、签章覆盖和乱码文本需要进入人工复核队列。"
+      },
+      {
+        "key": "处理建议",
+        "value": "保留章节标题、条款编号和源文件证据，便于合规审计。"
+      }
+    ],
+    "key_value_map": {
+      "合同编号": "DPA-2026-0519",
+      "签署日期": "2026-05-19",
+      "异常提示": "跨页表格、签章覆盖和乱码文本需要进入人工复核队列。",
+      "处理建议": "保留章节标题、条款编号和源文件证据，便于合规审计。"
+    },
+    "numeric_facts": [
+      {
+        "line": 17,
+        "text": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。",
+        "numbers": [
+          "2"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-19"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "处理建议: 保留章节标题、条款编号和源文件证据，便于合规审计。"
+        },
+        {
+          "source": "line",
+          "text": "处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。"
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 9,
+          "text": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。"
+        },
+        {
+          "line": 19,
+          "text": "## 第四条 异常处理"
+        },
+        {
+          "line": 21,
+          "text": "异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。"
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 5,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# 数据处理服务合同关键条款\n\n合同编号：DPA-2026-0519\n\n签署日期：2026-05-19\n\n## 第一条 服务范围\n\n乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。\n\n## 第二条 数据安全\n\n乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。\n\n## 第三条 验收标准\n\n验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。\n\n## 第四条 异常处理\n\n异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。\n\n处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。"
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 12,
+          "source_counts": {
+            "html": 12
+          }
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "accept",
+    "actions": [
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit."
+    ],
+    "issue_codes": [
+      "document_level_provenance"
+    ],
+    "initial_issue_codes": [
+      "document_level_provenance"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a\\html\\case_3_standard_contract.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a\\html\\case_3_standard_contract_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 5,
+      "by_type": {
+        "text": 5
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a\\html\\case_3_standard_contract.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a\\html\\case_3_standard_contract_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\submission_cases\\6eebecbf0e8a\\summary.md"
+}

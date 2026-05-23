@@ -1,0 +1,19 @@
+{
+  "skipped_blocks": [
+    {
+      "block_id": "p1_b3",
+      "type": "image",
+      "reason": "weak_figure"
+    },
+    {
+      "block_id": "p1_b5",
+      "type": "table",
+      "reason": "empty_table"
+    }
+  ],
+  "parse_errors": [],
+  "summary": {
+    "total_skipped_blocks": 2,
+    "total_parse_errors": 0
+  }
+}

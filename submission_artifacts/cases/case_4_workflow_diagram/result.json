@@ -1,0 +1,239 @@
+{
+  "run_id": "82f2fcd2a454",
+  "task": "解析工艺流程说明，抽取流程步骤、关键参数、异常节点和处理建议。",
+  "profile": "workflow_or_diagram",
+  "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize figure/image references and ordered procedural statements",
+    "Flag pages that need visual model follow-up"
+  ],
+  "extracted": {
+    "content_summary": {
+      "item_count": 11,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 2,
+        "text": 5,
+        "list_item": 4
+      },
+      "source_counts": {
+        "html": 11
+      },
+      "text_characters": 279
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "锂电池涂布产线流程说明",
+        "line": 1,
+        "source": "heading",
+        "text": "报告日期：2026-05-20\n\n流程名称：正极浆料涂布与烘干流程\n\n流程图说明：投料 -> 搅拌 -> 过滤 -> 涂布 -> 烘干 -> 收卷 -> 质检。"
+      },
+      {
+        "level": 2,
+        "title": "关键步骤",
+        "line": 9,
+        "source": "heading",
+        "text": "- 投料阶段核对批次号和固含量。\n\n- 搅拌阶段记录转速 1,200 rpm 和温度 25 摄氏度。\n\n- 涂布阶段监控厚度 118 微米，允许偏差 3 微米。\n\n- 烘干阶段检查温区 1 到温区 4 的温度曲线。\n\n异常提示：若温区 3 连续 5 分钟超过 92 摄氏度，需暂停收卷并复核传感器。\n\n处理建议：Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+      }
+    ],
+    "tables": [],
+    "key_values": [
+      {
+        "key": "报告日期",
+        "value": "2026-05-20"
+      },
+      {
+        "key": "流程名称",
+        "value": "正极浆料涂布与烘干流程"
+      },
+      {
+        "key": "流程图说明",
+        "value": "投料 -> 搅拌 -> 过滤 -> 涂布 -> 烘干 -> 收卷 -> 质检。"
+      },
+      {
+        "key": "异常提示",
+        "value": "若温区 3 连续 5 分钟超过 92 摄氏度，需暂停收卷并复核传感器。"
+      },
+      {
+        "key": "处理建议",
+        "value": "Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+      }
+    ],
+    "key_value_map": {
+      "报告日期": "2026-05-20",
+      "流程名称": "正极浆料涂布与烘干流程",
+      "流程图说明": "投料 -> 搅拌 -> 过滤 -> 涂布 -> 烘干 -> 收卷 -> 质检。",
+      "异常提示": "若温区 3 连续 5 分钟超过 92 摄氏度，需暂停收卷并复核传感器。",
+      "处理建议": "Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+    },
+    "numeric_facts": [
+      {
+        "line": 13,
+        "text": "- 搅拌阶段记录转速 1,200 rpm 和温度 25 摄氏度。",
+        "numbers": [
+          "1,200",
+          "25"
+        ]
+      },
+      {
+        "line": 15,
+        "text": "- 涂布阶段监控厚度 118 微米，允许偏差 3 微米。",
+        "numbers": [
+          "118",
+          "3"
+        ]
+      },
+      {
+        "line": 17,
+        "text": "- 烘干阶段检查温区 1 到温区 4 的温度曲线。",
+        "numbers": [
+          "1",
+          "4"
+        ]
+      },
+      {
+        "line": 19,
+        "text": "异常提示：若温区 3 连续 5 分钟超过 92 摄氏度，需暂停收卷并复核传感器。",
+        "numbers": [
+          "3",
+          "5",
+          "92"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-20"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "处理建议: Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+        },
+        {
+          "source": "line",
+          "text": "处理建议：Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 19,
+          "text": "异常提示：若温区 3 连续 5 分钟超过 92 摄氏度，需暂停收卷并复核传感器。"
+        },
+        {
+          "line": 21,
+          "text": "处理建议：Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 2,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# 锂电池涂布产线流程说明\n\n报告日期：2026-05-20\n\n流程名称：正极浆料涂布与烘干流程\n\n流程图说明：投料 -> 搅拌 -> 过滤 -> 涂布 -> 烘干 -> 收卷 -> 质检。\n\n## 关键步骤\n\n- 投料阶段核对批次号和固含量。\n\n- 搅拌阶段记录转速 1,200 rpm 和温度 25 摄氏度。\n\n- 涂布阶段监控厚度 118 微米，允许偏差 3 微米。\n\n- 烘干阶段检查温区 1 到温区 4 的温度曲线。\n\n异常提示：若温区 3 连续 5 分钟超过 92 摄氏度，需暂停收卷并复核传感器。\n\n处理建议：Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 11,
+          "source_counts": {
+            "html": 11
+          }
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "accept",
+    "actions": [
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit."
+    ],
+    "issue_codes": [
+      "document_level_provenance"
+    ],
+    "initial_issue_codes": [
+      "document_level_provenance"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\html\\case_4_workflow_diagram.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\html\\case_4_workflow_diagram_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 2,
+      "by_type": {
+        "text": 2
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\html\\case_4_workflow_diagram.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\html\\case_4_workflow_diagram_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\summary.md"
+}

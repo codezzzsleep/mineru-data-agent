@@ -1,0 +1,6 @@
+{
+  "task": "解析工程流程或工艺说明，抽取流程步骤、图像引用和需要视觉复核的页面。",
+  "profile": "workflow_or_diagram",
+  "backend": "pipeline",
+  "method": "auto"
+}

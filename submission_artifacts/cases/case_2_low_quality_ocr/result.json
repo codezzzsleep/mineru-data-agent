@@ -1,0 +1,260 @@
+{
+  "run_id": "31921e2b4f8f",
+  "task": "分析低质量 OCR 文本，抽取日期、异常温度、编码噪声和处理建议。",
+  "profile": "low_quality_ocr",
+  "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_2_low_quality_ocr.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize OCR confidence proxies and mojibake/noise checks",
+    "Flag pages with sparse extracted text for manual or VLM fallback"
+  ],
+  "extracted": {
+    "content_summary": {
+      "item_count": 10,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 2,
+        "text": 5,
+        "list_item": 3
+      },
+      "source_counts": {
+        "html": 10
+      },
+      "text_characters": 271
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "低质量扫描件 OCR 复核记录",
+        "line": 1,
+        "source": "heading",
+        "text": "报告日期：2026-05-18\n\n文档来源：车间安全巡检拍照件，存在轻微倾斜、局部反光、签章覆盖和手写批注。\n\nOCR 摘要：第 2 页温度记录可读，第 3 页签章区域存在样编码噪声，第 4 页边缘文字残缺。\n\n异常提示：设备 B-17 的温度记录出现 86.5 摄氏度，超过阈值 80 摄氏度，需要人工复核原图。\n\n处理建议：对低清晰度区域启用更高分辨率重扫或 VLM 复核，并把噪声行写入质量报告。"
+      },
+      {
+        "level": 2,
+        "title": "复核清单",
+        "line": 13,
+        "source": "heading",
+        "text": "- 检查页边裁切是否导致表格列名丢失。\n\n- 检查手写签章是否覆盖设备编号。\n\n- 检查异常温度数值是否来自同一行。"
+      }
+    ],
+    "tables": [],
+    "key_values": [
+      {
+        "key": "报告日期",
+        "value": "2026-05-18"
+      },
+      {
+        "key": "文档来源",
+        "value": "车间安全巡检拍照件，存在轻微倾斜、局部反光、签章覆盖和手写批注。"
+      },
+      {
+        "key": "OCR 摘要",
+        "value": "第 2 页温度记录可读，第 3 页签章区域存在样编码噪声，第 4 页边缘文字残缺。"
+      },
+      {
+        "key": "异常提示",
+        "value": "设备 B-17 的温度记录出现 86.5 摄氏度，超过阈值 80 摄氏度，需要人工复核原图。"
+      },
+      {
+        "key": "处理建议",
+        "value": "对低清晰度区域启用更高分辨率重扫或 VLM 复核，并把噪声行写入质量报告。"
+      }
+    ],
+    "key_value_map": {
+      "报告日期": "2026-05-18",
+      "文档来源": "车间安全巡检拍照件，存在轻微倾斜、局部反光、签章覆盖和手写批注。",
+      "OCR 摘要": "第 2 页温度记录可读，第 3 页签章区域存在样编码噪声，第 4 页边缘文字残缺。",
+      "异常提示": "设备 B-17 的温度记录出现 86.5 摄氏度，超过阈值 80 摄氏度，需要人工复核原图。",
+      "处理建议": "对低清晰度区域启用更高分辨率重扫或 VLM 复核，并把噪声行写入质量报告。"
+    },
+    "numeric_facts": [
+      {
+        "line": 7,
+        "text": "OCR 摘要：第 2 页温度记录可读，第 3 页签章区域存在样编码噪声，第 4 页边缘文字残缺。",
+        "numbers": [
+          "2",
+          "3",
+          "4"
+        ]
+      },
+      {
+        "line": 9,
+        "text": "异常提示：设备 B-17 的温度记录出现 86.5 摄氏度，超过阈值 80 摄氏度，需要人工复核原图。",
+        "numbers": [
+          "86.5",
+          "80"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-18"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "处理建议: 对低清晰度区域启用更高分辨率重扫或 VLM 复核，并把噪声行写入质量报告。"
+        },
+        {
+          "source": "line",
+          "text": "处理建议：对低清晰度区域启用更高分辨率重扫或 VLM 复核，并把噪声行写入质量报告。"
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 1,
+          "text": "# 低质量扫描件 OCR 复核记录"
+        },
+        {
+          "line": 9,
+          "text": "异常提示：设备 B-17 的温度记录出现 86.5 摄氏度，超过阈值 80 摄氏度，需要人工复核原图。"
+        },
+        {
+          "line": 11,
+          "text": "处理建议：对低清晰度区域启用更高分辨率重扫或 VLM 复核，并把噪声行写入质量报告。"
+        },
+        {
+          "line": 13,
+          "text": "## 复核清单"
+        },
+        {
+          "line": 19,
+          "text": "- 检查异常温度数值是否来自同一行。"
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 2,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# 低质量扫描件 OCR 复核记录\n\n报告日期：2026-05-18\n\n文档来源：车间安全巡检拍照件，存在轻微倾斜、局部反光、签章覆盖和手写批注。\n\nOCR 摘要：第 2 页温度记录可读，第 3 页签章区域存在样编码噪声，第 4 页边缘文字残缺。\n\n异常提示：设备 B-17 的温度记录出现 86.5 摄氏度，超过阈值 80 摄氏度，需要人工复核原图。\n\n处理建议：对低清晰度区域启用更高分辨率重扫或 VLM 复核，并把噪声行写入质量报告。\n\n## 复核清单\n\n- 检查页边裁切是否导致表格列名丢失。\n\n- 检查手写签章是否覆盖设备编号。\n\n- 检查异常温度数值是否来自同一行。"
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 10,
+          "source_counts": {
+            "html": 10
+          }
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "recovered_accept",
+    "actions": [
+      "Executed 1 automatic recovery attempt(s); selected `text_cleanup`.",
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit.",
+      "Initial quality issues were preserved for audit: possible_mojibake, document_level_provenance."
+    ],
+    "issue_codes": [
+      "document_level_provenance"
+    ],
+    "initial_issue_codes": [
+      "possible_mojibake",
+      "document_level_provenance"
+    ],
+    "selected_attempt": "text_cleanup",
+    "executed": true,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass_with_warnings",
+        "score": 92,
+        "issue_codes": [
+          "possible_mojibake",
+          "document_level_provenance"
+        ],
+        "selected": false,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\html\\case_2_low_quality_ocr.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\html\\case_2_low_quality_ocr_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      },
+      {
+        "name": "text_cleanup",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\recovery\\text_cleanup\\case_2_low_quality_ocr.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\recovery\\text_cleanup\\case_2_low_quality_ocr_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 2,
+      "by_type": {
+        "text": 2
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\recovery\\text_cleanup\\case_2_low_quality_ocr.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\recovery\\text_cleanup\\case_2_low_quality_ocr_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\submission_cases\\31921e2b4f8f\\summary.md"
+}

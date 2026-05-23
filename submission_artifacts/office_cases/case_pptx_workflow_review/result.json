@@ -1,0 +1,275 @@
+{
+  "run_id": "d8eea5507bd5",
+  "task": "Parse a PowerPoint workflow review deck, extract slide-level text, execution matrix, risks, recommendations, quality logs, recovery decision, and retrieval chunks.",
+  "profile": "workflow_or_diagram",
+  "input_file": "<PROJECT_ROOT>\\examples\\office_files\\workflow_agent_review.pptx",
+  "output_dir": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize figure/image references and ordered procedural statements",
+    "Flag pages that need visual model follow-up"
+  ],
+  "extracted": {
+    "content_summary": {
+      "item_count": 7,
+      "page_indices": [
+        0,
+        1,
+        2
+      ],
+      "page_count": 3,
+      "provenance_level": "page",
+      "type_counts": {
+        "heading": 3,
+        "text": 3,
+        "table": 1
+      },
+      "source_counts": {
+        "pptx": 7
+      },
+      "text_characters": 606
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "Slide 1",
+        "line": 1,
+        "source": "heading",
+        "text": "Workflow Agent Review\nInspection Date: 2026-05-23\nGoal: verify slide-level provenance, execution matrices, and recovery notes."
+      },
+      {
+        "level": 1,
+        "title": "Slide 2",
+        "line": 7,
+        "source": "heading",
+        "text": "Execution Matrix\n\n| Step | Tool | Output | Recovery |\n| --- | --- | --- | --- |\n| 1 | Native PPTX extractor | slide text | keep slide index |\n| 2 | Validator | quality report | flag warnings |\n| 3 | Retrieval exporter | jsonl chunks | skip noise |"
+      },
+      {
+        "level": 1,
+        "title": "Slide 3",
+        "line": 17,
+        "source": "heading",
+        "text": "Findings\nAnomaly: slide decks often lose section order during plain text extraction.\nRecommendation: preserve slide index and table rows in content blocks.\nRisk: charts still require a visual model follow-up."
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 11,
+        "headers": [
+          "Step",
+          "Tool",
+          "Output",
+          "Recovery"
+        ],
+        "rows": [
+          [
+            "1",
+            "Native PPTX extractor",
+            "slide text",
+            "keep slide index"
+          ],
+          [
+            "2",
+            "Validator",
+            "quality report",
+            "flag warnings"
+          ],
+          [
+            "3",
+            "Retrieval exporter",
+            "jsonl chunks",
+            "skip noise"
+          ]
+        ],
+        "row_count": 3,
+        "column_count": 4
+      }
+    ],
+    "key_values": [
+      {
+        "key": "Inspection Date",
+        "value": "2026-05-23"
+      },
+      {
+        "key": "Goal",
+        "value": "verify slide-level provenance, execution matrices, and recovery notes."
+      },
+      {
+        "key": "Anomaly",
+        "value": "slide decks often lose section order during plain text extraction."
+      },
+      {
+        "key": "Recommendation",
+        "value": "preserve slide index and table rows in content blocks."
+      },
+      {
+        "key": "Risk",
+        "value": "charts still require a visual model follow-up."
+      }
+    ],
+    "key_value_map": {
+      "Inspection Date": "2026-05-23",
+      "Goal": "verify slide-level provenance, execution matrices, and recovery notes.",
+      "Anomaly": "slide decks often lose section order during plain text extraction.",
+      "Recommendation": "preserve slide index and table rows in content blocks.",
+      "Risk": "charts still require a visual model follow-up."
+    },
+    "numeric_facts": [
+      {
+        "line": 1,
+        "text": "# Slide 1",
+        "numbers": [
+          "1"
+        ]
+      },
+      {
+        "line": 7,
+        "text": "# Slide 2",
+        "numbers": [
+          "2"
+        ]
+      },
+      {
+        "line": 13,
+        "text": "| 1 | Native PPTX extractor | slide text | keep slide index |",
+        "numbers": [
+          "1"
+        ]
+      },
+      {
+        "line": 14,
+        "text": "| 2 | Validator | quality report | flag warnings |",
+        "numbers": [
+          "2"
+        ]
+      },
+      {
+        "line": 15,
+        "text": "| 3 | Retrieval exporter | jsonl chunks | skip noise |",
+        "numbers": [
+          "3"
+        ]
+      },
+      {
+        "line": 17,
+        "text": "# Slide 3",
+        "numbers": [
+          "3"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-23"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "Recommendation: preserve slide index and table rows in content blocks."
+        },
+        {
+          "source": "line",
+          "text": "Anomaly: slide decks often lose section order during plain text extraction."
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 14,
+          "text": "| 2 | Validator | quality report | flag warnings |"
+        },
+        {
+          "line": 22,
+          "text": "Risk: charts still require a visual model follow-up."
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 3,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# Slide 1\n\nWorkflow Agent Review\nInspection Date: 2026-05-23\nGoal: verify slide-level provenance, execution matrices, and recovery notes.\n\n# Slide 2\n\nExecution Matrix\n\n| Step | Tool | Output | Recovery |\n| --- | --- | --- | --- |\n| 1 | Native PPTX extractor | slide text | keep slide index |\n| 2 | Validator | quality report | flag warnings |\n| 3 | Retrieval exporter | jsonl chunks | skip noise |\n\n# Slide 3\n\nFindings\nAnomaly: slide decks often lose section order during plain text extraction.\nRecommendation: preserve slide index and table rows in content blocks.\nRisk: charts still require a visual model follow-up."
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 0,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "issues": []
+  },
+  "recovery_decision": {
+    "decision": "accept",
+    "actions": [
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit."
+    ],
+    "issue_codes": [],
+    "initial_issue_codes": [],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "recorded",
+        "method": "recorded",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5\\office\\workflow_agent_review.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5\\office\\workflow_agent_review_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 4,
+      "by_type": {
+        "text": 3,
+        "table": 1
+      },
+      "pages": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5\\office\\workflow_agent_review.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5\\office\\workflow_agent_review_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\office_cases\\d8eea5507bd5\\summary.md"
+}

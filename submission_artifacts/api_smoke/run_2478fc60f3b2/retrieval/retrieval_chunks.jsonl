@@ -1,0 +1,2 @@
+{"chunk_id": "0436b28901264e3c8a5b26273ac3e49f:p1:text:1", "page_no": 1, "content_type": "text", "section_title": "网页巡检日报", "chunk_text": "报告日期：2026-05-22\n系统名称：语料处理平台\n巡检范围：上传接口、解析任务队列、结果导出、日志归档和检索切片生成。\n异常情况：未发现阻断性错误，发现两条低优先级告警，均已进入复查队列。\n处理建议：继续观察任务队列延迟，保留 trace、summary 和 retrieval 输出用于复核。", "image_path": ""}
+{"chunk_id": "0436b28901264e3c8a5b26273ac3e49f:p1:table:2", "page_no": 1, "content_type": "table", "section_title": "网页巡检日报", "chunk_text": "| 模块 | 状态 | 建议 |\n| --- | --- | --- |\n| 上传接口 | 正常 | 保留大小限制 |\n| 结果导出 | 正常 | 定期抽查 |", "image_path": ""}

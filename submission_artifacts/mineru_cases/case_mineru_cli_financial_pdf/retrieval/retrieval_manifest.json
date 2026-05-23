@@ -1,0 +1,46 @@
+{
+  "doc_id": "complex_financial_report",
+  "source_file": "<PROJECT_ROOT>\\examples\\real_pdfs\\complex_financial_report.pdf",
+  "created_at": "2026-05-22T19:57:53.254750+00:00",
+  "output_files": {
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\42db2610f372\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\42db2610f372\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\42db2610f372\\retrieval\\retrieval_quality.json"
+  },
+  "schema": [
+    "chunk_id",
+    "page_no",
+    "content_type",
+    "section_title",
+    "chunk_text",
+    "image_path"
+  ],
+  "chunking_policy": {
+    "source_priority": [
+      "content_list",
+      "markdown"
+    ],
+    "skip_noise_blocks": [
+      "aside_text",
+      "footer",
+      "header",
+      "page_aside_text",
+      "page_footer",
+      "page_header",
+      "page_number"
+    ],
+    "skip_low_value_sections": true,
+    "merge_short_text": true,
+    "target_chunk_chars": "1200-3600"
+  },
+  "stats": {
+    "total_chunks": 2,
+    "by_type": {
+      "text": 2
+    },
+    "pages": [
+      1,
+      3
+    ]
+  }
+}

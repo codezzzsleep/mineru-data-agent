@@ -1,0 +1,6 @@
+{
+  "task": "解析行业标准或合同文档，抽取章节、条款、关键约束条件，并保留源页证据。",
+  "profile": "standard_or_contract",
+  "backend": "pipeline",
+  "method": "auto"
+}

@@ -1,0 +1,36 @@
+[
+  {
+    "event": "task_created",
+    "task_id": "dfdc14c2-062b-4ec7-ba5e-d89bad8eb59505",
+    "trace_id": "f9e851458f177ac898d87e7369f37611"
+  },
+  {
+    "event": "file_uploaded",
+    "status_code": 200
+  },
+  {
+    "event": "task_polled",
+    "state": "waiting-file",
+    "trace_id": "1e5cb102c7a00d2d686e8ee9f5149200"
+  },
+  {
+    "event": "task_polled",
+    "state": "running",
+    "trace_id": "85981eed4380bb9b157959d3cb00bd29"
+  },
+  {
+    "event": "task_polled",
+    "state": "running",
+    "trace_id": "011883a7bb687a8f235d41ff784c49b7"
+  },
+  {
+    "event": "task_polled",
+    "state": "done",
+    "trace_id": "f01ef4b8d7f6f0339aecedb44c5d5201"
+  },
+  {
+    "event": "task_done",
+    "task_id": "dfdc14c2-062b-4ec7-ba5e-d89bad8eb59505",
+    "markdown_url": "https://cdn-mineru.openxlab.org.cn/pdf/2026-05-23/03e00180-66fc-429d-b205-94c362a7b289/full.md"
+  }
+]

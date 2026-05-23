@@ -1,0 +1,280 @@
+{
+  "run_id": "4a46b742ae8c",
+  "task": "Parse a Word standard review packet, extract clauses, compliance table, dates, risks, recommendations, quality logs, recovery decision, and retrieval chunks.",
+  "profile": "standard_or_contract",
+  "input_file": "<PROJECT_ROOT>\\examples\\office_files\\industry_standard_review.docx",
+  "output_dir": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize section hierarchy and clause-like paragraph extraction",
+    "Preserve source page or document heading evidence for each clause"
+  ],
+  "extracted": {
+    "content_summary": {
+      "item_count": 10,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 3,
+        "text": 6,
+        "table": 1
+      },
+      "source_counts": {
+        "docx": 10
+      },
+      "text_characters": 737
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "Industry Standard Review Packet",
+        "line": 1,
+        "source": "heading",
+        "text": "Document ID: DOCX-2026-STD-02\n\nEffective Date: 2026-05-23\n\nPurpose: evaluate Word document structure extraction, clause tables, risk fields, recommendations, and document-level provenance."
+      },
+      {
+        "level": 2,
+        "title": "1. Compliance Matrix",
+        "line": 9,
+        "source": "heading",
+        "text": "| Clause | Requirement | Evidence | Risk |\n| --- | --- | --- | --- |\n| 1.1 | Every run must keep trace logs. | trace.json | low |\n| 1.2 | Structured outputs must include tables and key-values. | result.json | medium |\n| 1.3 | Warnings must not be hidden from reviewers. | quality.issues | medium |"
+      },
+      {
+        "level": 2,
+        "title": "2. Exception Handling",
+        "line": 17,
+        "source": "heading",
+        "text": "Risk: missing provenance should trigger review instead of silent pass.\n\nRecommendation: inspect recovery_decision before exporting downstream chunks.\n\nOwner: Data Governance Office"
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 11,
+        "headers": [
+          "Clause",
+          "Requirement",
+          "Evidence",
+          "Risk"
+        ],
+        "rows": [
+          [
+            "1.1",
+            "Every run must keep trace logs.",
+            "trace.json",
+            "low"
+          ],
+          [
+            "1.2",
+            "Structured outputs must include tables and key-values.",
+            "result.json",
+            "medium"
+          ],
+          [
+            "1.3",
+            "Warnings must not be hidden from reviewers.",
+            "quality.issues",
+            "medium"
+          ]
+        ],
+        "row_count": 3,
+        "column_count": 4
+      }
+    ],
+    "key_values": [
+      {
+        "key": "Document ID",
+        "value": "DOCX-2026-STD-02"
+      },
+      {
+        "key": "Effective Date",
+        "value": "2026-05-23"
+      },
+      {
+        "key": "Purpose",
+        "value": "evaluate Word document structure extraction, clause tables, risk fields, recommendations, and document-level provenance."
+      },
+      {
+        "key": "Risk",
+        "value": "missing provenance should trigger review instead of silent pass."
+      },
+      {
+        "key": "Recommendation",
+        "value": "inspect recovery_decision before exporting downstream chunks."
+      },
+      {
+        "key": "Owner",
+        "value": "Data Governance Office"
+      }
+    ],
+    "key_value_map": {
+      "Document ID": "DOCX-2026-STD-02",
+      "Effective Date": "2026-05-23",
+      "Purpose": "evaluate Word document structure extraction, clause tables, risk fields, recommendations, and document-level provenance.",
+      "Risk": "missing provenance should trigger review instead of silent pass.",
+      "Recommendation": "inspect recovery_decision before exporting downstream chunks.",
+      "Owner": "Data Governance Office"
+    },
+    "numeric_facts": [
+      {
+        "line": 13,
+        "text": "| 1.1 | Every run must keep trace logs. | trace.json | low |",
+        "numbers": [
+          "1.1"
+        ]
+      },
+      {
+        "line": 14,
+        "text": "| 1.2 | Structured outputs must include tables and key-values. | result.json | medium |",
+        "numbers": [
+          "1.2"
+        ]
+      },
+      {
+        "line": 15,
+        "text": "| 1.3 | Warnings must not be hidden from reviewers. | quality.issues | medium |",
+        "numbers": [
+          "1.3"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-23"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "Recommendation: inspect recovery_decision before exporting downstream chunks."
+        },
+        {
+          "source": "line",
+          "text": "Purpose: evaluate Word document structure extraction, clause tables, risk fields, recommendations, and document-level provenance."
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 7,
+          "text": "Purpose: evaluate Word document structure extraction, clause tables, risk fields, recommendations, and document-level provenance."
+        },
+        {
+          "line": 11,
+          "text": "| Clause | Requirement | Evidence | Risk |"
+        },
+        {
+          "line": 15,
+          "text": "| 1.3 | Warnings must not be hidden from reviewers. | quality.issues | medium |"
+        },
+        {
+          "line": 19,
+          "text": "Risk: missing provenance should trigger review instead of silent pass."
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 3,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# Industry Standard Review Packet\n\nDocument ID: DOCX-2026-STD-02\n\nEffective Date: 2026-05-23\n\nPurpose: evaluate Word document structure extraction, clause tables, risk fields, recommendations, and document-level provenance.\n\n## 1. Compliance Matrix\n\n| Clause | Requirement | Evidence | Risk |\n| --- | --- | --- | --- |\n| 1.1 | Every run must keep trace logs. | trace.json | low |\n| 1.2 | Structured outputs must include tables and key-values. | result.json | medium |\n| 1.3 | Warnings must not be hidden from reviewers. | quality.issues | medium |\n\n## 2. Exception Handling\n\nRisk: missing provenance should trigger review instead of silent pass.\n\nRecommendation: inspect recovery_decision before exporting downstream chunks.\n\nOwner: Data Governance Office"
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 10,
+          "source_counts": {
+            "docx": 10
+          }
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "accept",
+    "actions": [
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit."
+    ],
+    "issue_codes": [
+      "document_level_provenance"
+    ],
+    "initial_issue_codes": [
+      "document_level_provenance"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "recorded",
+        "method": "recorded",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\office\\industry_standard_review.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\office\\industry_standard_review_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 3,
+      "by_type": {
+        "text": 2,
+        "table": 1
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\office\\industry_standard_review.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\office\\industry_standard_review_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\office_cases\\4a46b742ae8c\\summary.md"
+}

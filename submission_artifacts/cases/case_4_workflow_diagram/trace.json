@@ -1,0 +1,64 @@
+{
+  "created_at": "2026-05-22T21:05:22.844478+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.835992+00:00",
+      "ended_at": "2026-05-22T21:05:22.835992+00:00",
+      "detail": {
+        "task": "解析工艺流程说明，抽取流程步骤、关键参数、异常节点和处理建议。",
+        "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html"
+      }
+    },
+    {
+      "name": "extract_html",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.835992+00:00",
+      "ended_at": "2026-05-22T21:05:22.840496+00:00",
+      "detail": {
+        "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.840496+00:00",
+      "ended_at": "2026-05-22T21:05:22.840496+00:00",
+      "detail": {}
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.840496+00:00",
+      "ended_at": "2026-05-22T21:05:22.840496+00:00",
+      "detail": {
+        "profile": "workflow_or_diagram"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.840496+00:00",
+      "ended_at": "2026-05-22T21:05:22.840496+00:00",
+      "detail": {
+        "quality_status": "pass",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.840496+00:00",
+      "ended_at": "2026-05-22T21:05:22.842474+00:00",
+      "detail": {}
+    }
+  ],
+  "tool_calls": [],
+  "run_id": "82f2fcd2a454",
+  "task": "解析工艺流程说明，抽取流程步骤、关键参数、异常节点和处理建议。",
+  "profile": "workflow_or_diagram",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\submission_cases\\82f2fcd2a454\\summary.md"
+}

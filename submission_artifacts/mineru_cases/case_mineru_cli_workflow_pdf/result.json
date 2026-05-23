@@ -1,0 +1,252 @@
+{
+  "run_id": "ec0698e565de",
+  "task": "Parse an engineering workflow PDF with a flow diagram, execution matrix, findings, recommendations, quality logs, and retrieval chunks.",
+  "profile": "workflow_or_diagram",
+  "input_file": "<PROJECT_ROOT>\\examples\\real_pdfs\\workflow_diagram_report.pdf",
+  "output_dir": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize figure/image references and ordered procedural statements",
+    "Flag pages that need visual model follow-up"
+  ],
+  "extracted": {
+    "content_summary": {
+      "item_count": 11,
+      "page_indices": [
+        0,
+        1
+      ],
+      "page_count": 2,
+      "provenance_level": "page",
+      "type_counts": {
+        "text": 9,
+        "image": 1,
+        "table": 1
+      },
+      "source_counts": {
+        "native": 11
+      },
+      "text_characters": 422
+    },
+    "sections": [
+      {
+        "level": 2,
+        "title": "Engineering Workflow Inspection Report",
+        "line": 1,
+        "source": "heading",
+        "text": "Inspection Date: 2026-05-22 System: MinerU Data Agent processing line"
+      },
+      {
+        "level": 2,
+        "title": "1. Workflow Diagram",
+        "line": 5,
+        "source": "heading",
+        "text": "![](images/fa4881571c226c5b8644da690eecad79cf15915ccb02078e137502d7862f2367.jpg)"
+      },
+      {
+        "level": 2,
+        "title": "2. Execution Matrix",
+        "line": 9,
+        "source": "heading",
+        "text": "<table><tr><td rowspan=1 colspan=1>Step</td><td rowspan=1 colspan=1>Input</td><td rowspan=1 colspan=1>Tool</td><td rowspan=1 colspan=1>Expected Output</td><td rowspan=1 colspan=1>Recovery Rule</td></tr><tr><td rowspan=1 colspan=1>1</td><td rowspan=1 colspan=1>PDF upload</td><td rowspan=1 colspan=1>API layer</td><td rowspan=1 colspan=1>stored file</td><td rowspan=1 colspan=1>reject oversize input</td></tr><tr><td rowspan=1 colspan=1>2</td><td rowspan=1 colspan=1>document</td><td rowspan=1 colspan=1>MinerU CLI</td><td rowspan=1 colspan=1>markdown and content list</td><td rowspan=1 colspan=1>retry online API</td></tr><tr><td rowspan=1 colspan=1>3</td><td rowspan=1 colspan=1>content blocks</td><td rowspan=1 colspan=1>validator</td><td rowspan=1 colspan=1>quality report</td><td rowspan=1 colspan=1>mark needs_review</td></tr><tr><td rowspan=1 colspan=1>4</td><td rowspan=1 colspan=1>markdown</td><td rowspan=1 colspan=1>retrieval exporter</td><td rowspan=1 colspan=1>jsonl chunks</td><td rowspan=1 colspan=1>skip noisy blocks</td></tr></table>"
+      },
+      {
+        "level": 2,
+        "title": "3. Findings",
+        "line": 13,
+        "source": "heading",
+        "text": "Anomaly: a previous API smoke sample was too short and triggered a quality warning.\n\nRecommendation: use richer smoke inputs and keep warnings visible in the result."
+      },
+      {
+        "level": 2,
+        "title": "4. Review Targets",
+        "line": 19,
+        "source": "heading",
+        "text": "Check that every run has result.json, trace.json, summary.md, and retrieval artifacts."
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 11,
+        "headers": [
+          "Step",
+          "Input",
+          "Tool",
+          "Expected Output",
+          "Recovery Rule"
+        ],
+        "rows": [
+          [
+            "1",
+            "PDF upload",
+            "API layer",
+            "stored file",
+            "reject oversize input"
+          ],
+          [
+            "2",
+            "document",
+            "MinerU CLI",
+            "markdown and content list",
+            "retry online API"
+          ],
+          [
+            "3",
+            "content blocks",
+            "validator",
+            "quality report",
+            "mark needs_review"
+          ],
+          [
+            "4",
+            "markdown",
+            "retrieval exporter",
+            "jsonl chunks",
+            "skip noisy blocks"
+          ]
+        ],
+        "row_count": 4,
+        "column_count": 5,
+        "source": "html_table"
+      }
+    ],
+    "key_values": [
+      {
+        "key": "Inspection Date",
+        "value": "2026-05-22 System: MinerU Data Agent processing line"
+      },
+      {
+        "key": "Anomaly",
+        "value": "a previous API smoke sample was too short and triggered a quality warning."
+      },
+      {
+        "key": "Recommendation",
+        "value": "use richer smoke inputs and keep warnings visible in the result."
+      }
+    ],
+    "key_value_map": {
+      "Inspection Date": "2026-05-22 System: MinerU Data Agent processing line",
+      "Anomaly": "a previous API smoke sample was too short and triggered a quality warning.",
+      "Recommendation": "use richer smoke inputs and keep warnings visible in the result."
+    },
+    "numeric_facts": [
+      {
+        "line": 11,
+        "text": "Step Input Tool Expected Output Recovery Rule 1 PDF upload API layer stored file reject oversize input 2 document MinerU CLI markdown and content list retry online API 3 content blocks validator quality report mark needs_review 4 markdown retrieval exporter jsonl chunks skip noisy blocks",
+        "numbers": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-22"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "Recommendation: use richer smoke inputs and keep warnings visible in the result."
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 15,
+          "text": "Anomaly: a previous API smoke sample was too short and triggered a quality warning."
+        },
+        {
+          "line": 17,
+          "text": "Recommendation: use richer smoke inputs and keep warnings visible in the result."
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 5,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "## Engineering Workflow Inspection Report\n\nInspection Date: 2026-05-22 System: MinerU Data Agent processing line\n\n## 1. Workflow Diagram\n\n![](images/fa4881571c226c5b8644da690eecad79cf15915ccb02078e137502d7862f2367.jpg)\n\n## 2. Execution Matrix\n\n<table><tr><td rowspan=1 colspan=1>Step</td><td rowspan=1 colspan=1>Input</td><td rowspan=1 colspan=1>Tool</td><td rowspan=1 colspan=1>Expected Output</td><td rowspan=1 colspan=1>Recovery Rule</td></tr><tr><td rowspan=1 colspan=1>1</td><td rowspan=1 colspan=1>PDF upload</td><td rowspan=1 colspan=1>API layer</td><td rowspan=1 colspan=1>stored file</td><td rowspan=1 colspan=1>reject oversize input</td></tr><tr><td rowspan=1 colspan=1>2</td><td rowspan=1 colspan=1>document</td><td rowspan=1 colspan=1>MinerU CLI</td><td rowspan=1 colspan=1>markdown and content list</td><td rowspan=1 colspan=1>retry online API</td></tr><tr><td rowspan=1 colspan=1>3</td><td rowspan=1 colspan=1>content blocks</td><td rowspan=1 colspan=1>validator</td><td rowspan=1 colspan=1>quality report</td><td rowspan=1 colspan=1>mark needs_review</td></tr><tr><td rowspan=1 colspan=1>4</td><td rowspan=1 colspan=1>markdown</td><td rowspan=1 colspan=1>retrieval exporter</td><td rowspan=1 colspan=1>jsonl chunks</td><td rowspan=1 colspan=1>skip noisy blocks</td></tr></table>\n\n## 3. Findings\n\nAnomaly: a previous API smoke sample was too short and triggered a quality warning.\n\nRecommendation: use richer smoke inputs and keep warnings visible in the result.\n\n## 4. Review Targets\n\nCheck that every run has result.json, trace.json, summary.md, and retrieval artifacts."
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 0,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "issues": []
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 3,
+      "by_type": {
+        "text": 3
+      },
+      "pages": [
+        1,
+        2
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_content_list.json",
+    "middle_json_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_middle.json",
+    "model_json_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_model.json",
+    "layout_pdf_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_layout.pdf",
+    "span_pdf_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_span.pdf",
+    "origin_pdf_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_origin.pdf",
+    "image_dir": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\images"
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\summary.md",
+  "recovery_decision": {
+    "decision": "accept",
+    "actions": [
+      "No automatic retry required; keep artifacts and trace for audit."
+    ],
+    "issue_codes": [],
+    "initial_issue_codes": [],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "recorded",
+        "method": "recorded",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_content_list.json",
+          "middle_json_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_middle.json",
+          "model_json_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_model.json",
+          "layout_pdf_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_layout.pdf",
+          "span_pdf_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_span.pdf",
+          "origin_pdf_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\workflow_diagram_report_origin.pdf",
+          "image_dir": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\ec0698e565de\\mineru\\workflow_diagram_report\\auto\\images"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "created_at": "2026-05-22T21:05:22.854465+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.846498+00:00",
+      "ended_at": "2026-05-22T21:05:22.846498+00:00",
+      "detail": {
+        "task": "清洗网页巡检日报，抽取日期、异常数量、异常表格和处理建议。",
+        "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_5_web_inspection_report.html"
+      }
+    },
+    {
+      "name": "extract_html",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.846498+00:00",
+      "ended_at": "2026-05-22T21:05:22.849496+00:00",
+      "detail": {
+        "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_5_web_inspection_report.html"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.849496+00:00",
+      "ended_at": "2026-05-22T21:05:22.849496+00:00",
+      "detail": {}
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.849496+00:00",
+      "ended_at": "2026-05-22T21:05:22.850496+00:00",
+      "detail": {
+        "profile": "general_document"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.850496+00:00",
+      "ended_at": "2026-05-22T21:05:22.850496+00:00",
+      "detail": {
+        "quality_status": "pass",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-22T21:05:22.850496+00:00",
+      "ended_at": "2026-05-22T21:05:22.852495+00:00",
+      "detail": {}
+    }
+  ],
+  "tool_calls": [],
+  "run_id": "e0f566f95db8",
+  "task": "清洗网页巡检日报，抽取日期、异常数量、异常表格和处理建议。",
+  "profile": "general_document",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\submission_cases\\e0f566f95db8\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\submission_cases\\e0f566f95db8\\summary.md"
+}

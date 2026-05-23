@@ -1,0 +1,85 @@
+[
+  {
+    "type": "heading",
+    "text": "# Slide 1",
+    "title": "Slide 1",
+    "level": 1,
+    "source": "pptx",
+    "page_idx": 0,
+    "block_idx": 0
+  },
+  {
+    "type": "text",
+    "text": "Workflow Agent Review\nInspection Date: 2026-05-23\nGoal: verify slide-level provenance, execution matrices, and recovery notes.",
+    "source": "pptx",
+    "page_idx": 0,
+    "block_idx": 1
+  },
+  {
+    "type": "heading",
+    "text": "# Slide 2",
+    "title": "Slide 2",
+    "level": 1,
+    "source": "pptx",
+    "page_idx": 1,
+    "block_idx": 2
+  },
+  {
+    "type": "text",
+    "text": "Execution Matrix",
+    "source": "pptx",
+    "page_idx": 1,
+    "block_idx": 3
+  },
+  {
+    "type": "table",
+    "text": "| Step | Tool | Output | Recovery |\n| --- | --- | --- | --- |\n| 1 | Native PPTX extractor | slide text | keep slide index |\n| 2 | Validator | quality report | flag warnings |\n| 3 | Retrieval exporter | jsonl chunks | skip noise |",
+    "source": "pptx",
+    "page_idx": 1,
+    "block_idx": 4,
+    "headers": [
+      "Step",
+      "Tool",
+      "Output",
+      "Recovery"
+    ],
+    "rows": [
+      [
+        "1",
+        "Native PPTX extractor",
+        "slide text",
+        "keep slide index"
+      ],
+      [
+        "2",
+        "Validator",
+        "quality report",
+        "flag warnings"
+      ],
+      [
+        "3",
+        "Retrieval exporter",
+        "jsonl chunks",
+        "skip noise"
+      ]
+    ],
+    "row_count": 3,
+    "column_count": 4
+  },
+  {
+    "type": "heading",
+    "text": "# Slide 3",
+    "title": "Slide 3",
+    "level": 1,
+    "source": "pptx",
+    "page_idx": 2,
+    "block_idx": 5
+  },
+  {
+    "type": "text",
+    "text": "Findings\nAnomaly: slide decks often lose section order during plain text extraction.\nRecommendation: preserve slide index and table rows in content blocks.\nRisk: charts still require a visual model follow-up.",
+    "source": "pptx",
+    "page_idx": 2,
+    "block_idx": 6
+  }
+]

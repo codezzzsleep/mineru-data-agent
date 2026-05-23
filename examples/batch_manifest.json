@@ -1,0 +1,14 @@
+{
+  "defaults": {
+    "profile": "auto",
+    "method": "auto",
+    "lang": "ch"
+  },
+  "tasks": [
+    {
+      "input": "sample_html_report.html",
+      "task": "清洗网页巡检日报，抽取日期、异常数量、处理建议，并生成知识库 chunks",
+      "profile": "general_document"
+    }
+  ]
+}

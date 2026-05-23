@@ -1,0 +1,197 @@
+{
+  "run_id": "2478fc60f3b2",
+  "task": "抽取报告日期、系统名称、异常情况和处理建议",
+  "profile": "general_document",
+  "input_file": "<PROJECT_ROOT>\\runs\\api_smoke\\_uploads\\0436b28901264e3c8a5b26273ac3e49f.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\api_smoke\\2478fc60f3b2",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs"
+  ],
+  "extracted": {
+    "content_summary": {
+      "item_count": 7,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 1,
+        "text": 5,
+        "table": 1
+      },
+      "source_counts": {
+        "html": 7
+      },
+      "text_characters": 234
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "网页巡检日报",
+        "line": 1,
+        "source": "heading",
+        "text": "报告日期：2026-05-22\n\n系统名称：语料处理平台\n\n巡检范围：上传接口、解析任务队列、结果导出、日志归档和检索切片生成。\n\n异常情况：未发现阻断性错误，发现两条低优先级告警，均已进入复查队列。\n\n处理建议：继续观察任务队列延迟，保留 trace、summary 和 retrieval 输出用于复核。\n\n| 模块 | 状态 | 建议 |\n| --- | --- | --- |\n| 上传接口 | 正常 | 保留大小限制 |\n| 结果导出 | 正常 | 定期抽查 |"
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 13,
+        "headers": [
+          "模块",
+          "状态",
+          "建议"
+        ],
+        "rows": [
+          [
+            "上传接口",
+            "正常",
+            "保留大小限制"
+          ],
+          [
+            "结果导出",
+            "正常",
+            "定期抽查"
+          ]
+        ],
+        "row_count": 2,
+        "column_count": 3
+      }
+    ],
+    "key_values": [
+      {
+        "key": "报告日期",
+        "value": "2026-05-22"
+      },
+      {
+        "key": "系统名称",
+        "value": "语料处理平台"
+      },
+      {
+        "key": "巡检范围",
+        "value": "上传接口、解析任务队列、结果导出、日志归档和检索切片生成。"
+      },
+      {
+        "key": "异常情况",
+        "value": "未发现阻断性错误，发现两条低优先级告警，均已进入复查队列。"
+      },
+      {
+        "key": "处理建议",
+        "value": "继续观察任务队列延迟，保留 trace、summary 和 retrieval 输出用于复核。"
+      }
+    ],
+    "key_value_map": {
+      "报告日期": "2026-05-22",
+      "系统名称": "语料处理平台",
+      "巡检范围": "上传接口、解析任务队列、结果导出、日志归档和检索切片生成。",
+      "异常情况": "未发现阻断性错误，发现两条低优先级告警，均已进入复查队列。",
+      "处理建议": "继续观察任务队列延迟，保留 trace、summary 和 retrieval 输出用于复核。"
+    },
+    "numeric_facts": [],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-22"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "处理建议: 继续观察任务队列延迟，保留 trace、summary 和 retrieval 输出用于复核。"
+        },
+        {
+          "source": "line",
+          "text": "处理建议：继续观察任务队列延迟，保留 trace、summary 和 retrieval 输出用于复核。"
+        },
+        {
+          "source": "line",
+          "text": "| 模块 | 状态 | 建议 |"
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 9,
+          "text": "异常情况：未发现阻断性错误，发现两条低优先级告警，均已进入复查队列。"
+        },
+        {
+          "line": 11,
+          "text": "处理建议：继续观察任务队列延迟，保留 trace、summary 和 retrieval 输出用于复核。"
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 1,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# 网页巡检日报\n\n报告日期：2026-05-22\n\n系统名称：语料处理平台\n\n巡检范围：上传接口、解析任务队列、结果导出、日志归档和检索切片生成。\n\n异常情况：未发现阻断性错误，发现两条低优先级告警，均已进入复查队列。\n\n处理建议：继续观察任务队列延迟，保留 trace、summary 和 retrieval 输出用于复核。\n\n| 模块 | 状态 | 建议 |\n| --- | --- | --- |\n| 上传接口 | 正常 | 保留大小限制 |\n| 结果导出 | 正常 | 定期抽查 |"
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 7,
+          "source_counts": {
+            "html": 7
+          }
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "accept",
+    "actions": [
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit."
+    ],
+    "issue_codes": [
+      "document_level_provenance"
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\api_smoke\\2478fc60f3b2\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\api_smoke\\2478fc60f3b2\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\api_smoke\\2478fc60f3b2\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 2,
+      "by_type": {
+        "text": 1,
+        "table": 1
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\api_smoke\\2478fc60f3b2\\html\\0436b28901264e3c8a5b26273ac3e49f.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\api_smoke\\2478fc60f3b2\\html\\0436b28901264e3c8a5b26273ac3e49f_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\api_smoke\\2478fc60f3b2\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\api_smoke\\2478fc60f3b2\\summary.md",
+  "api_output_root": "<PROJECT_ROOT>\\runs\\api_smoke"
+}

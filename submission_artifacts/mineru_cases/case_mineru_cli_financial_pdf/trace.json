@@ -1,0 +1,76 @@
+{
+  "created_at": "2026-05-22T19:57:53.258755+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-22T19:56:24.051578+00:00",
+      "ended_at": "2026-05-22T19:56:24.051578+00:00",
+      "detail": {
+        "task": "Parse a complex financial PDF, extract tables, numeric facts, total rows, audit notes, quality logs, and retrieval chunks.",
+        "input_file": "<PROJECT_ROOT>\\examples\\real_pdfs\\complex_financial_report.pdf"
+      }
+    },
+    {
+      "name": "mineru_parse",
+      "status": "completed",
+      "started_at": "2026-05-22T19:56:24.051578+00:00",
+      "ended_at": "2026-05-22T19:57:53.183378+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "en"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-22T19:57:53.183378+00:00",
+      "ended_at": "2026-05-22T19:57:53.252469+00:00",
+      "detail": {}
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-22T19:57:53.252469+00:00",
+      "ended_at": "2026-05-22T19:57:53.252469+00:00",
+      "detail": {
+        "profile": "financial_report"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-22T19:57:53.252469+00:00",
+      "ended_at": "2026-05-22T19:57:53.256789+00:00",
+      "detail": {}
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "mineru-cli",
+      "command": [
+        "<MINERU_ROOT>\\.venv\\Scripts\\mineru.exe",
+        "-p",
+        "<PROJECT_ROOT>\\examples\\real_pdfs\\complex_financial_report.pdf",
+        "-o",
+        "<PROJECT_ROOT>\\runs\\real_pdf_cases\\42db2610f372\\mineru",
+        "-b",
+        "pipeline",
+        "-m",
+        "auto",
+        "-l",
+        "en"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 89.128,
+      "stdout_tail": "Start MinerU FastAPI Service: http://127.0.0.1:60936\nAPI documentation: http://127.0.0.1:60936/docs\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\nDownloading Model from https://www.modelscope.cn to directory: <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0\n",
+      "stderr_tail": "1/1 [00:00<00:00,  6.15it/s]\nTable-ocr det: 100%|██████████| 1/1 [00:00<00:00,  6.15it/s]\n2026-05-23 03:57:20,285 - modelscope - INFO - Creating symbolic link [<USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0].\n2026-05-23 03:57:20,286 - modelscope - WARNING - Failed to create symbolic link <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0 for <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1___0.\n2026-05-23 03:57:22,606 - modelscope - INFO - Creating symbolic link [<USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0].\n2026-05-23 03:57:22,607 - modelscope - WARNING - Failed to create symbolic link <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0 for <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1___0.\n\nTable-ocr rec en:   0%|          | 0/60 [00:00<?, ?it/s]\nTable-ocr rec en:  10%|█         | 6/60 [00:01<00:10,  5.36it/s]\nTable-ocr rec en:  20%|██        | 12/60 [00:01<00:06,  7.06it/s]\nTable-ocr rec en:  30%|███       | 18/60 [00:02<00:05,  7.32it/s]\nTable-ocr rec en:  40%|████      | 24/60 [00:03<00:05,  7.03it/s]\nTable-ocr rec en:  50%|█████     | 30/60 [00:04<00:03,  7.83it/s]\nTable-ocr rec en:  60%|██████    | 36/60 [00:04<00:02,  8.22it/s]\nTable-ocr rec en:  70%|███████   | 42/60 [00:05<00:02,  8.27it/s]\nTable-ocr rec en:  80%|████████  | 48/60 [00:06<00:01,  8.41it/s]\nTable-ocr rec en:  90%|█████████ | 54/60 [00:06<00:00,  8.22it/s]\nTable-ocr rec en: 100%|██████████| 60/60 [00:07<00:00,  8.10it/s]\nTable-ocr rec en: 100%|██████████| 60/60 [00:07<00:00,  7.82it/s]\n\nTable-wireless Predict:   0%|          | 0/1 [00:00<?, ?it/s]\nTable-wireless Predict: 100%|██████████| 1/1 [00:00<00:00,  4.61it/s]\nTable-wireless Predict: 100%|██████████| 1/1 [00:00<00:00,  4.61it/s]\n\nTable-wired Predict:   0%|          | 0/1 [00:00<?, ?it/s]2026-05-23 03:57:33,610 - modelscope - INFO - Creating symbolic link [<USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0].\n2026-05-23 03:57:33,611 - modelscope - WARNING - Failed to create symbolic link <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0 for <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1___0.\n\nTable-wired Predict: 100%|██████████| 1/1 [00:03<00:00,  3.61s/it]\nTable-wired Predict: 100%|██████████| 1/1 [00:03<00:00,  3.61s/it]\n2026-05-23 03:57:37,270 - modelscope - INFO - Creating symbolic link [<USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0].\n2026-05-23 03:57:37,271 - modelscope - WARNING - Failed to create symbolic link <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0 for <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1___0.\n2026-05-23 03:57:39,655 - modelscope - INFO - Creating symbolic link [<USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0].\n2026-05-23 03:57:39,656 - modelscope - WARNING - Failed to create symbolic link <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1.0 for <USER_HOME>\\.cache\\modelscope\\hub\\models\\OpenDataLab\\PDF-Extract-Kit-1___0.\n\nOCR-det en:   0%|          | 0/11 [00:00<?, ?it/s]\nOCR-det en:   9%|▉         | 1/11 [00:00<00:01,  6.48it/s]\nOCR-det en:  27%|██▋       | 3/11 [00:00<00:00,  9.03it/s]\nOCR-det en:  45%|████▌     | 5/11 [00:00<00:00, 11.04it/s]\nOCR-det en:  64%|██████▎   | 7/11 [00:00<00:00, 12.39it/s]\nOCR-det en:  91%|█████████ | 10/11 [00:00<00:00, 15.87it/s]\nOCR-det en: 100%|██████████| 11/11 [00:00<00:00, 13.71it/s]\n\nSeal Predict: 0it [00:00, ?it/s]\nSeal Predict: 0it [00:00, ?it/s]\n\nProcessing pages:   0%|          | 0/3 [00:00<?, ?it/s]\nProcessing pages: 100%|██████████| 3/3 [00:00<00:00, 27.56it/s]\nProcessing pages: 100%|██████████| 3/3 [00:00<00:00, 22.23it/s]\n2026-05-23 03:57:42.100 | INFO     | mineru.cli.client:run_planned_task:809 - Completed batch 1/1 | Processed 3/3 pages | 1 of 1 batch finished | task#1 [complex_financial_report]\n"
+    }
+  ],
+  "run_id": "42db2610f372",
+  "task": "Parse a complex financial PDF, extract tables, numeric facts, total rows, audit notes, quality logs, and retrieval chunks.",
+  "profile": "financial_report",
+  "result_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\42db2610f372\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\real_pdf_cases\\42db2610f372\\summary.md"
+}

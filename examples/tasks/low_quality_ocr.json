@@ -1,0 +1,6 @@
+{
+  "task": "解析扫描版中文 PDF，输出 Markdown 正文、页级内容块和 OCR 质量日志。",
+  "profile": "low_quality_ocr",
+  "backend": "pipeline",
+  "method": "auto"
+}

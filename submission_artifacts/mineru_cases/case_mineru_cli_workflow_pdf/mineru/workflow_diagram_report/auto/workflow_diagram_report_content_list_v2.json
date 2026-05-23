@@ -1,0 +1,199 @@
+[
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Engineering Workflow Inspection Report"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                205,
+                63,
+                796,
+                87
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Inspection Date: 2026-05-22 System: MinerU Data Agent processing line"
+                    }
+                ]
+            },
+            "bbox": [
+                90,
+                93,
+                423,
+                131
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "1. Workflow Diagram"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                92,
+                141,
+                396,
+                166
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/fa4881571c226c5b8644da690eecad79cf15915ccb02078e137502d7862f2367.jpg"
+                },
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                127,
+                209,
+                811,
+                410
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "2. Execution Matrix"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                90,
+                485,
+                373,
+                507
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/e95fc1760d8e9c9c18fc7bd7ef49284b70abd403e886b888ba8042eebf9154dc.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "<table><tr><td rowspan=1 colspan=1>Step</td><td rowspan=1 colspan=1>Input</td><td rowspan=1 colspan=1>Tool</td><td rowspan=1 colspan=1>Expected Output</td><td rowspan=1 colspan=1>Recovery Rule</td></tr><tr><td rowspan=1 colspan=1>1</td><td rowspan=1 colspan=1>PDF upload</td><td rowspan=1 colspan=1>API layer</td><td rowspan=1 colspan=1>stored file</td><td rowspan=1 colspan=1>reject oversize input</td></tr><tr><td rowspan=1 colspan=1>2</td><td rowspan=1 colspan=1>document</td><td rowspan=1 colspan=1>MinerU CLI</td><td rowspan=1 colspan=1>markdown and content list</td><td rowspan=1 colspan=1>retry online API</td></tr><tr><td rowspan=1 colspan=1>3</td><td rowspan=1 colspan=1>content blocks</td><td rowspan=1 colspan=1>validator</td><td rowspan=1 colspan=1>quality report</td><td rowspan=1 colspan=1>mark needs_review</td></tr><tr><td rowspan=1 colspan=1>4</td><td rowspan=1 colspan=1>markdown</td><td rowspan=1 colspan=1>retrieval exporter</td><td rowspan=1 colspan=1>jsonl chunks</td><td rowspan=1 colspan=1>skip noisy blocks</td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                257,
+                514,
+                741,
+                600
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3. Findings"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                90,
+                64,
+                257,
+                87
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Anomaly: a previous API smoke sample was too short and triggered a quality warning."
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                93,
+                737,
+                110
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Recommendation: use richer smoke inputs and keep warnings visible in the result."
+                    }
+                ]
+            },
+            "bbox": [
+                90,
+                115,
+                710,
+                130
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "4. Review Targets"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                90,
+                133,
+                354,
+                155
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "Check that every run has result.json, trace.json, summary.md, and retrieval artifacts."
+                    }
+                ]
+            },
+            "bbox": [
+                90,
+                162,
+                724,
+                179
+            ]
+        }
+    ]
+]

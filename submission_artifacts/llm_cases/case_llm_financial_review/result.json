@@ -1,0 +1,412 @@
+{
+  "run_id": "42f057700d90",
+  "task": "解析财报密集数字表格，抽取报告日期、公司名称、关键数字、检查合计行，并由大模型给出复核计划、目标schema和风险恢复建议。注意：HTML fixture 由本地 HTML 结构化模块解析，不要写成 MinerU CLI/API 已解析；没有质量错误时不要输出 error 级风险。",
+  "profile": "financial_report",
+  "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90",
+  "plan": [
+    "Inspect input type and task objective",
+    "Parse document with MinerU or native HTML extractor",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, and numeric views",
+    "Run quality checks and produce traceable logs",
+    "Prioritize dense table extraction and numeric consistency checks",
+    "Flag subtotal/total rows and suspicious numeric cells"
+  ],
+  "extracted": {
+    "content_summary": {
+      "item_count": 8,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 2,
+        "text": 5,
+        "table": 1
+      },
+      "source_counts": {
+        "html": 8
+      },
+      "text_characters": 465
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "华东制造有限公司 2026 年一季度经营报表",
+        "line": 1,
+        "source": "heading",
+        "text": "报告日期：2026-04-30\n\n公司名称：华东制造有限公司\n\n报表口径：人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。"
+      },
+      {
+        "level": 2,
+        "title": "资产负债与利润摘要",
+        "line": 9,
+        "source": "heading",
+        "text": "| 项目 | 2026Q1 | 2025Q4 | 变动率 |\n| --- | --- | --- | --- |\n| 营业收入 | 12,860.50 | 11,902.10 | 8.05% |\n| 营业成本 | 8,430.25 | 7,921.30 | 6.43% |\n| 销售费用 | 615.30 | 590.00 | 4.29% |\n| 管理费用 | 781.20 | 760.15 | 2.77% |\n| 利润总额 | 3,033.75 | 2,630.65 | 15.32% |\n| 合计 | 25,721.00 | 23,804.20 | 8.05% |\n\n异常提示：合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。\n\n处理建议：将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。"
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 11,
+        "headers": [
+          "项目",
+          "2026Q1",
+          "2025Q4",
+          "变动率"
+        ],
+        "rows": [
+          [
+            "营业收入",
+            "12,860.50",
+            "11,902.10",
+            "8.05%"
+          ],
+          [
+            "营业成本",
+            "8,430.25",
+            "7,921.30",
+            "6.43%"
+          ],
+          [
+            "销售费用",
+            "615.30",
+            "590.00",
+            "4.29%"
+          ],
+          [
+            "管理费用",
+            "781.20",
+            "760.15",
+            "2.77%"
+          ],
+          [
+            "利润总额",
+            "3,033.75",
+            "2,630.65",
+            "15.32%"
+          ],
+          [
+            "合计",
+            "25,721.00",
+            "23,804.20",
+            "8.05%"
+          ]
+        ],
+        "row_count": 6,
+        "column_count": 4
+      }
+    ],
+    "key_values": [
+      {
+        "key": "报告日期",
+        "value": "2026-04-30"
+      },
+      {
+        "key": "公司名称",
+        "value": "华东制造有限公司"
+      },
+      {
+        "key": "报表口径",
+        "value": "人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。"
+      },
+      {
+        "key": "异常提示",
+        "value": "合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。"
+      },
+      {
+        "key": "处理建议",
+        "value": "将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。"
+      }
+    ],
+    "key_value_map": {
+      "报告日期": "2026-04-30",
+      "公司名称": "华东制造有限公司",
+      "报表口径": "人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。",
+      "异常提示": "合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。",
+      "处理建议": "将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。"
+    },
+    "numeric_facts": [
+      {
+        "line": 1,
+        "text": "# 华东制造有限公司 2026 年一季度经营报表",
+        "numbers": [
+          "2026"
+        ]
+      },
+      {
+        "line": 13,
+        "text": "| 营业收入 | 12,860.50 | 11,902.10 | 8.05% |",
+        "numbers": [
+          "12,860.50",
+          "11,902.10",
+          "8.05%"
+        ]
+      },
+      {
+        "line": 14,
+        "text": "| 营业成本 | 8,430.25 | 7,921.30 | 6.43% |",
+        "numbers": [
+          "8,430.25",
+          "7,921.30",
+          "6.43%"
+        ]
+      },
+      {
+        "line": 15,
+        "text": "| 销售费用 | 615.30 | 590.00 | 4.29% |",
+        "numbers": [
+          "615.30",
+          "590.00",
+          "4.29%"
+        ]
+      },
+      {
+        "line": 16,
+        "text": "| 管理费用 | 781.20 | 760.15 | 2.77% |",
+        "numbers": [
+          "781.20",
+          "760.15",
+          "2.77%"
+        ]
+      },
+      {
+        "line": 17,
+        "text": "| 利润总额 | 3,033.75 | 2,630.65 | 15.32% |",
+        "numbers": [
+          "3,033.75",
+          "2,630.65",
+          "15.32%"
+        ]
+      },
+      {
+        "line": 18,
+        "text": "| 合计 | 25,721.00 | 23,804.20 | 8.05% |",
+        "numbers": [
+          "25,721.00",
+          "23,804.20",
+          "8.05%"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-04-30"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "处理建议: 将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。"
+        },
+        {
+          "source": "line",
+          "text": "处理建议：将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。"
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 7,
+          "text": "报表口径：人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。"
+        },
+        {
+          "line": 20,
+          "text": "异常提示：合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。"
+        },
+        {
+          "line": 22,
+          "text": "处理建议：将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。"
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 2,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# 华东制造有限公司 2026 年一季度经营报表\n\n报告日期：2026-04-30\n\n公司名称：华东制造有限公司\n\n报表口径：人民币万元，未经审计，用于 Data Agent 结构化处理与数字复核演示。\n\n## 资产负债与利润摘要\n\n| 项目 | 2026Q1 | 2025Q4 | 变动率 |\n| --- | --- | --- | --- |\n| 营业收入 | 12,860.50 | 11,902.10 | 8.05% |\n| 营业成本 | 8,430.25 | 7,921.30 | 6.43% |\n| 销售费用 | 615.30 | 590.00 | 4.29% |\n| 管理费用 | 781.20 | 760.15 | 2.77% |\n| 利润总额 | 3,033.75 | 2,630.65 | 15.32% |\n| 合计 | 25,721.00 | 23,804.20 | 8.05% |\n\n异常提示：合计行需要与明细项重新核验，避免 OCR 或表格跨列导致金额幻觉。\n\n处理建议：将总计、小计、合计行加入复核队列，并保留源页和表格行号证据。"
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 2,
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "HTML input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 8,
+          "source_counts": {
+            "html": 8
+          }
+        }
+      },
+      {
+        "code": "numeric_total_verified",
+        "level": "info",
+        "message": "A total/subtotal row matched the sum of comparable numeric rows.",
+        "evidence": {
+          "table_index": 0,
+          "row_index": 5,
+          "row_preview": [
+            "合计",
+            "25,721.00",
+            "23,804.20",
+            "8.05%"
+          ],
+          "verified": [
+            {
+              "column_index": 1,
+              "expected_total": 25721.0,
+              "computed_total": 25721.0,
+              "delta": 0.0,
+              "source_value_count": 5
+            },
+            {
+              "column_index": 2,
+              "expected_total": 23804.2,
+              "computed_total": 23804.2,
+              "delta": 0.0,
+              "source_value_count": 5
+            }
+          ],
+          "mismatches": []
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 3,
+      "by_type": {
+        "text": 2,
+        "table": 1
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "task_understanding": "解析一份由本地HTML结构化模块（native-html-extractor）提取的财务报告HTML fixture，报告为华东制造有限公司2026年一季度经营报表。任务包括：抽取报告日期、公司名称、表中关键数字（营业收入、营业成本、销售费用、管理费用、利润总额、合计项），验证合计行数值与明细项之和是否一致，并输出复核计划、目标提取schema、风险发现和恢复建议。输入为文档级溯源（无页面级），质量检查无错误，合计行已验证一致。",
+    "execution_plan": [
+      "确认输入来源为native-html-extractor，标注解析器类型并避免误写为MinerU CLI/API",
+      "从markdown_preview和section_titles抽取报告日期、公司名称",
+      "提取表格中所有数值行，包括明细项和合计行，记录每行每个数值单元格",
+      "对合计行进行独立性验算：将前5个明细项的2026Q1列和2025Q4列分别求和，与合计行对应数值比较（已由quality.issues验证一致，delta=0）",
+      "构建结构化schema，包含字段：报告日期、公司名称、项目、2026Q1值、2025Q4值、变动率、合计验证状态",
+      "生成验证重点清单，涵盖数字一致性、合计行正确性、溯源完整性",
+      "基于当前无质量错误的事实，输出info或warning级别的风险发现，不输出error级别",
+      "提出恢复建议，针对未来可能出现的OCR跨列、行数不匹配等场景准备预案"
+    ],
+    "target_schema": {
+      "报告日期": "财务报表所覆盖季度的截止日期，本例为2026-04-30",
+      "公司名称": "财务报表主体公司全称，本例为华东制造有限公司",
+      "项目": "报表中各项指标名称，如营业收入、营业成本等",
+      "2026Q1": "2026年第一季度报表数值（单位：万元），格式为保留两位小数的数字",
+      "2025Q4": "2025年第四季度报表数值（单位：万元），格式为保留两位小数的数字",
+      "变动率": "季度同比增长率，以百分数表示，如8.05%",
+      "合计验证状态": "合计行数值与明细项之和的匹配状态，值为'一致'或'不一致'",
+      "溯源级别": "内容溯源粒度，当前为document级（无页面信息）"
+    },
+    "verification_focus": [
+      "确认抽取的报告日期和公司名称与markdown标题一致",
+      "逐项核对表格中每个数字的提取正确性（例如千分位分隔符是否保留）",
+      "对合计行的2026Q1列（25,721.00）进行手动求和：12,860.50+8,430.25+615.30+781.20+3,033.75=25,721.00，验证一致",
+      "对合计行的2025Q4列（23,804.20）进行手动求和：11,902.10+7,921.30+590.00+760.15+2,630.65=23,804.20，验证一致",
+      "确认变动率合计行（8.05%）是否由加权计算或简单平均得出（本例与行列无关，仅提取）",
+      "检查溯源级别为document级，确认无页面信息是否影响后续参考",
+      "复查质量检查中issue_count=2但均为info，无error，确保风险级别正确"
+    ],
+    "risk_findings": [
+      {
+        "level": "info",
+        "message": "输入为HTML fixture，解析器为native-html-extractor，非MinerU CLI/API，溯源为文档级而非页面级。",
+        "evidence": "parser_context.actual_parser: native-html-extractor; source_counts.html: 8; provenance_level: document"
+      },
+      {
+        "level": "info",
+        "message": "合计行数值已验证与明细项之和完全匹配（delta=0），无数字不一致风险。",
+        "evidence": "quality.issues[1].level: info; numeric_total_verified: table_index=0, column_index=1 expected_total=25721.0 computed_total=25721.0 delta=0.0; column_index=2 expected_total=23804.2 computed_total=23804.2 delta=0.0"
+      },
+      {
+        "level": "warning",
+        "message": "异常提示字段虽注明'合计行需要与明细项重新核验'，但实际验算结果一致，提示可能为保守预设；建议后续处理时仍保留该提醒以防结构性变更。",
+        "evidence": "key_value_examples中异常提示内容与quality.issues不一致；markdown_preview中也包含该提示"
+      },
+      {
+        "level": "info",
+        "message": "表格仅包含5个明细行和1个合计行，变动率合计行未做与加权平均值的对比，仅提取原始值。",
+        "evidence": "numeric_fact_examples中合计行的变动率为8.05%，但明细项变动率分别为8.05%,6.43%,4.29%,2.77%,15.32%，合计行的变动率不简单等于明细项平均值"
+      }
+    ],
+    "recovery_suggestions": [
+      "若未来遇到与当前验证不一致的合计行（delta非零），应自动回退至原始表格图片或HTML源码重新解析，并触发人工复核流程",
+      "对于文档级溯源（无page_indices），建议在输出时增加文档整体标识符（如文件名哈希），便于后续回溯",
+      "建议在下一次解析中增加对变动率合计行的独立验算（例如加权平均值与表格值的比较），以进一步降低幻觉风险",
+      "若OCR输入出现跨列截断，应在schema中加入'截断标记'字段，并由后处理程序做边缘检测"
+    ],
+    "reasoning_content": "我们被要求输出严格的JSON，不要包含markdown fences。任务是对给定的财务报告HTML解析结果进行分析，给出task_understanding, execution_plan, target_schema, verification_focus, risk_findings, recovery_suggestions。\n\n注意：用户指定了HTML input由native-html-extractor解析，不是MinerU CLI/API。质量检查issues有两个info级别的，没有error。所以不要输出error级风险。\n\n内容总结：有一个表格，有合计行被验证正确（delta=0），但提示中强调合计行需要重新核验。实际上质量检查显示total verified，没有mismatch。所以应该是正确的。但任务要求“检查合计行”，且异常提示说需要重新核验，我们可以在风险中作为warning但基于事实没有错误，所以可以给info或warning。\n\n根据schema：risk_findings level只能是info|warning|error。没有error级问题。\n\n我们需要提取：报告日期（2026-04-30）、公司名称（华东制造有限公司）、关键数字（表格中的五个明细项目和合计），合计行检查（已验证正确）。\n\n目标schema：field_name -> description。建议包括：报告日期、公司名称、项目、2026Q1、2025Q4、变动率、合计项、总体验证状态等。\n\nverification_focus: 需包括数字一致性、合计行验证、provenance信息等。\n\nrecovery_suggestions: 因为无错误，可以建议后续扩展等。\n\n注意：必须严格遵循required_json_schema，每个字段都要有。\n\n让我们构造。",
+    "enabled": true,
+    "status": "completed"
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\html\\case_1_financial_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\html\\case_1_financial_report_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\summary.md",
+  "recovery_decision": {
+    "decision": "accept",
+    "actions": [
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit."
+    ],
+    "issue_codes": [
+      "document_level_provenance",
+      "numeric_total_verified"
+    ],
+    "initial_issue_codes": [
+      "document_level_provenance",
+      "numeric_total_verified"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "recorded",
+        "method": "recorded",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\html\\case_1_financial_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\llm_evidence\\42f057700d90\\html\\case_1_financial_report_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  }
+}

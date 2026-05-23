@@ -1,0 +1,14 @@
+{
+  "skipped_blocks": [
+    {
+      "block_id": "p2_b7",
+      "type": "table",
+      "reason": "empty_table"
+    }
+  ],
+  "parse_errors": [],
+  "summary": {
+    "total_skipped_blocks": 1,
+    "total_parse_errors": 0
+  }
+}

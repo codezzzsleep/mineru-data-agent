@@ -1,0 +1,6 @@
+{
+  "task": "解析财报 PDF，抽取资产、负债、利润相关表格和关键数字，并标记合计行用于复核。",
+  "profile": "financial_report",
+  "backend": "pipeline",
+  "method": "auto"
+}

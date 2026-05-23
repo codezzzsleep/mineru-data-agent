@@ -1,0 +1,57 @@
+[
+    {
+        "id":  "case_1_financial_report",
+        "task":  "解析财报密集数字表格，抽取报告日期、公司名称、关键数字、合计行和处理建议。",
+        "profile":  "financial_report",
+        "status":  "completed",
+        "quality_status":  "pass",
+        "quality_score":  100,
+        "sections":  2,
+        "tables":  1,
+        "key_values":  5
+    },
+    {
+        "id":  "case_2_low_quality_ocr",
+        "task":  "分析低质量 OCR 文本，抽取日期、异常温度、编码噪声和处理建议。",
+        "profile":  "low_quality_ocr",
+        "status":  "completed",
+        "quality_status":  "pass",
+        "quality_score":  100,
+        "sections":  2,
+        "tables":  0,
+        "key_values":  5
+    },
+    {
+        "id":  "case_3_standard_contract",
+        "task":  "结构化合同条款，抽取合同编号、签署日期、章节条款、异常处理和处理建议。",
+        "profile":  "standard_or_contract",
+        "status":  "completed",
+        "quality_status":  "pass",
+        "quality_score":  100,
+        "sections":  5,
+        "tables":  0,
+        "key_values":  4
+    },
+    {
+        "id":  "case_4_workflow_diagram",
+        "task":  "解析工艺流程说明，抽取流程步骤、关键参数、异常节点和处理建议。",
+        "profile":  "workflow_or_diagram",
+        "status":  "completed",
+        "quality_status":  "pass",
+        "quality_score":  100,
+        "sections":  2,
+        "tables":  0,
+        "key_values":  5
+    },
+    {
+        "id":  "case_5_web_inspection_report",
+        "task":  "清洗网页巡检日报，抽取日期、异常数量、异常表格和处理建议。",
+        "profile":  "general_document",
+        "status":  "completed",
+        "quality_status":  "pass",
+        "quality_score":  100,
+        "sections":  2,
+        "tables":  1,
+        "key_values":  3
+    }
+]

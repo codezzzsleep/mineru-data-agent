@@ -1,0 +1,144 @@
+{
+  "skipped_blocks": [
+    {
+      "block_id": "p1_b3",
+      "type": "page_number",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p1_b4",
+      "type": "header",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p1_b5",
+      "type": "aside_text",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p2_b10",
+      "type": "text",
+      "reason": "empty_text"
+    },
+    {
+      "block_id": "p2_b15",
+      "type": "equation",
+      "reason": "unsupported"
+    },
+    {
+      "block_id": "p2_b16",
+      "type": "header",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p2_b17",
+      "type": "page_number",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p2_b19",
+      "type": "aside_text",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p3_b24",
+      "type": "page_number",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p3_b25",
+      "type": "header",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p4_b27",
+      "type": "text",
+      "reason": "empty_text"
+    },
+    {
+      "block_id": "p4_b33",
+      "type": "header",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p4_b34",
+      "type": "page_number",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p5_b37",
+      "type": "page_number",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p5_b38",
+      "type": "header",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p5_b39",
+      "type": "aside_text",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p6_b42",
+      "type": "text",
+      "reason": "empty_text"
+    },
+    {
+      "block_id": "p6_b47",
+      "type": "header",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p6_b48",
+      "type": "page_number",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p7_b50",
+      "type": "text",
+      "reason": "empty_text"
+    },
+    {
+      "block_id": "p7_b56",
+      "type": "page_number",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p7_b57",
+      "type": "header",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p7_b58",
+      "type": "aside_text",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p8_b59",
+      "type": "text",
+      "reason": "empty_text"
+    },
+    {
+      "block_id": "p8_b62",
+      "type": "header",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p8_b63",
+      "type": "page_number",
+      "reason": "noise"
+    },
+    {
+      "block_id": "p8_b64",
+      "type": "aside_text",
+      "reason": "noise"
+    }
+  ],
+  "parse_errors": [],
+  "summary": {
+    "total_skipped_blocks": 27,
+    "total_parse_errors": 0
+  }
+}
