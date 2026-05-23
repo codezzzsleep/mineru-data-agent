@@ -1,0 +1,62 @@
+{
+  "input": "examples/cases/case_1_financial_report.html",
+  "cases": [
+    {
+      "id": "case_financial_growth_query",
+      "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并给出证据。",
+      "result_path": "submission_artifacts/adaptive_cases/case_financial_growth_query/result.json",
+      "trace_path": "submission_artifacts/adaptive_cases/case_financial_growth_query/trace.json",
+      "summary_path": "submission_artifacts/adaptive_cases/case_financial_growth_query/summary.md",
+      "task_intents": [
+        "comparison",
+        "ranking",
+        "growth_analysis",
+        "evidence_trace"
+      ],
+      "target_schema": {
+        "company_name": "reporting company or organization",
+        "report_period": "reporting period/date",
+        "line_item": "financial statement row name",
+        "current_value": "current period value",
+        "previous_value": "comparison period value",
+        "unit": "currency or unit scale",
+        "evidence": "source text/table evidence",
+        "comparison_base": "baseline period or value",
+        "comparison_current": "current period or value",
+        "delta": "current minus baseline",
+        "percent_change": "relative change when computable",
+        "rank": "ranking order or selected max/min item"
+      },
+      "answers": [
+        "comparisons",
+        "top_growth_candidate",
+        "field_evidence"
+      ]
+    },
+    {
+      "id": "case_financial_anomaly_evidence_query",
+      "task": "找出财报中需要复核的异常或风险信号，列出来源证据和建议处理动作。",
+      "result_path": "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/result.json",
+      "trace_path": "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/trace.json",
+      "summary_path": "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/summary.md",
+      "task_intents": [
+        "anomaly_detection",
+        "evidence_trace"
+      ],
+      "target_schema": {
+        "company_name": "reporting company or organization",
+        "report_period": "reporting period/date",
+        "line_item": "financial statement row name",
+        "current_value": "current period value",
+        "previous_value": "comparison period value",
+        "unit": "currency or unit scale",
+        "evidence": "source text/table evidence",
+        "risk_reason": "why the item should be reviewed"
+      },
+      "answers": [
+        "anomaly_candidates",
+        "field_evidence"
+      ]
+    }
+  ]
+}

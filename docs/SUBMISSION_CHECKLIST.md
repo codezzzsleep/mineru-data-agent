@@ -16,9 +16,11 @@
 - [x] 明确说明 DeepSeek/ModelScope 大模型是可选增强，API key 通过环境变量配置且不进入提交包
 - [x] LLM 已接入解析前调度，输出 `execution_control`、`llm_analysis.pre_execution_plan` 和 `llm_pre_execution_planning` trace 步骤
 - [x] 至少 1 个提交级结果实际启用 LLM，见 `submission_artifacts/llm_cases/`
+- [x] 同一文档不同自然语言任务的自适应规划证据已生成，见 `submission_artifacts/adaptive_cases/`
 - [x] 真实 PDF 已保存解析前调度 + API-to-CLI fallback 恢复证据，见 `submission_artifacts/recovery_cases/`
 - [x] `recovery_decision.executed=true` 的 PDF 证据已生成，且评测标签会检查 `selected_attempt=cli_fallback`
 - [x] 带标注评测指标已生成，见 `submission_artifacts/evaluation/`
+- [x] 评测指标已补字段级 precision/recall/F1 和 failed-check 分布
 - [x] 评测指标已覆盖 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据和 2 个 recovery gate
 - [x] 稳定性与工具耗时摘要已生成，见 `submission_artifacts/stability/`
 - [x] 成本、速度与质量分组对比已生成，见 `submission_artifacts/baseline_comparison/`

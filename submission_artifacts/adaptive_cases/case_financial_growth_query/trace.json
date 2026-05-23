@@ -1,0 +1,180 @@
+{
+  "created_at": "2026-05-23T19:06:29.745520+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-23T19:06:29.659647+00:00",
+      "ended_at": "2026-05-23T19:06:29.661152+00:00",
+      "detail": {
+        "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并给出证据。",
+        "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
+        "adaptive_decision": {
+          "profile": "financial_report",
+          "task_intents": [
+            "comparison",
+            "ranking",
+            "growth_analysis",
+            "evidence_trace"
+          ],
+          "target_schema": {
+            "company_name": "reporting company or organization",
+            "report_period": "reporting period/date",
+            "line_item": "financial statement row name",
+            "current_value": "current period value",
+            "previous_value": "comparison period value",
+            "unit": "currency or unit scale",
+            "evidence": "source text/table evidence",
+            "comparison_base": "baseline period or value",
+            "comparison_current": "current period or value",
+            "delta": "current minus baseline",
+            "percent_change": "relative change when computable",
+            "rank": "ranking order or selected max/min item"
+          },
+          "post_processors": [
+            "field_evidence_builder",
+            "numeric_fact_extractor",
+            "table_total_validator",
+            "trend_and_ranking_analyzer",
+            "evidence_trace_export"
+          ],
+          "verification_focus": [
+            "schema_fields_have_evidence",
+            "quality_issues_are_not_hidden",
+            "numeric_tokens_preserved",
+            "subtotal_total_consistency",
+            "comparison_values_have_same_unit"
+          ],
+          "quality_thresholds": {
+            "min_quality_score": 92,
+            "require_tables": true,
+            "require_numeric_facts": true,
+            "prefer_page_provenance": false
+          },
+          "recovery_strategy": [
+            {
+              "action": "text_cleanup",
+              "trigger": "mojibake_or_encoding_noise",
+              "priority": "normal"
+            },
+            {
+              "action": "manual_numeric_review",
+              "trigger": "total_or_subtotal_mismatch",
+              "priority": "high"
+            }
+          ],
+          "rationale": [
+            "profile=financial_report selected from task/file signals",
+            "input suffix=.html",
+            "task intents=comparison, ranking, growth_analysis, evidence_trace",
+            "schema and recovery priorities are derived before parsing and saved for audit"
+          ]
+        }
+      }
+    },
+    {
+      "name": "extract_html",
+      "status": "completed",
+      "started_at": "2026-05-23T19:06:29.661152+00:00",
+      "ended_at": "2026-05-23T19:06:29.735605+00:00",
+      "detail": {
+        "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-23T19:06:29.735605+00:00",
+      "ended_at": "2026-05-23T19:06:29.736696+00:00",
+      "detail": {
+        "item_count": 8,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "html": 8
+        },
+        "section_count": 2,
+        "table_count": 1,
+        "key_value_count": 5,
+        "numeric_fact_count": 7,
+        "semantic_signal_counts": {
+          "dates": 1,
+          "recommendations": 2,
+          "anomaly_lines": 3
+        },
+        "task_result": {
+          "task_intents": [
+            "comparison",
+            "ranking",
+            "growth_analysis",
+            "evidence_trace"
+          ],
+          "target_schema_keys": [
+            "company_name",
+            "report_period",
+            "line_item",
+            "current_value",
+            "previous_value",
+            "unit",
+            "evidence",
+            "comparison_base",
+            "comparison_current",
+            "delta",
+            "percent_change",
+            "rank"
+          ],
+          "answer_keys": [
+            "comparisons",
+            "top_growth_candidate",
+            "field_evidence"
+          ]
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-23T19:06:29.736696+00:00",
+      "ended_at": "2026-05-23T19:06:29.737466+00:00",
+      "detail": {
+        "profile": "financial_report"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-23T19:06:29.737466+00:00",
+      "ended_at": "2026-05-23T19:06:29.737466+00:00",
+      "detail": {
+        "quality_status": "pass",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-23T19:06:29.737466+00:00",
+      "ended_at": "2026-05-23T19:06:29.740986+00:00",
+      "detail": {
+        "chunks_count": 3,
+        "by_type": {
+          "text": 2,
+          "table": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [],
+  "run_id": "17e56a82ebc2",
+  "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并给出证据。",
+  "profile": "financial_report",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\summary.md"
+}

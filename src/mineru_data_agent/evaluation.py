@@ -37,6 +37,8 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         f"- Cases: {report['case_count']}",
         f"- Expected-field accuracy: {_pct(aggregate['field_accuracy'])} "
         f"({aggregate['matched_fields']}/{aggregate['expected_fields']})",
+        f"- Expected-field precision/recall/F1: {_pct(aggregate['field_precision'])} / "
+        f"{_pct(aggregate['field_recall'])} / {_pct(aggregate['field_f1'])}",
         f"- Text evidence accuracy: {_pct(aggregate['text_evidence_accuracy'])} "
         f"({aggregate['matched_text_evidence']}/{aggregate['expected_text_evidence']})",
         f"- Numeric evidence accuracy: {_pct(aggregate['numeric_evidence_accuracy'])} "
@@ -53,6 +55,7 @@ def render_markdown_report(report: dict[str, Any]) -> str:
         f"({aggregate['provenance_gates_passed']}/{aggregate['provenance_gates']})",
         f"- Recovery gate pass rate: {_pct(aggregate['recovery_gate_pass_rate'])} "
         f"({aggregate['recovery_gates_passed']}/{aggregate['recovery_gates']})",
+        f"- Failed checks by type: `{json.dumps(aggregate['failed_checks_by_type'], ensure_ascii=False)}`",
         "",
         "## Cases",
         "",
@@ -82,6 +85,7 @@ def render_markdown_report(report: dict[str, Any]) -> str:
             "## Notes",
             "",
             "- Field accuracy here measures labeled key-value expectations, not full OCR character accuracy.",
+            "- Field precision/recall/F1 are computed only over labeled expected fields: wrong extracted values count against precision, missing values count against recall.",
             "- Text evidence accuracy checks whether lightweight human-labeled facts appear anywhere in the structured output.",
             "- Numeric evidence accuracy checks labeled numeric facts by nearby text and expected number tokens.",
             "- Table evidence accuracy checks labeled table fragments by headers/cells and row or column minima.",
@@ -331,6 +335,12 @@ def _check_recovery(expected: Any, recovery: Any) -> dict[str, Any]:
 def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
     expected_fields = sum(item["expected_fields"] for item in cases)
     matched_fields = sum(item["matched_fields"] for item in cases)
+    predicted_labeled_fields = sum(
+        1
+        for item in cases
+        for check in item.get("field_checks", [])
+        if isinstance(check, dict) and check.get("actual") is not None
+    )
     expected_text_evidence = sum(item["expected_text_evidence"] for item in cases)
     matched_text_evidence = sum(item["matched_text_evidence"] for item in cases)
     expected_numeric_evidence = sum(item["expected_numeric_evidence"] for item in cases)
@@ -351,10 +361,27 @@ def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
     recovery_gates_passed = sum(
         1 for item in cases if item["recovery_gate"]["expected"] and item["recovery_gate"]["passed"]
     )
+    failed_checks_by_type = {
+        "fields": expected_fields - matched_fields,
+        "text_evidence": expected_text_evidence - matched_text_evidence,
+        "numeric_evidence": expected_numeric_evidence - matched_numeric_evidence,
+        "table_evidence": expected_table_evidence - matched_table_evidence,
+        "profile": profile_checks - profile_matches,
+        "structure": structure_gates - structure_gates_passed,
+        "quality": quality_gates - quality_gates_passed,
+        "provenance": provenance_gates - provenance_gates_passed,
+        "recovery": recovery_gates - recovery_gates_passed,
+    }
+    field_precision = matched_fields / predicted_labeled_fields if predicted_labeled_fields else (1.0 if expected_fields == 0 else 0.0)
+    field_recall = matched_fields / expected_fields if expected_fields else 1.0
     return {
         "expected_fields": expected_fields,
         "matched_fields": matched_fields,
+        "predicted_labeled_fields": predicted_labeled_fields,
         "field_accuracy": matched_fields / expected_fields if expected_fields else 1.0,
+        "field_precision": field_precision,
+        "field_recall": field_recall,
+        "field_f1": _f1(field_precision, field_recall),
         "expected_text_evidence": expected_text_evidence,
         "matched_text_evidence": matched_text_evidence,
         "text_evidence_accuracy": matched_text_evidence / expected_text_evidence if expected_text_evidence else 1.0,
@@ -381,6 +408,7 @@ def _aggregate(cases: list[dict[str, Any]]) -> dict[str, Any]:
         "recovery_gates": recovery_gates,
         "recovery_gates_passed": recovery_gates_passed,
         "recovery_gate_pass_rate": recovery_gates_passed / recovery_gates if recovery_gates else 1.0,
+        "failed_checks_by_type": failed_checks_by_type,
     }
 
 
@@ -440,3 +468,9 @@ def _pct(value: float) -> str:
 
 def _ok(value: bool) -> str:
     return "pass" if value else "fail"
+
+
+def _f1(precision: float, recall: float) -> float:
+    if precision + recall == 0:
+        return 0.0
+    return 2 * precision * recall / (precision + recall)

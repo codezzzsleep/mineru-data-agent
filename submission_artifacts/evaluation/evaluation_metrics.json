@@ -6,7 +6,11 @@
   "aggregate": {
     "expected_fields": 45,
     "matched_fields": 45,
+    "predicted_labeled_fields": 45,
     "field_accuracy": 1.0,
+    "field_precision": 1.0,
+    "field_recall": 1.0,
+    "field_f1": 1.0,
     "expected_text_evidence": 22,
     "matched_text_evidence": 22,
     "text_evidence_accuracy": 1.0,
@@ -30,7 +34,18 @@
     "provenance_gate_pass_rate": 1.0,
     "recovery_gates": 2,
     "recovery_gates_passed": 2,
-    "recovery_gate_pass_rate": 1.0
+    "recovery_gate_pass_rate": 1.0,
+    "failed_checks_by_type": {
+      "fields": 0,
+      "text_evidence": 0,
+      "numeric_evidence": 0,
+      "table_evidence": 0,
+      "profile": 0,
+      "structure": 0,
+      "quality": 0,
+      "provenance": 0,
+      "recovery": 0
+    }
   },
   "cases": [
     {

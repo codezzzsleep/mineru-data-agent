@@ -79,6 +79,9 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
     report = evaluate_cases(labels_path, project_root=tmp_path)
 
     assert report["aggregate"]["field_accuracy"] == 1.0
+    assert report["aggregate"]["field_precision"] == 1.0
+    assert report["aggregate"]["field_recall"] == 1.0
+    assert report["aggregate"]["field_f1"] == 1.0
     assert report["aggregate"]["text_evidence_accuracy"] == 1.0
     assert report["aggregate"]["numeric_evidence_accuracy"] == 1.0
     assert report["aggregate"]["table_evidence_accuracy"] == 1.0
@@ -86,6 +89,7 @@ def test_evaluate_cases_computes_labeled_metrics(tmp_path: Path) -> None:
     assert report["aggregate"]["structure_gate_pass_rate"] == 1.0
     assert report["aggregate"]["recovery_gate_pass_rate"] == 1.0
     assert "Expected-field accuracy: 100.0%" in render_markdown_report(report)
+    assert "Expected-field precision/recall/F1: 100.0% / 100.0% / 100.0%" in render_markdown_report(report)
     assert "Text evidence accuracy: 100.0%" in render_markdown_report(report)
     assert "Numeric evidence accuracy: 100.0%" in render_markdown_report(report)
     assert "Table evidence accuracy: 100.0%" in render_markdown_report(report)

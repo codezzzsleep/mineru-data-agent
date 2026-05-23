@@ -2,11 +2,13 @@
 
 基于 MinerU 的复杂文档 Data Agent，面向「智能进化·Agent 能力评测赛道」设计。
 
+评委快速版见 `docs/EXECUTIVE_SUMMARY.md`。
+
 证据边界：本项目里的 `quality.score` 是规则校验分，不是字段级、表格逐格或 OCR 字符级准确率。`submission_artifacts/cases/` 是自构造 HTML/网页 fixture，用于验证 Agent 管线和可追溯产物；PDF 文件级 MinerU 证据见 `submission_artifacts/mineru_cases/`，其中多个样本是为公开提交生成的合成业务样本。为补足真实样本证据，项目新增 `submission_artifacts/public_real_cases/`，使用 IRS、NIST、SEC 和 CDC 的官方公开 PDF，并附 source metadata、人工轻量标注和文本证据评测。
 
 它不是简单调用 MinerU，而是在 MinerU/HTML 解析结果之上增加：
 
-- 任务意图识别与执行计划
+- 任务意图识别、自适应执行计划、动态 schema、任务级后处理和恢复优先级
 - PDF/图片的 MinerU 解析适配，以及 DOCX/PPTX/HTML 的轻量结构化适配；当前提交包已包含 4 个 PDF 文件级本地 MinerU CLI 证据和 2 个 Office 文件级证据
 - HTML 文档的轻量结构化适配，保留标题层级、段落、列表和表格
 - DOCX/PPTX 文档的轻量结构化适配，保留 Word 章节/表格与 PPT slide-level provenance
@@ -26,7 +28,9 @@
 - 2 个 Office 文件级 artifact，覆盖 Word 合规矩阵和 PowerPoint 工作流汇报
 - 4 个更贴近评审挑战的复杂文档 fixture，并附人工标注表，覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流
 - 4 个官方公开真实 PDF 证据包，覆盖 IRS 表单、NIST AI RMF、Microsoft SEC 年报和 CDC 公共卫生说明，并附人工轻量标注和来源元数据
+- 1 个自适应规划证据包：同一财报输入在“增长最快项目”和“异常/证据复核”两个任务下生成不同 task intents、target schema、post-processors 和 task-specific answers
 - 1 个实际启用 DeepSeek-V4-Flash 的 LLM 证据案例，用于任务理解、schema 建议、复核重点和恢复建议；当前 live rerun 已记录 2 次 LLM 调用、4309 tokens
+- 1 份带标注评测报告，新增字段级 precision/recall/F1 与 failed-check 分布，用于区分规则质量分和人工标签指标
 - 2 份真实 HTTP loopback 压测报告，覆盖同步解析和异步 job 轮询；其中加强版为 100 请求、并发 20、100/100 成功；另有 1 份成本/速度/质量对比报告，按 runner/场景组展示 tradeoff
 
 ## Quick Start
@@ -291,7 +295,7 @@ runs/<run_id>/
 python scripts/build_evaluation_report.py
 ```
 
-当前报告位于 `submission_artifacts/evaluation/`，覆盖 17 个提交案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛。
+当前报告位于 `submission_artifacts/evaluation/`，覆盖 17 个提交案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛，并额外输出字段级 precision/recall/F1 与 failed-check 分布。
 
 成本、速度和质量 tradeoff 对比可通过以下命令生成：
 
@@ -338,6 +342,6 @@ python scripts/build_baseline_comparison.py
 - `--llm deepseek`：可选 DeepSeek v4-flash 官方推理层，参与解析前调度和解析后复核；不开启时项目仍可完整运行。
 - `--llm modelscope`：可选 ModelScope 推理入口，默认模型 `deepseek-ai/DeepSeek-V4-Flash`。
 
-当前提交包内的强复现证据分为十五类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；1 个 PDF recovery 案例证明在线 API 缺少页级 provenance 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；4 个挑战 fixture 与人工标注表覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；4 个官方公开真实 PDF 案例证明系统能处理外部公开材料，并通过文本、数字和表格证据门槛；1 个 NIST 48 页长文档分片案例证明在线 API 20 页限制下可由 Agent 自动拆分 page ranges 并汇总分片证据；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议，并记录 4309 tokens；1 份带标注评测报告证明 17 个案例的 45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛均可复查；1 份稳定性报告汇总 17 个保存案例的 trace、工具调用、耗时、质量状态和恢复执行；1 份 API 并发 smoke 报告证明本地接口在 8 请求、并发 4 下能稳定落盘结果；2 份真实 HTTP loopback 压测报告证明同步/异步 API 在 12 请求并发 6、100 请求并发 20 下均 100% 成功；1 份成本/速度/质量对比报告按 runner 和场景组展示 tradeoff；1 份 LLM token/cost 审计报告汇总 live LLM usage。新运行还会输出 `extracted.field_evidence`，为键值字段提供 confidence proxy、证据文本和行/页/块级 provenance。公开真实文档证据包仍是轻量人工标注，不等同于完整 OCR 字符级 benchmark。
+当前提交包内的强复现证据分为十六类：5 个 HTML/网页 fixture 用于稳定验证 Agent 的计划、结构化抽取、质量校验、trace、自动恢复与检索导出；4 个 PDF 文件级案例用本地 `mineru-cli` 跑通，证明 MinerU CLI 后端、页级 provenance、HTML 表格解析、图像 artifact 和完整中间 artifact 可用；1 个 CPU 友好的 MinerU 在线 Agent API PDF 案例证明无 GPU 条件下也能跑通 PDF fixture；1 个 PDF recovery 案例证明在线 API 缺少页级 provenance 后自动 fallback 到 CLI artifact，且 `recovery_decision.executed=true`；2 个 DOCX/PPTX 文件级案例证明 Office 文档结构化、表格抽取和 slide-level provenance 可用；4 个挑战 fixture 与人工标注表覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流；1 个自适应规划证据包证明同一输入在增长排名和异常证据任务下会生成不同 intents、schema 和 `task_result`；4 个官方公开真实 PDF 案例证明系统能处理外部公开材料，并通过文本、数字和表格证据门槛；1 个 NIST 48 页长文档分片案例证明在线 API 20 页限制下可由 Agent 自动拆分 page ranges 并汇总分片证据；1 个 LLM-enabled 财报复核案例证明 DeepSeek-V4-Flash 能参与任务理解、schema 建议和风险恢复建议，并记录 4309 tokens；1 份带标注评测报告证明 17 个案例的 45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、字段 precision/recall/F1、profile、结构门槛、质量门槛、provenance 门槛和 recovery 门槛均可复查；1 份稳定性报告汇总 17 个保存案例的 trace、工具调用、耗时、质量状态和恢复执行；1 份 API 并发 smoke 报告证明本地接口在 8 请求、并发 4 下能稳定落盘结果；2 份真实 HTTP loopback 压测报告证明同步/异步 API 在 12 请求并发 6、100 请求并发 20 下均 100% 成功；1 份成本/速度/质量对比报告按 runner 和场景组展示 tradeoff；1 份 LLM token/cost 审计报告汇总 live LLM usage。新运行还会输出 `extracted.field_evidence` 和 `extracted.task_result`，为键值字段、任务级答案和 schema 决策提供证据。公开真实文档证据包仍是轻量人工标注，不等同于完整 OCR 字符级 benchmark。
 
 针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；对标与后续真实 benchmark 路线见 `docs/BENCHMARK_AND_ROADMAP.md`；稳定性摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`，真实 HTTP 压测见 `submission_artifacts/http_load_test/http_load_test_report.md` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`，长文档分片证据见 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`，成本/速度/质量对比见 `submission_artifacts/baseline_comparison/baseline_comparison.md`，LLM token/cost 审计见 `submission_artifacts/llm_cost/llm_cost_report.md`。

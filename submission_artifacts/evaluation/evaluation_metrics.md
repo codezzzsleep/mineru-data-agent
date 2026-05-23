@@ -6,6 +6,7 @@ This report compares saved submission artifacts against lightweight human labels
 
 - Cases: 17
 - Expected-field accuracy: 100.0% (45/45)
+- Expected-field precision/recall/F1: 100.0% / 100.0% / 100.0%
 - Text evidence accuracy: 100.0% (22/22)
 - Numeric evidence accuracy: 100.0% (11/11)
 - Table evidence accuracy: 100.0% (6/6)
@@ -14,6 +15,7 @@ This report compares saved submission artifacts against lightweight human labels
 - Quality gate pass rate: 100.0% (17/17)
 - Provenance gate pass rate: 100.0% (17/17)
 - Recovery gate pass rate: 100.0% (2/2)
+- Failed checks by type: `{"fields": 0, "text_evidence": 0, "numeric_evidence": 0, "table_evidence": 0, "profile": 0, "structure": 0, "quality": 0, "provenance": 0, "recovery": 0}`
 
 ## Cases
 
@@ -40,6 +42,7 @@ This report compares saved submission artifacts against lightweight human labels
 ## Notes
 
 - Field accuracy here measures labeled key-value expectations, not full OCR character accuracy.
+- Field precision/recall/F1 are computed only over labeled expected fields: wrong extracted values count against precision, missing values count against recall.
 - Text evidence accuracy checks whether lightweight human-labeled facts appear anywhere in the structured output.
 - Numeric evidence accuracy checks labeled numeric facts by nearby text and expected number tokens.
 - Table evidence accuracy checks labeled table fragments by headers/cells and row or column minima.

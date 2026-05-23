@@ -125,7 +125,26 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 
 这些样本已纳入 `examples/evaluation/labels.json` 和 `submission_artifacts/evaluation/`，用于评测 17 个提交案例中的新增挑战维度。
 
-## 7. 官方公开真实文档证据包
+## 7. 自适应规划证据包
+
+自适应规划位置：`submission_artifacts/adaptive_cases/`
+
+该证据包使用同一份财报 HTML 输入，分别执行两个不同自然语言任务，检查 Agent 是否改变任务意图、目标 schema、后处理器和任务级答案。
+
+| Case | 任务 | 关键差异 |
+| --- | --- | --- |
+| `case_financial_growth_query` | 找出与上一期相比增长最快的项目 | 触发 `comparison/ranking/growth_analysis/evidence_trace`，输出 `top_growth_candidate=利润总额`，计算 `percent_change=15.3232%` |
+| `case_financial_anomaly_evidence_query` | 找出需要复核的异常或风险信号 | 触发 `anomaly_detection/evidence_trace`，输出异常候选和字段证据，不执行增长排名 |
+
+复跑方式：
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\run_adaptive_planning_cases.py
+```
+
+边界说明：该证据证明任务级规划和后处理可变，不等同于多轮对话 Agent 或大规模语义 benchmark。
+
+## 8. 官方公开真实文档证据包
 
 公开真实文档位置：`submission_artifacts/public_real_cases/`
 
@@ -146,7 +165,7 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 .\.venv\Scripts\python.exe .\scripts\run_public_real_cases.py
 ```
 
-## 8. 长文档分片执行案例
+## 9. 长文档分片执行案例
 
 长文档证据位置：`submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/`
 
@@ -166,7 +185,7 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 
 边界说明：这是在线 API 长文档分片编排证据，不是本地 MinerU CLI/GPU pages-per-second benchmark，也不是公网生产压测；在线 API 路径仍可能缺少页级 provenance。
 
-## 9. LLM-Enabled 财报复核案例
+## 10. LLM-Enabled 财报复核案例
 
 LLM 案例位置：`submission_artifacts/llm_cases/case_llm_financial_review/`
 
@@ -183,7 +202,7 @@ LLM 在该案例中的职责是：
 
 当前代码已把 LLM 从单纯解析后复核前移到解析前调度。开启 `--llm deepseek` 或 `--llm modelscope` 时，trace 会新增 `llm_pre_execution_planning`，结果会新增 `execution_control` 和 `llm_analysis.pre_execution_plan`，记录模型建议的 profile、runner、backend、method、语言、目标 schema 和恢复策略；系统只应用安全白名单内且未被用户显式锁定的建议。
 
-## 10. 带标注评测指标
+## 11. 带标注评测指标
 
 评测报告位置：`submission_artifacts/evaluation/`
 
@@ -201,7 +220,7 @@ LLM 在该案例中的职责是：
 
 该评测不是完整 OCR 字符级标注集，但能把关键字段、结构输出和可追溯性变成可复跑指标，补足“只有案例展示、没有指标”的短板。
 
-## 11. 稳定性、耗时与 API 并发 Smoke
+## 12. 稳定性、耗时与 API 并发 Smoke
 
 稳定性报告位置：`submission_artifacts/stability/`
 
@@ -240,7 +259,7 @@ API 并发 smoke 位置：`submission_artifacts/api_load_smoke/`
 
 边界说明：稳定性报告是保存 artifact 的摘要；API 并发 smoke 是本地进程内接口验证；HTTP loopback 压测走真实本地 TCP 请求；长文档分片案例是单文档在线 API 编排验证；成本/速度/质量对比基于保存 artifact 和轻量人工标注。它们仍不是外部公网、高 GPU 负载、第三方 OCR benchmark 或长期长文档 soak 压测。
 
-## 12. 边界说明
+## 13. 边界说明
 
 当前证据已经能证明项目具备 HTML/网页结构化处理闭环、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出能力。
 

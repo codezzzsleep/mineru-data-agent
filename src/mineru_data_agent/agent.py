@@ -11,7 +11,7 @@ from .retrieval_exporter import build_retrieval_export
 from .logging_utils import TraceRecorder
 from .mineru_client import MinerUParseError, MinerURunner
 from .models import AgentResult, ParseArtifacts, ToolCall
-from .planner import build_plan, infer_profile
+from .planner import analyze_requirement, build_plan, build_task_result, infer_profile
 from .validators import build_quality_report
 
 
@@ -81,11 +81,18 @@ class MinerUDataAgent:
         suffix = input_path.suffix.lower()
         llm_preplan: dict[str, Any] = {"enabled": False}
         execution_control: dict[str, Any] = {}
+        input_metadata = _input_metadata(input_path)
 
         try:
-            with trace.step("infer_task_profile", task=task, input_file=str(input_path)):
+            with trace.step("infer_task_profile", task=task, input_file=str(input_path)) as profile_step:
                 resolved_profile = infer_profile(task, input_path.name) if profile == "auto" else profile
-                plan = build_plan(task, resolved_profile)
+                adaptive_decision = analyze_requirement(
+                    task,
+                    resolved_profile,
+                    input_metadata=input_metadata,
+                )
+                plan = build_plan(task, resolved_profile, adaptive_decision)
+                profile_step.detail["adaptive_decision"] = adaptive_decision.to_jsonable()
             execution_control = _initial_execution_control(
                 requested_profile=profile,
                 resolved_profile=resolved_profile,
@@ -94,6 +101,7 @@ class MinerUDataAgent:
                 lang=lang,
                 suffix=suffix,
                 runner_name=self.mineru_runner.__class__.__name__,
+                adaptive_decision=adaptive_decision.to_jsonable(),
             )
 
             if self.llm_client:
@@ -107,7 +115,7 @@ class MinerUDataAgent:
                 ) as pre_step:
                     llm_preplan, llm_pre_call = self.llm_client.plan_execution(
                         task=task,
-                        input_metadata=_input_metadata(input_path),
+                        input_metadata=input_metadata,
                         inferred_profile=resolved_profile,
                         requested_profile=profile,
                         requested_backend=backend,
@@ -128,7 +136,18 @@ class MinerUDataAgent:
                         runner_kind=_runner_kind(self.mineru_runner),
                         runner_name=self.mineru_runner.__class__.__name__,
                     )
-                    plan = _merge_plan(build_plan(task, resolved_profile), llm_preplan.get("execution_plan", []))
+                    adaptive_decision = analyze_requirement(
+                        task,
+                        resolved_profile,
+                        input_metadata=input_metadata,
+                        llm_preplan=llm_preplan,
+                    )
+                    execution_control["adaptive_decision"] = adaptive_decision.to_jsonable()
+                    execution_control["planning_rationale"]["adaptive_decision_rationale"] = adaptive_decision.rationale
+                    plan = _merge_plan(
+                        build_plan(task, resolved_profile, adaptive_decision),
+                        llm_preplan.get("execution_plan", []),
+                    )
                     pre_step.detail["execution_control"] = execution_control
 
             artifacts = ParseArtifacts()
@@ -165,8 +184,9 @@ class MinerUDataAgent:
                     content_list = read_content_list(artifacts.content_list_path)
 
             with trace.step("build_structured_view") as structured_step:
-                extracted = build_extracted_view(markdown, content_list)
+                extracted = _attach_task_result(build_extracted_view(markdown, content_list), adaptive_decision)
                 structured_step.detail.update(_structured_trace_detail(extracted))
+                structured_step.detail["task_result"] = _task_result_trace_detail(extracted)
 
             with trace.step("quality_validation", profile=resolved_profile):
                 quality = build_quality_report(markdown, extracted, resolved_profile, task=task)
@@ -186,7 +206,10 @@ class MinerUDataAgent:
             if _should_run_text_cleanup(quality):
                 with trace.step("auto_recovery_text_cleanup", from_status=quality.get("status")):
                     recovered_markdown, recovered_content = _clean_text_artifacts(markdown, content_list)
-                    recovered_extracted = build_extracted_view(recovered_markdown, recovered_content)
+                    recovered_extracted = _attach_task_result(
+                        build_extracted_view(recovered_markdown, recovered_content),
+                        adaptive_decision,
+                    )
                     recovered_quality = build_quality_report(
                         recovered_markdown,
                         recovered_extracted,
@@ -244,7 +267,10 @@ class MinerUDataAgent:
                         trace.add_tool_call(retry_call.__dict__)
                         retry_markdown = read_markdown(retry_artifacts.markdown_path)
                         retry_content = read_content_list(retry_artifacts.content_list_path)
-                        retry_extracted = build_extracted_view(retry_markdown, retry_content)
+                        retry_extracted = _attach_task_result(
+                            build_extracted_view(retry_markdown, retry_content),
+                            adaptive_decision,
+                        )
                         retry_quality = build_quality_report(retry_markdown, retry_extracted, resolved_profile, task=task)
                         recovery_attempts.append(
                             _attempt_summary(
@@ -296,7 +322,10 @@ class MinerUDataAgent:
                         trace.add_tool_call(fallback_call.__dict__)
                         fallback_markdown = read_markdown(fallback_artifacts.markdown_path)
                         fallback_content = read_content_list(fallback_artifacts.content_list_path)
-                        fallback_extracted = build_extracted_view(fallback_markdown, fallback_content)
+                        fallback_extracted = _attach_task_result(
+                            build_extracted_view(fallback_markdown, fallback_content),
+                            adaptive_decision,
+                        )
                         fallback_quality = build_quality_report(
                             fallback_markdown,
                             fallback_extracted,
@@ -456,6 +485,23 @@ def _structured_trace_detail(extracted: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _attach_task_result(extracted: dict[str, Any], adaptive_decision: Any) -> dict[str, Any]:
+    extracted["task_result"] = build_task_result(extracted, adaptive_decision)
+    return extracted
+
+
+def _task_result_trace_detail(extracted: dict[str, Any]) -> dict[str, Any]:
+    task_result = extracted.get("task_result", {}) if isinstance(extracted, dict) else {}
+    answers = task_result.get("answers", {}) if isinstance(task_result, dict) else {}
+    return {
+        "task_intents": task_result.get("task_intents", []),
+        "target_schema_keys": list((task_result.get("target_schema") or {}).keys())[:30]
+        if isinstance(task_result.get("target_schema"), dict)
+        else [],
+        "answer_keys": list(answers.keys()) if isinstance(answers, dict) else [],
+    }
+
+
 def _retrieval_trace_detail(retrieval_export: dict[str, Any]) -> dict[str, Any]:
     stats = retrieval_export.get("stats", {}) if isinstance(retrieval_export, dict) else {}
     return {
@@ -484,6 +530,7 @@ def _initial_execution_control(
     lang: str,
     suffix: str,
     runner_name: str,
+    adaptive_decision: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     runner_kind = "native" if suffix in NATIVE_SUFFIXES else ("agent-api" if "AgentAPI" in runner_name else "cli")
     return {
@@ -517,6 +564,7 @@ def _initial_execution_control(
             suffix=suffix,
             source="rules",
         ),
+        "adaptive_decision": adaptive_decision or {},
         "runner_class": runner_name,
         "applied": [],
         "ignored": [],
@@ -731,6 +779,7 @@ def _build_summary(result: AgentResult) -> str:
     key_values = result.extracted.get("key_values", [])
     field_evidence = result.extracted.get("field_evidence", [])
     semantic = result.extracted.get("semantic_signals", {})
+    task_result = result.extracted.get("task_result", {}) if isinstance(result.extracted.get("task_result"), dict) else {}
     top_pairs = key_values[:8] if isinstance(key_values, list) else []
     top_evidence = field_evidence[:5] if isinstance(field_evidence, list) else []
     lines = [
@@ -758,6 +807,7 @@ def _build_summary(result: AgentResult) -> str:
         f"- Recovery decision: {result.recovery_decision.get('decision', 'unknown')}",
         f"- Recovery selected attempt: {result.recovery_decision.get('selected_attempt', 'initial')}",
         f"- Recovery attempts: {len(result.recovery_decision.get('attempts', []))}",
+        f"- Task intents: {', '.join(task_result.get('task_intents', [])) if task_result.get('task_intents') else 'none'}",
         f"- LLM analysis: {_llm_status_label(result.llm_analysis)}",
         "",
         "## Plan",
@@ -773,6 +823,38 @@ def _build_summary(result: AgentResult) -> str:
         if isinstance(policy, list) and policy:
             lines.append("- Recovery policy:")
             lines.extend([f"  - {item}" for item in policy[:6]])
+    adaptive = result.execution_control.get("adaptive_decision", {})
+    if isinstance(adaptive, dict) and adaptive:
+        lines.extend(["", "## Adaptive Task Decision"])
+        lines.append(f"- Intents: {', '.join(adaptive.get('task_intents', []))}")
+        schema = adaptive.get("target_schema", {})
+        if isinstance(schema, dict) and schema:
+            lines.append(f"- Target schema keys: {', '.join(list(schema.keys())[:12])}")
+        thresholds = adaptive.get("quality_thresholds", {})
+        if isinstance(thresholds, dict) and thresholds:
+            lines.append(f"- Quality thresholds: {json.dumps(thresholds, ensure_ascii=False)}")
+        recovery = adaptive.get("recovery_strategy", [])
+        if isinstance(recovery, list) and recovery:
+            lines.append("- Recovery strategy:")
+            for item in recovery[:6]:
+                if isinstance(item, dict):
+                    lines.append(f"  - {item.get('action')} on {item.get('trigger')} ({item.get('priority')})")
+    answers = task_result.get("answers", {}) if isinstance(task_result.get("answers"), dict) else {}
+    if answers:
+        lines.extend(["", "## Task-Specific Answers"])
+        top_growth = answers.get("top_growth_candidate")
+        if isinstance(top_growth, dict):
+            lines.append(
+                "- Top growth candidate: "
+                f"{top_growth.get('label')} delta={top_growth.get('delta')} "
+                f"percent_change={top_growth.get('percent_change')}"
+            )
+        comparisons = answers.get("comparisons")
+        if isinstance(comparisons, list) and comparisons:
+            lines.append(f"- Comparison candidates: {len(comparisons)}")
+        anomalies = answers.get("anomaly_candidates")
+        if isinstance(anomalies, list) and anomalies:
+            lines.append(f"- Anomaly candidates: {len(anomalies)}")
     if result.llm_analysis.get("enabled"):
         llm_plan = result.llm_analysis.get("execution_plan", [])
         lines.extend(["", "## LLM Agent Analysis", ""])
