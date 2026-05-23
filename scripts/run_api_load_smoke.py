@@ -7,7 +7,7 @@ import shutil
 import statistics
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -131,7 +131,7 @@ def build_report(
     successes = [item for item in results if item.get("status_code") == 200]
     failures = [item for item in results if item.get("status_code") != 200]
     return {
-        "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "scope": "Local in-process FastAPI concurrency smoke test; not an external production load test.",
         "input": display_path(input_path),
         "output_dir": display_path(out_dir),

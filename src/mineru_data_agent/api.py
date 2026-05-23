@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 import os
 import threading
 import uuid
@@ -335,7 +335,7 @@ def _public_config(config: ParseRequestConfig) -> dict[str, Any]:
 
 
 def _utc_now() -> str:
-    return datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 def json_dumps(value: Any) -> str:

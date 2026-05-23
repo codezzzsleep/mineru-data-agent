@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from collections import Counter
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -87,7 +87,7 @@ def main() -> None:
 
     report = {
         "schema_version": "2026-05-23",
-        "generated_at": datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "scope": (
             "Submission artifact stability report over saved evaluation cases. "
             "This is not a high-concurrency load test."
