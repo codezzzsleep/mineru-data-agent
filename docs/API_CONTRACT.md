@@ -61,7 +61,7 @@ Stable top-level fields:
 | `execution_control` | Requested, initial, resolved, applied/ignored LLM control changes, planning rationale, and adaptive task decision. |
 | `extracted` | Structured output: sections, tables, key-values, field evidence, numeric facts, semantic signals, task result, content summary. |
 | `quality` | Rule-based quality status, score, issue list, and issue counts. |
-| `recovery_decision` | Decision, actions, attempts, selected attempt, and initial issue codes. |
+| `recovery_decision` | Decision, actions, attempts, selected attempt, initial issue codes, and optional LLM post-parse quality decision. |
 | `retrieval_export` | Paths and stats for `retrieval_chunks.jsonl`, manifest, and retrieval quality report. |
 | `llm_analysis` | Optional pre-execution and post-parse LLM analysis. |
 | `artifacts` | MinerU/native parser artifact paths. |
@@ -79,6 +79,7 @@ Evidence fields reviewers should inspect:
 - `extracted.numeric_facts[*]`: line, text snippet, number tokens.
 - `quality.issues[*].code`: machine-readable risk flags.
 - `recovery_decision.attempts[*]`: initial/retry/fallback quality and artifact paths.
+- `recovery_decision.llm_quality_decision`: LLM post-parse risk counts, findings, suggested actions, and applied decision effects when LLM is enabled.
 - `trace_path`: authoritative step/tool audit trail.
 
 ## Async Jobs

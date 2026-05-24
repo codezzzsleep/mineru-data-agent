@@ -399,6 +399,10 @@ class MinerUDataAgent:
                     llm_analysis["enabled"] = True
                     llm_analysis["usage_summary"] = _summarize_llm_usage(llm_preplan, post_llm_analysis)
                     trace.add_tool_call(llm_call.__dict__)
+                with trace.step("llm_quality_decision") as llm_decision_step:
+                    llm_quality_decision = _apply_llm_quality_decision(recovery_decision, post_llm_analysis)
+                    llm_analysis["quality_decision"] = llm_quality_decision
+                    llm_decision_step.detail.update(llm_quality_decision)
 
             result = AgentResult(
                 run_id=run_id,
@@ -1072,6 +1076,67 @@ def _build_recovery_decision(
         "executed": executed,
         "attempts": attempts,
     }
+
+
+def _apply_llm_quality_decision(recovery_decision: dict[str, Any], post_llm_analysis: dict[str, Any]) -> dict[str, Any]:
+    findings = post_llm_analysis.get("risk_findings")
+    suggestions = post_llm_analysis.get("recovery_suggestions")
+    if not isinstance(findings, list):
+        findings = []
+    if not isinstance(suggestions, list):
+        suggestions = []
+
+    risk_counts = {"error": 0, "warning": 0, "info": 0}
+    normalized_findings: list[dict[str, Any]] = []
+    for item in findings:
+        if not isinstance(item, dict):
+            continue
+        level = str(item.get("level", "info")).lower()
+        if level not in risk_counts:
+            level = "info"
+        risk_counts[level] += 1
+        normalized_findings.append(
+            {
+                "level": level,
+                "message": str(item.get("message", "")).strip(),
+                "evidence": str(item.get("evidence", "")).strip(),
+            }
+        )
+
+    normalized_suggestions = [str(item).strip() for item in suggestions if str(item).strip()]
+    previous_decision = str(recovery_decision.get("decision", "accept"))
+    actions = recovery_decision.setdefault("actions", [])
+    if not isinstance(actions, list):
+        actions = []
+        recovery_decision["actions"] = actions
+
+    applied_effects: list[str] = []
+    if risk_counts["error"]:
+        recovery_decision["decision"] = "llm_review_required"
+        actions.append("LLM post-parse review reported error-level risk; route to review before downstream use.")
+        applied_effects.append("decision=llm_review_required")
+    elif risk_counts["warning"] and previous_decision == "accept":
+        recovery_decision["decision"] = "accept_with_llm_review_notes"
+        actions.append("LLM post-parse review reported warning-level risk; keep review note with the result.")
+        applied_effects.append("decision=accept_with_llm_review_notes")
+
+    for suggestion in normalized_suggestions[:5]:
+        action = f"LLM suggested: {suggestion}"
+        if action not in actions:
+            actions.append(action)
+            applied_effects.append("append_recovery_suggestion")
+
+    quality_decision = {
+        "status": post_llm_analysis.get("status", "completed"),
+        "previous_decision": previous_decision,
+        "final_decision": recovery_decision.get("decision"),
+        "risk_counts": risk_counts,
+        "risk_findings": normalized_findings[:20],
+        "suggested_actions": normalized_suggestions[:10],
+        "applied_effects": applied_effects,
+    }
+    recovery_decision["llm_quality_decision"] = quality_decision
+    return quality_decision
 
 
 def _attempt_summary(

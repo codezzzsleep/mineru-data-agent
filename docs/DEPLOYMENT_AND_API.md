@@ -385,4 +385,20 @@ export MINERU_DATA_AGENT_MODELSCOPE_OUTPUT_USD_PER_MILLION_TOKENS="<output-price
 
 也可用通用变量 `MINERU_DATA_AGENT_LLM_INPUT_USD_PER_MILLION_TOKENS` 和 `MINERU_DATA_AGENT_LLM_OUTPUT_USD_PER_MILLION_TOKENS`。当前 live ModelScope 案例已有 provider token usage；recovery 演练里的离线 LLM 回放仍会如实显示 0 tokens。
 
+生成 LLM 开启/关闭影响对比：
+
+```bash
+python scripts/build_llm_impact_report.py
+```
+
+当前报告位于 `submission_artifacts/llm_impact/llm_impact_report.json` 和 `submission_artifacts/llm_impact/llm_impact_report.md`。它对比保存的规则运行与 LLM-enabled 运行，列出质量分、trace 步骤、工具调用、LLM 决策点、recovery suggestion 和 token usage。若要形成更强结论，应在同一 manifest 上分别跑 `--llm none` 与 `--llm deepseek` 或 `--llm modelscope`。
+
+生成 artifact 总索引：
+
+```bash
+python scripts/build_artifacts_index.py
+```
+
+当前索引位于 `submission_artifacts/ARTIFACTS_INDEX.md` 和 `submission_artifacts/ARTIFACTS_INDEX.json`，用于快速定位各类 artifact。
+
 口径：稳定性报告是保存 artifact 的工程摘要；API load smoke 是本地进程内并发请求验证；HTTP load smoke 是本机 TCP loopback 验证；long document chunk report 是在线 API 分片执行结果；baseline comparison 是保存 artifact 的对比视图；LLM cost report 统计 provider 返回或已保存的 usage。公网压测、GPU 长文档压力测试、云成本 benchmark 和第三方 OCR benchmark 可按部署环境继续补充。

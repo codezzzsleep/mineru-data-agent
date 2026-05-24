@@ -5,6 +5,7 @@ This matrix maps likely Track 2 review questions to local files that can be chec
 | Risk | Current Evidence | Remaining Boundary |
 | --- | --- | --- |
 | Task planning explainability is weak | `result.json.execution_control` records requested/initial/resolved controls, applied/ignored LLM recommendations, planning rationale, and `adaptive_decision` with task intents, target schema, post-processors, quality thresholds, and recovery strategy. `submission_artifacts/adaptive_cases/` shows the same input document producing different plans and `task_result` for growth ranking vs anomaly-evidence review. | It is deterministic adaptive planning plus optional LLM merge, not a full multi-turn conversation planner. |
+| LLM only suggests but does not affect decisions | LLM preplanning can change whitelisted profile/backend/method/lang controls. New runs also write post-parse `risk_findings` and `recovery_suggestions` into `recovery_decision.llm_quality_decision`, and warning/error findings can change the final recovery decision. `submission_artifacts/llm_impact/llm_impact_report.md` compares saved rule and LLM-enabled runs. | Current saved live LLM comparison has one pair; a larger 10-case on/off run is still the next useful benchmark. |
 | Recovery chain is incomplete | `recovery_decision.attempts` records initial, text cleanup, OCR retry, and CLI fallback attempts. Evidence includes `case_pdf_llm_api_to_cli_fallback` and `case_7_noisy_contract_scan`. | API-to-CLI fallback evidence currently uses cached CLI artifact in this environment; live full-chain evidence needs a real MinerU CLI executable. |
 | Cost/speed/quality tradeoff is not quantified | `submission_artifacts/stability/stability_report.md` summarizes 17 saved cases, tool calls, tool elapsed seconds, recovery count, quality status, and provenance distribution. `submission_artifacts/baseline_comparison/baseline_comparison.md` groups saved artifacts by runner/scenario and compares labeled checks, quality, tool seconds, page provenance, and recovery. `submission_artifacts/http_load_test/http_load_test_report.md` and `submission_artifacts/http_load_test_100/http_load_test_report.md` add 12-request/concurrency-6 and 100-request/concurrency-20 live HTTP loopback results. `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md` adds a 48-page, 3-chunk live online API long-document run. `submission_artifacts/llm_cost/llm_cost_report.md` audits live LLM token usage. | The comparison is based on saved artifacts and lightweight labels; the HTTP tests are local loopback, not public network/GPU/cloud-cost benchmarks. Cost remains unset unless official token prices are configured. |
 | Complex scenarios are not covered | Evidence covers public real PDFs, a chunked long public PDF, challenge fixtures, local MinerU CLI PDFs, Office files, API smoke, recovery, and LLM-enabled analysis. | More real scanned documents and figure-heavy engineering drawings would still strengthen the submission. |
@@ -27,6 +28,8 @@ This matrix maps likely Track 2 review questions to local files that can be chec
 - Long-document chunked API smoke: `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`
 - Baseline/tradeoff comparison: `submission_artifacts/baseline_comparison/baseline_comparison.md`
 - LLM cost audit: `submission_artifacts/llm_cost/llm_cost_report.md`
+- LLM impact comparison: `submission_artifacts/llm_impact/llm_impact_report.md`
+- Artifact index: `submission_artifacts/ARTIFACTS_INDEX.md`
 - Benchmark roadmap: `docs/BENCHMARK_AND_ROADMAP.md`
 - Public real-document evidence: `submission_artifacts/public_real_cases/`
 - Recovery evidence: `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/`
@@ -36,10 +39,12 @@ This matrix maps likely Track 2 review questions to local files that can be chec
 ## Recommended Reviewer Reading Order
 
 1. `README.md`
-2. `docs/COMPETITION_ALIGNMENT.md`
-3. `docs/API_CONTRACT.md`
-4. `submission_artifacts/evaluation/evaluation_metrics.md`
-5. `submission_artifacts/stability/stability_report.md`
-6. `submission_artifacts/baseline_comparison/baseline_comparison.md`
-7. `submission_artifacts/http_load_test/http_load_test_report.md`
-8. `docs/CASE_STUDIES.md`
+2. `docs/EVALUATION_GUIDE.md`
+3. `submission_artifacts/ARTIFACTS_INDEX.md`
+4. `docs/COMPETITION_ALIGNMENT.md`
+5. `docs/API_CONTRACT.md`
+6. `submission_artifacts/evaluation/evaluation_metrics.md`
+7. `submission_artifacts/stability/stability_report.md`
+8. `submission_artifacts/baseline_comparison/baseline_comparison.md`
+9. `submission_artifacts/llm_impact/llm_impact_report.md`
+10. `docs/CASE_STUDIES.md`

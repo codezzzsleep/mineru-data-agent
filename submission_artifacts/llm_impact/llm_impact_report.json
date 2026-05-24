@@ -1,0 +1,116 @@
+{
+  "schema_version": "2026-05-24",
+  "generated_at": "2026-05-24T06:11:33Z",
+  "scope": "Saved-artifact comparison of LLM-enabled runs against deterministic runs.",
+  "aggregate": {
+    "compared_pairs": 1,
+    "llm_enabled_pairs": 1,
+    "pairs_with_applied_controls": 0,
+    "pairs_with_recovery_suggestions": 1
+  },
+  "pairs": [
+    {
+      "id": "financial_html_llm_vs_rules",
+      "status": "compared",
+      "description": "Same financial HTML fixture family, comparing deterministic extraction with LLM preplanning/post-parse review.",
+      "baseline": {
+        "path": "submission_artifacts/cases/case_1_financial_report/result.json",
+        "profile": "financial_report",
+        "quality_status": "pass",
+        "quality_score": 100,
+        "field_evidence_count": 0,
+        "tables": 1,
+        "key_values": 5,
+        "numeric_facts": 7,
+        "provenance_level": "document",
+        "trace_steps": 6,
+        "tool_calls": 0,
+        "recovery_decision": "accept",
+        "llm_enabled": false
+      },
+      "llm": {
+        "path": "submission_artifacts/llm_cases/case_llm_financial_review/result.json",
+        "profile": "financial_report",
+        "quality_status": "pass",
+        "quality_score": 100,
+        "field_evidence_count": 5,
+        "tables": 1,
+        "key_values": 5,
+        "numeric_facts": 7,
+        "provenance_level": "document",
+        "trace_steps": 8,
+        "tool_calls": 2,
+        "recovery_decision": "accept",
+        "llm_enabled": true
+      },
+      "delta": {
+        "quality_score": 0.0,
+        "trace_steps": 2,
+        "tool_calls": 2,
+        "target_schema_fields": 3,
+        "verification_focus_items": 4,
+        "risk_findings": 2,
+        "recovery_suggestions": 5,
+        "applied_controls": 0,
+        "ignored_controls": 2
+      },
+      "llm_decision_points": {
+        "pre_execution_plan_status": "completed",
+        "recommended_profile": "financial_report",
+        "recommended_runner": "cli",
+        "recommended_backend": "pipeline",
+        "recommended_method": "auto",
+        "recommended_lang": "ch",
+        "applied": [],
+        "ignored": [
+          {
+            "field": "backend",
+            "recommended": "pipeline",
+            "current": "pipeline",
+            "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+          },
+          {
+            "field": "method",
+            "recommended": "auto",
+            "current": "auto",
+            "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+          }
+        ],
+        "post_parse_status": "completed",
+        "quality_decision": {},
+        "quality_decision_status": "not_present_in_saved_artifact",
+        "usage_summary": {
+          "tool_call_count": 2,
+          "prompt_tokens": 2092,
+          "completion_tokens": 2217,
+          "total_tokens": 4309,
+          "cost_configured_calls": 0,
+          "estimated_cost_usd": null,
+          "providers": [
+            {
+              "provider": "modelscope",
+              "model": "deepseek-ai/DeepSeek-V4-Flash"
+            },
+            {
+              "provider": "modelscope",
+              "model": "deepseek-ai/DeepSeek-V4-Flash"
+            }
+          ],
+          "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+        }
+      }
+    }
+  ],
+  "rerun_plan": {
+    "goal": "Run the same manifest twice, once with --llm none and once with --llm deepseek or --llm modelscope.",
+    "metrics": [
+      "quality status and score",
+      "field precision/recall/F1",
+      "trace steps and tool calls",
+      "LLM applied/ignored recommendations",
+      "token usage and estimated cost",
+      "recovery decision changes"
+    ],
+    "minimum_next_set": "10 cases: 4 financial, 2 noisy OCR, 2 contract/standard, 1 workflow, 1 long document chunk."
+  }
+}

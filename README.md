@@ -2,7 +2,7 @@
 
 基于 MinerU 的文档处理 Data Agent，面向「智能进化·Agent 能力评测赛道」设计。
 
-一页摘要见 `docs/EXECUTIVE_SUMMARY.md`。
+评审导航见 `docs/EVALUATION_GUIDE.md`；一页摘要见 `docs/EXECUTIVE_SUMMARY.md`。
 
 指标口径：`quality.score` 记录空结果、乱码、页级来源缺失、合计行不一致等规则风险；字段级 precision/recall/F1 在 `submission_artifacts/evaluation/` 单独统计。`submission_artifacts/cases/` 用于复跑 HTML/网页流程，PDF、Office、公开真实文档和长文档证据分别放在对应的 artifact 目录中。
 
@@ -30,6 +30,7 @@
 - 4 个官方公开真实 PDF 案例，覆盖 IRS 表单、NIST AI RMF、Microsoft SEC 年报和 CDC 公共卫生说明，并附人工轻量标注和来源元数据
 - 1 个自适应规划案例：同一财报输入在“增长最快项目”和“异常/证据复核”两个任务下生成不同 task intents、target schema、post-processors 和 task-specific answers
 - 1 个实际启用 DeepSeek-V4-Flash 的 LLM 证据案例，用于任务理解、schema 建议、复核重点和恢复建议；当前 live rerun 已记录 2 次 LLM 调用、4309 tokens
+- 1 份 LLM impact 报告，对比保存的规则运行与 LLM-enabled 运行，列出 LLM 决策点、token、应用/忽略项和 recovery suggestion
 - 1 份带标注评测报告，新增字段级 precision/recall/F1 与 failed-check 分布，用于区分规则质量分和人工标签指标
 - 2 份真实 HTTP loopback 压测报告，覆盖同步解析和异步 job 轮询；其中加强版为 100 请求、并发 20、100/100 成功；另有 1 份成本/速度/质量对比报告，按 runner/场景组展示 tradeoff
 
@@ -297,6 +298,14 @@ python scripts/build_evaluation_report.py
 
 当前报告位于 `submission_artifacts/evaluation/`，覆盖 17 个提交案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、profile 命中、结构门槛、质量门槛、provenance 门槛和 recovery 门槛，并额外输出字段级 precision/recall/F1 与 failed-check 分布。
 
+提交 artifact 总索引可通过以下命令生成：
+
+```bash
+python scripts/build_artifacts_index.py
+```
+
+当前索引位于 `submission_artifacts/ARTIFACTS_INDEX.md`，按目录列出 result/trace 数量和主要报告。
+
 成本、速度和质量 tradeoff 对比可通过以下命令生成：
 
 ```bash
@@ -304,6 +313,14 @@ python scripts/build_baseline_comparison.py
 ```
 
 当前报告位于 `submission_artifacts/baseline_comparison/`，按 native HTML、MinerU CLI PDF、Office、LLM recovery、挑战 fixture 和官方公开 PDF 分组展示标注通过率、工具耗时、平均质量分、trace 步骤数、页级 provenance 和 recovery 执行情况。它是保存 artifact 的对比视图，不是第三方 OCR benchmark。
+
+LLM 开启/关闭影响对比可通过以下命令生成：
+
+```bash
+python scripts/build_llm_impact_report.py
+```
+
+当前报告位于 `submission_artifacts/llm_impact/`，对比保存的财报 HTML 规则运行与 LLM-enabled 运行。它用于说明 LLM 决策点和成本，不替代更大规模的 live LLM benchmark。
 
 ## Recommended HeyWhale Setup
 
@@ -328,7 +345,7 @@ python scripts/build_baseline_comparison.py
 
 官方 MDIC2026 页面明确赛道二要求构建「数据智能体 Data Agent」，并说明参赛需使用 MinerU 工具链（含 SaaS 端与开源项目）。本项目的赛题对齐分析见 `docs/COMPETITION_ALIGNMENT.md`。
 
-赛题页评分维度与本项目优化策略见 `docs/EVALUATION_STRATEGY.md`；部署与 API 复现说明见 `docs/DEPLOYMENT_AND_API.md`。
+赛题页评分维度与本项目优化策略见 `docs/EVALUATION_STRATEGY.md`；部署与 API 复现说明见 `docs/DEPLOYMENT_AND_API.md`；评审快速路径见 `docs/EVALUATION_GUIDE.md`。
 
 项目原创性、第三方参考边界和密钥处理说明见 `docs/ORIGINALITY_AND_COMPLIANCE.md`。
 
@@ -348,8 +365,8 @@ python scripts/build_baseline_comparison.py
 - 指标：`submission_artifacts/evaluation/` 统计 17 个案例、45 个字段、22 条文本证据、11 条数字证据、6 条表格证据和字段级 precision/recall/F1。
 - 稳定性：`submission_artifacts/stability/` 汇总 trace、工具调用、耗时、质量状态和恢复执行。
 - API：`submission_artifacts/api_load_smoke/`、`submission_artifacts/http_load_test/`、`submission_artifacts/http_load_test_100/` 保存本地接口验证和 100 请求并发结果。
-- 成本/速度/质量：`submission_artifacts/baseline_comparison/` 按 runner 和场景组展示耗时、质量、页级 provenance 和 recovery；`submission_artifacts/llm_cost/` 记录 live LLM token usage。
+- 成本/速度/质量：`submission_artifacts/baseline_comparison/` 按 runner 和场景组展示耗时、质量、页级 provenance 和 recovery；`submission_artifacts/llm_cost/` 记录 live LLM token usage；`submission_artifacts/llm_impact/` 对比规则运行与 LLM-enabled 运行。
 
 新运行还会输出 `extracted.field_evidence` 和 `extracted.task_result`，为键值字段、任务级答案和 schema 决策提供可复查字段。公开真实文档样本使用轻量人工标注；如果需要 OCR 字符级或表格逐格 benchmark，应按 `docs/BENCHMARK_AND_ROADMAP.md` 扩展。
 
-针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；对标与后续真实 benchmark 路线见 `docs/BENCHMARK_AND_ROADMAP.md`；稳定性摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`，真实 HTTP 压测见 `submission_artifacts/http_load_test/http_load_test_report.md` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`，长文档分片证据见 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`，成本/速度/质量对比见 `submission_artifacts/baseline_comparison/baseline_comparison.md`，LLM token/cost 审计见 `submission_artifacts/llm_cost/llm_cost_report.md`。
+针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；对标与后续真实 benchmark 路线见 `docs/BENCHMARK_AND_ROADMAP.md`；artifact 总索引见 `submission_artifacts/ARTIFACTS_INDEX.md`；稳定性摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`，真实 HTTP 压测见 `submission_artifacts/http_load_test/http_load_test_report.md` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`，长文档分片证据见 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`，成本/速度/质量对比见 `submission_artifacts/baseline_comparison/baseline_comparison.md`，LLM token/cost 审计见 `submission_artifacts/llm_cost/llm_cost_report.md`，LLM impact 对比见 `submission_artifacts/llm_impact/llm_impact_report.md`。

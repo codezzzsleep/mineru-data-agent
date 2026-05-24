@@ -122,10 +122,14 @@ def test_llm_preplan_controls_profile_method_and_trace(tmp_path: Path) -> None:
     assert result.llm_analysis["pre_execution_plan"]["target_schema"]["报告日期"] == "date"
     assert result.llm_analysis["usage_summary"]["total_tokens"] == 430
     assert result.llm_analysis["usage_summary"]["estimated_cost_usd"] == 0.003
+    assert result.llm_analysis["quality_decision"]["risk_counts"]["warning"] == 1
+    assert result.recovery_decision["decision"] == "accept_with_llm_review_notes"
+    assert result.recovery_decision["llm_quality_decision"]["suggested_actions"] == ["keep OCR quality review note"]
     assert llm.post_parse_profile == "low_quality_ocr"
     trace = json.loads(Path(result.trace_path).read_text(encoding="utf-8"))
     step_names = [step["name"] for step in trace["steps"]]
     assert step_names.index("llm_pre_execution_planning") < step_names.index("mineru_parse")
+    assert "llm_quality_decision" in step_names
     assert trace["tool_calls"][0]["tool"] == "fake-llm-preplan"
     structured_step = next(step for step in trace["steps"] if step["name"] == "build_structured_view")
     retrieval_step = next(step for step in trace["steps"] if step["name"] == "build_retrieval_export")
@@ -364,8 +368,14 @@ class _PreplanningLLM:
                 "execution_plan": ["review OCR quality"],
                 "target_schema": {"报告日期": "date"},
                 "verification_focus": ["trace"],
-                "risk_findings": [],
-                "recovery_suggestions": [],
+                "risk_findings": [
+                    {
+                        "level": "warning",
+                        "message": "OCR quality should remain reviewable",
+                        "evidence": "post-parse quality review",
+                    }
+                ],
+                "recovery_suggestions": ["keep OCR quality review note"],
                 "llm_usage": {
                     "provider": "fake",
                     "model": "fake-post",

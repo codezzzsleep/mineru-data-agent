@@ -1,0 +1,525 @@
+{
+  "schema_version": "2026-05-24",
+  "generated_at": "2026-05-24T06:16:08Z",
+  "root": "submission_artifacts",
+  "quick_metrics": {
+    "evaluation": {
+      "cases": 17,
+      "expected_fields": 45,
+      "field_precision": 1.0,
+      "field_recall": 1.0,
+      "field_f1": 1.0
+    },
+    "stability": {
+      "cases": 17,
+      "tool_calls": 11,
+      "tool_elapsed_seconds": 240.107,
+      "recovery_executed_cases": 4
+    },
+    "http_load_test_100": {
+      "requests": 100,
+      "success": 100,
+      "failed": 0,
+      "p95_seconds": 4.205352
+    },
+    "llm_cost": {
+      "llm_enabled_results": 2,
+      "llm_trace_tool_calls": 4,
+      "total_tokens": 4309,
+      "estimated_cost_usd": null
+    },
+    "llm_impact": {
+      "compared_pairs": 1,
+      "llm_enabled_pairs": 1,
+      "pairs_with_applied_controls": 0,
+      "pairs_with_recovery_suggestions": 1
+    }
+  },
+  "categories": [
+    {
+      "id": "cases",
+      "title": "HTML/Web fixtures",
+      "description": "Native HTML path for planning, extraction, trace, recovery, and retrieval checks.",
+      "path": "submission_artifacts/cases",
+      "exists": true,
+      "result_files": 5,
+      "trace_files": 5,
+      "readmes": [
+        "submission_artifacts/cases/case_1_financial_report/README.md",
+        "submission_artifacts/cases/case_2_low_quality_ocr/README.md",
+        "submission_artifacts/cases/case_3_standard_contract/README.md",
+        "submission_artifacts/cases/case_4_workflow_diagram/README.md",
+        "submission_artifacts/cases/case_5_web_inspection_report/README.md",
+        "submission_artifacts/cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/cases/case_1_financial_report/summary.md",
+        "submission_artifacts/cases/case_2_low_quality_ocr/summary.md",
+        "submission_artifacts/cases/case_3_standard_contract/summary.md",
+        "submission_artifacts/cases/case_4_workflow_diagram/summary.md",
+        "submission_artifacts/cases/case_5_web_inspection_report/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/cases/artifact_index.json",
+        "submission_artifacts/cases/batch_report.json",
+        "submission_artifacts/cases/case_1_financial_report/retrieval/retrieval_manifest.json",
+        "submission_artifacts/cases/case_1_financial_report/retrieval/retrieval_quality.json",
+        "submission_artifacts/cases/case_2_low_quality_ocr/retrieval/retrieval_manifest.json",
+        "submission_artifacts/cases/case_2_low_quality_ocr/retrieval/retrieval_quality.json",
+        "submission_artifacts/cases/case_3_standard_contract/retrieval/retrieval_manifest.json",
+        "submission_artifacts/cases/case_3_standard_contract/retrieval/retrieval_quality.json",
+        "submission_artifacts/cases/case_4_workflow_diagram/retrieval/retrieval_manifest.json",
+        "submission_artifacts/cases/case_4_workflow_diagram/retrieval/retrieval_quality.json",
+        "submission_artifacts/cases/case_5_web_inspection_report/retrieval/retrieval_manifest.json",
+        "submission_artifacts/cases/case_5_web_inspection_report/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "mineru_cases",
+      "title": "MinerU CLI PDFs",
+      "description": "Local MinerU CLI PDF runs with page provenance and middle/layout/model artifacts.",
+      "path": "submission_artifacts/mineru_cases",
+      "exists": true,
+      "result_files": 4,
+      "trace_files": 4,
+      "readmes": [
+        "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/README.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/mismatch_drill/README.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/README.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_low_quality_pdf/README.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_workflow_pdf/README.md",
+        "submission_artifacts/mineru_cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/mineru/standard_contract_cross_page/auto/standard_contract_cross_page.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/summary.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/human_spot_check.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/mineru/complex_financial_report/auto/complex_financial_report.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/mismatch_drill/mismatch_input.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/summary.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_low_quality_pdf/mineru/small_ocr/auto/small_ocr.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_low_quality_pdf/summary.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_workflow_pdf/mineru/workflow_diagram_report/auto/workflow_diagram_report.md",
+        "submission_artifacts/mineru_cases/case_mineru_cli_workflow_pdf/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/mineru/standard_contract_cross_page/auto/standard_contract_cross_page_content_list.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/mineru/standard_contract_cross_page/auto/standard_contract_cross_page_content_list_v2.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/mineru/standard_contract_cross_page/auto/standard_contract_cross_page_middle.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/mineru/standard_contract_cross_page/auto/standard_contract_cross_page_model.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/retrieval/retrieval_manifest.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/retrieval/retrieval_quality.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/mineru/complex_financial_report/auto/complex_financial_report_content_list.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/mineru/complex_financial_report/auto/complex_financial_report_content_list_v2.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/mineru/complex_financial_report/auto/complex_financial_report_middle.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/mineru/complex_financial_report/auto/complex_financial_report_model.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/mismatch_drill/mismatch_quality.json",
+        "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/retrieval/retrieval_manifest.json"
+      ]
+    },
+    {
+      "id": "agent_api_cases",
+      "title": "MinerU Agent API PDF",
+      "description": "CPU-friendly online API PDF run with lightweight Markdown output.",
+      "path": "submission_artifacts/agent_api_cases",
+      "exists": true,
+      "result_files": 1,
+      "trace_files": 1,
+      "readmes": [
+        "submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/README.md",
+        "submission_artifacts/agent_api_cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page.md",
+        "submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page_agent_response.json",
+        "submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page_content_list.json",
+        "submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/retrieval/retrieval_manifest.json",
+        "submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "recovery_cases",
+      "title": "Recovery",
+      "description": "API-to-CLI fallback and recovery attempt evidence.",
+      "path": "submission_artifacts/recovery_cases",
+      "exists": true,
+      "result_files": 1,
+      "trace_files": 1,
+      "readmes": [
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page.md",
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru_fallback_cli/standard_contract_cross_page/auto/standard_contract_cross_page.md",
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page_agent_response.json",
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page_content_list.json",
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru_fallback_cli/standard_contract_cross_page/auto/standard_contract_cross_page_content_list.json",
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru_fallback_cli/standard_contract_cross_page/auto/standard_contract_cross_page_content_list_v2.json",
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru_fallback_cli/standard_contract_cross_page/auto/standard_contract_cross_page_middle.json",
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru_fallback_cli/standard_contract_cross_page/auto/standard_contract_cross_page_model.json",
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/retrieval/retrieval_manifest.json",
+        "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "office_cases",
+      "title": "Office files",
+      "description": "DOCX/PPTX native extraction runs.",
+      "path": "submission_artifacts/office_cases",
+      "exists": true,
+      "result_files": 2,
+      "trace_files": 2,
+      "readmes": [
+        "submission_artifacts/office_cases/case_docx_standard_review/README.md",
+        "submission_artifacts/office_cases/case_pptx_workflow_review/README.md",
+        "submission_artifacts/office_cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/office_cases/case_docx_standard_review/office/industry_standard_review.md",
+        "submission_artifacts/office_cases/case_docx_standard_review/summary.md",
+        "submission_artifacts/office_cases/case_pptx_workflow_review/office/workflow_agent_review.md",
+        "submission_artifacts/office_cases/case_pptx_workflow_review/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/office_cases/case_docx_standard_review/office/industry_standard_review_content_list.json",
+        "submission_artifacts/office_cases/case_docx_standard_review/retrieval/retrieval_manifest.json",
+        "submission_artifacts/office_cases/case_docx_standard_review/retrieval/retrieval_quality.json",
+        "submission_artifacts/office_cases/case_pptx_workflow_review/office/workflow_agent_review_content_list.json",
+        "submission_artifacts/office_cases/case_pptx_workflow_review/retrieval/retrieval_manifest.json",
+        "submission_artifacts/office_cases/case_pptx_workflow_review/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "challenge_cases",
+      "title": "Challenge fixtures",
+      "description": "Cross-page table, OCR noise, standard matrix, and incident workflow fixtures.",
+      "path": "submission_artifacts/challenge_cases",
+      "exists": true,
+      "result_files": 4,
+      "trace_files": 4,
+      "readmes": [
+        "submission_artifacts/challenge_cases/case_6_cross_page_financial_table/README.md",
+        "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/README.md",
+        "submission_artifacts/challenge_cases/case_8_industry_standard_matrix/README.md",
+        "submission_artifacts/challenge_cases/case_9_incident_workflow_report/README.md",
+        "submission_artifacts/challenge_cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/challenge_cases/case_6_cross_page_financial_table/html/case_6_cross_page_financial_table.md",
+        "submission_artifacts/challenge_cases/case_6_cross_page_financial_table/summary.md",
+        "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/html/case_7_noisy_contract_scan.md",
+        "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/recovery/text_cleanup/case_7_noisy_contract_scan.md",
+        "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/summary.md",
+        "submission_artifacts/challenge_cases/case_8_industry_standard_matrix/html/case_8_industry_standard_matrix.md",
+        "submission_artifacts/challenge_cases/case_8_industry_standard_matrix/summary.md",
+        "submission_artifacts/challenge_cases/case_9_incident_workflow_report/html/case_9_incident_workflow_report.md",
+        "submission_artifacts/challenge_cases/case_9_incident_workflow_report/summary.md",
+        "submission_artifacts/challenge_cases/human_annotation_table.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/challenge_cases/case_6_cross_page_financial_table/html/case_6_cross_page_financial_table_content_list.json",
+        "submission_artifacts/challenge_cases/case_6_cross_page_financial_table/retrieval/retrieval_manifest.json",
+        "submission_artifacts/challenge_cases/case_6_cross_page_financial_table/retrieval/retrieval_quality.json",
+        "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/html/case_7_noisy_contract_scan_content_list.json",
+        "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/recovery/text_cleanup/case_7_noisy_contract_scan_content_list.json",
+        "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/retrieval/retrieval_manifest.json",
+        "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/retrieval/retrieval_quality.json",
+        "submission_artifacts/challenge_cases/case_8_industry_standard_matrix/html/case_8_industry_standard_matrix_content_list.json",
+        "submission_artifacts/challenge_cases/case_8_industry_standard_matrix/retrieval/retrieval_manifest.json",
+        "submission_artifacts/challenge_cases/case_8_industry_standard_matrix/retrieval/retrieval_quality.json",
+        "submission_artifacts/challenge_cases/case_9_incident_workflow_report/html/case_9_incident_workflow_report_content_list.json",
+        "submission_artifacts/challenge_cases/case_9_incident_workflow_report/retrieval/retrieval_manifest.json"
+      ]
+    },
+    {
+      "id": "adaptive_cases",
+      "title": "Adaptive planning",
+      "description": "Same input with different natural-language tasks and task-specific results.",
+      "path": "submission_artifacts/adaptive_cases",
+      "exists": true,
+      "result_files": 2,
+      "trace_files": 2,
+      "readmes": [
+        "submission_artifacts/adaptive_cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/html/case_1_financial_report.md",
+        "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/summary.md",
+        "submission_artifacts/adaptive_cases/case_financial_growth_query/html/case_1_financial_report.md",
+        "submission_artifacts/adaptive_cases/case_financial_growth_query/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/adaptive_cases/artifact_index.json",
+        "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/html/case_1_financial_report_content_list.json",
+        "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/retrieval/retrieval_manifest.json",
+        "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/retrieval/retrieval_quality.json",
+        "submission_artifacts/adaptive_cases/case_financial_growth_query/html/case_1_financial_report_content_list.json",
+        "submission_artifacts/adaptive_cases/case_financial_growth_query/retrieval/retrieval_manifest.json",
+        "submission_artifacts/adaptive_cases/case_financial_growth_query/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "public_real_cases",
+      "title": "Public real PDFs",
+      "description": "IRS, NIST, SEC, and CDC public PDF cases with lightweight labels.",
+      "path": "submission_artifacts/public_real_cases",
+      "exists": true,
+      "result_files": 4,
+      "trace_files": 4,
+      "readmes": [
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/README.md",
+        "submission_artifacts/public_real_cases/public_irs_w4_form/README.md",
+        "submission_artifacts/public_real_cases/public_microsoft_annual_report/README.md",
+        "submission_artifacts/public_real_cases/public_nist_ai_rmf/README.md",
+        "submission_artifacts/public_real_cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/public_real_cases/human_annotation_table.md",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru/cdc_vis_instructions/agent_api/cdc_vis_instructions.md",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru_retry_ocr/cdc_vis_instructions/agent_api/cdc_vis_instructions.md",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/summary.md",
+        "submission_artifacts/public_real_cases/public_irs_w4_form/mineru/irs_w4/agent_api/irs_w4.md",
+        "submission_artifacts/public_real_cases/public_irs_w4_form/summary.md",
+        "submission_artifacts/public_real_cases/public_microsoft_annual_report/mineru/microsoft_2024_annual_report/agent_api/microsoft_2024_annual_report.md",
+        "submission_artifacts/public_real_cases/public_microsoft_annual_report/summary.md",
+        "submission_artifacts/public_real_cases/public_nist_ai_rmf/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0.md",
+        "submission_artifacts/public_real_cases/public_nist_ai_rmf/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/public_real_cases/artifact_index.json",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/human_labels.json",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru/cdc_vis_instructions/agent_api/cdc_vis_instructions_agent_response.json",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru/cdc_vis_instructions/agent_api/cdc_vis_instructions_content_list.json",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru_retry_ocr/cdc_vis_instructions/agent_api/cdc_vis_instructions_agent_response.json",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru_retry_ocr/cdc_vis_instructions/agent_api/cdc_vis_instructions_content_list.json",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/retrieval/retrieval_manifest.json",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/retrieval/retrieval_quality.json",
+        "submission_artifacts/public_real_cases/public_cdc_vis_instructions/source_metadata.json",
+        "submission_artifacts/public_real_cases/public_irs_w4_form/human_labels.json",
+        "submission_artifacts/public_real_cases/public_irs_w4_form/mineru/irs_w4/agent_api/irs_w4_agent_response.json",
+        "submission_artifacts/public_real_cases/public_irs_w4_form/mineru/irs_w4/agent_api/irs_w4_content_list.json"
+      ]
+    },
+    {
+      "id": "long_document_chunks",
+      "title": "Long document chunks",
+      "description": "NIST AI RMF page-range chunking across the online API page limit.",
+      "path": "submission_artifacts/long_document_chunks",
+      "exists": true,
+      "result_files": 3,
+      "trace_files": 3,
+      "readmes": [
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0.md",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/summary.md",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0.md",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/summary.md",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0.md",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/summary.md",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0_agent_response.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0_content_list.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/retrieval/retrieval_manifest.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/retrieval/retrieval_quality.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0_agent_response.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0_content_list.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/retrieval/retrieval_manifest.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/retrieval/retrieval_quality.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0_agent_response.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0_content_list.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/retrieval/retrieval_manifest.json",
+        "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "llm_cases",
+      "title": "LLM cases",
+      "description": "OpenAI-compatible LLM preplanning and post-parse review results.",
+      "path": "submission_artifacts/llm_cases",
+      "exists": true,
+      "result_files": 1,
+      "trace_files": 1,
+      "readmes": [
+        "submission_artifacts/llm_cases/case_llm_financial_review/README.md",
+        "submission_artifacts/llm_cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/llm_cases/case_llm_financial_review/html/case_1_financial_report.md",
+        "submission_artifacts/llm_cases/case_llm_financial_review/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/llm_cases/case_llm_financial_review/html/case_1_financial_report_content_list.json",
+        "submission_artifacts/llm_cases/case_llm_financial_review/retrieval/retrieval_manifest.json",
+        "submission_artifacts/llm_cases/case_llm_financial_review/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "evaluation",
+      "title": "Evaluation metrics",
+      "description": "Saved label checks and field precision/recall/F1.",
+      "path": "submission_artifacts/evaluation",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/evaluation/evaluation_metrics.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/evaluation/evaluation_metrics.json"
+      ]
+    },
+    {
+      "id": "stability",
+      "title": "Stability report",
+      "description": "Trace, tool timing, quality, provenance, and recovery aggregation.",
+      "path": "submission_artifacts/stability",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/stability/stability_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/stability/stability_report.json"
+      ]
+    },
+    {
+      "id": "api_smoke",
+      "title": "API smoke",
+      "description": "Health, sync parse, and PDF API smoke results.",
+      "path": "submission_artifacts/api_smoke",
+      "exists": true,
+      "result_files": 2,
+      "trace_files": 2,
+      "readmes": [
+        "submission_artifacts/api_smoke/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/api_smoke/run_2478fc60f3b2/html/0436b28901264e3c8a5b26273ac3e49f.md",
+        "submission_artifacts/api_smoke/run_2478fc60f3b2/summary.md",
+        "submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/mineru/8828ab01efa846f98d524719bb9d8b69/agent_api/8828ab01efa846f98d524719bb9d8b69.md",
+        "submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/api_smoke/health_response.json",
+        "submission_artifacts/api_smoke/parse_response.json",
+        "submission_artifacts/api_smoke/pdf_parse_response.json",
+        "submission_artifacts/api_smoke/run_2478fc60f3b2/html/0436b28901264e3c8a5b26273ac3e49f_content_list.json",
+        "submission_artifacts/api_smoke/run_2478fc60f3b2/retrieval/retrieval_manifest.json",
+        "submission_artifacts/api_smoke/run_2478fc60f3b2/retrieval/retrieval_quality.json",
+        "submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/mineru/8828ab01efa846f98d524719bb9d8b69/agent_api/8828ab01efa846f98d524719bb9d8b69_agent_response.json",
+        "submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/mineru/8828ab01efa846f98d524719bb9d8b69/agent_api/8828ab01efa846f98d524719bb9d8b69_content_list.json",
+        "submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/retrieval/retrieval_manifest.json",
+        "submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "api_load_smoke",
+      "title": "API load smoke",
+      "description": "Local FastAPI TestClient concurrency results.",
+      "path": "submission_artifacts/api_load_smoke",
+      "exists": true,
+      "result_files": 8,
+      "trace_files": 8,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/api_load_smoke/api_load_smoke_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/api_load_smoke/api_load_smoke_report.json"
+      ]
+    },
+    {
+      "id": "http_load_test",
+      "title": "HTTP load test",
+      "description": "Local TCP loopback sync/async API load test with request artifacts.",
+      "path": "submission_artifacts/http_load_test",
+      "exists": true,
+      "result_files": 12,
+      "trace_files": 12,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/http_load_test/http_load_test_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/http_load_test/http_load_test_report.json"
+      ]
+    },
+    {
+      "id": "http_load_test_100",
+      "title": "HTTP load test 100",
+      "description": "100-request local TCP loopback sync/async API load test.",
+      "path": "submission_artifacts/http_load_test_100",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/http_load_test_100/http_load_test_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/http_load_test_100/http_load_test_report.json"
+      ]
+    },
+    {
+      "id": "baseline_comparison",
+      "title": "Tradeoff comparison",
+      "description": "Saved-artifact cost/speed/quality comparison by runner/scenario group.",
+      "path": "submission_artifacts/baseline_comparison",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/baseline_comparison/baseline_comparison.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/baseline_comparison/baseline_comparison.json"
+      ]
+    },
+    {
+      "id": "llm_cost",
+      "title": "LLM cost",
+      "description": "Provider token usage and optional price-based cost estimate.",
+      "path": "submission_artifacts/llm_cost",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/llm_cost/llm_cost_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/llm_cost/llm_cost_report.json"
+      ]
+    },
+    {
+      "id": "llm_impact",
+      "title": "LLM impact",
+      "description": "With/without LLM artifact comparison.",
+      "path": "submission_artifacts/llm_impact",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/llm_impact/llm_impact_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/llm_impact/llm_impact_report.json"
+      ]
+    }
+  ]
+}

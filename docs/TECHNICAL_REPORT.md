@@ -32,7 +32,8 @@
 5. 读取 MinerU 输出，构造结构化视图，包括 `sections`、`tables`、`key_values`、`key_value_map`、`numeric_facts` 和 `semantic_signals`。
 6. 生成检索友好的知识库 chunks，过滤页眉页脚、页码、目录等低价值内容。
 7. 运行质量校验；若命中可恢复风险，执行文本清理二次 pass、PDF/图片 OCR 重试，或在在线 API 缺页级 provenance 时执行本地 CLI fallback，并按质量评分择优。若恢复尝试失败，失败尝试会进入 `recovery_decision.attempts` 与 trace，系统保留初始可用结果继续输出。
-8. 生成 `result.json`、`summary.md`、`trace.json`。
+8. 若启用 LLM，执行解析后复核，并把 `risk_findings` 与 `recovery_suggestions` 写入 `recovery_decision.llm_quality_decision`。warning/error 级风险会改变或补充最终 recovery 决策。
+9. 生成 `result.json`、`summary.md`、`trace.json`。
 
 每一步都会写入 trace，包含步骤状态、时间、工具命令、耗时、stdout/stderr 摘要，满足可追溯性要求。若解析或工具调用失败，系统也会写出失败态 `trace.json`，避免异常链路只停留在控制台错误里。
 
@@ -70,8 +71,10 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 | 公开真实 PDF | `submission_artifacts/public_real_cases/` | IRS、NIST、SEC、CDC 4 份官方公开 PDF，保存 source metadata、human labels、trace、result 和 retrieval 导出 |
 | 长文档分片 | `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/` | NIST AI RMF 48 页拆成 3 个 page range，3/3 成功，58 个 retrieval chunks |
 | LLM case | `submission_artifacts/llm_cases/case_llm_financial_review/` | ModelScope DeepSeek-V4-Flash 预调度和复核，`usage_summary.total_tokens=4309` |
+| LLM impact | `submission_artifacts/llm_impact/` | 保存的规则运行与 LLM-enabled 运行对比，列出决策点、应用/忽略项、recovery suggestion 和 token |
 | Evaluation | `submission_artifacts/evaluation/` | 17 个案例、45 个字段、22 条文本证据、11 条数字证据、6 条表格证据和字段级 precision/recall/F1 |
 | Stability/API/Tradeoff | `submission_artifacts/stability/`、`submission_artifacts/http_load_test_100/`、`submission_artifacts/baseline_comparison/`、`submission_artifacts/llm_cost/` | trace 完整性、工具耗时、100 请求本地 HTTP loopback、runner 分组对比和 LLM token 审计 |
+| Artifact index | `submission_artifacts/ARTIFACTS_INDEX.md` | 提交 artifact 总导航，列出各目录 result/trace 数量和主报告 |
 
 ## 5. 质量控制
 
@@ -126,6 +129,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - `submission_artifacts/challenge_cases/` 中包含 4 个挑战 fixture、结果日志和人工标注表
 - `submission_artifacts/public_real_cases/` 中包含 4 个官方公开真实 PDF 案例、来源元数据和人工轻量标注
 - `submission_artifacts/llm_cases/` 中包含 1 个实际启用 DeepSeek-V4-Flash 的 LLM 运行证据
+- `submission_artifacts/llm_impact/` 中包含保存的规则运行与 LLM-enabled 运行对比
 - `submission_artifacts/evaluation/` 中包含 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、字段 precision/recall/F1 和 failed-check 分布的带标注评测指标
 - `submission_artifacts/stability/` 中包含 17 个保存案例的 trace、工具耗时、质量状态和恢复统计
 - `submission_artifacts/api_load_smoke/` 中包含 8 请求、并发 4 的本地 FastAPI smoke 报告和对应落盘 artifact

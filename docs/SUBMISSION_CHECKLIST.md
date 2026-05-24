@@ -6,6 +6,7 @@
 - [x] GitHub 公开仓库已创建：https://github.com/codezzzsleep/mineru-data-agent
 - [x] GitHub Actions 测试工作流已加入，push/PR 会运行 pytest
 - [x] README 写清安装、CLI、API 和输出说明
+- [x] 评审导航已写入 `docs/EVALUATION_GUIDE.md`，包含评分维度、复现步骤和关键指标入口
 - [x] API 合约、参数、返回 schema 和错误码已写入 `docs/API_CONTRACT.md`
 - [x] 评审扣分点回应和证据矩阵已写入 `docs/ENGINEERING_EVIDENCE.md`
 - [x] 技术报告包含系统架构、执行机制、质量控制、应用价值
@@ -25,6 +26,8 @@
 - [x] 稳定性与工具耗时摘要已生成，见 `submission_artifacts/stability/`
 - [x] 成本、速度与质量分组对比已生成，见 `submission_artifacts/baseline_comparison/`
 - [x] LLM token 与成本审计报告已生成，见 `submission_artifacts/llm_cost/`
+- [x] LLM impact 对比报告已生成，见 `submission_artifacts/llm_impact/`
+- [x] Artifact 总索引已生成，见 `submission_artifacts/ARTIFACTS_INDEX.md`
 - [x] Live ModelScope DeepSeek-V4-Flash 复跑已记录 provider token usage：4309 tokens
 - [x] 对标矩阵与后续 benchmark/roadmap 已写入 `docs/BENCHMARK_AND_ROADMAP.md`
 - [x] 至少 5 个典型任务案例，见 `submission_artifacts/cases/`

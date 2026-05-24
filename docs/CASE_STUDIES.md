@@ -202,6 +202,10 @@ LLM 在该案例中的职责是：
 
 当前代码已把 LLM 从单纯解析后复核前移到解析前调度。开启 `--llm deepseek` 或 `--llm modelscope` 时，trace 会新增 `llm_pre_execution_planning`，结果会新增 `execution_control` 和 `llm_analysis.pre_execution_plan`，记录模型建议的 profile、runner、backend、method、语言、目标 schema 和恢复策略；系统只应用安全白名单内且未被用户显式锁定的建议。
 
+LLM impact 对比位置：`submission_artifacts/llm_impact/`
+
+该报告由 `scripts/build_llm_impact_report.py` 生成。当前保存结果对比财报 HTML 的规则运行与 LLM-enabled 运行：两者质量分都是 `pass` 100；LLM-enabled 运行额外记录 4309 tokens、目标 schema、复核重点和 5 条 recovery suggestion。当前保存的旧 LLM artifact 还没有 `llm_quality_decision` 字段；新运行会把解析后复核写入 `recovery_decision.llm_quality_decision`。
+
 ## 11. 带标注评测指标
 
 评测报告位置：`submission_artifacts/evaluation/`
@@ -258,6 +262,10 @@ API 并发 smoke 位置：`submission_artifacts/api_load_smoke/`
 该报告由 `scripts/build_baseline_comparison.py` 生成，复用 evaluation 与 stability 两份报告，把 17 个案例按 native HTML、MinerU CLI PDF、Office、LLM recovery、挑战 fixture 和官方公开 PDF 分组。当前保存结果显示每组轻量人工标注检查均通过，同时保留工具耗时、平均质量分、trace 步骤、页级 provenance 和 recovery 执行数量，用来回应评审关于“成本、速度、精度平衡没有量化”的追问。
 
 口径说明：稳定性报告是保存 artifact 的摘要；API 并发 smoke 是本地进程内接口验证；HTTP loopback 压测走真实本地 TCP 请求；长文档分片案例是单文档在线 API 编排验证；成本/速度/质量对比基于保存 artifact 和人工标注。
+
+Artifact 总索引位置：`submission_artifacts/ARTIFACTS_INDEX.md`
+
+该索引由 `scripts/build_artifacts_index.py` 生成，用于让评审快速定位各目录的 result/trace 数量和主报告。
 
 ## 13. 后续补充项
 
