@@ -1,5 +1,6 @@
-# MinerU Data Agent Run dd5ba81bd642
+# MinerU Data Agent Run 8edb4766c056
 
+- Schema version: 2026-05-24
 - Task: Parse a cross-page-style financial control pack, extract document id, owner, tables, subtotal/total evidence, risks, recommendations, trace, and retrieval chunks.
 - Profile: financial_report
 - Execution method: auto

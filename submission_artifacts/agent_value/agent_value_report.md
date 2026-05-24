@@ -7,8 +7,8 @@ Saved-artifact report of what the Agent layer adds on top of parser Markdown/con
 - Cases: 37
 - Decision modes: `{"controlled_fault_injection": 5, "deterministic_rules": 25, "llm_enabled_saved_result_without_live_trace": 1, "offline_scripted_decision_regression": 5, "saved_live_llm_trace": 1}`
 - Parser runners: `{"-": 12, "agent-api": 8, "cli": 3, "native": 14}`
-- With state machine: 15
-- With runtime recovery plan: 15
+- With state machine: 17
+- With runtime recovery plan: 17
 - With task_result: 17
 - With field evidence: 19
 - With cross-page references: 2
@@ -39,8 +39,8 @@ Saved-artifact report of what the Agent layer adds on top of parser Markdown/con
 
 | Case | Mode | Runner | Schema | State | Quality | Recovery | Evidence | Retrieval |
 | --- | --- | --- | ---: | --- | --- | --- | ---: | ---: |
-| `submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/result.json` | `deterministic_rules` | `native` | 8 | - | pass (100) | accept / initial | 5 | 3 |
-| `submission_artifacts/adaptive_cases/case_financial_growth_query/result.json` | `deterministic_rules` | `native` | 12 | - | pass (100) | accept / initial | 5 | 3 |
+| `submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/result.json` | `deterministic_rules` | `native` | 8 | yes | pass (100) | accept / initial | 5 | 3 |
+| `submission_artifacts/adaptive_cases/case_financial_growth_query/result.json` | `deterministic_rules` | `native` | 12 | yes | pass (100) | accept / initial | 5 | 3 |
 | `submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/result.json` | `deterministic_rules` | `-` | 0 | - | pass_with_warnings (92) | accept_with_review_notes / initial | 0 | 6 |
 | `submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/result.json` | `offline_scripted_decision_regression` | `native` | 12 | yes | pass_with_warnings (92) | manual_numeric_review / initial | 7 | 5 |
 | `submission_artifacts/agent_decision_cases/financial_growth_agent_plan/result.json` | `offline_scripted_decision_regression` | `native` | 14 | yes | pass (100) | accept / initial | 5 | 3 |

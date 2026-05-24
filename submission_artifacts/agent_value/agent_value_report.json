@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T12:18:56Z",
+  "generated_at": "2026-05-24T13:01:00Z",
   "scope": "Saved-artifact report of what the Agent layer adds on top of parser Markdown/content_list artifacts.",
   "aggregate": {
     "cases": 37,
@@ -17,8 +17,8 @@
       "cli": 3,
       "native": 14
     },
-    "with_state_machine": 15,
-    "with_runtime_recovery_plan": 15,
+    "with_state_machine": 17,
+    "with_runtime_recovery_plan": 17,
     "with_task_result": 17,
     "with_field_evidence": 19,
     "with_cross_page_references": 2,
@@ -66,8 +66,8 @@
       "target_schema_fields": 8,
       "post_processors": 5,
       "has_action_plan": true,
-      "has_state_machine": false,
-      "has_runtime_recovery_plan": false,
+      "has_state_machine": true,
+      "has_runtime_recovery_plan": true,
       "replan_triggers": 4,
       "quality_status": "pass",
       "quality_score": 100,
@@ -84,7 +84,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 3,
-      "trace_steps": 8,
+      "trace_steps": 10,
       "trace_tool_calls": 0,
       "live_llm_trace_calls": 0
     },
@@ -109,8 +109,8 @@
       "target_schema_fields": 12,
       "post_processors": 5,
       "has_action_plan": true,
-      "has_state_machine": false,
-      "has_runtime_recovery_plan": false,
+      "has_state_machine": true,
+      "has_runtime_recovery_plan": true,
       "replan_triggers": 4,
       "quality_status": "pass",
       "quality_score": 100,
@@ -127,7 +127,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 3,
-      "trace_steps": 8,
+      "trace_steps": 10,
       "trace_tool_calls": 0,
       "live_llm_trace_calls": 0
     },
@@ -213,7 +213,7 @@
       "cross_page_reference_count": 1,
       "task_result_keys": 5,
       "retrieval_chunks": 5,
-      "trace_steps": 12,
+      "trace_steps": 13,
       "trace_tool_calls": 2,
       "live_llm_trace_calls": 0
     },
@@ -256,7 +256,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 3,
-      "trace_steps": 12,
+      "trace_steps": 13,
       "trace_tool_calls": 2,
       "live_llm_trace_calls": 0
     },
@@ -298,7 +298,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 4,
-      "trace_steps": 13,
+      "trace_steps": 14,
       "trace_tool_calls": 2,
       "live_llm_trace_calls": 0
     },
@@ -340,7 +340,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 5,
-      "trace_steps": 12,
+      "trace_steps": 13,
       "trace_tool_calls": 2,
       "live_llm_trace_calls": 0
     },
@@ -382,7 +382,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 2,
-      "trace_steps": 12,
+      "trace_steps": 13,
       "trace_tool_calls": 2,
       "live_llm_trace_calls": 0
     },
@@ -637,7 +637,7 @@
       "cross_page_reference_count": 1,
       "task_result_keys": 5,
       "retrieval_chunks": 5,
-      "trace_steps": 9,
+      "trace_steps": 10,
       "trace_tool_calls": 0,
       "live_llm_trace_calls": 0
     },
@@ -679,7 +679,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 4,
-      "trace_steps": 10,
+      "trace_steps": 11,
       "trace_tool_calls": 0,
       "live_llm_trace_calls": 0
     },
@@ -721,7 +721,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 4,
-      "trace_steps": 9,
+      "trace_steps": 10,
       "trace_tool_calls": 0,
       "live_llm_trace_calls": 0
     },
@@ -763,7 +763,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 4,
-      "trace_steps": 9,
+      "trace_steps": 10,
       "trace_tool_calls": 0,
       "live_llm_trace_calls": 0
     },
@@ -806,7 +806,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 2,
-      "trace_steps": 9,
+      "trace_steps": 10,
       "trace_tool_calls": 0,
       "live_llm_trace_calls": 0
     },
@@ -848,7 +848,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 1,
-      "trace_steps": 10,
+      "trace_steps": 11,
       "trace_tool_calls": 2,
       "live_llm_trace_calls": 0
     },
@@ -888,7 +888,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 1,
-      "trace_steps": 10,
+      "trace_steps": 11,
       "trace_tool_calls": 2,
       "live_llm_trace_calls": 0
     },
@@ -932,7 +932,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 1,
-      "trace_steps": 10,
+      "trace_steps": 11,
       "trace_tool_calls": 1,
       "live_llm_trace_calls": 0
     },
@@ -975,7 +975,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 1,
-      "trace_steps": 10,
+      "trace_steps": 11,
       "trace_tool_calls": 0,
       "live_llm_trace_calls": 0
     },
@@ -1602,7 +1602,7 @@
       "cross_page_reference_count": 0,
       "task_result_keys": 5,
       "retrieval_chunks": 2,
-      "trace_steps": 13,
+      "trace_steps": 14,
       "trace_tool_calls": 4,
       "live_llm_trace_calls": 0
     }

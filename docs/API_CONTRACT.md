@@ -53,6 +53,7 @@ Stable top-level fields:
 
 | Field | Meaning |
 | --- | --- |
+| `schema_version` | Stable output schema contract version for downstream compatibility checks. |
 | `run_id` | Stable run identifier. |
 | `task` | Original task. |
 | `profile` | Final profile after rule/LLM planning. |
@@ -72,10 +73,12 @@ Stable top-level fields:
 Evidence fields reviewers should inspect:
 
 - `execution_control.planning_rationale`: why profile, runner, backend, method, language, and recovery policy were selected.
+- `execution_control.profile_inference`: configurable profile evidence, including keyword hits and lightweight deterministic token/character vector similarity. This is not a learned embedding model.
 - `execution_control.adaptive_decision`: task intents, target schema, post-processors, quality thresholds, and recovery strategy chosen for this request.
-- `execution_control.agent_action_plan`: subtask graph, selected tool registry, dynamic choices, replan triggers, and single-run memory policy.
+- `execution_control.agent_action_plan`: subtask graph, selected tool registry, dynamic choices, replan triggers, and local memory policy.
 - `execution_control.agent_action_plan.state_machine`: conditional DAG with dependency edges, quality-triggered recovery edges, runner/method changes, and loop policy.
-- `execution_control.runtime_recovery_plan`: recovery actions selected from the action plan and validator fallback policies before automatic recovery attempts are executed.
+- `execution_control.cross_run_memory`: local SQLite recovery statistics from previous runs under the same output root, disabled with `MINERU_DATA_AGENT_MEMORY=0`. This is deterministic statistics, not model fine-tuning or RL.
+- `execution_control.runtime_recovery_plan`: recovery actions selected from the action plan, validator fallback policies, bounded LLM suggestions, and matching local memory recommendations before automatic recovery attempts are executed.
 - `execution_control.replan_after_quality`: quality issue codes, considered actions, attempted actions, selected attempt, and next action if risk remains.
 - `execution_control.strict_page_provenance`: whether strict page provenance was requested, whether it applied to this file type, and whether the final result satisfied it.
 - `extracted.content_summary.provenance_level`: `page`, `document`, or `none`.

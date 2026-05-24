@@ -1,4 +1,72 @@
-from mineru_data_agent.planner import analyze_requirement, build_agent_action_plan, build_quality_replan, build_task_result
+import json
+
+from mineru_data_agent.planner import (
+    analyze_requirement,
+    build_agent_action_plan,
+    build_quality_replan,
+    build_task_result,
+    infer_profile,
+    infer_profile_evidence,
+)
+from mineru_data_agent.profile_config import load_profile_definitions
+
+
+def test_profile_inference_uses_configurable_evidence(monkeypatch, tmp_path) -> None:
+    config_path = tmp_path / "profiles.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "profiles": {
+                    "standard_or_contract": {
+                        "description": "Environmental penalty reports and compliance clauses.",
+                        "keywords": ["环保", "处罚", "整改"],
+                    }
+                }
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("MINERU_DATA_AGENT_PROFILE_CONFIG", str(config_path))
+    load_profile_definitions.cache_clear()
+
+    evidence = infer_profile_evidence("提取这份环保报告中的所有处罚条款和整改要求", "notice.pdf")
+
+    assert infer_profile("提取这份环保报告中的所有处罚条款和整改要求", "notice.pdf") == "standard_or_contract"
+    assert evidence["selected_profile"] == "standard_or_contract"
+    assert evidence["source"] == "profile_config"
+    assert evidence["matches"][0]["keyword_hits"]
+    assert "not a learned embedding model" in evidence["boundary"]
+
+    load_profile_definitions.cache_clear()
+
+
+def test_unknown_configured_profile_maps_to_general_document(monkeypatch, tmp_path) -> None:
+    config_path = tmp_path / "profiles.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "profiles": {
+                    "medical_claim": {
+                        "description": "Insurance claims, diagnosis, patient records.",
+                        "keywords": ["诊断", "医保", "理赔"],
+                    }
+                }
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("MINERU_DATA_AGENT_PROFILE_CONFIG", str(config_path))
+    load_profile_definitions.cache_clear()
+
+    evidence = infer_profile_evidence("抽取医保理赔诊断结论", "claim.pdf")
+
+    assert evidence["configured_profile"] == "medical_claim"
+    assert evidence["selected_profile"] == "general_document"
+    assert evidence["unsupported_profile_mapped_to"] == "general_document"
+
+    load_profile_definitions.cache_clear()
 
 
 def test_adaptive_planner_detects_growth_ranking_intent() -> None:

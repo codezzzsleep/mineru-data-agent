@@ -1,11 +1,11 @@
 {
   "doc_id": "ocr_retry_success_controlled",
   "source_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\ocr_retry_success_controlled.pdf",
-  "created_at": "2026-05-24T12:13:40.506775+00:00",
+  "created_at": "2026-05-24T13:00:50.290641+00:00",
   "output_files": {
-    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\retrieval\\retrieval_manifest.json",
-    "quality_report": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

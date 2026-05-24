@@ -1,7 +1,8 @@
 > Boundary: controlled fake MinerU runner; validates failed-attempt audit trail.
 
-# MinerU Data Agent Run f4813cc3fed7
+# MinerU Data Agent Run c759949d7acd
 
+- Schema version: 2026-05-24
 - Task: 解析稀疏 PDF；记录 OCR 重试失败后的保底结果。
 - Profile: general_document
 - Execution method: auto

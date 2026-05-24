@@ -4,35 +4,35 @@ Static repository quality summary generated from local files.
 
 ## Aggregate
 
-- Python files: 51
-- Physical lines: 14155
-- Code lines: 12569
-- Classes: 36
-- Functions: 580
+- Python files: 54
+- Physical lines: 14812
+- Code lines: 13145
+- Classes: 38
+- Functions: 609
 - Test files: 12
-- Test functions: 80
+- Test functions: 83
 - CI workflows: `[".github/workflows/tests.yml"]`
 - Coverage measured: true
-- Line coverage: 81.69
+- Line coverage: 82.22
 - Coverage report: `submission_artifacts/coverage/coverage_report.md`
 
 ## By Area
 
 | Area | Files | Physical Lines | Code Lines | Classes | Functions | Test Functions |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| src | 14 | 6753 | 6058 | 19 | 273 | 0 |
-| scripts | 25 | 5614 | 4999 | 9 | 211 | 0 |
-| tests | 12 | 1788 | 1512 | 8 | 96 | 80 |
+| src | 16 | 7152 | 6416 | 21 | 291 | 0 |
+| scripts | 26 | 5764 | 5124 | 9 | 219 | 0 |
+| tests | 12 | 1896 | 1605 | 8 | 99 | 83 |
 
 ## Largest Python Files
 
 | File | Area | Code Lines | Functions | Classes |
 | --- | --- | ---: | ---: | ---: |
-| `src/mineru_data_agent/agent.py` | src | 1580 | 44 | 2 |
+| `src/mineru_data_agent/agent.py` | src | 1675 | 45 | 2 |
 | `src/mineru_data_agent/extractors.py` | src | 898 | 59 | 1 |
-| `src/mineru_data_agent/planner.py` | src | 774 | 29 | 2 |
+| `src/mineru_data_agent/planner.py` | src | 786 | 30 | 2 |
+| `tests/test_agent_recovery.py` | tests | 529 | 24 | 8 |
 | `src/mineru_data_agent/llm_client.py` | src | 509 | 19 | 3 |
-| `tests/test_agent_recovery.py` | tests | 493 | 23 | 8 |
 | `src/mineru_data_agent/mineru_client.py` | src | 451 | 23 | 3 |
 | `src/mineru_data_agent/evaluation.py` | src | 431 | 21 | 0 |
 | `src/mineru_data_agent/retrieval_exporter.py` | src | 394 | 24 | 1 |
@@ -45,7 +45,7 @@ Static repository quality summary generated from local files.
 
 | File | Tests |
 | --- | ---: |
-| `tests/test_agent_recovery.py` | 8 |
+| `tests/test_agent_recovery.py` | 9 |
 | `tests/test_api.py` | 11 |
 | `tests/test_artifact_reports.py` | 6 |
 | `tests/test_batch.py` | 2 |
@@ -54,7 +54,7 @@ Static repository quality summary generated from local files.
 | `tests/test_extractors.py` | 13 |
 | `tests/test_llm_client.py` | 10 |
 | `tests/test_mineru_client.py` | 6 |
-| `tests/test_planner.py` | 4 |
+| `tests/test_planner.py` | 6 |
 | `tests/test_retrieval_exporter.py` | 5 |
 | `tests/test_validators.py` | 11 |
 

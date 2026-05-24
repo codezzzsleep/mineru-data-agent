@@ -2,7 +2,7 @@
 
 This is a synthetic challenge fixture used to stress a specific edge case.
 
-- Run id: `6bc536ef8ea8`
+- Run id: `3095f0c1ba2b`
 - Profile: `low_quality_ocr`
 - Quality: `pass` (100/100)
 - Recovery executed: `true`

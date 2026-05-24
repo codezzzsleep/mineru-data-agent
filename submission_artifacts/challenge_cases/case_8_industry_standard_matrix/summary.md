@@ -1,5 +1,6 @@
-# MinerU Data Agent Run 749ca8669a9b
+# MinerU Data Agent Run e4de9c3c7280
 
+- Schema version: 2026-05-24
 - Task: Parse an industry standard compliance matrix, extract standard id, owner, requirements, severity, exception rules, quality logs, and retrieval chunks.
 - Profile: standard_or_contract
 - Execution method: auto

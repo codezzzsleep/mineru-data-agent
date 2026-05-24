@@ -1,9 +1,9 @@
 {
-  "run_id": "40786b721414",
+  "run_id": "9d9fc853fe71",
   "task": "解析稀疏 PDF；初始文本过短时切到 OCR。",
   "profile": "general_document",
   "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\ocr_retry_success_controlled.pdf",
-  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414",
+  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -56,6 +56,13 @@
         "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
         "manual_numeric_review when subtotal/total consistency checks fail"
       ]
+    },
+    "profile_inference": {
+      "selected_profile": "general_document",
+      "source": "explicit_request",
+      "method": "explicit_profile",
+      "matches": [],
+      "boundary": "Profile was supplied by the caller; configurable inference was not used."
     },
     "adaptive_decision": {
       "profile": "general_document",
@@ -490,22 +497,37 @@
         }
       },
       "memory_policy": {
-        "scope": "single_run_trace",
+        "scope": "single_run_trace_and_local_sqlite_statistics",
         "writes": [
           "execution_control.agent_action_plan",
           "trace.steps",
           "recovery_decision.attempts",
-          "retrieval_manifest"
+          "retrieval_manifest",
+          "output_root/.mineru_data_agent/memory.sqlite"
         ],
         "reads": [
           "input_metadata",
           "task_intents",
           "quality_issues",
-          "retry_history"
+          "retry_history",
+          "local recovery outcomes with matching profile and issue codes"
         ],
-        "cross_run_learning": false,
-        "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+        "cross_run_learning": "local_sqlite_recovery_statistics",
+        "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+        "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
       }
+    },
+    "cross_run_memory": {
+      "enabled": true,
+      "path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\.mineru_data_agent\\memory.sqlite",
+      "profile": "general_document",
+      "issue_codes": [
+        "short_text"
+      ],
+      "stats": [],
+      "recommended_actions": [],
+      "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+      "recorded": true
     },
     "runtime_recovery_plan": {
       "source": "agent_action_plan.state_machine",
@@ -520,10 +542,18 @@
           "reason": "sparse PDF text often needs OCR mode",
           "runner_change": null,
           "method_change": "auto->ocr",
+          "additional_sources": [
+            {
+              "source": "validator_policy",
+              "issue_code": "short_text",
+              "reason": "quality report indicates sparse or OCR-sensitive result"
+            }
+          ],
           "skip_reason": "",
           "runtime_status": "executed"
         }
       ],
+      "memory_recommended_actions": [],
       "loop_policy": {
         "max_attempts_per_recovery_action": 1,
         "selection_rule": "choose highest quality score while preserving audit trail",
@@ -698,8 +728,8 @@
         ],
         "selected": false,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\mineru\\ocr_retry_success_controlled\\auto\\ocr_retry_success_controlled.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\mineru\\ocr_retry_success_controlled\\auto\\ocr_retry_success_controlled_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\mineru\\ocr_retry_success_controlled\\auto\\ocr_retry_success_controlled.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\mineru\\ocr_retry_success_controlled\\auto\\ocr_retry_success_controlled_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -717,8 +747,8 @@
         "issue_codes": [],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -730,9 +760,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 1,
       "by_type": {
@@ -747,8 +777,8 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -756,8 +786,9 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\summary.md",
+  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9d9fc853fe71\\summary.md",
+  "schema_version": "2026-05-24",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

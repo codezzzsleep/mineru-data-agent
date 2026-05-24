@@ -1,9 +1,9 @@
 {
-  "run_id": "05183ace2503",
+  "run_id": "4795b51e1c1a",
   "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。",
   "profile": "financial_report",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -71,6 +71,55 @@
         "schema and recovery priorities are derived before parsing and saved for audit",
         "LLM preplan target schema and verification focus were merged into the adaptive decision."
       ]
+    },
+    "profile_inference": {
+      "selected_profile": "financial_report",
+      "source": "built_in_profile_config",
+      "method": "config_keyword_and_lightweight_semantic_vector",
+      "config_path": "",
+      "matches": [
+        {
+          "profile": "financial_report",
+          "score": 0.1396,
+          "keyword_hits": [
+            "财报",
+            "financial"
+          ],
+          "semantic_score": 0.1326,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "general_document",
+          "score": 0.1328,
+          "keyword_hits": [
+            "report"
+          ],
+          "semantic_score": 0.0608,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "standard_or_contract",
+          "score": 0.0,
+          "keyword_hits": [],
+          "semantic_score": 0.0,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "workflow_or_diagram",
+          "score": 0.0,
+          "keyword_hits": [],
+          "semantic_score": 0.0,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "low_quality_ocr",
+          "score": 0.0,
+          "keyword_hits": [],
+          "semantic_score": 0.0,
+          "source": "built_in_profile_config"
+        }
+      ],
+      "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
     },
     "adaptive_decision": {
       "profile": "financial_report",
@@ -616,22 +665,38 @@
         }
       },
       "memory_policy": {
-        "scope": "single_run_trace",
+        "scope": "single_run_trace_and_local_sqlite_statistics",
         "writes": [
           "execution_control.agent_action_plan",
           "trace.steps",
           "recovery_decision.attempts",
-          "retrieval_manifest"
+          "retrieval_manifest",
+          "output_root/.mineru_data_agent/memory.sqlite"
         ],
         "reads": [
           "input_metadata",
           "task_intents",
           "quality_issues",
-          "retry_history"
+          "retry_history",
+          "local recovery outcomes with matching profile and issue codes"
         ],
-        "cross_run_learning": false,
-        "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+        "cross_run_learning": "local_sqlite_recovery_statistics",
+        "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+        "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
       }
+    },
+    "cross_run_memory": {
+      "enabled": true,
+      "path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\.mineru_data_agent\\memory.sqlite",
+      "profile": "financial_report",
+      "issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "stats": [],
+      "recommended_actions": [],
+      "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+      "recorded": true
     },
     "runtime_recovery_plan": {
       "source": "agent_action_plan.state_machine",
@@ -651,6 +716,7 @@
           "runtime_status": "skipped"
         }
       ],
+      "memory_recommended_actions": [],
       "loop_policy": {
         "max_attempts_per_recovery_action": 1,
         "selection_rule": "choose highest quality score while preserving audit trail",
@@ -1416,8 +1482,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\html\\case_1_financial_report.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\html\\case_1_financial_report_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\html\\case_1_financial_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\html\\case_1_financial_report_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1452,9 +1518,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 3,
       "by_type": {
@@ -1556,6 +1622,55 @@
           "schema and recovery priorities are derived before parsing and saved for audit",
           "LLM preplan target schema and verification focus were merged into the adaptive decision."
         ]
+      },
+      "profile_inference": {
+        "selected_profile": "financial_report",
+        "source": "built_in_profile_config",
+        "method": "config_keyword_and_lightweight_semantic_vector",
+        "config_path": "",
+        "matches": [
+          {
+            "profile": "financial_report",
+            "score": 0.1396,
+            "keyword_hits": [
+              "财报",
+              "financial"
+            ],
+            "semantic_score": 0.1326,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "general_document",
+            "score": 0.1328,
+            "keyword_hits": [
+              "report"
+            ],
+            "semantic_score": 0.0608,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "standard_or_contract",
+            "score": 0.0,
+            "keyword_hits": [],
+            "semantic_score": 0.0,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "workflow_or_diagram",
+            "score": 0.0,
+            "keyword_hits": [],
+            "semantic_score": 0.0,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "low_quality_ocr",
+            "score": 0.0,
+            "keyword_hits": [],
+            "semantic_score": 0.0,
+            "source": "built_in_profile_config"
+          }
+        ],
+        "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
       },
       "adaptive_decision": {
         "profile": "financial_report",
@@ -2101,22 +2216,38 @@
           }
         },
         "memory_policy": {
-          "scope": "single_run_trace",
+          "scope": "single_run_trace_and_local_sqlite_statistics",
           "writes": [
             "execution_control.agent_action_plan",
             "trace.steps",
             "recovery_decision.attempts",
-            "retrieval_manifest"
+            "retrieval_manifest",
+            "output_root/.mineru_data_agent/memory.sqlite"
           ],
           "reads": [
             "input_metadata",
             "task_intents",
             "quality_issues",
-            "retry_history"
+            "retry_history",
+            "local recovery outcomes with matching profile and issue codes"
           ],
-          "cross_run_learning": false,
-          "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+          "cross_run_learning": "local_sqlite_recovery_statistics",
+          "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+          "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
         }
+      },
+      "cross_run_memory": {
+        "enabled": true,
+        "path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\.mineru_data_agent\\memory.sqlite",
+        "profile": "financial_report",
+        "issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified"
+        ],
+        "stats": [],
+        "recommended_actions": [],
+        "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+        "recorded": true
       },
       "runtime_recovery_plan": {
         "source": "agent_action_plan.state_machine",
@@ -2136,6 +2267,7 @@
             "runtime_status": "skipped"
           }
         ],
+        "memory_recommended_actions": [],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
@@ -2332,8 +2464,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\html\\case_1_financial_report.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\html\\case_1_financial_report_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\html\\case_1_financial_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\html\\case_1_financial_report_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -2341,6 +2473,7 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\summary.md",
+  "schema_version": "2026-05-24"
 }

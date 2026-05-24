@@ -1,14 +1,21 @@
 {
-  "created_at": "2026-05-24T12:18:31.244961+00:00",
+  "created_at": "2026-05-24T13:00:49.210336+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T12:18:31.232265+00:00",
-      "ended_at": "2026-05-24T12:18:31.233268+00:00",
+      "started_at": "2026-05-24T13:00:49.120532+00:00",
+      "ended_at": "2026-05-24T13:00:49.120532+00:00",
       "detail": {
         "task": "Parse an industry standard compliance matrix, extract standard id, owner, requirements, severity, exception rules, quality logs, and retrieval chunks.",
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_8_industry_standard_matrix.html",
+        "profile_inference": {
+          "selected_profile": "standard_or_contract",
+          "source": "explicit_request",
+          "method": "explicit_profile",
+          "matches": [],
+          "boundary": "Profile was supplied by the caller; configurable inference was not used."
+        },
         "adaptive_decision": {
           "profile": "standard_or_contract",
           "task_intents": [
@@ -54,8 +61,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T12:18:31.233268+00:00",
-      "ended_at": "2026-05-24T12:18:31.233268+00:00",
+      "started_at": "2026-05-24T13:00:49.120532+00:00",
+      "ended_at": "2026-05-24T13:00:49.121533+00:00",
       "detail": {
         "subtask_count": 6,
         "selected_tools": [
@@ -71,8 +78,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T12:18:31.233268+00:00",
-      "ended_at": "2026-05-24T12:18:31.238384+00:00",
+      "started_at": "2026-05-24T13:00:49.121533+00:00",
+      "ended_at": "2026-05-24T13:00:49.126076+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_8_industry_standard_matrix.html"
       }
@@ -80,8 +87,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T12:18:31.238384+00:00",
-      "ended_at": "2026-05-24T12:18:31.239383+00:00",
+      "started_at": "2026-05-24T13:00:49.126076+00:00",
+      "ended_at": "2026-05-24T13:00:49.126936+00:00",
       "detail": {
         "item_count": 11,
         "page_count": 0,
@@ -117,8 +124,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T12:18:31.239383+00:00",
-      "ended_at": "2026-05-24T12:18:31.239383+00:00",
+      "started_at": "2026-05-24T13:00:49.126936+00:00",
+      "ended_at": "2026-05-24T13:00:49.126936+00:00",
       "detail": {
         "profile": "standard_or_contract"
       }
@@ -126,14 +133,15 @@
     {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T12:18:31.239383+00:00",
-      "ended_at": "2026-05-24T12:18:31.239383+00:00",
+      "started_at": "2026-05-24T13:00:49.127475+00:00",
+      "ended_at": "2026-05-24T13:00:49.127475+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
           "document_level_provenance"
         ],
         "actions": [],
+        "memory_recommended_actions": [],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
@@ -145,8 +153,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T12:18:31.239383+00:00",
-      "ended_at": "2026-05-24T12:18:31.239383+00:00",
+      "started_at": "2026-05-24T13:00:49.127475+00:00",
+      "ended_at": "2026-05-24T13:00:49.127475+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "initial"
@@ -155,8 +163,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T12:18:31.239383+00:00",
-      "ended_at": "2026-05-24T12:18:31.239383+00:00",
+      "started_at": "2026-05-24T13:00:49.127475+00:00",
+      "ended_at": "2026-05-24T13:00:49.127475+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass",
@@ -205,8 +213,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T12:18:31.239383+00:00",
-      "ended_at": "2026-05-24T12:18:31.241415+00:00",
+      "started_at": "2026-05-24T13:00:49.127475+00:00",
+      "ended_at": "2026-05-24T13:00:49.130513+00:00",
       "detail": {
         "chunks_count": 4,
         "by_type": {
@@ -216,17 +224,32 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\e4de9c3c7280\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\e4de9c3c7280\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\e4de9c3c7280\\retrieval\\retrieval_quality.json"
+      }
+    },
+    {
+      "name": "agent_memory_update",
+      "status": "completed",
+      "started_at": "2026-05-24T13:00:49.130513+00:00",
+      "ended_at": "2026-05-24T13:00:49.206228+00:00",
+      "detail": {
+        "enabled": true,
+        "recorded": true,
+        "profile": "standard_or_contract",
+        "initial_issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected_attempt": "initial"
       }
     }
   ],
   "tool_calls": [],
-  "run_id": "749ca8669a9b",
+  "run_id": "e4de9c3c7280",
   "task": "Parse an industry standard compliance matrix, extract standard id, owner, requirements, severity, exception rules, quality logs, and retrieval chunks.",
   "profile": "standard_or_contract",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\summary.md"
+  "result_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\e4de9c3c7280\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\e4de9c3c7280\\summary.md"
 }

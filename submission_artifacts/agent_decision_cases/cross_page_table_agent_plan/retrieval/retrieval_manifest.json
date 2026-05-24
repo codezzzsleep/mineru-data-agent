@@ -1,11 +1,11 @@
 {
   "doc_id": "case_6_cross_page_financial_table",
   "source_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html",
-  "created_at": "2026-05-24T12:13:19.175632+00:00",
+  "created_at": "2026-05-24T13:00:46.739233+00:00",
   "output_files": {
-    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\6015703adc96\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\6015703adc96\\retrieval\\retrieval_manifest.json",
-    "quality_report": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\6015703adc96\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0cb156d8db98\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0cb156d8db98\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0cb156d8db98\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

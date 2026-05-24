@@ -1,9 +1,9 @@
 {
-  "run_id": "3dad4a05f2ff",
+  "run_id": "c8075b57983d",
   "task": "清理 OCR 噪声合同并保留质量问题。",
   "profile": "low_quality_ocr",
   "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\text_cleanup_mojibake.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff",
+  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -58,6 +58,13 @@
         "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
         "manual_numeric_review when subtotal/total consistency checks fail"
       ]
+    },
+    "profile_inference": {
+      "selected_profile": "low_quality_ocr",
+      "source": "explicit_request",
+      "method": "explicit_profile",
+      "matches": [],
+      "boundary": "Profile was supplied by the caller; configurable inference was not used."
     },
     "adaptive_decision": {
       "profile": "low_quality_ocr",
@@ -482,22 +489,39 @@
         }
       },
       "memory_policy": {
-        "scope": "single_run_trace",
+        "scope": "single_run_trace_and_local_sqlite_statistics",
         "writes": [
           "execution_control.agent_action_plan",
           "trace.steps",
           "recovery_decision.attempts",
-          "retrieval_manifest"
+          "retrieval_manifest",
+          "output_root/.mineru_data_agent/memory.sqlite"
         ],
         "reads": [
           "input_metadata",
           "task_intents",
           "quality_issues",
-          "retry_history"
+          "retry_history",
+          "local recovery outcomes with matching profile and issue codes"
         ],
-        "cross_run_learning": false,
-        "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+        "cross_run_learning": "local_sqlite_recovery_statistics",
+        "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+        "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
       }
+    },
+    "cross_run_memory": {
+      "enabled": true,
+      "path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\.mineru_data_agent\\memory.sqlite",
+      "profile": "low_quality_ocr",
+      "issue_codes": [
+        "possible_mojibake",
+        "document_level_provenance",
+        "expected_anomaly_signal_missing"
+      ],
+      "stats": [],
+      "recommended_actions": [],
+      "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+      "recorded": true
     },
     "runtime_recovery_plan": {
       "source": "agent_action_plan.state_machine",
@@ -514,10 +538,18 @@
           "reason": "encoding noise can be improved without rerunning OCR",
           "runner_change": null,
           "method_change": null,
+          "additional_sources": [
+            {
+              "source": "validator_policy",
+              "issue_code": "possible_mojibake",
+              "reason": "text cleanup remains available for mojibake even if no trigger matched"
+            }
+          ],
           "skip_reason": "",
           "runtime_status": "executed"
         }
       ],
+      "memory_recommended_actions": [],
       "loop_policy": {
         "max_attempts_per_recovery_action": 1,
         "selection_rule": "choose highest quality score while preserving audit trail",
@@ -781,8 +813,8 @@
         ],
         "selected": false,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\html\\text_cleanup_mojibake.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\html\\text_cleanup_mojibake_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\html\\text_cleanup_mojibake.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\html\\text_cleanup_mojibake_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -803,8 +835,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\recovery\\text_cleanup\\text_cleanup_mojibake.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\recovery\\text_cleanup\\text_cleanup_mojibake_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\recovery\\text_cleanup\\text_cleanup_mojibake.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\recovery\\text_cleanup\\text_cleanup_mojibake_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -816,9 +848,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 1,
       "by_type": {
@@ -833,8 +865,8 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\recovery\\text_cleanup\\text_cleanup_mojibake.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\recovery\\text_cleanup\\text_cleanup_mojibake_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\recovery\\text_cleanup\\text_cleanup_mojibake.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\recovery\\text_cleanup\\text_cleanup_mojibake_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -842,8 +874,9 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\summary.md",
+  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c8075b57983d\\summary.md",
+  "schema_version": "2026-05-24",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

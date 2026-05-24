@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T12:18:56Z",
+  "generated_at": "2026-05-24T13:06:48Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -70,7 +70,7 @@
       "selected_non_initial": 6,
       "executed_rate": 0.20512820512820512,
       "selected_non_initial_rate": 0.15384615384615385,
-      "average_non_initial_tool_seconds_when_executed": 4.421,
+      "average_non_initial_tool_seconds_when_executed": 2.936,
       "attempt_counts": {
         "cli_fallback": 1,
         "initial": 39,
@@ -143,8 +143,8 @@
         "cli": 3,
         "native": 14
       },
-      "with_state_machine": 15,
-      "with_runtime_recovery_plan": 15,
+      "with_state_machine": 17,
+      "with_runtime_recovery_plan": 17,
       "with_task_result": 17,
       "with_field_evidence": 19,
       "with_cross_page_references": 2,
@@ -155,25 +155,25 @@
       "with_live_llm_trace": 1
     },
     "code_quality": {
-      "python_files": 51,
-      "physical_lines": 14155,
-      "code_lines": 12569,
-      "classes": 36,
-      "functions": 580,
-      "test_functions": 80,
+      "python_files": 54,
+      "physical_lines": 14812,
+      "code_lines": 13145,
+      "classes": 38,
+      "functions": 609,
+      "test_functions": 83,
       "test_files": 12,
       "workflow_files": [
         ".github/workflows/tests.yml"
       ],
       "coverage_measured": true,
-      "line_coverage_percent": 81.69,
+      "line_coverage_percent": 82.22,
       "coverage_report": "submission_artifacts/coverage/coverage_report.md"
     },
     "coverage": {
       "measured": true,
-      "line_coverage_percent": 81.69,
-      "num_statements": 3364,
-      "missing_lines": 616
+      "line_coverage_percent": 82.22,
+      "num_statements": 3544,
+      "missing_lines": 630
     }
   },
   "categories": [
@@ -482,6 +482,40 @@
         "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/retrieval/retrieval_manifest.json",
         "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/retrieval/retrieval_quality.json",
         "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/html/case_3_standard_contract_content_list.json"
+      ]
+    },
+    {
+      "id": "memory_cases",
+      "title": "Cross-run memory",
+      "description": "Controlled local SQLite recovery-memory case showing a later run can read prior recovery outcomes.",
+      "path": "submission_artifacts/memory_cases",
+      "exists": true,
+      "result_files": 3,
+      "trace_files": 3,
+      "readmes": [
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/html/input.md",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/recovery/text_cleanup/input.md",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/summary.md",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/second_run/html/input.md",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/second_run/recovery/text_cleanup/input.md",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/second_run/summary.md",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/html/input_content_list.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/recovery/text_cleanup/input_content_list.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/retrieval/retrieval_manifest.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/retrieval/retrieval_quality.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/memory_report.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/retrieval/retrieval_manifest.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/retrieval/retrieval_quality.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/second_run/html/input_content_list.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/second_run/recovery/text_cleanup/input_content_list.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/second_run/retrieval/retrieval_manifest.json",
+        "submission_artifacts/memory_cases/cross_run_text_cleanup_memory/second_run/retrieval/retrieval_quality.json"
       ]
     },
     {

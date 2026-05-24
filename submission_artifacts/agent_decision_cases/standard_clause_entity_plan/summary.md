@@ -1,7 +1,8 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run 38961250fefc
+# MinerU Data Agent Run 980af4c9df85
 
+- Schema version: 2026-05-24
 - Task: 识别合同条款中的甲方、乙方、义务、例外条件和来源证据。
 - Profile: standard_or_contract
 - Execution method: auto

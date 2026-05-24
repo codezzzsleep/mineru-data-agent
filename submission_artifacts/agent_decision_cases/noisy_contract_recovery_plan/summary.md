@@ -1,12 +1,13 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run e1a2cd2ccb74
+# MinerU Data Agent Run 0dc4770ca4b3
 
+- Schema version: 2026-05-24
 - Task: 解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。
 - Profile: low_quality_ocr
 - Execution method: auto
 - Execution backend: pipeline
-- LLM preplan applied changes: 1
+- LLM preplan applied changes: 0
 - Input: `<PROJECT_ROOT>\examples\challenge_cases\case_7_noisy_contract_scan.html`
 - Quality: pass (100/100)
 - Content blocks: 11
@@ -84,8 +85,6 @@
 ## LLM Agent Analysis
 
 Pre-execution control: profile=low_quality_ocr, runner=native, method=ocr, backend=pipeline
-Applied LLM control changes:
-- profile: standard_or_contract -> low_quality_ocr
 
 解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。
 

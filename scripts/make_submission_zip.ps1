@@ -43,7 +43,7 @@ if ($IncludeReviewExchange) {
   $items += "review_exchange"
 }
 
-$excludeDirs = @("__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".venv", "runs", "dist")
+$excludeDirs = @("__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".venv", ".mineru_data_agent", "runs", "dist")
 $excludeFiles = @("*.pyc", "*.pyo", "*.log", ".env")
 
 foreach ($item in $items) {

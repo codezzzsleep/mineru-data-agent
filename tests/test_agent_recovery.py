@@ -27,11 +27,51 @@ def test_text_cleanup_recovery_selects_cleaned_attempt(tmp_path: Path) -> None:
     assert result.recovery_decision["decision"] == "recovered_accept"
     assert result.recovery_decision["selected_attempt"] == "text_cleanup"
     assert result.recovery_decision["executed"] is True
+    assert result.schema_version == "2026-05-24"
+    assert result.to_jsonable()["schema_version"] == "2026-05-24"
     runtime_plan = result.execution_control["runtime_recovery_plan"]
     assert runtime_plan["actions"][0]["action"] == "text_cleanup"
     assert runtime_plan["actions"][0]["runtime_status"] == "executed"
     assert "possible_mojibake" in result.recovery_decision["initial_issue_codes"]
     assert Path(result.artifacts["markdown_path"]).parts[-3:-1] == ("recovery", "text_cleanup")
+
+
+def test_cross_run_memory_recommends_prior_successful_recovery(tmp_path: Path) -> None:
+    html_path = tmp_path / "mojibake.html"
+    noisy = "锟斤拷" + ("这是一段需要清理但仍可结构化的巡检文本。" * 20)
+    html_path.write_text(
+        f"<html><body><h1>巡检日报</h1><p>报告日期：2026-05-23</p><p>{noisy}</p></body></html>",
+        encoding="utf-8",
+    )
+    output_root = tmp_path / "runs"
+    agent = MinerUDataAgent()
+
+    first = agent.run(
+        html_path,
+        output_root,
+        task="清理网页巡检日报并输出结构化结果",
+        profile="general_document",
+    )
+    second = agent.run(
+        html_path,
+        output_root,
+        task="清理网页巡检日报并输出结构化结果",
+        profile="general_document",
+    )
+
+    assert first.execution_control["cross_run_memory"]["recommended_actions"] == []
+    memory = second.execution_control["cross_run_memory"]
+    assert memory["enabled"] is True
+    assert memory["recommended_actions"] == ["text_cleanup"]
+    assert memory["stats"][0]["action"] == "text_cleanup"
+    assert memory["stats"][0]["successes"] == 1
+    runtime_plan = second.execution_control["runtime_recovery_plan"]
+    assert "text_cleanup" in runtime_plan["memory_recommended_actions"]
+    assert any(
+        source["source"] == "local_sqlite_memory.recommended_actions"
+        for source in runtime_plan["actions"][0].get("additional_sources", [])
+    )
+    assert (output_root / ".mineru_data_agent" / "memory.sqlite").exists()
 
 
 def test_pdf_quality_warning_retries_with_ocr_and_selects_better_attempt(tmp_path: Path) -> None:

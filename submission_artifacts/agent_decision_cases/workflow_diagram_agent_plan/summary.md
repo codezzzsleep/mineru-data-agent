@@ -1,7 +1,8 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run c733182007e0
+# MinerU Data Agent Run 5408ab934a45
 
+- Schema version: 2026-05-24
 - Task: 把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。
 - Profile: workflow_or_diagram
 - Execution method: auto

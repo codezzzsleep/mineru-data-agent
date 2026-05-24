@@ -1,14 +1,67 @@
 {
-  "created_at": "2026-05-24T12:13:19.126613+00:00",
+  "created_at": "2026-05-24T13:00:46.693952+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.111588+00:00",
-      "ended_at": "2026-05-24T12:13:19.111588+00:00",
+      "started_at": "2026-05-24T13:00:46.568719+00:00",
+      "ended_at": "2026-05-24T13:00:46.569721+00:00",
       "detail": {
         "task": "把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。",
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html",
+        "profile_inference": {
+          "selected_profile": "workflow_or_diagram",
+          "source": "built_in_profile_config",
+          "method": "config_keyword_and_lightweight_semantic_vector",
+          "config_path": "",
+          "matches": [
+            {
+              "profile": "workflow_or_diagram",
+              "score": 0.4889,
+              "keyword_hits": [
+                "流程",
+                "节点",
+                "步骤",
+                "flow",
+                "workflow",
+                "diagram"
+              ],
+              "semantic_score": 0.2528,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "general_document",
+              "score": 0.1368,
+              "keyword_hits": [
+                "文档"
+              ],
+              "semantic_score": 0.0735,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "standard_or_contract",
+              "score": 0.0089,
+              "keyword_hits": [],
+              "semantic_score": 0.0277,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "financial_report",
+              "score": 0.0085,
+              "keyword_hits": [],
+              "semantic_score": 0.0267,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "low_quality_ocr",
+              "score": 0.0,
+              "keyword_hits": [],
+              "semantic_score": 0.0,
+              "source": "built_in_profile_config"
+            }
+          ],
+          "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
+        },
         "adaptive_decision": {
           "profile": "workflow_or_diagram",
           "task_intents": [
@@ -57,8 +110,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.111588+00:00",
-      "ended_at": "2026-05-24T12:13:19.111588+00:00",
+      "started_at": "2026-05-24T13:00:46.569721+00:00",
+      "ended_at": "2026-05-24T13:00:46.569721+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "workflow_or_diagram",
@@ -113,6 +166,59 @@
               "schema and recovery priorities are derived before parsing and saved for audit",
               "LLM preplan target schema and verification focus were merged into the adaptive decision."
             ]
+          },
+          "profile_inference": {
+            "selected_profile": "workflow_or_diagram",
+            "source": "built_in_profile_config",
+            "method": "config_keyword_and_lightweight_semantic_vector",
+            "config_path": "",
+            "matches": [
+              {
+                "profile": "workflow_or_diagram",
+                "score": 0.4889,
+                "keyword_hits": [
+                  "流程",
+                  "节点",
+                  "步骤",
+                  "flow",
+                  "workflow",
+                  "diagram"
+                ],
+                "semantic_score": 0.2528,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "general_document",
+                "score": 0.1368,
+                "keyword_hits": [
+                  "文档"
+                ],
+                "semantic_score": 0.0735,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "standard_or_contract",
+                "score": 0.0089,
+                "keyword_hits": [],
+                "semantic_score": 0.0277,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "financial_report",
+                "score": 0.0085,
+                "keyword_hits": [],
+                "semantic_score": 0.0267,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "low_quality_ocr",
+                "score": 0.0,
+                "keyword_hits": [],
+                "semantic_score": 0.0,
+                "source": "built_in_profile_config"
+              }
+            ],
+            "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
           },
           "adaptive_decision": {
             "profile": "workflow_or_diagram",
@@ -642,22 +748,37 @@
               }
             },
             "memory_policy": {
-              "scope": "single_run_trace",
+              "scope": "single_run_trace_and_local_sqlite_statistics",
               "writes": [
                 "execution_control.agent_action_plan",
                 "trace.steps",
                 "recovery_decision.attempts",
-                "retrieval_manifest"
+                "retrieval_manifest",
+                "output_root/.mineru_data_agent/memory.sqlite"
               ],
               "reads": [
                 "input_metadata",
                 "task_intents",
                 "quality_issues",
-                "retry_history"
+                "retry_history",
+                "local recovery outcomes with matching profile and issue codes"
               ],
-              "cross_run_learning": false,
-              "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+              "cross_run_learning": "local_sqlite_recovery_statistics",
+              "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+              "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
             }
+          },
+          "cross_run_memory": {
+            "enabled": true,
+            "path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\.mineru_data_agent\\memory.sqlite",
+            "profile": "workflow_or_diagram",
+            "issue_codes": [
+              "document_level_provenance"
+            ],
+            "stats": [],
+            "recommended_actions": [],
+            "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+            "recorded": true
           },
           "runtime_recovery_plan": {
             "source": "agent_action_plan.state_machine",
@@ -676,6 +797,7 @@
                 "runtime_status": "skipped"
               }
             ],
+            "memory_recommended_actions": [],
             "loop_policy": {
               "max_attempts_per_recovery_action": 1,
               "selection_rule": "choose highest quality score while preserving audit trail",
@@ -733,8 +855,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.111588+00:00",
-      "ended_at": "2026-05-24T12:13:19.111588+00:00",
+      "started_at": "2026-05-24T13:00:46.569721+00:00",
+      "ended_at": "2026-05-24T13:00:46.569721+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -752,8 +874,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.111588+00:00",
-      "ended_at": "2026-05-24T12:13:19.117102+00:00",
+      "started_at": "2026-05-24T13:00:46.569721+00:00",
+      "ended_at": "2026-05-24T13:00:46.573719+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html"
       }
@@ -761,8 +883,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.117102+00:00",
-      "ended_at": "2026-05-24T12:13:19.117102+00:00",
+      "started_at": "2026-05-24T13:00:46.573719+00:00",
+      "ended_at": "2026-05-24T13:00:46.573719+00:00",
       "detail": {
         "item_count": 11,
         "page_count": 0,
@@ -804,8 +926,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.117102+00:00",
-      "ended_at": "2026-05-24T12:13:19.117102+00:00",
+      "started_at": "2026-05-24T13:00:46.573719+00:00",
+      "ended_at": "2026-05-24T13:00:46.573719+00:00",
       "detail": {
         "profile": "workflow_or_diagram"
       }
@@ -813,15 +935,15 @@
     {
       "name": "llm_agent_analysis",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.117102+00:00",
-      "ended_at": "2026-05-24T12:13:19.117102+00:00",
+      "started_at": "2026-05-24T13:00:46.573719+00:00",
+      "ended_at": "2026-05-24T13:00:46.573719+00:00",
       "detail": {}
     },
     {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.117102+00:00",
-      "ended_at": "2026-05-24T12:13:19.117102+00:00",
+      "started_at": "2026-05-24T13:00:46.574720+00:00",
+      "ended_at": "2026-05-24T13:00:46.574720+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -839,6 +961,7 @@
             "runtime_status": "skipped"
           }
         ],
+        "memory_recommended_actions": [],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
@@ -850,8 +973,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.117102+00:00",
-      "ended_at": "2026-05-24T12:13:19.117102+00:00",
+      "started_at": "2026-05-24T13:00:46.574720+00:00",
+      "ended_at": "2026-05-24T13:00:46.574720+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "initial"
@@ -860,8 +983,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.117102+00:00",
-      "ended_at": "2026-05-24T12:13:19.117102+00:00",
+      "started_at": "2026-05-24T13:00:46.574720+00:00",
+      "ended_at": "2026-05-24T13:00:46.574720+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass",
@@ -910,8 +1033,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.117102+00:00",
-      "ended_at": "2026-05-24T12:13:19.121102+00:00",
+      "started_at": "2026-05-24T13:00:46.574720+00:00",
+      "ended_at": "2026-05-24T13:00:46.576735+00:00",
       "detail": {
         "chunks_count": 2,
         "by_type": {
@@ -920,16 +1043,16 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\5408ab934a45\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\5408ab934a45\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\5408ab934a45\\retrieval\\retrieval_quality.json"
       }
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:19.121102+00:00",
-      "ended_at": "2026-05-24T12:13:19.121102+00:00",
+      "started_at": "2026-05-24T13:00:46.576735+00:00",
+      "ended_at": "2026-05-24T13:00:46.576735+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "accept",
@@ -952,6 +1075,21 @@
         "applied_effects": [
           "append_recovery_suggestion"
         ]
+      }
+    },
+    {
+      "name": "agent_memory_update",
+      "status": "completed",
+      "started_at": "2026-05-24T13:00:46.576735+00:00",
+      "ended_at": "2026-05-24T13:00:46.687947+00:00",
+      "detail": {
+        "enabled": true,
+        "recorded": true,
+        "profile": "workflow_or_diagram",
+        "initial_issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected_attempt": "initial"
       }
     }
   ],
@@ -1013,12 +1151,12 @@
       }
     }
   ],
-  "run_id": "c733182007e0",
+  "run_id": "5408ab934a45",
   "task": "把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。",
   "profile": "workflow_or_diagram",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\5408ab934a45\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\5408ab934a45\\summary.md",
   "offline_regression_boundary": {
     "enabled": true,
     "not_live_llm": true,

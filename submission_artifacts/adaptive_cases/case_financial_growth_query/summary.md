@@ -1,5 +1,6 @@
-# MinerU Data Agent Run c731abb69fe2
+# MinerU Data Agent Run ec0330a7568e
 
+- Schema version: 2026-05-24
 - Task: 找出财报中与上一期相比增长最快的项目，计算变化幅度，并给出证据。
 - Profile: financial_report
 - Execution method: auto
@@ -71,6 +72,9 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
 - export_artifacts: Write result, trace, summary, and retrieval artifacts.
+
+## Runtime Recovery Plan
+- Initial issue codes: document_level_provenance, numeric_total_verified
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance, numeric_total_verified

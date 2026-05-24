@@ -1,14 +1,63 @@
 {
-  "created_at": "2026-05-24T12:13:18.968566+00:00",
+  "created_at": "2026-05-24T13:00:46.220473+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.872254+00:00",
-      "ended_at": "2026-05-24T12:13:18.873791+00:00",
+      "started_at": "2026-05-24T13:00:46.046356+00:00",
+      "ended_at": "2026-05-24T13:00:46.049519+00:00",
       "detail": {
         "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。",
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
+        "profile_inference": {
+          "selected_profile": "financial_report",
+          "source": "built_in_profile_config",
+          "method": "config_keyword_and_lightweight_semantic_vector",
+          "config_path": "",
+          "matches": [
+            {
+              "profile": "financial_report",
+              "score": 0.1396,
+              "keyword_hits": [
+                "财报",
+                "financial"
+              ],
+              "semantic_score": 0.1326,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "general_document",
+              "score": 0.1328,
+              "keyword_hits": [
+                "report"
+              ],
+              "semantic_score": 0.0608,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "standard_or_contract",
+              "score": 0.0,
+              "keyword_hits": [],
+              "semantic_score": 0.0,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "workflow_or_diagram",
+              "score": 0.0,
+              "keyword_hits": [],
+              "semantic_score": 0.0,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "low_quality_ocr",
+              "score": 0.0,
+              "keyword_hits": [],
+              "semantic_score": 0.0,
+              "source": "built_in_profile_config"
+            }
+          ],
+          "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
+        },
         "adaptive_decision": {
           "profile": "financial_report",
           "task_intents": [
@@ -75,8 +124,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.873791+00:00",
-      "ended_at": "2026-05-24T12:13:18.873791+00:00",
+      "started_at": "2026-05-24T13:00:46.049519+00:00",
+      "ended_at": "2026-05-24T13:00:46.050521+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "financial_report",
@@ -131,6 +180,55 @@
               "schema and recovery priorities are derived before parsing and saved for audit",
               "LLM preplan target schema and verification focus were merged into the adaptive decision."
             ]
+          },
+          "profile_inference": {
+            "selected_profile": "financial_report",
+            "source": "built_in_profile_config",
+            "method": "config_keyword_and_lightweight_semantic_vector",
+            "config_path": "",
+            "matches": [
+              {
+                "profile": "financial_report",
+                "score": 0.1396,
+                "keyword_hits": [
+                  "财报",
+                  "financial"
+                ],
+                "semantic_score": 0.1326,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "general_document",
+                "score": 0.1328,
+                "keyword_hits": [
+                  "report"
+                ],
+                "semantic_score": 0.0608,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "standard_or_contract",
+                "score": 0.0,
+                "keyword_hits": [],
+                "semantic_score": 0.0,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "workflow_or_diagram",
+                "score": 0.0,
+                "keyword_hits": [],
+                "semantic_score": 0.0,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "low_quality_ocr",
+                "score": 0.0,
+                "keyword_hits": [],
+                "semantic_score": 0.0,
+                "source": "built_in_profile_config"
+              }
+            ],
+            "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
           },
           "adaptive_decision": {
             "profile": "financial_report",
@@ -676,22 +774,38 @@
               }
             },
             "memory_policy": {
-              "scope": "single_run_trace",
+              "scope": "single_run_trace_and_local_sqlite_statistics",
               "writes": [
                 "execution_control.agent_action_plan",
                 "trace.steps",
                 "recovery_decision.attempts",
-                "retrieval_manifest"
+                "retrieval_manifest",
+                "output_root/.mineru_data_agent/memory.sqlite"
               ],
               "reads": [
                 "input_metadata",
                 "task_intents",
                 "quality_issues",
-                "retry_history"
+                "retry_history",
+                "local recovery outcomes with matching profile and issue codes"
               ],
-              "cross_run_learning": false,
-              "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+              "cross_run_learning": "local_sqlite_recovery_statistics",
+              "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+              "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
             }
+          },
+          "cross_run_memory": {
+            "enabled": true,
+            "path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\.mineru_data_agent\\memory.sqlite",
+            "profile": "financial_report",
+            "issue_codes": [
+              "document_level_provenance",
+              "numeric_total_verified"
+            ],
+            "stats": [],
+            "recommended_actions": [],
+            "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+            "recorded": true
           },
           "runtime_recovery_plan": {
             "source": "agent_action_plan.state_machine",
@@ -711,6 +825,7 @@
                 "runtime_status": "skipped"
               }
             ],
+            "memory_recommended_actions": [],
             "loop_policy": {
               "max_attempts_per_recovery_action": 1,
               "selection_rule": "choose highest quality score while preserving audit trail",
@@ -783,8 +898,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.873791+00:00",
-      "ended_at": "2026-05-24T12:13:18.873791+00:00",
+      "started_at": "2026-05-24T13:00:46.050521+00:00",
+      "ended_at": "2026-05-24T13:00:46.050521+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -802,8 +917,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.873791+00:00",
-      "ended_at": "2026-05-24T12:13:18.954258+00:00",
+      "started_at": "2026-05-24T13:00:46.050521+00:00",
+      "ended_at": "2026-05-24T13:00:46.121246+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html"
       }
@@ -811,8 +926,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.954258+00:00",
-      "ended_at": "2026-05-24T12:13:18.956712+00:00",
+      "started_at": "2026-05-24T13:00:46.121246+00:00",
+      "ended_at": "2026-05-24T13:00:46.123244+00:00",
       "detail": {
         "item_count": 8,
         "page_count": 0,
@@ -863,8 +978,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.957717+00:00",
-      "ended_at": "2026-05-24T12:13:18.957717+00:00",
+      "started_at": "2026-05-24T13:00:46.123244+00:00",
+      "ended_at": "2026-05-24T13:00:46.124246+00:00",
       "detail": {
         "profile": "financial_report"
       }
@@ -872,15 +987,15 @@
     {
       "name": "llm_agent_analysis",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.957717+00:00",
-      "ended_at": "2026-05-24T12:13:18.957717+00:00",
+      "started_at": "2026-05-24T13:00:46.124246+00:00",
+      "ended_at": "2026-05-24T13:00:46.124246+00:00",
       "detail": {}
     },
     {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.958703+00:00",
-      "ended_at": "2026-05-24T12:13:18.958703+00:00",
+      "started_at": "2026-05-24T13:00:46.125246+00:00",
+      "ended_at": "2026-05-24T13:00:46.125246+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -899,6 +1014,7 @@
             "runtime_status": "skipped"
           }
         ],
+        "memory_recommended_actions": [],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
@@ -910,8 +1026,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.958703+00:00",
-      "ended_at": "2026-05-24T12:13:18.958703+00:00",
+      "started_at": "2026-05-24T13:00:46.125246+00:00",
+      "ended_at": "2026-05-24T13:00:46.125246+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "initial"
@@ -920,8 +1036,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.958703+00:00",
-      "ended_at": "2026-05-24T12:13:18.958703+00:00",
+      "started_at": "2026-05-24T13:00:46.125246+00:00",
+      "ended_at": "2026-05-24T13:00:46.125246+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass",
@@ -985,8 +1101,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.958703+00:00",
-      "ended_at": "2026-05-24T12:13:18.962476+00:00",
+      "started_at": "2026-05-24T13:00:46.125246+00:00",
+      "ended_at": "2026-05-24T13:00:46.128994+00:00",
       "detail": {
         "chunks_count": 3,
         "by_type": {
@@ -996,16 +1112,16 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\retrieval\\retrieval_quality.json"
       }
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:18.962476+00:00",
-      "ended_at": "2026-05-24T12:13:18.962476+00:00",
+      "started_at": "2026-05-24T13:00:46.128994+00:00",
+      "ended_at": "2026-05-24T13:00:46.128994+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "accept",
@@ -1028,6 +1144,22 @@
         "applied_effects": [
           "append_recovery_suggestion"
         ]
+      }
+    },
+    {
+      "name": "agent_memory_update",
+      "status": "completed",
+      "started_at": "2026-05-24T13:00:46.128994+00:00",
+      "ended_at": "2026-05-24T13:00:46.214439+00:00",
+      "detail": {
+        "enabled": true,
+        "recorded": true,
+        "profile": "financial_report",
+        "initial_issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified"
+        ],
+        "selected_attempt": "initial"
       }
     }
   ],
@@ -1089,12 +1221,12 @@
       }
     }
   ],
-  "run_id": "05183ace2503",
+  "run_id": "4795b51e1c1a",
   "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。",
   "profile": "financial_report",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4795b51e1c1a\\summary.md",
   "offline_regression_boundary": {
     "enabled": true,
     "not_live_llm": true,

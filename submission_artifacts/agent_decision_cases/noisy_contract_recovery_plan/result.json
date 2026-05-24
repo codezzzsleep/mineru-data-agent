@@ -1,9 +1,9 @@
 {
-  "run_id": "e1a2cd2ccb74",
+  "run_id": "0dc4770ca4b3",
   "task": "解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。",
   "profile": "low_quality_ocr",
   "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -33,7 +33,7 @@
       "lang": "ch"
     },
     "initial": {
-      "profile": "standard_or_contract",
+      "profile": "low_quality_ocr",
       "backend": "pipeline",
       "method": "auto",
       "lang": "ch",
@@ -67,6 +67,58 @@
         "schema and recovery priorities are derived before parsing and saved for audit",
         "LLM preplan target schema and verification focus were merged into the adaptive decision."
       ]
+    },
+    "profile_inference": {
+      "selected_profile": "low_quality_ocr",
+      "source": "built_in_profile_config",
+      "method": "config_keyword_and_lightweight_semantic_vector",
+      "config_path": "",
+      "matches": [
+        {
+          "profile": "low_quality_ocr",
+          "score": 0.3164,
+          "keyword_hits": [
+            "乱码",
+            "ocr",
+            "scan",
+            "noisy"
+          ],
+          "semantic_score": 0.1389,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "standard_or_contract",
+          "score": 0.1607,
+          "keyword_hits": [
+            "合同",
+            "contract"
+          ],
+          "semantic_score": 0.1752,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "general_document",
+          "score": 0.0124,
+          "keyword_hits": [],
+          "semantic_score": 0.0388,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "financial_report",
+          "score": 0.009,
+          "keyword_hits": [],
+          "semantic_score": 0.0282,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "workflow_or_diagram",
+          "score": 0.0,
+          "keyword_hits": [],
+          "semantic_score": 0.0,
+          "source": "built_in_profile_config"
+        }
+      ],
+      "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
     },
     "adaptive_decision": {
       "profile": "low_quality_ocr",
@@ -119,14 +171,7 @@
       ]
     },
     "runner_class": "MinerURunner",
-    "applied": [
-      {
-        "field": "profile",
-        "from": "standard_or_contract",
-        "to": "low_quality_ocr",
-        "reason": "llm_preplan"
-      }
-    ],
+    "applied": [],
     "ignored": [
       {
         "field": "backend",
@@ -581,22 +626,38 @@
         }
       },
       "memory_policy": {
-        "scope": "single_run_trace",
+        "scope": "single_run_trace_and_local_sqlite_statistics",
         "writes": [
           "execution_control.agent_action_plan",
           "trace.steps",
           "recovery_decision.attempts",
-          "retrieval_manifest"
+          "retrieval_manifest",
+          "output_root/.mineru_data_agent/memory.sqlite"
         ],
         "reads": [
           "input_metadata",
           "task_intents",
           "quality_issues",
-          "retry_history"
+          "retry_history",
+          "local recovery outcomes with matching profile and issue codes"
         ],
-        "cross_run_learning": false,
-        "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+        "cross_run_learning": "local_sqlite_recovery_statistics",
+        "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+        "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
       }
+    },
+    "cross_run_memory": {
+      "enabled": true,
+      "path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\.mineru_data_agent\\memory.sqlite",
+      "profile": "low_quality_ocr",
+      "issue_codes": [
+        "possible_mojibake",
+        "document_level_provenance"
+      ],
+      "stats": [],
+      "recommended_actions": [],
+      "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+      "recorded": true
     },
     "runtime_recovery_plan": {
       "source": "agent_action_plan.state_machine",
@@ -612,10 +673,23 @@
           "reason": "encoding noise can be improved without rerunning OCR",
           "runner_change": null,
           "method_change": null,
+          "additional_sources": [
+            {
+              "source": "validator_policy",
+              "issue_code": "possible_mojibake",
+              "reason": "text cleanup remains available for mojibake even if no trigger matched"
+            },
+            {
+              "source": "llm_post_review.recovery_suggestions",
+              "issue_code": "llm_suggested",
+              "reason": "run text_cleanup when possible_mojibake appears"
+            }
+          ],
           "skip_reason": "",
           "runtime_status": "executed"
         }
       ],
+      "memory_recommended_actions": [],
       "loop_policy": {
         "max_attempts_per_recovery_action": 1,
         "selection_rule": "choose highest quality score while preserving audit trail",
@@ -1059,8 +1133,8 @@
         ],
         "selected": false,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\html\\case_7_noisy_contract_scan.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\html\\case_7_noisy_contract_scan_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\html\\case_7_noisy_contract_scan.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\html\\case_7_noisy_contract_scan_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1080,8 +1154,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1116,9 +1190,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 4,
       "by_type": {
@@ -1187,7 +1261,7 @@
         "lang": "ch"
       },
       "initial": {
-        "profile": "standard_or_contract",
+        "profile": "low_quality_ocr",
         "backend": "pipeline",
         "method": "auto",
         "lang": "ch",
@@ -1221,6 +1295,58 @@
           "schema and recovery priorities are derived before parsing and saved for audit",
           "LLM preplan target schema and verification focus were merged into the adaptive decision."
         ]
+      },
+      "profile_inference": {
+        "selected_profile": "low_quality_ocr",
+        "source": "built_in_profile_config",
+        "method": "config_keyword_and_lightweight_semantic_vector",
+        "config_path": "",
+        "matches": [
+          {
+            "profile": "low_quality_ocr",
+            "score": 0.3164,
+            "keyword_hits": [
+              "乱码",
+              "ocr",
+              "scan",
+              "noisy"
+            ],
+            "semantic_score": 0.1389,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "standard_or_contract",
+            "score": 0.1607,
+            "keyword_hits": [
+              "合同",
+              "contract"
+            ],
+            "semantic_score": 0.1752,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "general_document",
+            "score": 0.0124,
+            "keyword_hits": [],
+            "semantic_score": 0.0388,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "financial_report",
+            "score": 0.009,
+            "keyword_hits": [],
+            "semantic_score": 0.0282,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "workflow_or_diagram",
+            "score": 0.0,
+            "keyword_hits": [],
+            "semantic_score": 0.0,
+            "source": "built_in_profile_config"
+          }
+        ],
+        "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
       },
       "adaptive_decision": {
         "profile": "low_quality_ocr",
@@ -1273,14 +1399,7 @@
         ]
       },
       "runner_class": "MinerURunner",
-      "applied": [
-        {
-          "field": "profile",
-          "from": "standard_or_contract",
-          "to": "low_quality_ocr",
-          "reason": "llm_preplan"
-        }
-      ],
+      "applied": [],
       "ignored": [
         {
           "field": "backend",
@@ -1735,22 +1854,38 @@
           }
         },
         "memory_policy": {
-          "scope": "single_run_trace",
+          "scope": "single_run_trace_and_local_sqlite_statistics",
           "writes": [
             "execution_control.agent_action_plan",
             "trace.steps",
             "recovery_decision.attempts",
-            "retrieval_manifest"
+            "retrieval_manifest",
+            "output_root/.mineru_data_agent/memory.sqlite"
           ],
           "reads": [
             "input_metadata",
             "task_intents",
             "quality_issues",
-            "retry_history"
+            "retry_history",
+            "local recovery outcomes with matching profile and issue codes"
           ],
-          "cross_run_learning": false,
-          "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+          "cross_run_learning": "local_sqlite_recovery_statistics",
+          "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+          "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
         }
+      },
+      "cross_run_memory": {
+        "enabled": true,
+        "path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\.mineru_data_agent\\memory.sqlite",
+        "profile": "low_quality_ocr",
+        "issue_codes": [
+          "possible_mojibake",
+          "document_level_provenance"
+        ],
+        "stats": [],
+        "recommended_actions": [],
+        "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+        "recorded": true
       },
       "runtime_recovery_plan": {
         "source": "agent_action_plan.state_machine",
@@ -1766,10 +1901,23 @@
             "reason": "encoding noise can be improved without rerunning OCR",
             "runner_change": null,
             "method_change": null,
+            "additional_sources": [
+              {
+                "source": "validator_policy",
+                "issue_code": "possible_mojibake",
+                "reason": "text cleanup remains available for mojibake even if no trigger matched"
+              },
+              {
+                "source": "llm_post_review.recovery_suggestions",
+                "issue_code": "llm_suggested",
+                "reason": "run text_cleanup when possible_mojibake appears"
+              }
+            ],
             "skip_reason": "",
             "runtime_status": "executed"
           }
         ],
+        "memory_recommended_actions": [],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
@@ -1954,8 +2102,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1963,6 +2111,7 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\0dc4770ca4b3\\summary.md",
+  "schema_version": "2026-05-24"
 }

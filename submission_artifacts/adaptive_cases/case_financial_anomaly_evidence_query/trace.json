@@ -1,14 +1,21 @@
 {
-  "created_at": "2026-05-24T08:03:20.304393+00:00",
+  "created_at": "2026-05-24T13:00:48.309935+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T08:03:20.292136+00:00",
-      "ended_at": "2026-05-24T08:03:20.292136+00:00",
+      "started_at": "2026-05-24T13:00:47.902583+00:00",
+      "ended_at": "2026-05-24T13:00:47.902583+00:00",
       "detail": {
         "task": "找出财报中需要复核的异常或风险信号，列出来源证据和建议处理动作。",
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
+        "profile_inference": {
+          "selected_profile": "financial_report",
+          "source": "explicit_request",
+          "method": "explicit_profile",
+          "matches": [],
+          "boundary": "Profile was supplied by the caller; configurable inference was not used."
+        },
         "adaptive_decision": {
           "profile": "financial_report",
           "task_intents": [
@@ -69,8 +76,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T08:03:20.292136+00:00",
-      "ended_at": "2026-05-24T08:03:20.292136+00:00",
+      "started_at": "2026-05-24T13:00:47.902583+00:00",
+      "ended_at": "2026-05-24T13:00:47.902583+00:00",
       "detail": {
         "subtask_count": 6,
         "selected_tools": [
@@ -86,8 +93,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T08:03:20.292136+00:00",
-      "ended_at": "2026-05-24T08:03:20.298394+00:00",
+      "started_at": "2026-05-24T13:00:47.902583+00:00",
+      "ended_at": "2026-05-24T13:00:47.914613+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html"
       }
@@ -95,8 +102,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T08:03:20.298394+00:00",
-      "ended_at": "2026-05-24T08:03:20.298394+00:00",
+      "started_at": "2026-05-24T13:00:47.914613+00:00",
+      "ended_at": "2026-05-24T13:00:47.914613+00:00",
       "detail": {
         "item_count": 8,
         "page_count": 0,
@@ -138,17 +145,38 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T08:03:20.298394+00:00",
-      "ended_at": "2026-05-24T08:03:20.298394+00:00",
+      "started_at": "2026-05-24T13:00:47.914613+00:00",
+      "ended_at": "2026-05-24T13:00:47.914613+00:00",
       "detail": {
         "profile": "financial_report"
       }
     },
     {
+      "name": "agent_runtime_recovery_plan",
+      "status": "completed",
+      "started_at": "2026-05-24T13:00:47.915617+00:00",
+      "ended_at": "2026-05-24T13:00:47.915617+00:00",
+      "detail": {
+        "source": "agent_action_plan.state_machine",
+        "initial_issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified"
+        ],
+        "actions": [],
+        "memory_recommended_actions": [],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        },
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
+      }
+    },
+    {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T08:03:20.298394+00:00",
-      "ended_at": "2026-05-24T08:03:20.298394+00:00",
+      "started_at": "2026-05-24T13:00:47.915617+00:00",
+      "ended_at": "2026-05-24T13:00:47.915617+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "initial"
@@ -157,8 +185,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T08:03:20.298394+00:00",
-      "ended_at": "2026-05-24T08:03:20.298394+00:00",
+      "started_at": "2026-05-24T13:00:47.915617+00:00",
+      "ended_at": "2026-05-24T13:00:47.915617+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass",
@@ -185,14 +213,45 @@
         "selected_reason": "initial result remained the best accepted quality attempt",
         "next_action_if_still_risky": [
           "accept_with_trace_review"
-        ]
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "issue_code": "numeric_total_verified",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "initial",
+          "selected_attempt_quality": {
+            "status": "pass",
+            "score": 100,
+            "issue_codes": [
+              "document_level_provenance",
+              "numeric_total_verified"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance",
+            "numeric_total_verified"
+          ]
+        }
       }
     },
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T08:03:20.298394+00:00",
-      "ended_at": "2026-05-24T08:03:20.301394+00:00",
+      "started_at": "2026-05-24T13:00:47.915617+00:00",
+      "ended_at": "2026-05-24T13:00:47.918907+00:00",
       "detail": {
         "chunks_count": 3,
         "by_type": {
@@ -202,17 +261,33 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\1c00873d82d9\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\1c00873d82d9\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\1c00873d82d9\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c7a3814fb200\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c7a3814fb200\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c7a3814fb200\\retrieval\\retrieval_quality.json"
+      }
+    },
+    {
+      "name": "agent_memory_update",
+      "status": "completed",
+      "started_at": "2026-05-24T13:00:47.918907+00:00",
+      "ended_at": "2026-05-24T13:00:48.305243+00:00",
+      "detail": {
+        "enabled": true,
+        "recorded": true,
+        "profile": "financial_report",
+        "initial_issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified"
+        ],
+        "selected_attempt": "initial"
       }
     }
   ],
   "tool_calls": [],
-  "run_id": "1c00873d82d9",
+  "run_id": "c7a3814fb200",
   "task": "找出财报中需要复核的异常或风险信号，列出来源证据和建议处理动作。",
   "profile": "financial_report",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\1c00873d82d9\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\1c00873d82d9\\summary.md"
+  "result_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c7a3814fb200\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c7a3814fb200\\summary.md"
 }

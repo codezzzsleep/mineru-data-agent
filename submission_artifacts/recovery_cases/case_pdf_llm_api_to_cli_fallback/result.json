@@ -1,9 +1,9 @@
 {
-  "run_id": "f64b82d718a0",
+  "run_id": "9cfdd736c9a1",
   "task": "Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.",
   "profile": "standard_or_contract",
   "input_file": "<PROJECT_ROOT>\\examples\\real_pdfs\\standard_contract_cross_page.pdf",
-  "output_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0",
+  "output_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -69,6 +69,54 @@
         "schema and recovery priorities are derived before parsing and saved for audit",
         "LLM preplan target schema and verification focus were merged into the adaptive decision."
       ]
+    },
+    "profile_inference": {
+      "selected_profile": "standard_or_contract",
+      "source": "built_in_profile_config",
+      "method": "config_keyword_and_lightweight_semantic_vector",
+      "config_path": "",
+      "matches": [
+        {
+          "profile": "standard_or_contract",
+          "score": 0.2046,
+          "keyword_hits": [
+            "standard",
+            "contract",
+            "policy"
+          ],
+          "semantic_score": 0.149,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "general_document",
+          "score": 0.0158,
+          "keyword_hits": [],
+          "semantic_score": 0.0495,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "low_quality_ocr",
+          "score": 0.0126,
+          "keyword_hits": [],
+          "semantic_score": 0.0394,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "workflow_or_diagram",
+          "score": 0.0121,
+          "keyword_hits": [],
+          "semantic_score": 0.0378,
+          "source": "built_in_profile_config"
+        },
+        {
+          "profile": "financial_report",
+          "score": 0.0115,
+          "keyword_hits": [],
+          "semantic_score": 0.0359,
+          "source": "built_in_profile_config"
+        }
+      ],
+      "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
     },
     "adaptive_decision": {
       "profile": "standard_or_contract",
@@ -602,22 +650,37 @@
         }
       },
       "memory_policy": {
-        "scope": "single_run_trace",
+        "scope": "single_run_trace_and_local_sqlite_statistics",
         "writes": [
           "execution_control.agent_action_plan",
           "trace.steps",
           "recovery_decision.attempts",
-          "retrieval_manifest"
+          "retrieval_manifest",
+          "output_root/.mineru_data_agent/memory.sqlite"
         ],
         "reads": [
           "input_metadata",
           "task_intents",
           "quality_issues",
-          "retry_history"
+          "retry_history",
+          "local recovery outcomes with matching profile and issue codes"
         ],
-        "cross_run_learning": false,
-        "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+        "cross_run_learning": "local_sqlite_recovery_statistics",
+        "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+        "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
       }
+    },
+    "cross_run_memory": {
+      "enabled": true,
+      "path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\.mineru_data_agent\\memory.sqlite",
+      "profile": "standard_or_contract",
+      "issue_codes": [
+        "no_page_provenance"
+      ],
+      "stats": [],
+      "recommended_actions": [],
+      "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+      "recorded": true
     },
     "runtime_recovery_plan": {
       "source": "agent_action_plan.state_machine",
@@ -632,6 +695,13 @@
           "reason": "audit tasks need page-level source evidence",
           "runner_change": "agent-api->cli",
           "method_change": null,
+          "additional_sources": [
+            {
+              "source": "validator_policy",
+              "issue_code": "no_page_provenance",
+              "reason": "page provenance is missing and a fallback runner is configured"
+            }
+          ],
           "skip_reason": "",
           "runtime_status": "executed"
         },
@@ -646,6 +716,7 @@
           "runtime_status": "skipped"
         }
       ],
+      "memory_recommended_actions": [],
       "loop_policy": {
         "max_attempts_per_recovery_action": 1,
         "selection_rule": "choose highest quality score while preserving audit trail",
@@ -1444,10 +1515,10 @@
         ],
         "selected": false,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page_content_list.json",
           "middle_json_path": null,
-          "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page_agent_response.json",
+          "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page_agent_response.json",
           "layout_pdf_path": null,
           "span_pdf_path": null,
           "origin_pdf_path": null,
@@ -1463,14 +1534,14 @@
         "issue_codes": [],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_content_list.json",
-          "middle_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_middle.json",
-          "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_model.json",
-          "layout_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_layout.pdf",
-          "span_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_span.pdf",
-          "origin_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_origin.pdf",
-          "image_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\images"
+          "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_content_list.json",
+          "middle_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_middle.json",
+          "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_model.json",
+          "layout_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_layout.pdf",
+          "span_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_span.pdf",
+          "origin_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_origin.pdf",
+          "image_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\images"
         }
       }
     ],
@@ -1499,9 +1570,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 2,
       "by_type": {
@@ -1595,6 +1666,54 @@
           "schema and recovery priorities are derived before parsing and saved for audit",
           "LLM preplan target schema and verification focus were merged into the adaptive decision."
         ]
+      },
+      "profile_inference": {
+        "selected_profile": "standard_or_contract",
+        "source": "built_in_profile_config",
+        "method": "config_keyword_and_lightweight_semantic_vector",
+        "config_path": "",
+        "matches": [
+          {
+            "profile": "standard_or_contract",
+            "score": 0.2046,
+            "keyword_hits": [
+              "standard",
+              "contract",
+              "policy"
+            ],
+            "semantic_score": 0.149,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "general_document",
+            "score": 0.0158,
+            "keyword_hits": [],
+            "semantic_score": 0.0495,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "low_quality_ocr",
+            "score": 0.0126,
+            "keyword_hits": [],
+            "semantic_score": 0.0394,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "workflow_or_diagram",
+            "score": 0.0121,
+            "keyword_hits": [],
+            "semantic_score": 0.0378,
+            "source": "built_in_profile_config"
+          },
+          {
+            "profile": "financial_report",
+            "score": 0.0115,
+            "keyword_hits": [],
+            "semantic_score": 0.0359,
+            "source": "built_in_profile_config"
+          }
+        ],
+        "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
       },
       "adaptive_decision": {
         "profile": "standard_or_contract",
@@ -2128,22 +2247,37 @@
           }
         },
         "memory_policy": {
-          "scope": "single_run_trace",
+          "scope": "single_run_trace_and_local_sqlite_statistics",
           "writes": [
             "execution_control.agent_action_plan",
             "trace.steps",
             "recovery_decision.attempts",
-            "retrieval_manifest"
+            "retrieval_manifest",
+            "output_root/.mineru_data_agent/memory.sqlite"
           ],
           "reads": [
             "input_metadata",
             "task_intents",
             "quality_issues",
-            "retry_history"
+            "retry_history",
+            "local recovery outcomes with matching profile and issue codes"
           ],
-          "cross_run_learning": false,
-          "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+          "cross_run_learning": "local_sqlite_recovery_statistics",
+          "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+          "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
         }
+      },
+      "cross_run_memory": {
+        "enabled": true,
+        "path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\.mineru_data_agent\\memory.sqlite",
+        "profile": "standard_or_contract",
+        "issue_codes": [
+          "no_page_provenance"
+        ],
+        "stats": [],
+        "recommended_actions": [],
+        "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+        "recorded": true
       },
       "runtime_recovery_plan": {
         "source": "agent_action_plan.state_machine",
@@ -2158,6 +2292,13 @@
             "reason": "audit tasks need page-level source evidence",
             "runner_change": "agent-api->cli",
             "method_change": null,
+            "additional_sources": [
+              {
+                "source": "validator_policy",
+                "issue_code": "no_page_provenance",
+                "reason": "page provenance is missing and a fallback runner is configured"
+              }
+            ],
             "skip_reason": "",
             "runtime_status": "executed"
           },
@@ -2172,6 +2313,7 @@
             "runtime_status": "skipped"
           }
         ],
+        "memory_recommended_actions": [],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
@@ -2292,15 +2434,16 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_content_list.json",
-    "middle_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_middle.json",
-    "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_model.json",
-    "layout_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_layout.pdf",
-    "span_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_span.pdf",
-    "origin_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_origin.pdf",
-    "image_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\images"
+    "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_content_list.json",
+    "middle_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_middle.json",
+    "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_model.json",
+    "layout_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_layout.pdf",
+    "span_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_span.pdf",
+    "origin_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_origin.pdf",
+    "image_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\images"
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\summary.md",
+  "schema_version": "2026-05-24"
 }

@@ -1,7 +1,8 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run 6015703adc96
+# MinerU Data Agent Run 0cb156d8db98
 
+- Schema version: 2026-05-24
 - Task: 处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。
 - Profile: financial_report
 - Execution method: auto

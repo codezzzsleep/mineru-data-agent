@@ -1,0 +1,832 @@
+{
+  "run_id": "39df60777fe2",
+  "task": "清理网页巡检日报并输出结构化结果",
+  "profile": "general_document",
+  "input_file": "F:\\data_agent\\mineru-data-agent\\submission_artifacts\\memory_cases\\cross_run_text_cleanup_memory\\input.html",
+  "output_dir": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2",
+  "plan": [
+    "Inspect input type, document metadata, and natural-language task objective",
+    "Infer task intents and generate a target extraction schema",
+    "Choose MinerU/native parsing path and record execution rationale",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, numeric, and field-evidence views",
+    "Run task-specific post-processing and quality checks",
+    "Select recovery action from issue codes, retry history, and task priorities",
+    "Produce traceable result, summary, retrieval chunks, and audit logs",
+    "Apply task intent `structured_extraction` with schema-aware extraction and verification"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": false,
+    "strict_page_provenance": {
+      "enabled": false,
+      "required": false,
+      "satisfied": null
+    },
+    "requested": {
+      "profile": "general_document",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch"
+    },
+    "initial": {
+      "profile": "general_document",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "resolved": {
+      "profile": "general_document",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "planning_rationale": {
+      "source": "rules",
+      "file_family": "native_office_or_html",
+      "profile_reason": "no specialized profile signal was strong enough; use general structured extraction",
+      "runner_reason": "HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU",
+      "backend_reason": "backend=pipeline is used for MinerU parsing when the selected runner calls MinerU",
+      "method_reason": "method=auto balances automatic parsing with OCR fallback when quality gates require it",
+      "lang_reason": "lang=ch is passed to MinerU or recorded for native extraction audit",
+      "recovery_policy": [
+        "text_cleanup if mojibake or encoding noise is detected",
+        "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+        "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+        "manual_numeric_review when subtotal/total consistency checks fail"
+      ]
+    },
+    "profile_inference": {
+      "selected_profile": "general_document",
+      "source": "explicit_request",
+      "method": "explicit_profile",
+      "matches": [],
+      "boundary": "Profile was supplied by the caller; configurable inference was not used."
+    },
+    "adaptive_decision": {
+      "profile": "general_document",
+      "task_intents": [
+        "structured_extraction"
+      ],
+      "target_schema": {
+        "title": "document title",
+        "key_fact": "important extracted fact",
+        "evidence": "source evidence"
+      },
+      "post_processors": [
+        "field_evidence_builder"
+      ],
+      "verification_focus": [
+        "schema_fields_have_evidence",
+        "quality_issues_are_not_hidden"
+      ],
+      "quality_thresholds": {
+        "min_quality_score": 80,
+        "require_tables": false,
+        "require_numeric_facts": false,
+        "prefer_page_provenance": false
+      },
+      "recovery_strategy": [
+        {
+          "action": "text_cleanup",
+          "trigger": "mojibake_or_encoding_noise",
+          "priority": "normal"
+        }
+      ],
+      "rationale": [
+        "profile=general_document selected from task/file signals",
+        "input suffix=.html",
+        "task intents=structured_extraction",
+        "schema and recovery priorities are derived before parsing and saved for audit"
+      ]
+    },
+    "runner_class": "MinerURunner",
+    "applied": [],
+    "ignored": [],
+    "agent_action_plan": {
+      "objective": "清理网页巡检日报并输出结构化结果",
+      "runner": "native",
+      "subtasks": [
+        {
+          "id": "understand_task",
+          "goal": "Classify the document task and identify intent-specific outputs.",
+          "tools": [
+            "rule_intent_classifier"
+          ],
+          "expected_output": {
+            "profile": "general_document",
+            "intents": [
+              "structured_extraction"
+            ],
+            "schema_keys": [
+              "title",
+              "key_fact",
+              "evidence"
+            ]
+          },
+          "depends_on": []
+        },
+        {
+          "id": "choose_parse_path",
+          "goal": "Pick the cheapest parser path that still preserves required provenance.",
+          "tools": [
+            "native_extractor"
+          ],
+          "expected_output": {
+            "runner": "native"
+          },
+          "depends_on": [
+            "understand_task"
+          ]
+        },
+        {
+          "id": "extract_structure",
+          "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+          "tools": [
+            "structured_extractor"
+          ],
+          "expected_output": {
+            "post_processors": [
+              "field_evidence_builder"
+            ]
+          },
+          "depends_on": [
+            "choose_parse_path"
+          ]
+        },
+        {
+          "id": "validate_quality",
+          "goal": "Run profile and task-specific gates before accepting the result.",
+          "tools": [
+            "quality_validator"
+          ],
+          "expected_output": {
+            "quality_status": "pass|pass_with_warnings|needs_review"
+          },
+          "depends_on": [
+            "extract_structure"
+          ]
+        },
+        {
+          "id": "replan_if_needed",
+          "goal": "Map quality issues to recovery actions and select the best attempt.",
+          "tools": [
+            "text_cleanup"
+          ],
+          "expected_output": {
+            "selected_attempt": "initial or recovery action"
+          },
+          "depends_on": [
+            "validate_quality"
+          ]
+        },
+        {
+          "id": "export_artifacts",
+          "goal": "Write result, trace, summary, and retrieval artifacts.",
+          "tools": [
+            "retrieval_exporter",
+            "trace_writer"
+          ],
+          "expected_output": {
+            "files": [
+              "result.json",
+              "trace.json",
+              "summary.md",
+              "retrieval_chunks.jsonl"
+            ]
+          },
+          "depends_on": [
+            "replan_if_needed"
+          ]
+        }
+      ],
+      "tool_registry": [
+        {
+          "name": "native_extractor",
+          "capability": "Parse HTML/DOCX/PPTX structure without external OCR",
+          "selected": true,
+          "selection_reason": "file suffix is native text/Office",
+          "parameters": {}
+        },
+        {
+          "name": "mineru_cli",
+          "capability": "Run local MinerU CLI and keep page/layout artifacts",
+          "selected": false,
+          "selection_reason": "runner resolved to cli",
+          "parameters": {
+            "backend": "pipeline",
+            "method": "auto"
+          }
+        },
+        {
+          "name": "mineru_agent_api",
+          "capability": "Run online MinerU Agent API for CPU-friendly PDF parsing",
+          "selected": false,
+          "selection_reason": "runner resolved to agent-api",
+          "parameters": {
+            "backend": "pipeline",
+            "method": "auto"
+          }
+        },
+        {
+          "name": "llm_preplanner",
+          "capability": "Classify task and propose schema/controls before parsing",
+          "selected": false,
+          "selection_reason": "LLM client configured",
+          "parameters": {}
+        },
+        {
+          "name": "structured_extractor",
+          "capability": "Build sections, tables, key-values, numeric facts, and field evidence",
+          "selected": true,
+          "selection_reason": "always needed for output contract",
+          "parameters": {}
+        },
+        {
+          "name": "numeric_validator",
+          "capability": "Check numeric facts and table totals",
+          "selected": false,
+          "selection_reason": "financial or aggregation task",
+          "parameters": {}
+        },
+        {
+          "name": "contract_validator",
+          "capability": "Check section/clause/date evidence",
+          "selected": false,
+          "selection_reason": "contract or standard profile",
+          "parameters": {}
+        },
+        {
+          "name": "workflow_validator",
+          "capability": "Check workflow steps, anomalies, and visual-review hints",
+          "selected": false,
+          "selection_reason": "workflow or diagram profile",
+          "parameters": {}
+        },
+        {
+          "name": "text_cleanup",
+          "capability": "Clean mojibake/encoding noise and re-evaluate quality",
+          "selected": true,
+          "selection_reason": "enabled as recovery candidate",
+          "parameters": {}
+        },
+        {
+          "name": "ocr_retry",
+          "capability": "Retry parse with OCR mode after sparse/weak PDF result",
+          "selected": false,
+          "selection_reason": "PDF/image recovery candidate",
+          "parameters": {
+            "method": "ocr"
+          }
+        },
+        {
+          "name": "cli_fallback",
+          "capability": "Fallback from online API to CLI when page provenance is missing",
+          "selected": false,
+          "selection_reason": "audit-grade provenance candidate",
+          "parameters": {}
+        },
+        {
+          "name": "llm_post_review",
+          "capability": "Review extracted result for risks and recovery suggestions",
+          "selected": false,
+          "selection_reason": "LLM client configured",
+          "parameters": {}
+        },
+        {
+          "name": "retrieval_exporter",
+          "capability": "Write retrieval chunks and manifest",
+          "selected": true,
+          "selection_reason": "always needed for downstream data use",
+          "parameters": {}
+        }
+      ],
+      "dynamic_choices": [
+        {
+          "name": "profile",
+          "selected": "general_document",
+          "reason": "task and file signals after optional LLM merge"
+        },
+        {
+          "name": "runner",
+          "selected": "native",
+          "reason": "native suffix, CLI/API configuration, and provenance requirement"
+        },
+        {
+          "name": "backend",
+          "selected": "pipeline",
+          "reason": "MinerU backend used when runner calls MinerU"
+        },
+        {
+          "name": "method",
+          "selected": "auto",
+          "reason": "initial parse method; recovery can switch to OCR"
+        },
+        {
+          "name": "lang",
+          "selected": "ch",
+          "reason": "OCR language hint"
+        },
+        {
+          "name": "llm",
+          "selected": false,
+          "reason": "enabled only when a provider client is configured"
+        },
+        {
+          "name": "provenance_requirement",
+          "selected": "document",
+          "reason": "PDF/image outputs benefit most from page-level audit"
+        },
+        {
+          "name": "table_priority",
+          "selected": false,
+          "reason": "financial/aggregation tasks require table checks"
+        }
+      ],
+      "replan_triggers": [
+        {
+          "issue_code": "possible_mojibake",
+          "action": "text_cleanup",
+          "reason": "encoding noise can be improved without rerunning OCR"
+        },
+        {
+          "issue_code": "short_text",
+          "action": "ocr_retry",
+          "reason": "sparse PDF text often needs OCR mode"
+        },
+        {
+          "issue_code": "no_page_provenance",
+          "action": "cli_fallback",
+          "reason": "audit tasks need page-level source evidence"
+        },
+        {
+          "issue_code": "numeric_total_mismatch",
+          "action": "manual_numeric_review",
+          "reason": "numeric mismatch should not be silently repaired"
+        }
+      ],
+      "state_machine": {
+        "model": "single-run conditional DAG",
+        "initial_runner": "native",
+        "initial_method": "auto",
+        "nodes": [
+          {
+            "id": "understand_task",
+            "goal": "Classify the document task and identify intent-specific outputs.",
+            "tools": [
+              "rule_intent_classifier"
+            ]
+          },
+          {
+            "id": "choose_parse_path",
+            "goal": "Pick the cheapest parser path that still preserves required provenance.",
+            "tools": [
+              "native_extractor"
+            ]
+          },
+          {
+            "id": "extract_structure",
+            "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+            "tools": [
+              "structured_extractor"
+            ]
+          },
+          {
+            "id": "validate_quality",
+            "goal": "Run profile and task-specific gates before accepting the result.",
+            "tools": [
+              "quality_validator"
+            ]
+          },
+          {
+            "id": "replan_if_needed",
+            "goal": "Map quality issues to recovery actions and select the best attempt.",
+            "tools": [
+              "text_cleanup"
+            ]
+          },
+          {
+            "id": "export_artifacts",
+            "goal": "Write result, trace, summary, and retrieval artifacts.",
+            "tools": [
+              "retrieval_exporter",
+              "trace_writer"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "understand_task",
+            "to": "choose_parse_path",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "choose_parse_path",
+            "to": "extract_structure",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "extract_structure",
+            "to": "validate_quality",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "replan_if_needed",
+            "to": "export_artifacts",
+            "condition": "dependency_completed"
+          }
+        ],
+        "conditional_edges": [
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:possible_mojibake",
+            "action": "text_cleanup",
+            "runner_change": null,
+            "method_change": null
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:short_text",
+            "action": "ocr_retry",
+            "runner_change": null,
+            "method_change": "auto->ocr"
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:no_page_provenance",
+            "action": "cli_fallback",
+            "runner_change": "agent-api->cli",
+            "method_change": null
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:numeric_total_mismatch",
+            "action": "manual_numeric_review",
+            "runner_change": null,
+            "method_change": null
+          }
+        ],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        }
+      },
+      "memory_policy": {
+        "scope": "single_run_trace_and_local_sqlite_statistics",
+        "writes": [
+          "execution_control.agent_action_plan",
+          "trace.steps",
+          "recovery_decision.attempts",
+          "retrieval_manifest",
+          "output_root/.mineru_data_agent/memory.sqlite"
+        ],
+        "reads": [
+          "input_metadata",
+          "task_intents",
+          "quality_issues",
+          "retry_history",
+          "local recovery outcomes with matching profile and issue codes"
+        ],
+        "cross_run_learning": "local_sqlite_recovery_statistics",
+        "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+        "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
+      }
+    },
+    "cross_run_memory": {
+      "enabled": true,
+      "path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\.mineru_data_agent\\memory.sqlite",
+      "profile": "general_document",
+      "issue_codes": [
+        "possible_mojibake",
+        "document_level_provenance"
+      ],
+      "stats": [
+        {
+          "action": "text_cleanup",
+          "attempts": 1,
+          "successes": 1,
+          "success_rate": 1.0,
+          "avg_quality_score": 100.0
+        }
+      ],
+      "recommended_actions": [
+        "text_cleanup"
+      ],
+      "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+      "recorded": true
+    },
+    "runtime_recovery_plan": {
+      "source": "agent_action_plan.state_machine",
+      "initial_issue_codes": [
+        "possible_mojibake",
+        "document_level_provenance"
+      ],
+      "actions": [
+        {
+          "action": "text_cleanup",
+          "issue_code": "possible_mojibake",
+          "source": "agent_action_plan.replan_triggers",
+          "reason": "encoding noise can be improved without rerunning OCR",
+          "runner_change": null,
+          "method_change": null,
+          "additional_sources": [
+            {
+              "source": "validator_policy",
+              "issue_code": "possible_mojibake",
+              "reason": "text cleanup remains available for mojibake even if no trigger matched"
+            },
+            {
+              "source": "local_sqlite_memory.recommended_actions",
+              "issue_code": "memory_recommended",
+              "reason": "Prior local runs with the same profile and overlapping issue codes selected this recovery action successfully."
+            }
+          ],
+          "skip_reason": "",
+          "runtime_status": "executed"
+        }
+      ],
+      "memory_recommended_actions": [
+        "text_cleanup"
+      ],
+      "loop_policy": {
+        "max_attempts_per_recovery_action": 1,
+        "selection_rule": "choose highest quality score while preserving audit trail",
+        "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+      },
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
+    },
+    "replan_after_quality": {
+      "quality_status": "pass",
+      "quality_score": 100,
+      "issue_codes": [
+        "document_level_provenance"
+      ],
+      "considered_actions": [
+        {
+          "issue_code": "document_level_provenance",
+          "candidate_action": "keep_review_note",
+          "available_in_attempts": false
+        }
+      ],
+      "attempted_actions": [
+        "initial",
+        "text_cleanup"
+      ],
+      "selected_attempt": "text_cleanup",
+      "selected_reason": "text_cleanup had quality_status=pass and score=100",
+      "next_action_if_still_risky": [
+        "accept_with_trace_review"
+      ],
+      "quality_triggered_replan": {
+        "triggered": [
+          {
+            "issue_code": "document_level_provenance",
+            "replanning_decision": "keep_review_note",
+            "available_in_attempts": false,
+            "runner_change": null,
+            "method_change": null
+          }
+        ],
+        "selected_attempt": "text_cleanup",
+        "selected_attempt_quality": {
+          "status": "pass",
+          "score": 100,
+          "issue_codes": [
+            "document_level_provenance"
+          ]
+        },
+        "unhandled_issue_codes": [
+          "document_level_provenance"
+        ]
+      }
+    }
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 3,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 1,
+        "text": 2
+      },
+      "source_counts": {
+        "html": 3
+      },
+      "text_characters": 421
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "巡检日报",
+        "line": 1,
+        "source": "heading",
+        "text": "报告日期：2026-05-23\n\n这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。"
+      }
+    ],
+    "tables": [],
+    "key_values": [
+      {
+        "key": "报告日期",
+        "value": "2026-05-23"
+      }
+    ],
+    "key_value_map": {
+      "报告日期": "2026-05-23"
+    },
+    "field_evidence": [
+      {
+        "key": "报告日期",
+        "value": "2026-05-23",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "报告日期：2026-05-23",
+        "provenance": {
+          "line": 3,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 0
+      }
+    ],
+    "field_evidence_map": {
+      "报告日期": [
+        {
+          "value": "2026-05-23",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 3,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "报告日期：2026-05-23"
+        }
+      ]
+    },
+    "numeric_facts": [],
+    "semantic_signals": {
+      "dates": [
+        "2026-05-23"
+      ],
+      "recommendations": [],
+      "anomaly_lines": [],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": false,
+        "has_anomaly_signal": false
+      }
+    },
+    "cross_page_references": [],
+    "structure_quality": {
+      "heading_section_count": 1,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# 巡检日报\n\n报告日期：2026-05-23\n\n这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。这是一段需要清理但仍可结构化的巡检文本。",
+    "task_result": {
+      "task_intents": [
+        "structured_extraction"
+      ],
+      "target_schema": {
+        "title": "document title",
+        "key_fact": "important extracted fact",
+        "evidence": "source evidence"
+      },
+      "post_processors": [
+        "field_evidence_builder"
+      ],
+      "verification_focus": [
+        "schema_fields_have_evidence",
+        "quality_issues_are_not_hidden"
+      ],
+      "answers": {}
+    }
+  },
+  "quality": {
+    "score": 100,
+    "status": "pass",
+    "issue_count": 1,
+    "issue_counts": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 3,
+          "source_counts": {
+            "html": 3
+          }
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "recovered_accept",
+    "actions": [
+      "Executed 1 automatic recovery attempt(s); selected `text_cleanup`.",
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit.",
+      "Initial quality issues were preserved for audit: possible_mojibake, document_level_provenance."
+    ],
+    "issue_codes": [
+      "document_level_provenance"
+    ],
+    "initial_issue_codes": [
+      "possible_mojibake",
+      "document_level_provenance"
+    ],
+    "selected_attempt": "text_cleanup",
+    "executed": true,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass_with_warnings",
+        "score": 92,
+        "issue_codes": [
+          "possible_mojibake",
+          "document_level_provenance"
+        ],
+        "selected": false,
+        "artifacts": {
+          "markdown_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\html\\input.md",
+          "content_list_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\html\\input_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      },
+      {
+        "name": "text_cleanup",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass",
+        "score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\recovery\\text_cleanup\\input.md",
+          "content_list_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\recovery\\text_cleanup\\input_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 1,
+      "by_type": {
+        "text": 1
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\recovery\\text_cleanup\\input.md",
+    "content_list_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\recovery\\text_cleanup\\input_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\trace.json",
+  "summary_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\summary.md",
+  "schema_version": "2026-05-24"
+}

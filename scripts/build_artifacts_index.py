@@ -22,6 +22,7 @@ CATEGORIES = [
     ("challenge_cases", "Challenge fixtures", "Cross-page table, OCR noise, standard matrix, and incident workflow fixtures."),
     ("adaptive_cases", "Adaptive planning", "Same input with different natural-language tasks and task-specific results."),
     ("agent_decision_cases", "Agent decision regression", "Offline task decomposition, tool selection, quality replanning, and scripted decision-hook schema checks."),
+    ("memory_cases", "Cross-run memory", "Controlled local SQLite recovery-memory case showing a later run can read prior recovery outcomes."),
     ("public_real_cases", "Public real PDFs", "IRS, NIST, SEC, and CDC public PDF cases with lightweight labels."),
     ("long_document_chunks", "Long document chunks", "NIST AI RMF page-range chunking across the online API page limit."),
     ("llm_cases", "LLM cases", "OpenAI-compatible LLM preplanning and post-parse review results."),

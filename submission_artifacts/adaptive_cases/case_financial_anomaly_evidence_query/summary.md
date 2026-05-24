@@ -1,5 +1,6 @@
-# MinerU Data Agent Run 1c00873d82d9
+# MinerU Data Agent Run c7a3814fb200
 
+- Schema version: 2026-05-24
 - Task: 找出财报中需要复核的异常或风险信号，列出来源证据和建议处理动作。
 - Profile: financial_report
 - Execution method: auto
@@ -69,6 +70,9 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
 - export_artifacts: Write result, trace, summary, and retrieval artifacts.
+
+## Runtime Recovery Plan
+- Initial issue codes: document_level_provenance, numeric_total_verified
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance, numeric_total_verified

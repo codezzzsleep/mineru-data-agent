@@ -1,14 +1,62 @@
 {
-  "created_at": "2026-05-24T12:14:29.499699+00:00",
+  "created_at": "2026-05-24T13:00:59.720603+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:09.257934+00:00",
-      "ended_at": "2026-05-24T12:14:09.257934+00:00",
+      "started_at": "2026-05-24T13:00:51.313244+00:00",
+      "ended_at": "2026-05-24T13:00:51.317244+00:00",
       "detail": {
         "task": "Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.",
         "input_file": "<PROJECT_ROOT>\\examples\\real_pdfs\\standard_contract_cross_page.pdf",
+        "profile_inference": {
+          "selected_profile": "standard_or_contract",
+          "source": "built_in_profile_config",
+          "method": "config_keyword_and_lightweight_semantic_vector",
+          "config_path": "",
+          "matches": [
+            {
+              "profile": "standard_or_contract",
+              "score": 0.2046,
+              "keyword_hits": [
+                "standard",
+                "contract",
+                "policy"
+              ],
+              "semantic_score": 0.149,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "general_document",
+              "score": 0.0158,
+              "keyword_hits": [],
+              "semantic_score": 0.0495,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "low_quality_ocr",
+              "score": 0.0126,
+              "keyword_hits": [],
+              "semantic_score": 0.0394,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "workflow_or_diagram",
+              "score": 0.0121,
+              "keyword_hits": [],
+              "semantic_score": 0.0378,
+              "source": "built_in_profile_config"
+            },
+            {
+              "profile": "financial_report",
+              "score": 0.0115,
+              "keyword_hits": [],
+              "semantic_score": 0.0359,
+              "source": "built_in_profile_config"
+            }
+          ],
+          "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
+        },
         "adaptive_decision": {
           "profile": "standard_or_contract",
           "task_intents": [
@@ -65,8 +113,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:09.257934+00:00",
-      "ended_at": "2026-05-24T12:14:09.257934+00:00",
+      "started_at": "2026-05-24T13:00:51.317244+00:00",
+      "ended_at": "2026-05-24T13:00:51.317244+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "standard_or_contract",
@@ -121,6 +169,54 @@
               "schema and recovery priorities are derived before parsing and saved for audit",
               "LLM preplan target schema and verification focus were merged into the adaptive decision."
             ]
+          },
+          "profile_inference": {
+            "selected_profile": "standard_or_contract",
+            "source": "built_in_profile_config",
+            "method": "config_keyword_and_lightweight_semantic_vector",
+            "config_path": "",
+            "matches": [
+              {
+                "profile": "standard_or_contract",
+                "score": 0.2046,
+                "keyword_hits": [
+                  "standard",
+                  "contract",
+                  "policy"
+                ],
+                "semantic_score": 0.149,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "general_document",
+                "score": 0.0158,
+                "keyword_hits": [],
+                "semantic_score": 0.0495,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "low_quality_ocr",
+                "score": 0.0126,
+                "keyword_hits": [],
+                "semantic_score": 0.0394,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "workflow_or_diagram",
+                "score": 0.0121,
+                "keyword_hits": [],
+                "semantic_score": 0.0378,
+                "source": "built_in_profile_config"
+              },
+              {
+                "profile": "financial_report",
+                "score": 0.0115,
+                "keyword_hits": [],
+                "semantic_score": 0.0359,
+                "source": "built_in_profile_config"
+              }
+            ],
+            "boundary": "Profile inference uses configurable keywords plus lightweight token/character vector similarity; it is deterministic and not a learned embedding model."
           },
           "adaptive_decision": {
             "profile": "standard_or_contract",
@@ -654,22 +750,37 @@
               }
             },
             "memory_policy": {
-              "scope": "single_run_trace",
+              "scope": "single_run_trace_and_local_sqlite_statistics",
               "writes": [
                 "execution_control.agent_action_plan",
                 "trace.steps",
                 "recovery_decision.attempts",
-                "retrieval_manifest"
+                "retrieval_manifest",
+                "output_root/.mineru_data_agent/memory.sqlite"
               ],
               "reads": [
                 "input_metadata",
                 "task_intents",
                 "quality_issues",
-                "retry_history"
+                "retry_history",
+                "local recovery outcomes with matching profile and issue codes"
               ],
-              "cross_run_learning": false,
-              "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+              "cross_run_learning": "local_sqlite_recovery_statistics",
+              "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+              "boundary": "Memory is deterministic local statistics over prior recovery outcomes; it is not model fine-tuning, reinforcement learning, or shared cloud memory."
             }
+          },
+          "cross_run_memory": {
+            "enabled": true,
+            "path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\.mineru_data_agent\\memory.sqlite",
+            "profile": "standard_or_contract",
+            "issue_codes": [
+              "no_page_provenance"
+            ],
+            "stats": [],
+            "recommended_actions": [],
+            "boundary": "Local SQLite memory records recovery outcomes under the selected output root; it is simple statistics, not model fine-tuning.",
+            "recorded": true
           },
           "runtime_recovery_plan": {
             "source": "agent_action_plan.state_machine",
@@ -684,6 +795,13 @@
                 "reason": "audit tasks need page-level source evidence",
                 "runner_change": "agent-api->cli",
                 "method_change": null,
+                "additional_sources": [
+                  {
+                    "source": "validator_policy",
+                    "issue_code": "no_page_provenance",
+                    "reason": "page provenance is missing and a fallback runner is configured"
+                  }
+                ],
                 "skip_reason": "",
                 "runtime_status": "executed"
               },
@@ -698,6 +816,7 @@
                 "runtime_status": "skipped"
               }
             ],
+            "memory_recommended_actions": [],
             "loop_policy": {
               "max_attempts_per_recovery_action": 1,
               "selection_rule": "choose highest quality score while preserving audit trail",
@@ -736,8 +855,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:09.257934+00:00",
-      "ended_at": "2026-05-24T12:14:09.258931+00:00",
+      "started_at": "2026-05-24T13:00:51.317244+00:00",
+      "ended_at": "2026-05-24T13:00:51.318250+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -757,8 +876,8 @@
     {
       "name": "mineru_parse",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:09.258931+00:00",
-      "ended_at": "2026-05-24T12:14:29.307030+00:00",
+      "started_at": "2026-05-24T13:00:51.318250+00:00",
+      "ended_at": "2026-05-24T13:00:59.483034+00:00",
       "detail": {
         "backend": "pipeline",
         "method": "auto",
@@ -768,8 +887,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:29.307030+00:00",
-      "ended_at": "2026-05-24T12:14:29.442395+00:00",
+      "started_at": "2026-05-24T13:00:59.483034+00:00",
+      "ended_at": "2026-05-24T13:00:59.547176+00:00",
       "detail": {
         "item_count": 15,
         "page_count": 0,
@@ -811,8 +930,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:29.442395+00:00",
-      "ended_at": "2026-05-24T12:14:29.442395+00:00",
+      "started_at": "2026-05-24T13:00:59.548176+00:00",
+      "ended_at": "2026-05-24T13:00:59.548176+00:00",
       "detail": {
         "profile": "standard_or_contract"
       }
@@ -820,15 +939,15 @@
     {
       "name": "llm_agent_analysis",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:29.442395+00:00",
-      "ended_at": "2026-05-24T12:14:29.442395+00:00",
+      "started_at": "2026-05-24T13:00:59.548176+00:00",
+      "ended_at": "2026-05-24T13:00:59.548176+00:00",
       "detail": {}
     },
     {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:29.442395+00:00",
-      "ended_at": "2026-05-24T12:14:29.442395+00:00",
+      "started_at": "2026-05-24T13:00:59.549176+00:00",
+      "ended_at": "2026-05-24T13:00:59.549176+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -842,6 +961,13 @@
             "reason": "audit tasks need page-level source evidence",
             "runner_change": "agent-api->cli",
             "method_change": null,
+            "additional_sources": [
+              {
+                "source": "validator_policy",
+                "issue_code": "no_page_provenance",
+                "reason": "page provenance is missing and a fallback runner is configured"
+              }
+            ],
             "skip_reason": "",
             "runtime_status": "executed"
           },
@@ -856,6 +982,7 @@
             "runtime_status": "skipped"
           }
         ],
+        "memory_recommended_actions": [],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
@@ -867,8 +994,8 @@
     {
       "name": "auto_recovery_cli_fallback",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:29.442395+00:00",
-      "ended_at": "2026-05-24T12:14:29.479662+00:00",
+      "started_at": "2026-05-24T13:00:59.549176+00:00",
+      "ended_at": "2026-05-24T13:00:59.615086+00:00",
       "detail": {
         "from_runner": "agent-api",
         "fallback_runner": "cli",
@@ -890,8 +1017,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:29.479662+00:00",
-      "ended_at": "2026-05-24T12:14:29.479662+00:00",
+      "started_at": "2026-05-24T13:00:59.615086+00:00",
+      "ended_at": "2026-05-24T13:00:59.615086+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "cli_fallback"
@@ -900,8 +1027,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:29.479662+00:00",
-      "ended_at": "2026-05-24T12:14:29.479662+00:00",
+      "started_at": "2026-05-24T13:00:59.615086+00:00",
+      "ended_at": "2026-05-24T13:00:59.615086+00:00",
       "detail": {
         "selected_attempt": "cli_fallback",
         "quality_status": "pass",
@@ -931,8 +1058,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:29.479662+00:00",
-      "ended_at": "2026-05-24T12:14:29.490179+00:00",
+      "started_at": "2026-05-24T13:00:59.615086+00:00",
+      "ended_at": "2026-05-24T13:00:59.617703+00:00",
       "detail": {
         "chunks_count": 2,
         "by_type": {
@@ -942,16 +1069,16 @@
           1,
           2
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\retrieval\\retrieval_quality.json"
       }
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T12:14:29.490179+00:00",
-      "ended_at": "2026-05-24T12:14:29.490179+00:00",
+      "started_at": "2026-05-24T13:00:59.617703+00:00",
+      "ended_at": "2026-05-24T13:00:59.617703+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "recovered_accept",
@@ -974,6 +1101,21 @@
         "applied_effects": [
           "append_recovery_suggestion"
         ]
+      }
+    },
+    {
+      "name": "agent_memory_update",
+      "status": "completed",
+      "started_at": "2026-05-24T13:00:59.617703+00:00",
+      "ended_at": "2026-05-24T13:00:59.714841+00:00",
+      "detail": {
+        "enabled": true,
+        "recorded": true,
+        "profile": "standard_or_contract",
+        "initial_issue_codes": [
+          "no_page_provenance"
+        ],
+        "selected_attempt": "cli_fallback"
       }
     }
   ],
@@ -998,8 +1140,8 @@
         "standard_contract_cross_page.pdf"
       ],
       "status": "completed",
-      "elapsed_seconds": 20.042,
-      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"ae975aaf-e3bd-4672-a5af-80e5e08df0d305\",\n    \"trace_id\": \"6e4e60af65d16ac4a18808662abbcf22\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"4d507813e53edfc6622a9d198df49074\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"d3e54c8c7cc50685ef7ec4676e72808b\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"e62ce033addcd25733131112f95d6d41\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"7e05c1c53ababfc8eab93d37b9c0b85a\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"b8a2670ec075ad3b2688f235c1b0b2eb\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"572a686312f05862f40e8a4f9fb0bf52\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"149c2a0e030e04e3bd0fd024f801ef11\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"5ee5a8fe75a29fd95e39ab48f3642e8e\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"379d99cb4f08e0eb8725f0e000654d29\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"ae975aaf-e3bd-4672-a5af-80e5e08df0d305\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-24/ab2bfe7d-ba1f-4b56-8cb0-ce8806a90f38/full.md\"\n  }\n]",
+      "elapsed_seconds": 8.163,
+      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"764e3b6d-a8b7-481b-8fa0-3ea88e6242b005\",\n    \"trace_id\": \"1ff916281fb983873d75ac57a09e1d08\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"372ee89cd8aebfec47f17ab52b73e9d8\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"6b7593e78af51e6c6becb6faa88cbaa2\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"d2456b1c91690d3c2221d2c5b98b15fa\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"46c48407c7399fb029b62bf84e6dd2fb\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"764e3b6d-a8b7-481b-8fa0-3ea88e6242b005\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-24/453cafd0-36a0-41bb-be08-468bfc5f8767/full.md\"\n  }\n]",
       "stderr_tail": "",
       "metadata": {}
     },
@@ -1021,7 +1163,7 @@
         "cached-mineru-cli",
         "<PROJECT_ROOT>\\submission_artifacts\\mineru_cases\\case_mineru_cli_contract_pdf\\mineru\\standard_contract_cross_page\\auto",
         "->",
-        "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto"
+        "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\mineru_fallback_cli\\standard_contract_cross_page\\auto"
       ],
       "status": "completed",
       "elapsed_seconds": 0.001,
@@ -1030,10 +1172,10 @@
       "metadata": {}
     }
   ],
-  "run_id": "f64b82d718a0",
+  "run_id": "9cfdd736c9a1",
   "task": "Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.",
   "profile": "standard_or_contract",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\summary.md"
+  "result_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\9cfdd736c9a1\\summary.md"
 }

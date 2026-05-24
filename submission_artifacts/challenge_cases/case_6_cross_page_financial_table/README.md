@@ -2,7 +2,7 @@
 
 This is a synthetic challenge fixture used to stress a specific edge case.
 
-- Run id: `dd5ba81bd642`
+- Run id: `8edb4766c056`
 - Profile: `financial_report`
 - Quality: `pass_with_warnings` (92/100)
 - Recovery executed: `false`

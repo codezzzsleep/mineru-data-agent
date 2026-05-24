@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .ruff_cache/
+.mineru_data_agent/
 .coverage
 htmlcov/
 runs/

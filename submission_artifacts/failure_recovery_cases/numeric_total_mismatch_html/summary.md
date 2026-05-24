@@ -1,7 +1,8 @@
 > Boundary: native HTML controlled fixture; validates numeric mismatch detection.
 
-# MinerU Data Agent Run 9742489ae255
+# MinerU Data Agent Run 714efb886582
 
+- Schema version: 2026-05-24
 - Task: 检查财报表格总计是否一致，并标记人工复核项。
 - Profile: financial_report
 - Execution method: auto

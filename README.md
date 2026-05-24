@@ -9,7 +9,8 @@
 项目在 MinerU/HTML/Office 解析结果之上增加：
 
 - 任务意图识别、自适应执行计划、动态 schema、任务级后处理和恢复优先级
-- Agent action plan：每次运行记录子任务拆解、候选工具、动态选择原因、replan triggers 和质量后的再规划结果
+- 可配置 profile 推断：内置 profile 由关键词和轻量确定性 token/字符向量相似度共同打分，可用 `MINERU_DATA_AGENT_PROFILE_CONFIG` 调整；它不是学习型 embedding 模型
+- Agent action plan：每次运行记录子任务拆解、候选工具、动态选择原因、replan triggers、质量后的再规划结果和本地记忆策略
 - PDF/图片的 MinerU 解析适配，以及 DOCX/PPTX/HTML 的轻量结构化适配；当前提交包已包含 4 个 PDF 文件级本地 MinerU CLI 证据和 2 个 Office 文件级证据
 - HTML 文档的轻量结构化适配，保留标题层级、段落、列表和表格
 - DOCX/PPTX 文档的轻量结构化适配，保留 Word 章节/表格与 PPT slide-level provenance
@@ -18,8 +19,9 @@
 - 可选 DeepSeek/ModelScope 预执行调度：在解析前建议 profile、runner、backend、method、语言、目标 schema 和恢复策略，并把安全白名单内的建议实际应用到本次运行
 - 质量异常后的自动恢复执行：编码噪声清理二次 pass，以及 PDF/图片类低质量结果的 OCR 重试择优
 - 在线 Agent API 缺少页级 provenance 时，如果检测到本地 MinerU CLI 或显式配置了 CLI 路径，可自动触发 CLI fallback，并把初始问题码、两次尝试和最终择优结果写入 `recovery_decision`
+- 跨运行本地记忆：同一输出根目录下的 `.mineru_data_agent/memory.sqlite` 记录 profile、问题码和恢复结果，后续运行可把历史成功恢复路径纳入 `runtime_recovery_plan`；这是本地统计，不是模型训练
 - 面向检索/评测入库的 `retrieval_chunks.jsonl` 导出
-- `result.json`、`trace.json`、`summary.md` 三类可复查输出
+- `result.json`、`trace.json`、`summary.md` 三类可复查输出；新结果含 `schema_version`，便于下游兼容性检查
 - FastAPI 同步接口与异步 job/polling 接口，方便组委会或评审脚本调用
 - Dockerfile 与 docker-compose 一键启动 API，降低复现成本
 - 5 个可复跑 HTML/网页 fixture artifact，覆盖财报、低质量 OCR、合同条款、流程说明和网页巡检
@@ -32,6 +34,7 @@
 - 1 个自适应规划案例：同一财报输入在“增长最快项目”和“异常/证据复核”两个任务下生成不同 task intents、target schema、post-processors 和 task-specific answers
 - 5 个 Agent decision 离线回归案例：覆盖财报增长、OCR 噪声合同、条款实体、流程图文档和跨页表格，展示任务拆解、动态工具选择和质量后 replan；不作为 live LLM 证据
 - 5 个 controlled failure/recovery 案例：覆盖 text cleanup、OCR retry 成功/失败、strict provenance failure 和 numeric mismatch；不作为 live OCR/GPU/公网 benchmark
+- 1 个 controlled cross-run memory 案例：同一噪声文档第二次运行读取第一次 text cleanup 成功记录，并把本地统计推荐写入 `runtime_recovery_plan`
 - 1 个实际启用 DeepSeek-V4-Flash 的 LLM 证据案例，用于任务理解、schema 建议、复核重点和恢复建议；当前 live rerun 已记录 2 次 LLM 调用、4309 tokens
 - 1 份 LLM impact 报告，对比保存的规则运行与 LLM-enabled 运行，列出 LLM 决策点、token、应用/忽略项和 recovery suggestion
 - 1 份成本模型报告，把 native、CLI、在线 API、LLM 四类路径拆开，并用环境变量填入价格后自动估算 100 份文档成本

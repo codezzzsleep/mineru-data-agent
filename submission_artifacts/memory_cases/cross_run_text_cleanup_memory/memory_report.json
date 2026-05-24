@@ -1,0 +1,22 @@
+{
+  "schema_version": "2026-05-24",
+  "case_id": "cross_run_text_cleanup_memory",
+  "boundary": "This is a controlled local-memory regression case. It proves deterministic SQLite recovery statistics are read by a later run; it is not live LLM autonomy, reinforcement learning, or model fine-tuning.",
+  "first_run": {
+    "run_id": "43589089cb7d",
+    "selected_attempt": "text_cleanup",
+    "memory_recommended_actions": [],
+    "quality": "pass"
+  },
+  "second_run": {
+    "run_id": "39df60777fe2",
+    "selected_attempt": "text_cleanup",
+    "memory_recommended_actions": [
+      "text_cleanup"
+    ],
+    "runtime_memory_recommended_actions": [
+      "text_cleanup"
+    ],
+    "quality": "pass"
+  }
+}

@@ -1,5 +1,6 @@
-# MinerU Data Agent Run 849d14871926
+# MinerU Data Agent Run f1ac8c54e841
 
+- Schema version: 2026-05-24
 - Task: Parse an incident workflow report, extract incident id, timeline, fallback actions, risks, recommendations, recovery verification targets, trace, and retrieval chunks.
 - Profile: workflow_or_diagram
 - Execution method: auto

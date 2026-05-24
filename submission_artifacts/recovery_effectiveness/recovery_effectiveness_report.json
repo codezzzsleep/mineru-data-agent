@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T12:14:43Z",
+  "generated_at": "2026-05-24T13:01:00Z",
   "scope": "Recovery effectiveness summary over saved submission artifacts.",
   "aggregate": {
     "results_with_recovery": 39,
@@ -8,7 +8,7 @@
     "selected_non_initial": 6,
     "executed_rate": 0.20512820512820512,
     "selected_non_initial_rate": 0.15384615384615385,
-    "average_non_initial_tool_seconds_when_executed": 4.421,
+    "average_non_initial_tool_seconds_when_executed": 2.936,
     "attempt_counts": {
       "cli_fallback": 1,
       "initial": 39,
@@ -39,7 +39,7 @@
   "cases": [
     {
       "result_path": "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/result.json",
-      "run_id": "1c00873d82d9",
+      "run_id": "c7a3814fb200",
       "profile": "financial_report",
       "quality_status": "pass",
       "quality_score": 100,
@@ -63,7 +63,7 @@
     },
     {
       "result_path": "submission_artifacts/adaptive_cases/case_financial_growth_query/result.json",
-      "run_id": "c731abb69fe2",
+      "run_id": "ec0330a7568e",
       "profile": "financial_report",
       "quality_status": "pass",
       "quality_score": 100,
@@ -109,7 +109,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/result.json",
-      "run_id": "6015703adc96",
+      "run_id": "0cb156d8db98",
       "profile": "financial_report",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -135,7 +135,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/result.json",
-      "run_id": "05183ace2503",
+      "run_id": "4795b51e1c1a",
       "profile": "financial_report",
       "quality_status": "pass",
       "quality_score": 100,
@@ -159,7 +159,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/result.json",
-      "run_id": "e1a2cd2ccb74",
+      "run_id": "0dc4770ca4b3",
       "profile": "low_quality_ocr",
       "quality_status": "pass",
       "quality_score": 100,
@@ -183,7 +183,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/result.json",
-      "run_id": "38961250fefc",
+      "run_id": "980af4c9df85",
       "profile": "standard_or_contract",
       "quality_status": "pass",
       "quality_score": 100,
@@ -205,7 +205,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/result.json",
-      "run_id": "c733182007e0",
+      "run_id": "5408ab934a45",
       "profile": "workflow_or_diagram",
       "quality_status": "pass",
       "quality_score": 100,
@@ -385,7 +385,7 @@
     },
     {
       "result_path": "submission_artifacts/challenge_cases/case_6_cross_page_financial_table/result.json",
-      "run_id": "58d40cd48116",
+      "run_id": "8edb4766c056",
       "profile": "financial_report",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -411,7 +411,7 @@
     },
     {
       "result_path": "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/result.json",
-      "run_id": "ee0d71622431",
+      "run_id": "3095f0c1ba2b",
       "profile": "low_quality_ocr",
       "quality_status": "pass",
       "quality_score": 100,
@@ -435,7 +435,7 @@
     },
     {
       "result_path": "submission_artifacts/challenge_cases/case_8_industry_standard_matrix/result.json",
-      "run_id": "c62b72d418ea",
+      "run_id": "e4de9c3c7280",
       "profile": "standard_or_contract",
       "quality_status": "pass",
       "quality_score": 100,
@@ -457,7 +457,7 @@
     },
     {
       "result_path": "submission_artifacts/challenge_cases/case_9_incident_workflow_report/result.json",
-      "run_id": "591a12766ed6",
+      "run_id": "f1ac8c54e841",
       "profile": "workflow_or_diagram",
       "quality_status": "pass",
       "quality_score": 100,
@@ -479,7 +479,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/result.json",
-      "run_id": "9742489ae255",
+      "run_id": "714efb886582",
       "profile": "financial_report",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -503,7 +503,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/result.json",
-      "run_id": "f4813cc3fed7",
+      "run_id": "c759949d7acd",
       "profile": "general_document",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -528,7 +528,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/result.json",
-      "run_id": "40786b721414",
+      "run_id": "9d9fc853fe71",
       "profile": "general_document",
       "quality_status": "pass",
       "quality_score": 100,
@@ -549,7 +549,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/result.json",
-      "run_id": "b510f754515f",
+      "run_id": "bb7fc2be3e5c",
       "profile": "standard_or_contract",
       "quality_status": "needs_review",
       "quality_score": 54,
@@ -574,7 +574,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/text_cleanup_mojibake/result.json",
-      "run_id": "3dad4a05f2ff",
+      "run_id": "c8075b57983d",
       "profile": "low_quality_ocr",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -907,7 +907,7 @@
     },
     {
       "result_path": "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json",
-      "run_id": "f64b82d718a0",
+      "run_id": "9cfdd736c9a1",
       "profile": "standard_or_contract",
       "quality_status": "pass",
       "quality_score": 100,
@@ -923,7 +923,7 @@
       ],
       "final_issue_codes": [],
       "failed_attempts": [],
-      "non_initial_tool_seconds": 20.045,
+      "non_initial_tool_seconds": 8.166,
       "llm_quality_decision_present": true
     }
   ],

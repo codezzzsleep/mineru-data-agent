@@ -11,9 +11,17 @@ from typing import Any
 from .extractors import build_extracted_view, extract_docx, extract_html, extract_pptx, read_content_list, read_markdown
 from .retrieval_exporter import build_retrieval_export
 from .logging_utils import TraceRecorder
+from .memory import AgentMemoryStore
 from .mineru_client import MinerUParseError, MinerURunner
 from .models import AgentResult, ParseArtifacts, ToolCall
-from .planner import analyze_requirement, build_agent_action_plan, build_plan, build_quality_replan, build_task_result, infer_profile
+from .planner import (
+    analyze_requirement,
+    build_agent_action_plan,
+    build_plan,
+    build_quality_replan,
+    build_task_result,
+    infer_profile_evidence,
+)
 from .validators import build_quality_report
 
 
@@ -75,8 +83,10 @@ class MinerUDataAgent:
             raise FileNotFoundError(f"Input file does not exist: {input_path}")
 
         run_id = uuid.uuid4().hex[:12]
-        output_dir = Path(output_root).expanduser().resolve() / run_id
+        output_root_path = Path(output_root).expanduser().resolve()
+        output_dir = output_root_path / run_id
         output_dir.mkdir(parents=True, exist_ok=True)
+        memory_store = AgentMemoryStore(output_root_path)
         trace = TraceRecorder()
         result_path = output_dir / "result.json"
         summary_path = output_dir / "summary.md"
@@ -88,13 +98,25 @@ class MinerUDataAgent:
 
         try:
             with trace.step("infer_task_profile", task=task, input_file=str(input_path)) as profile_step:
-                resolved_profile = infer_profile(task, input_path.name) if profile == "auto" else profile
+                profile_inference = (
+                    infer_profile_evidence(task, input_path.name)
+                    if profile == "auto"
+                    else {
+                        "selected_profile": profile,
+                        "source": "explicit_request",
+                        "method": "explicit_profile",
+                        "matches": [],
+                        "boundary": "Profile was supplied by the caller; configurable inference was not used.",
+                    }
+                )
+                resolved_profile = str(profile_inference.get("selected_profile") or "general_document")
                 adaptive_decision = analyze_requirement(
                     task,
                     resolved_profile,
                     input_metadata=input_metadata,
                 )
                 plan = build_plan(task, resolved_profile, adaptive_decision)
+                profile_step.detail["profile_inference"] = profile_inference
                 profile_step.detail["adaptive_decision"] = adaptive_decision.to_jsonable()
             execution_control = _initial_execution_control(
                 requested_profile=profile,
@@ -105,6 +127,7 @@ class MinerUDataAgent:
                 suffix=suffix,
                 runner_name=self.mineru_runner.__class__.__name__,
                 adaptive_decision=adaptive_decision.to_jsonable(),
+                profile_inference=profile_inference,
                 strict_page_provenance=strict_page_provenance,
             )
 
@@ -139,6 +162,7 @@ class MinerUDataAgent:
                         suffix=suffix,
                         runner_kind=_runner_kind(self.mineru_runner),
                         runner_name=self.mineru_runner.__class__.__name__,
+                        profile_inference=profile_inference,
                         strict_page_provenance=strict_page_provenance,
                     )
                     adaptive_decision = analyze_requirement(
@@ -254,6 +278,12 @@ class MinerUDataAgent:
                 )
             ]
             selected_attempt = "initial"
+            initial_quality_issue_codes = _issue_codes(quality)
+            cross_run_memory = memory_store.summarize(
+                profile=resolved_profile,
+                issue_codes=initial_quality_issue_codes,
+            )
+            execution_control["cross_run_memory"] = cross_run_memory
 
             runtime_recovery_plan = _build_runtime_recovery_plan(
                 action_plan=execution_control.get("agent_action_plan", {}),
@@ -263,6 +293,7 @@ class MinerUDataAgent:
                 runner=self.mineru_runner,
                 fallback_runner=self.fallback_mineru_runner,
                 llm_recovery_suggestions=post_llm_analysis.get("recovery_suggestions"),
+                memory_summary=cross_run_memory,
             )
             execution_control["runtime_recovery_plan"] = runtime_recovery_plan
             with trace.step("agent_runtime_recovery_plan") as runtime_plan_step:
@@ -512,6 +543,31 @@ class MinerUDataAgent:
                     llm_analysis["quality_decision"] = llm_quality_decision
                     llm_decision_step.detail.update(llm_quality_decision)
 
+            with trace.step("agent_memory_update") as memory_step:
+                try:
+                    memory_store.record(
+                        run_id=run_id,
+                        profile=resolved_profile,
+                        initial_issue_codes=initial_quality_issue_codes,
+                        selected_attempt=selected_attempt,
+                        decision=str(recovery_decision.get("decision") or "accept"),
+                        quality_status=str(quality.get("status") or "unknown"),
+                        quality_score=int(quality.get("score") or 0),
+                    )
+                    execution_control.setdefault("cross_run_memory", {})["recorded"] = memory_store.enabled
+                    memory_step.detail.update(
+                        {
+                            "enabled": memory_store.enabled,
+                            "recorded": memory_store.enabled,
+                            "profile": resolved_profile,
+                            "initial_issue_codes": initial_quality_issue_codes,
+                            "selected_attempt": selected_attempt,
+                        }
+                    )
+                except Exception as exc:
+                    execution_control.setdefault("cross_run_memory", {})["record_error"] = repr(exc)[-500:]
+                    memory_step.detail.update({"enabled": memory_store.enabled, "recorded": False, "error": repr(exc)[-500:]})
+
             result = AgentResult(
                 run_id=run_id,
                 task=task,
@@ -643,6 +699,7 @@ def _initial_execution_control(
     suffix: str,
     runner_name: str,
     adaptive_decision: dict[str, Any] | None = None,
+    profile_inference: dict[str, Any] | None = None,
     strict_page_provenance: bool = False,
 ) -> dict[str, Any]:
     runner_kind = "native" if suffix in NATIVE_SUFFIXES else ("agent-api" if "AgentAPI" in runner_name else "cli")
@@ -682,6 +739,7 @@ def _initial_execution_control(
             suffix=suffix,
             source="rules",
         ),
+        "profile_inference": profile_inference or {},
         "adaptive_decision": adaptive_decision or {},
         "runner_class": runner_name,
         "applied": [],
@@ -700,6 +758,7 @@ def _apply_llm_preplan(
     suffix: str,
     runner_kind: str,
     runner_name: str,
+    profile_inference: dict[str, Any] | None = None,
     strict_page_provenance: bool = False,
 ) -> tuple[str, str, str, str, dict[str, Any]]:
     resolved_profile = initial_profile
@@ -714,6 +773,7 @@ def _apply_llm_preplan(
         lang=lang,
         suffix=suffix,
         runner_name=runner_name,
+        profile_inference=profile_inference,
         strict_page_provenance=strict_page_provenance,
     )
     control["llm_preplan_enabled"] = True
@@ -905,6 +965,7 @@ def _build_summary(result: AgentResult) -> str:
     lines = [
         f"# MinerU Data Agent Run {result.run_id}",
         "",
+        f"- Schema version: {result.schema_version}",
         f"- Task: {result.task}",
         f"- Profile: {result.profile}",
         f"- Execution method: {result.execution_control.get('resolved', {}).get('method', 'unknown')}",
@@ -1414,6 +1475,7 @@ def _build_runtime_recovery_plan(
     runner: Any,
     fallback_runner: Any | None,
     llm_recovery_suggestions: Any = None,
+    memory_summary: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     issue_codes = _issue_codes(quality)
     triggers = action_plan.get("replan_triggers", []) if isinstance(action_plan, dict) else []
@@ -1495,6 +1557,16 @@ def _build_runtime_recovery_plan(
                 state_edge=None,
             )
         )
+    for action in _iter_memory_recovery_actions(memory_summary):
+        actions.append(
+            _runtime_recovery_action(
+                action=action,
+                issue_code="memory_recommended",
+                source="local_sqlite_memory.recommended_actions",
+                reason="Prior local runs with the same profile and overlapping issue codes selected this recovery action successfully.",
+                state_edge=None,
+            )
+        )
 
     deduped = _dedupe_runtime_actions(actions)
     for item in deduped:
@@ -1513,6 +1585,9 @@ def _build_runtime_recovery_plan(
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": issue_codes,
         "actions": deduped,
+        "memory_recommended_actions": list((memory_summary or {}).get("recommended_actions", []))
+        if isinstance(memory_summary, dict)
+        else [],
         "loop_policy": state_machine.get("loop_policy", {}) if isinstance(state_machine, dict) else {},
         "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner.",
     }
@@ -1543,6 +1618,14 @@ def _dedupe_runtime_actions(actions: list[dict[str, Any]]) -> list[dict[str, Any
     for action in actions:
         name = str(action.get("action") or "")
         if not name or name in deduped:
+            if name and name in deduped:
+                deduped[name].setdefault("additional_sources", []).append(
+                    {
+                        "source": action.get("source"),
+                        "issue_code": action.get("issue_code"),
+                        "reason": action.get("reason"),
+                    }
+                )
             continue
         deduped[name] = action
     return sorted(deduped.values(), key=lambda item: priority.get(str(item.get("action")), 99))
@@ -1563,6 +1646,21 @@ def _map_llm_recovery_suggestion(suggestion: str) -> str:
     if any(token in lowered for token in ("cli", "fallback", "local", "本地", "页级", "page provenance", "page-level")):
         return "cli_fallback"
     return "llm_suggested_review"
+
+
+def _iter_memory_recovery_actions(memory_summary: dict[str, Any] | None) -> list[str]:
+    if not isinstance(memory_summary, dict):
+        return []
+    raw_actions = memory_summary.get("recommended_actions")
+    if not isinstance(raw_actions, list):
+        return []
+    supported = {"text_cleanup", "ocr_retry", "cli_fallback"}
+    actions: list[str] = []
+    for item in raw_actions:
+        action = str(item).strip()
+        if action in supported and action not in actions:
+            actions.append(action)
+    return actions[:3]
 
 
 def _first_matching_issue(issue_codes: list[str], candidates: set[str]) -> str | None:

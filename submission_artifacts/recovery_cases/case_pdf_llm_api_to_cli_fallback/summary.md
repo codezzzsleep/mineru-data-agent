@@ -1,5 +1,6 @@
-# MinerU Data Agent Run f64b82d718a0
+# MinerU Data Agent Run 9cfdd736c9a1
 
+- Schema version: 2026-05-24
 - Task: Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.
 - Profile: standard_or_contract
 - Execution method: auto

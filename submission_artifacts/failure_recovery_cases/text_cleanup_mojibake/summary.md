@@ -1,7 +1,8 @@
 > Boundary: native HTML controlled fixture; validates text cleanup recovery path.
 
-# MinerU Data Agent Run 3dad4a05f2ff
+# MinerU Data Agent Run c8075b57983d
 
+- Schema version: 2026-05-24
 - Task: 清理 OCR 噪声合同并保留质量问题。
 - Profile: low_quality_ocr
 - Execution method: auto

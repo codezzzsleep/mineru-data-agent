@@ -4,6 +4,7 @@ import re
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
+from .profile_config import infer_profile_with_evidence
 
 PROFILE_CHOICES = {
     "financial_report",
@@ -45,16 +46,23 @@ class AgentActionPlan:
 
 
 def infer_profile(task: str, filename: str) -> str:
-    text = f"{task} {filename}".lower()
-    if any(word in text for word in ["财报", "报表", "资产", "负债", "利润", "cash", "finance", "table"]):
-        return "financial_report"
-    if any(word in text for word in ["规范", "标准", "条款", "合同", "standard", "clause"]):
-        return "standard_or_contract"
-    if any(word in text for word in ["流程", "工艺", "工程图", "图纸", "flow", "diagram"]):
-        return "workflow_or_diagram"
-    if any(word in text for word in ["扫描", "拍照", "模糊", "低质量", "ocr", "scan"]):
-        return "low_quality_ocr"
-    return "general_document"
+    return str(infer_profile_evidence(task, filename)["selected_profile"])
+
+
+def infer_profile_evidence(task: str, filename: str) -> dict[str, Any]:
+    evidence = infer_profile_with_evidence(task, filename)
+    selected_profile = str(evidence.get("selected_profile") or "general_document")
+    if selected_profile in PROFILE_CHOICES:
+        return evidence
+    evidence = dict(evidence)
+    evidence["configured_profile"] = selected_profile
+    evidence["selected_profile"] = "general_document"
+    evidence["unsupported_profile_mapped_to"] = "general_document"
+    evidence["boundary"] = (
+        f"{evidence.get('boundary', '')} Custom profile `{selected_profile}` was detected from configuration, "
+        "but no specialized validators/post-processors are registered for it, so execution uses the general_document path."
+    ).strip()
+    return evidence
 
 
 def analyze_requirement(
@@ -215,21 +223,27 @@ def build_agent_action_plan(
         replan_triggers=replan_triggers,
         state_machine=_state_machine(subtasks, replan_triggers, runner=runner, method=method),
         memory_policy={
-            "scope": "single_run_trace",
+            "scope": "single_run_trace_and_local_sqlite_statistics",
             "writes": [
                 "execution_control.agent_action_plan",
                 "trace.steps",
                 "recovery_decision.attempts",
                 "retrieval_manifest",
+                "output_root/.mineru_data_agent/memory.sqlite",
             ],
             "reads": [
                 "input_metadata",
                 "task_intents",
                 "quality_issues",
                 "retry_history",
+                "local recovery outcomes with matching profile and issue codes",
             ],
-            "cross_run_learning": False,
-            "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces.",
+            "cross_run_learning": "local_sqlite_recovery_statistics",
+            "disable_with_env": "MINERU_DATA_AGENT_MEMORY=0",
+            "boundary": (
+                "Memory is deterministic local statistics over prior recovery outcomes; "
+                "it is not model fine-tuning, reinforcement learning, or shared cloud memory."
+            ),
         },
     )
 

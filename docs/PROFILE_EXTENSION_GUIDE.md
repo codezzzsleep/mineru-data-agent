@@ -2,10 +2,27 @@
 
 This project treats a document profile as a deterministic routing and validation policy. A new profile does not require changing the API contract, but it should add its own schema, checks, fixtures, and labels.
 
+## Tune Existing Profiles Without Code
+
+For quick adaptation, set `MINERU_DATA_AGENT_PROFILE_CONFIG` to a JSON file with profile descriptions and keywords:
+
+```json
+{
+  "profiles": {
+    "standard_or_contract": {
+      "description": "Environmental penalty reports and compliance clauses.",
+      "keywords": ["环保", "处罚", "整改"]
+    }
+  }
+}
+```
+
+The selector records evidence in `execution_control.profile_inference`, including keyword hits and lightweight deterministic token/character vector similarity. This is intentionally not a learned embedding model. If the config introduces a brand-new profile id without matching validators/post-processors in code, the run records `configured_profile` and safely maps execution to `general_document`.
+
 ## Add A Profile
 
 1. Add the profile id to `PROFILE_CHOICES` in `src/mineru_data_agent/planner.py`.
-2. Extend `infer_profile()` with conservative task/file keywords.
+2. Add default description/keywords to `src/mineru_data_agent/profile_config.py`, or provide them through `MINERU_DATA_AGENT_PROFILE_CONFIG`.
 3. Add default fields in `_default_schema()`.
 4. Add task-specific processors in `_post_processors()` and validation focus in `_verification_focus()`.
 5. Add quality thresholds and recovery preferences in `_quality_thresholds()` and `_recovery_strategy()`.

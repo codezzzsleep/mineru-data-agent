@@ -1,5 +1,6 @@
-# MinerU Data Agent Run 6bc536ef8ea8
+# MinerU Data Agent Run 3095f0c1ba2b
 
+- Schema version: 2026-05-24
 - Task: Parse an OCR-noisy contract scan review, clean mojibake fragments, preserve initial quality issues, extract contract metadata, risk table, recommendations, trace, and retrieval chunks.
 - Profile: low_quality_ocr
 - Execution method: auto

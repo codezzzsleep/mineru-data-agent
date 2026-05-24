@@ -1,14 +1,21 @@
 {
-  "created_at": "2026-05-24T12:13:40.579307+00:00",
+  "created_at": "2026-05-24T13:00:50.510459+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.557111+00:00",
-      "ended_at": "2026-05-24T12:13:40.558127+00:00",
+      "started_at": "2026-05-24T13:00:50.409852+00:00",
+      "ended_at": "2026-05-24T13:00:50.409852+00:00",
       "detail": {
         "task": "解析稀疏 PDF；记录 OCR 重试失败后的保底结果。",
         "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\ocr_retry_failure_controlled.pdf",
+        "profile_inference": {
+          "selected_profile": "general_document",
+          "source": "explicit_request",
+          "method": "explicit_profile",
+          "matches": [],
+          "boundary": "Profile was supplied by the caller; configurable inference was not used."
+        },
         "adaptive_decision": {
           "profile": "general_document",
           "task_intents": [
@@ -61,8 +68,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.558127+00:00",
-      "ended_at": "2026-05-24T12:13:40.558127+00:00",
+      "started_at": "2026-05-24T13:00:50.409852+00:00",
+      "ended_at": "2026-05-24T13:00:50.409852+00:00",
       "detail": {
         "subtask_count": 6,
         "selected_tools": [
@@ -78,8 +85,8 @@
     {
       "name": "mineru_parse",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.558127+00:00",
-      "ended_at": "2026-05-24T12:13:40.564120+00:00",
+      "started_at": "2026-05-24T13:00:50.409852+00:00",
+      "ended_at": "2026-05-24T13:00:50.412368+00:00",
       "detail": {
         "backend": "pipeline",
         "method": "auto",
@@ -89,8 +96,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.564120+00:00",
-      "ended_at": "2026-05-24T12:13:40.564120+00:00",
+      "started_at": "2026-05-24T13:00:50.412368+00:00",
+      "ended_at": "2026-05-24T13:00:50.412368+00:00",
       "detail": {
         "item_count": 1,
         "page_count": 1,
@@ -123,8 +130,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.564120+00:00",
-      "ended_at": "2026-05-24T12:13:40.564120+00:00",
+      "started_at": "2026-05-24T13:00:50.412368+00:00",
+      "ended_at": "2026-05-24T13:00:50.412368+00:00",
       "detail": {
         "profile": "general_document"
       }
@@ -132,8 +139,8 @@
     {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.564120+00:00",
-      "ended_at": "2026-05-24T12:13:40.564120+00:00",
+      "started_at": "2026-05-24T13:00:50.413369+00:00",
+      "ended_at": "2026-05-24T13:00:50.413369+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -147,9 +154,24 @@
             "reason": "sparse PDF text often needs OCR mode",
             "runner_change": null,
             "method_change": "auto->ocr",
+            "additional_sources": [
+              {
+                "source": "validator_policy",
+                "issue_code": "short_text",
+                "reason": "quality report indicates sparse or OCR-sensitive result"
+              },
+              {
+                "source": "local_sqlite_memory.recommended_actions",
+                "issue_code": "memory_recommended",
+                "reason": "Prior local runs with the same profile and overlapping issue codes selected this recovery action successfully."
+              }
+            ],
             "skip_reason": "",
             "runtime_status": "executed"
           }
+        ],
+        "memory_recommended_actions": [
+          "ocr_retry"
         ],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
@@ -162,8 +184,8 @@
     {
       "name": "auto_recovery_ocr_retry",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.564120+00:00",
-      "ended_at": "2026-05-24T12:13:40.564120+00:00",
+      "started_at": "2026-05-24T13:00:50.413369+00:00",
+      "ended_at": "2026-05-24T13:00:50.413369+00:00",
       "detail": {
         "backend": "pipeline",
         "from_method": "auto",
@@ -177,8 +199,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.565112+00:00",
-      "ended_at": "2026-05-24T12:13:40.565112+00:00",
+      "started_at": "2026-05-24T13:00:50.413369+00:00",
+      "ended_at": "2026-05-24T13:00:50.413369+00:00",
       "detail": {
         "quality_status": "pass_with_warnings",
         "selected_attempt": "initial"
@@ -187,8 +209,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.565112+00:00",
-      "ended_at": "2026-05-24T12:13:40.565112+00:00",
+      "started_at": "2026-05-24T13:00:50.413369+00:00",
+      "ended_at": "2026-05-24T13:00:50.413369+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass_with_warnings",
@@ -236,8 +258,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T12:13:40.565112+00:00",
-      "ended_at": "2026-05-24T12:13:40.568180+00:00",
+      "started_at": "2026-05-24T13:00:50.413369+00:00",
+      "ended_at": "2026-05-24T13:00:50.415370+00:00",
       "detail": {
         "chunks_count": 1,
         "by_type": {
@@ -246,9 +268,24 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\f4813cc3fed7\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\f4813cc3fed7\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\f4813cc3fed7\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c759949d7acd\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c759949d7acd\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c759949d7acd\\retrieval\\retrieval_quality.json"
+      }
+    },
+    {
+      "name": "agent_memory_update",
+      "status": "completed",
+      "started_at": "2026-05-24T13:00:50.415370+00:00",
+      "ended_at": "2026-05-24T13:00:50.506490+00:00",
+      "detail": {
+        "enabled": true,
+        "recorded": true,
+        "profile": "general_document",
+        "initial_issue_codes": [
+          "short_text"
+        ],
+        "selected_attempt": "initial"
       }
     }
   ],
@@ -278,12 +315,12 @@
       "metadata": {}
     }
   ],
-  "run_id": "f4813cc3fed7",
+  "run_id": "c759949d7acd",
   "task": "解析稀疏 PDF；记录 OCR 重试失败后的保底结果。",
   "profile": "general_document",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\f4813cc3fed7\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\f4813cc3fed7\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c759949d7acd\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\c759949d7acd\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,
