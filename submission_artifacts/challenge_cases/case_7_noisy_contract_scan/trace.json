@@ -1,21 +1,81 @@
 {
-  "created_at": "2026-05-23T12:06:06.837603+00:00",
+  "created_at": "2026-05-24T12:18:31.201599+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-23T12:06:06.820523+00:00",
-      "ended_at": "2026-05-23T12:06:06.820523+00:00",
+      "started_at": "2026-05-24T12:18:31.184891+00:00",
+      "ended_at": "2026-05-24T12:18:31.184891+00:00",
       "detail": {
         "task": "Parse an OCR-noisy contract scan review, clean mojibake fragments, preserve initial quality issues, extract contract metadata, risk table, recommendations, trace, and retrieval chunks.",
-        "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html"
+        "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html",
+        "adaptive_decision": {
+          "profile": "low_quality_ocr",
+          "task_intents": [
+            "anomaly_detection",
+            "evidence_trace"
+          ],
+          "target_schema": {
+            "recognized_text": "OCR text candidate",
+            "noise_signal": "blur/mojibake/sparse-text signal",
+            "critical_field": "field that must be reviewed",
+            "recovery_action": "retry or fallback recommendation",
+            "evidence": "source evidence",
+            "risk_reason": "why the item should be reviewed"
+          },
+          "post_processors": [
+            "field_evidence_builder",
+            "anomaly_signal_collector",
+            "evidence_trace_export"
+          ],
+          "verification_focus": [
+            "schema_fields_have_evidence",
+            "quality_issues_are_not_hidden",
+            "risk_findings_link_to_source_text"
+          ],
+          "quality_thresholds": {
+            "min_quality_score": 88,
+            "require_tables": false,
+            "require_numeric_facts": false,
+            "prefer_page_provenance": false
+          },
+          "recovery_strategy": [
+            {
+              "action": "text_cleanup",
+              "trigger": "mojibake_or_encoding_noise",
+              "priority": "normal"
+            }
+          ],
+          "rationale": [
+            "profile=low_quality_ocr selected from task/file signals",
+            "input suffix=.html",
+            "task intents=anomaly_detection, evidence_trace",
+            "schema and recovery priorities are derived before parsing and saved for audit"
+          ]
+        }
+      }
+    },
+    {
+      "name": "agent_task_decomposition",
+      "status": "completed",
+      "started_at": "2026-05-24T12:18:31.184891+00:00",
+      "ended_at": "2026-05-24T12:18:31.184891+00:00",
+      "detail": {
+        "subtask_count": 6,
+        "selected_tools": [
+          "native_extractor",
+          "structured_extractor",
+          "text_cleanup",
+          "retrieval_exporter"
+        ],
+        "replan_trigger_count": 4
       }
     },
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-23T12:06:06.820523+00:00",
-      "ended_at": "2026-05-23T12:06:06.826030+00:00",
+      "started_at": "2026-05-24T12:18:31.184891+00:00",
+      "ended_at": "2026-05-24T12:18:31.190007+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html"
       }
@@ -23,8 +83,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-23T12:06:06.826030+00:00",
-      "ended_at": "2026-05-23T12:06:06.826030+00:00",
+      "started_at": "2026-05-24T12:18:31.190007+00:00",
+      "ended_at": "2026-05-24T12:18:31.190007+00:00",
       "detail": {
         "item_count": 11,
         "page_count": 0,
@@ -34,48 +94,150 @@
         },
         "section_count": 3,
         "table_count": 1,
-        "key_value_count": 4,
+        "key_value_count": 5,
         "numeric_fact_count": 2,
         "semantic_signal_counts": {
           "dates": 1,
           "recommendations": 1,
           "anomaly_lines": 3
+        },
+        "task_result": {
+          "task_intents": [
+            "anomaly_detection",
+            "evidence_trace"
+          ],
+          "target_schema_keys": [
+            "recognized_text",
+            "noise_signal",
+            "critical_field",
+            "recovery_action",
+            "evidence",
+            "risk_reason"
+          ],
+          "answer_keys": [
+            "anomaly_candidates",
+            "field_evidence"
+          ]
         }
       }
     },
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-23T12:06:06.826030+00:00",
-      "ended_at": "2026-05-23T12:06:06.827037+00:00",
+      "started_at": "2026-05-24T12:18:31.190007+00:00",
+      "ended_at": "2026-05-24T12:18:31.190007+00:00",
       "detail": {
         "profile": "low_quality_ocr"
       }
     },
     {
+      "name": "agent_runtime_recovery_plan",
+      "status": "completed",
+      "started_at": "2026-05-24T12:18:31.191007+00:00",
+      "ended_at": "2026-05-24T12:18:31.191007+00:00",
+      "detail": {
+        "source": "agent_action_plan.state_machine",
+        "initial_issue_codes": [
+          "possible_mojibake",
+          "document_level_provenance"
+        ],
+        "actions": [
+          {
+            "action": "text_cleanup",
+            "issue_code": "possible_mojibake",
+            "source": "agent_action_plan.replan_triggers",
+            "reason": "encoding noise can be improved without rerunning OCR",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "",
+            "runtime_status": "executed"
+          }
+        ],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        },
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
+      }
+    },
+    {
       "name": "auto_recovery_text_cleanup",
       "status": "completed",
-      "started_at": "2026-05-23T12:06:06.827037+00:00",
-      "ended_at": "2026-05-23T12:06:06.829693+00:00",
+      "started_at": "2026-05-24T12:18:31.191007+00:00",
+      "ended_at": "2026-05-24T12:18:31.195607+00:00",
       "detail": {
-        "from_status": "pass_with_warnings"
+        "from_status": "pass_with_warnings",
+        "plan_issue_code": "possible_mojibake",
+        "plan_source": "agent_action_plan.replan_triggers"
       }
     },
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-23T12:06:06.829693+00:00",
-      "ended_at": "2026-05-23T12:06:06.829693+00:00",
+      "started_at": "2026-05-24T12:18:31.195607+00:00",
+      "ended_at": "2026-05-24T12:18:31.195607+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "text_cleanup"
       }
     },
     {
+      "name": "agent_replan_after_quality",
+      "status": "completed",
+      "started_at": "2026-05-24T12:18:31.195607+00:00",
+      "ended_at": "2026-05-24T12:18:31.195607+00:00",
+      "detail": {
+        "selected_attempt": "text_cleanup",
+        "quality_status": "pass",
+        "quality_score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial",
+          "text_cleanup"
+        ],
+        "selected_reason": "text_cleanup had quality_status=pass and score=100",
+        "next_action_if_still_risky": [
+          "accept_with_trace_review"
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "text_cleanup",
+          "selected_attempt_quality": {
+            "status": "pass",
+            "score": 100,
+            "issue_codes": [
+              "document_level_provenance"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance"
+          ]
+        }
+      }
+    },
+    {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-23T12:06:06.829693+00:00",
-      "ended_at": "2026-05-23T12:06:06.834586+00:00",
+      "started_at": "2026-05-24T12:18:31.195607+00:00",
+      "ended_at": "2026-05-24T12:18:31.198602+00:00",
       "detail": {
         "chunks_count": 4,
         "by_type": {
@@ -85,17 +247,17 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\6bc536ef8ea8\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\6bc536ef8ea8\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\6bc536ef8ea8\\retrieval\\retrieval_quality.json"
       }
     }
   ],
   "tool_calls": [],
-  "run_id": "ee0d71622431",
+  "run_id": "6bc536ef8ea8",
   "task": "Parse an OCR-noisy contract scan review, clean mojibake fragments, preserve initial quality issues, extract contract metadata, risk table, recommendations, trace, and retrieval chunks.",
   "profile": "low_quality_ocr",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\summary.md"
+  "result_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\6bc536ef8ea8\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\6bc536ef8ea8\\summary.md"
 }

@@ -1,4 +1,4 @@
-# MinerU Data Agent Run 58d40cd48116
+# MinerU Data Agent Run dd5ba81bd642
 
 - Task: Parse a cross-page-style financial control pack, extract document id, owner, tables, subtotal/total evidence, risks, recommendations, trace, and retrieval chunks.
 - Profile: financial_report
@@ -7,13 +7,14 @@
 - LLM preplan applied changes: 0
 - Input: `<PROJECT_ROOT>\examples\challenge_cases\case_6_cross_page_financial_table.html`
 - Quality: pass_with_warnings (92/100)
-- Content blocks: 12
+- Content blocks: 13
 - Pages with provenance: 0
 - Provenance level: document
 - Sections: 4
 - Tables: 2
-- Key-values: 6
-- Numeric facts: 10
+- Key-values: 7
+- Field evidence records: 7
+- Numeric facts: 11
 - Dates detected: 2
 - Recommendation signals: 1
 - Anomaly signals: 1
@@ -21,16 +22,69 @@
 - Recovery decision: manual_numeric_review
 - Recovery selected attempt: initial
 - Recovery attempts: 1
+- Task intents: aggregation, anomaly_detection, cross_page_reasoning, evidence_trace
 - LLM analysis: disabled
 
 ## Plan
-1. Inspect input type and task objective
-2. Parse document with MinerU or native HTML extractor
-3. Normalize content blocks with page-level or document-level provenance
-4. Build markdown, section, key-value, table, and numeric views
-5. Run quality checks and produce traceable logs
-6. Prioritize dense table extraction and numeric consistency checks
-7. Flag subtotal/total rows and suspicious numeric cells
+1. Inspect input type, document metadata, and natural-language task objective
+2. Infer task intents and generate a target extraction schema
+3. Choose MinerU/native parsing path and record execution rationale
+4. Normalize content blocks with page-level or document-level provenance
+5. Build markdown, section, key-value, table, numeric, and field-evidence views
+6. Run task-specific post-processing and quality checks
+7. Select recovery action from issue codes, retry history, and task priorities
+8. Produce traceable result, summary, retrieval chunks, and audit logs
+9. Prioritize dense table extraction and numeric consistency checks
+10. Compute trend/comparison candidates when the task asks for growth, decline, max/min, or year-over-year change
+11. Flag subtotal/total rows and suspicious numeric cells
+12. Apply task intent `aggregation` with schema-aware extraction and verification
+13. Apply task intent `anomaly_detection` with schema-aware extraction and verification
+14. Apply task intent `cross_page_reasoning` with schema-aware extraction and verification
+15. Apply task intent `evidence_trace` with schema-aware extraction and verification
+
+## Planning Rationale
+- financial keywords or explicit profile require table and numeric consistency checks
+- HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU
+- backend=pipeline is used for MinerU parsing when the selected runner calls MinerU
+- method=auto balances automatic parsing with OCR fallback when quality gates require it
+- lang=ch is passed to MinerU or recorded for native extraction audit
+- Recovery policy:
+  - text_cleanup if mojibake or encoding noise is detected
+  - ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues
+  - cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available
+  - manual_numeric_review when subtotal/total consistency checks fail
+
+## Adaptive Task Decision
+- Intents: aggregation, anomaly_detection, cross_page_reasoning, evidence_trace
+- Target schema keys: company_name, report_period, line_item, current_value, previous_value, unit, evidence, risk_reason, page_span
+- Quality thresholds: {"min_quality_score": 90, "require_tables": true, "require_numeric_facts": true, "prefer_page_provenance": false}
+- Recovery strategy:
+  - text_cleanup on mojibake_or_encoding_noise (normal)
+  - manual_numeric_review on total_or_subtotal_mismatch (high)
+
+## Agent Action Plan
+- Subtasks: 6
+- Selected tools: native_extractor, structured_extractor, numeric_validator, text_cleanup, retrieval_exporter
+- understand_task: Classify the document task and identify intent-specific outputs.
+- choose_parse_path: Pick the cheapest parser path that still preserves required provenance.
+- extract_structure: Normalize sections, tables, key-values, numeric facts, and field evidence.
+- validate_quality: Run profile and task-specific gates before accepting the result.
+- replan_if_needed: Map quality issues to recovery actions and select the best attempt.
+- export_artifacts: Write result, trace, summary, and retrieval artifacts.
+
+## Runtime Recovery Plan
+- Initial issue codes: document_level_provenance, numeric_total_verified, numeric_total_mismatch
+- manual_numeric_review: skipped for numeric_total_mismatch (agent_action_plan.replan_triggers)
+
+## Agent Replan After Quality
+- Issue codes: document_level_provenance, numeric_total_verified, numeric_total_mismatch
+- Attempted actions: initial
+- Selected reason: initial result remained the best accepted quality attempt
+
+## Task-Specific Answers
+- Top growth candidate: Maintenance Service delta=7246.0 percent_change=181150.0
+- Comparison candidates: 5
+- Anomaly candidates: 1
 
 ## Extracted Fields
 - Document ID: FIN-CROSS-2026-06
@@ -38,7 +92,15 @@
 - Owner: Finance Shared Service Center
 - Scenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.
 - Risk: subtotal and total rows are separated by a page break in the source PDF.
+- Cross-page reference: 详见第 2 页的 Cost Detail table before accepting the total.
 - Recommendation: verify that retrieval chunks preserve both page labels and table context.
+
+## Field Evidence
+- Document ID: confidence=0.86, location=3, evidence=Document ID: FIN-CROSS-2026-06
+- Reporting Period: confidence=0.86, location=5, evidence=Reporting Period: 2026-01-01 to 2026-03-31
+- Owner: confidence=0.86, location=7, evidence=Owner: Finance Shared Service Center
+- Scenario: confidence=0.86, location=11, evidence=Scenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.
+- Risk: confidence=0.86, location=31, evidence=Risk: subtotal and total rows are separated by a page break in the source PDF.
 
 ## Recommendation Evidence
 - Recommendation: verify that retrieval chunks preserve both page labels and table context.
@@ -89,5 +151,7 @@ Scenario: the table is designed to mimic a PDF where the header and subtotal con
 ## Audit Notes
 
 Risk: subtotal and total rows are separated by a page break in the source PDF.
+
+Cross-page reference: 详见第 2 页的 Cost Detail table before accepting the total.
 
 Recommendation: verify that retrieval chunks preserve both page labels and table context.

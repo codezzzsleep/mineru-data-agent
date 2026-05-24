@@ -1,6 +1,6 @@
 > Boundary: controlled fake online-API runner; validates strict provenance gate without claiming live API behavior.
 
-# MinerU Data Agent Run 988d50383a06
+# MinerU Data Agent Run b510f754515f
 
 - Task: 解析 PDF，并要求字段能追溯到页级来源。
 - Profile: standard_or_contract

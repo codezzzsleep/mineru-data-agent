@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T11:21:11.982206+00:00",
+  "created_at": "2026-05-24T12:13:19.126613+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.958767+00:00",
-      "ended_at": "2026-05-24T11:21:11.958767+00:00",
+      "started_at": "2026-05-24T12:13:19.111588+00:00",
+      "ended_at": "2026-05-24T12:13:19.111588+00:00",
       "detail": {
         "task": "把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。",
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html",
@@ -57,8 +57,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.958767+00:00",
-      "ended_at": "2026-05-24T11:21:11.958767+00:00",
+      "started_at": "2026-05-24T12:13:19.111588+00:00",
+      "ended_at": "2026-05-24T12:13:19.111588+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "workflow_or_diagram",
@@ -664,13 +664,24 @@
             "initial_issue_codes": [
               "document_level_provenance"
             ],
-            "actions": [],
+            "actions": [
+              {
+                "action": "llm_suggested_review",
+                "issue_code": "llm_suggested",
+                "source": "llm_post_review.recovery_suggestions",
+                "reason": "visual review if diagram evidence is missing",
+                "runner_change": null,
+                "method_change": null,
+                "skip_reason": "manual_or_advisory_action_only",
+                "runtime_status": "skipped"
+              }
+            ],
             "loop_policy": {
               "max_attempts_per_recovery_action": 1,
               "selection_rule": "choose highest quality score while preserving audit trail",
               "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
             },
-            "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+            "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
           },
           "replan_after_quality": {
             "quality_status": "pass",
@@ -722,8 +733,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.958767+00:00",
-      "ended_at": "2026-05-24T11:21:11.958767+00:00",
+      "started_at": "2026-05-24T12:13:19.111588+00:00",
+      "ended_at": "2026-05-24T12:13:19.111588+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -741,8 +752,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.958767+00:00",
-      "ended_at": "2026-05-24T11:21:11.973273+00:00",
+      "started_at": "2026-05-24T12:13:19.111588+00:00",
+      "ended_at": "2026-05-24T12:13:19.117102+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html"
       }
@@ -750,8 +761,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.973273+00:00",
-      "ended_at": "2026-05-24T11:21:11.974275+00:00",
+      "started_at": "2026-05-24T12:13:19.117102+00:00",
+      "ended_at": "2026-05-24T12:13:19.117102+00:00",
       "detail": {
         "item_count": 11,
         "page_count": 0,
@@ -761,7 +772,7 @@
         },
         "section_count": 2,
         "table_count": 0,
-        "key_value_count": 5,
+        "key_value_count": 6,
         "numeric_fact_count": 4,
         "semantic_signal_counts": {
           "dates": 1,
@@ -793,36 +804,54 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.974275+00:00",
-      "ended_at": "2026-05-24T11:21:11.974275+00:00",
+      "started_at": "2026-05-24T12:13:19.117102+00:00",
+      "ended_at": "2026-05-24T12:13:19.117102+00:00",
       "detail": {
         "profile": "workflow_or_diagram"
       }
     },
     {
+      "name": "llm_agent_analysis",
+      "status": "completed",
+      "started_at": "2026-05-24T12:13:19.117102+00:00",
+      "ended_at": "2026-05-24T12:13:19.117102+00:00",
+      "detail": {}
+    },
+    {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.974275+00:00",
-      "ended_at": "2026-05-24T11:21:11.974275+00:00",
+      "started_at": "2026-05-24T12:13:19.117102+00:00",
+      "ended_at": "2026-05-24T12:13:19.117102+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
           "document_level_provenance"
         ],
-        "actions": [],
+        "actions": [
+          {
+            "action": "llm_suggested_review",
+            "issue_code": "llm_suggested",
+            "source": "llm_post_review.recovery_suggestions",
+            "reason": "visual review if diagram evidence is missing",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "manual_or_advisory_action_only",
+            "runtime_status": "skipped"
+          }
+        ],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       }
     },
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.974275+00:00",
-      "ended_at": "2026-05-24T11:21:11.974275+00:00",
+      "started_at": "2026-05-24T12:13:19.117102+00:00",
+      "ended_at": "2026-05-24T12:13:19.117102+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "initial"
@@ -831,8 +860,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.974275+00:00",
-      "ended_at": "2026-05-24T11:21:11.974275+00:00",
+      "started_at": "2026-05-24T12:13:19.117102+00:00",
+      "ended_at": "2026-05-24T12:13:19.117102+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass",
@@ -881,8 +910,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.974275+00:00",
-      "ended_at": "2026-05-24T11:21:11.977793+00:00",
+      "started_at": "2026-05-24T12:13:19.117102+00:00",
+      "ended_at": "2026-05-24T12:13:19.121102+00:00",
       "detail": {
         "chunks_count": 2,
         "by_type": {
@@ -891,23 +920,16 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\retrieval\\retrieval_quality.json"
       }
-    },
-    {
-      "name": "llm_agent_analysis",
-      "status": "completed",
-      "started_at": "2026-05-24T11:21:11.977793+00:00",
-      "ended_at": "2026-05-24T11:21:11.977793+00:00",
-      "detail": {}
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.977793+00:00",
-      "ended_at": "2026-05-24T11:21:11.977793+00:00",
+      "started_at": "2026-05-24T12:13:19.121102+00:00",
+      "ended_at": "2026-05-24T12:13:19.121102+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "accept",
@@ -991,12 +1013,12 @@
       }
     }
   ],
-  "run_id": "c7cb56bc440c",
+  "run_id": "c733182007e0",
   "task": "把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。",
   "profile": "workflow_or_diagram",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\summary.md",
   "offline_regression_boundary": {
     "enabled": true,
     "not_live_llm": true,

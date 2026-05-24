@@ -19,6 +19,14 @@ DATE_RE = re.compile(
 )
 RECOMMENDATION_KEYS = ("建议", "处理建议", "整改", "措施", "action", "recommend")
 ANOMALY_WORDS = ("异常", "风险", "问题", "复核", "告警", "缺陷", "error", "warning", "risk", "issue")
+KEY_VALUE_PREFIX_RE = re.compile(r"^\s*(?:[-*•]|\d+[.)、]|[（(]?\d+[)）])\s*")
+KEY_VALUE_DELIMITERS = ("：", ":")
+TABLE_KEY_HEADERS = {"key", "field", "name", "字段", "项目", "科目", "条款", "指标"}
+TABLE_VALUE_HEADERS = {"value", "amount", "status", "description", "值", "数值", "金额", "状态", "说明", "内容"}
+CROSS_PAGE_REFERENCE_RE = re.compile(
+    r"(见|参见|详见|参考|如|同|延续|承接)\s*"
+    r"(?:第\s*(\d{1,4})\s*页|上文|前述|上述|同上|上一节|下表|上表|附件\s*([A-Za-z0-9一二三四五六七八九十]+))"
+)
 
 
 def read_markdown(path: Path | None) -> str:
@@ -88,15 +96,93 @@ def _parse_table(lines: list[str], start_line: int) -> dict[str, Any]:
         if cells and all(set(cell) <= {"-", ":", " "} for cell in cells):
             continue
         rows.append(cells)
-    headers = rows[0] if rows else []
-    body = rows[1:] if len(rows) > 1 else []
+    normalized_rows, merged_cells = _normalize_table_rows(rows)
+    headers = normalized_rows[0] if normalized_rows else []
+    body = normalized_rows[1:] if len(normalized_rows) > 1 else []
+    raw_body = rows[1:] if len(rows) > 1 else []
+    max_width = max((len(row) for row in normalized_rows), default=0)
+    header_levels = _infer_header_levels(normalized_rows)
+    flattened_headers = _flatten_header_levels(header_levels)
+    if flattened_headers:
+        headers = flattened_headers
+        body = normalized_rows[len(header_levels) :]
     return {
         "start_line": start_line,
         "headers": headers,
         "rows": body,
         "row_count": len(body),
-        "column_count": len(headers),
+        "column_count": max_width or len(headers),
+        "raw_rows": raw_body,
+        "header_levels": header_levels,
+        "merged_cells": merged_cells,
     }
+
+
+def _normalize_table_rows(rows: list[list[str]]) -> tuple[list[list[str]], list[dict[str, Any]]]:
+    if not rows:
+        return [], []
+    width = max(len(row) for row in rows)
+    padded = [row + [""] * (width - len(row)) for row in rows]
+    normalized = [list(row) for row in padded]
+    merged_cells: list[dict[str, Any]] = []
+    for row_index in range(2, len(normalized)):
+        for column_index, value in enumerate(normalized[row_index]):
+            if value:
+                continue
+            inherited = normalized[row_index - 1][column_index]
+            if not inherited:
+                continue
+            normalized[row_index][column_index] = inherited
+            merged_cells.append(
+                {
+                    "row_index": row_index,
+                    "column_index": column_index,
+                    "value": inherited,
+                    "inferred_from": "above",
+                }
+            )
+    return normalized, merged_cells
+
+
+def _infer_header_levels(rows: list[list[str]]) -> list[list[str]]:
+    if not rows:
+        return []
+    header_levels = [rows[0]]
+    if len(rows) < 3:
+        return header_levels
+    second = rows[1]
+    data_after_second = rows[2:]
+    if _looks_like_header_row(second, data_after_second):
+        header_levels.append(second)
+    return header_levels
+
+
+def _looks_like_header_row(row: list[str], later_rows: list[list[str]]) -> bool:
+    if not row or not later_rows:
+        return False
+    non_empty = [cell for cell in row if cell]
+    if not non_empty:
+        return False
+    numeric_cells = sum(1 for cell in non_empty if NUMBER_RE.search(cell))
+    if numeric_cells:
+        return False
+    later_numeric = sum(1 for later in later_rows for cell in later if NUMBER_RE.search(cell))
+    return later_numeric >= max(1, len(later_rows))
+
+
+def _flatten_header_levels(header_levels: list[list[str]]) -> list[str]:
+    if len(header_levels) <= 1:
+        return header_levels[0] if header_levels else []
+    width = max(len(row) for row in header_levels)
+    flattened: list[str] = []
+    for column_index in range(width):
+        parts: list[str] = []
+        for row in header_levels:
+            value = row[column_index] if column_index < len(row) else ""
+            if value and value not in parts:
+                parts.append(value)
+        flattened.append(" / ".join(parts))
+    return flattened
 
 
 def _extract_html_tables_from_markdown(markdown: str) -> list[dict[str, Any]]:
@@ -113,10 +199,61 @@ def _parse_html_table_snippet(html: str, start_line: int) -> dict[str, Any]:
 
     soup = BeautifulSoup(html, "html.parser")
     rows: list[list[str]] = []
+    merged_cells: list[dict[str, Any]] = []
+    rowspans: dict[int, dict[str, Any]] = {}
     header_row_index: int | None = None
-    for tr in soup.find_all("tr"):
+    for row_index, tr in enumerate(soup.find_all("tr")):
         cells = tr.find_all(["th", "td"])
-        row = [_normalize_inline_text(cell.get_text(" ", strip=True)) for cell in cells]
+        row: list[str] = []
+        column_index = 0
+        for cell in cells:
+            while column_index in rowspans:
+                span = rowspans[column_index]
+                row.append(str(span["text"]))
+                span["remaining"] = int(span["remaining"]) - 1
+                merged_cells.append(
+                    {
+                        "row_index": row_index,
+                        "column_index": column_index,
+                        "value": span["text"],
+                        "inferred_from": "rowspan",
+                    }
+                )
+                if span["remaining"] <= 0:
+                    del rowspans[column_index]
+                column_index += 1
+            text = _normalize_inline_text(cell.get_text(" ", strip=True))
+            colspan = _safe_positive_int(cell.get("colspan"), default=1)
+            rowspan = _safe_positive_int(cell.get("rowspan"), default=1)
+            for offset in range(colspan):
+                row.append(text)
+                if offset:
+                    merged_cells.append(
+                        {
+                            "row_index": row_index,
+                            "column_index": column_index,
+                            "value": text,
+                            "inferred_from": "colspan",
+                        }
+                    )
+                if rowspan > 1:
+                    rowspans[column_index] = {"text": text, "remaining": rowspan - 1}
+                column_index += 1
+        while column_index in rowspans:
+            span = rowspans[column_index]
+            row.append(str(span["text"]))
+            span["remaining"] = int(span["remaining"]) - 1
+            merged_cells.append(
+                {
+                    "row_index": row_index,
+                    "column_index": column_index,
+                    "value": span["text"],
+                    "inferred_from": "rowspan",
+                }
+            )
+            if span["remaining"] <= 0:
+                del rowspans[column_index]
+            column_index += 1
         if not any(row):
             continue
         if header_row_index is None and tr.find("th"):
@@ -137,26 +274,148 @@ def _parse_html_table_snippet(html: str, start_line: int) -> dict[str, Any]:
         "row_count": len(body),
         "column_count": len(headers),
         "source": "html_table",
+        "raw_rows": rows,
+        "header_levels": [headers],
+        "merged_cells": merged_cells,
     }
 
 
-def extract_key_value_candidates(markdown: str) -> list[dict[str, str]]:
+def _safe_positive_int(value: Any, *, default: int) -> int:
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        return default
+    return parsed if parsed > 0 else default
+
+
+def extract_key_value_candidates(markdown: str, tables: list[dict[str, Any]] | None = None) -> list[dict[str, str]]:
     candidates: list[dict[str, str]] = []
-    for line in markdown.splitlines():
-        clean = line.strip().strip("-*")
+    seen: set[tuple[str, str]] = set()
+    lines = markdown.splitlines()
+    for index, line in enumerate(lines):
+        clean = _normalize_key_value_line(line)
         if not clean or len(clean) > 220:
             continue
-        if "：" in clean:
-            key, value = clean.split("：", 1)
-        elif ":" in clean:
-            key, value = clean.split(":", 1)
-        else:
+        split = _split_key_value(clean)
+        if split is None:
             continue
-        key = key.strip()
-        value = value.strip()
-        if 1 <= len(key) <= 40 and value:
-            candidates.append({"key": key, "value": value})
-    return candidates[:200]
+        key, value = split
+        if not value:
+            value = _collect_multiline_value(lines, index)
+        _append_key_value(candidates, seen, key, value)
+
+    for table in tables or []:
+        for key, value in _extract_table_key_values(table):
+            _append_key_value(candidates, seen, key, value)
+
+    for key, value in _extract_heading_following_paragraph_values(lines):
+        _append_key_value(candidates, seen, key, value)
+    return candidates[:250]
+
+
+def _normalize_key_value_line(line: str) -> str:
+    clean = KEY_VALUE_PREFIX_RE.sub("", line.strip())
+    return clean.strip().strip("-*").strip()
+
+
+def _split_key_value(clean: str) -> tuple[str, str] | None:
+    for delimiter in KEY_VALUE_DELIMITERS:
+        if delimiter not in clean:
+            continue
+        key, value = clean.split(delimiter, 1)
+        key = _normalize_inline_text(key)
+        value = _normalize_inline_text(value)
+        if 1 <= len(key) <= 60 and _looks_like_key(key):
+            return key, value
+    return None
+
+
+def _looks_like_key(key: str) -> bool:
+    if NUMBER_RE.fullmatch(key):
+        return False
+    if key.startswith(("http://", "https://")):
+        return False
+    return bool(re.search(r"[\w\u4e00-\u9fff]", key))
+
+
+def _collect_multiline_value(lines: list[str], index: int) -> str:
+    parts: list[str] = []
+    for next_line in lines[index + 1 : index + 4]:
+        clean = _normalize_key_value_line(next_line)
+        if not clean:
+            if parts:
+                break
+            continue
+        if clean.startswith("#") or TABLE_ROW_RE.match(clean) or _split_key_value(clean):
+            break
+        parts.append(clean)
+    return _normalize_inline_text(" ".join(parts))
+
+
+def _append_key_value(
+    candidates: list[dict[str, str]],
+    seen: set[tuple[str, str]],
+    key: str,
+    value: str,
+) -> None:
+    key = _normalize_inline_text(key)
+    value = _normalize_inline_text(value)
+    if not (1 <= len(key) <= 60 and value and len(value) <= 500):
+        return
+    marker = (key, value)
+    if marker in seen:
+        return
+    seen.add(marker)
+    candidates.append({"key": key, "value": value})
+
+
+def _extract_table_key_values(table: dict[str, Any]) -> list[tuple[str, str]]:
+    headers = [str(item).strip() for item in table.get("headers", []) if str(item).strip()]
+    rows = table.get("rows", [])
+    if not isinstance(rows, list):
+        return []
+    if not _table_looks_like_key_value(headers, table):
+        return []
+    pairs: list[tuple[str, str]] = []
+    for row in rows:
+        if not isinstance(row, list) or len(row) < 2:
+            continue
+        key = str(row[0]).strip()
+        value = " | ".join(str(cell).strip() for cell in row[1:] if str(cell).strip())
+        if key and value:
+            pairs.append((key, value))
+    return pairs
+
+
+def _table_looks_like_key_value(headers: list[str], table: dict[str, Any]) -> bool:
+    column_count = int(table.get("column_count") or len(headers) or 0)
+    if column_count != 2:
+        return False
+    lowered = {header.lower() for header in headers}
+    if lowered & TABLE_KEY_HEADERS or lowered & TABLE_VALUE_HEADERS:
+        return True
+    return len(headers) == 2 and not any(NUMBER_RE.search(header) for header in headers)
+
+
+def _extract_heading_following_paragraph_values(lines: list[str]) -> list[tuple[str, str]]:
+    pairs: list[tuple[str, str]] = []
+    for index, line in enumerate(lines[:-1]):
+        heading = HEADING_RE.match(line.strip())
+        if not heading:
+            continue
+        key = _normalize_inline_text(heading.group(2))
+        if not (1 <= len(key) <= 60):
+            continue
+        for next_line in lines[index + 1 : index + 4]:
+            value = _normalize_key_value_line(next_line)
+            if not value:
+                continue
+            if value.startswith("#") or TABLE_ROW_RE.match(value) or _split_key_value(value):
+                break
+            if len(value) <= 180:
+                pairs.append((key, value))
+            break
+    return pairs
 
 
 def extract_key_value_map(candidates: list[dict[str, str]]) -> dict[str, str | list[str]]:
@@ -259,6 +518,64 @@ def extract_semantic_signals(markdown: str, key_values: list[dict[str, str]]) ->
             "has_anomaly_signal": bool(anomaly_lines),
         },
     }
+
+
+def extract_cross_page_references(
+    sections: list[dict[str, Any]],
+    content_list: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    references: list[dict[str, Any]] = []
+    for section in sections:
+        text = _normalize_inline_text(str(section.get("text", "")))
+        if not text:
+            continue
+        source_page = _infer_section_page(section, content_list)
+        for match in CROSS_PAGE_REFERENCE_RE.finditer(text):
+            target_page = int(match.group(2)) if match.group(2) else None
+            references.append(
+                {
+                    "source_title": section.get("title"),
+                    "source_line": section.get("line"),
+                    "source_page": source_page,
+                    "reference_text": match.group(0),
+                    "target_page": target_page,
+                    "target_hint": match.group(3) or _reference_hint(match.group(0)),
+                    "relation": _reference_relation(match.group(0)),
+                    "confidence": 0.78 if target_page else 0.56,
+                }
+            )
+    return references[:100]
+
+
+def _infer_section_page(section: dict[str, Any], content_list: list[dict[str, Any]]) -> int | None:
+    title = _normalize_inline_text(str(section.get("title", "")))
+    body = _normalize_inline_text(str(section.get("text", "")))
+    snippets = [text for text in (title, body[:80]) if text and text != "document"]
+    for block in content_list:
+        page_idx = block.get("page_idx")
+        if page_idx is None:
+            continue
+        block_text = _normalize_inline_text(str(block.get("text", "")))
+        if any(snippet and snippet in block_text for snippet in snippets):
+            return int(page_idx) + 1
+    return None
+
+
+def _reference_hint(text: str) -> str | None:
+    for token in ("上文", "前述", "上述", "同上", "上一节", "下表", "上表"):
+        if token in text:
+            return token
+    return None
+
+
+def _reference_relation(text: str) -> str:
+    if "下表" in text or "上表" in text:
+        return "table_reference"
+    if "附件" in text:
+        return "attachment_reference"
+    if "第" in text and "页" in text:
+        return "page_reference"
+    return "context_reference"
 
 
 def summarize_content_blocks(content_list: list[dict[str, Any]]) -> dict[str, Any]:
@@ -688,19 +1005,21 @@ def _field_evidence_text(
 
 
 def build_extracted_view(markdown: str, content_list: list[dict[str, Any]]) -> dict[str, Any]:
-    key_values = extract_key_value_candidates(markdown)
+    tables = extract_markdown_tables(markdown)
+    key_values = extract_key_value_candidates(markdown, tables)
     sections = extract_sections(markdown)
     field_evidence = extract_field_evidence(markdown, key_values, content_list)
     return {
         "content_summary": summarize_content_blocks(content_list),
         "sections": sections,
-        "tables": extract_markdown_tables(markdown),
+        "tables": tables,
         "key_values": key_values,
         "key_value_map": extract_key_value_map(key_values),
         "field_evidence": field_evidence,
         "field_evidence_map": build_field_evidence_map(field_evidence),
         "numeric_facts": extract_numeric_facts(markdown),
         "semantic_signals": extract_semantic_signals(markdown, key_values),
+        "cross_page_references": extract_cross_page_references(sections, content_list),
         "structure_quality": {
             "heading_section_count": sum(1 for item in sections if item.get("source") == "heading"),
             "fallback_section_count": sum(1 for item in sections if item.get("source") == "fallback"),

@@ -1,6 +1,6 @@
 > Boundary: native HTML controlled fixture; validates numeric mismatch detection.
 
-# MinerU Data Agent Run daa6aa34148c
+# MinerU Data Agent Run 9742489ae255
 
 - Task: 检查财报表格总计是否一致，并标记人工复核项。
 - Profile: financial_report
@@ -14,8 +14,8 @@
 - Provenance level: document
 - Sections: 1
 - Tables: 1
-- Key-values: 0
-- Field evidence records: 0
+- Key-values: 3
+- Field evidence records: 3
 - Numeric facts: 3
 - Dates detected: 0
 - Recommendation signals: 0
@@ -81,6 +81,16 @@
 - Selected reason: initial result remained the best accepted quality attempt
 
 ## Task-Specific Answers
+
+## Extracted Fields
+- 硬件收入: 100
+- 软件收入: 200
+- 合计: 400
+
+## Field Evidence
+- 硬件收入: confidence=0.86, location=5, evidence=| 项目 | 金额 | | --- | --- | | 硬件收入 | 100 | | 软件收入 | 200 | | 合计 | 400 |
+- 软件收入: confidence=0.86, location=6, evidence=| 项目 | 金额 | | --- | --- | | 硬件收入 | 100 | | 软件收入 | 200 | | 合计 | 400 |
+- 合计: confidence=0.86, location=7, evidence=| 项目 | 金额 | | --- | --- | | 硬件收入 | 100 | | 软件收入 | 200 | | 合计 | 400 |
 
 ## Recovery Decision
 - Decision: manual_numeric_review

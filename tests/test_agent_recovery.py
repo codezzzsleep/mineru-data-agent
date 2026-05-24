@@ -156,6 +156,31 @@ def test_llm_preplan_controls_profile_method_and_trace(tmp_path: Path) -> None:
     assert retrieval_step["detail"]["by_type"]["text"] >= 1
 
 
+def test_llm_recovery_suggestion_can_drive_runtime_ocr_retry(tmp_path: Path) -> None:
+    input_path = tmp_path / "clean.pdf"
+    input_path.write_bytes(b"%PDF-1.4\n% clean")
+    runner = _LLMSuggestedRetryRunner()
+    llm = _OcrRetrySuggestionLLM()
+
+    result = MinerUDataAgent(mineru_runner=runner, llm_client=llm).run(
+        input_path,
+        tmp_path / "runs",
+        task="解析 PDF，并让复核模型判断是否需要 OCR 复跑",
+        profile="general_document",
+        method="auto",
+    )
+
+    assert runner.methods == ["auto", "ocr"]
+    actions = result.execution_control["runtime_recovery_plan"]["actions"]
+    assert actions[0]["action"] == "ocr_retry"
+    assert actions[0]["source"] == "llm_post_review.recovery_suggestions"
+    assert actions[0]["runtime_status"] == "executed"
+    assert result.llm_analysis["post_parse_analysis"]["recovery_suggestions"] == ["retry with OCR to verify faint scan"]
+    trace = json.loads(Path(result.trace_path).read_text(encoding="utf-8"))
+    step_names = [step["name"] for step in trace["steps"]]
+    assert step_names.index("llm_agent_analysis") < step_names.index("agent_runtime_recovery_plan")
+
+
 def test_agent_api_no_page_provenance_falls_back_to_cli_attempt(tmp_path: Path) -> None:
     input_path = tmp_path / "contract.pdf"
     input_path.write_bytes(b"%PDF-1.4\n% contract")
@@ -367,6 +392,92 @@ class _RetryFailingRunner(_RetryRunner):
             )
             raise MinerUParseError("simulated OCR retry failure", call)
         return super().parse(input_path, output_dir, backend=backend, method=method, lang=lang)
+
+
+class _LLMSuggestedRetryRunner:
+    def __init__(self) -> None:
+        self.methods: list[str] = []
+
+    def parse(
+        self,
+        input_path: Path,
+        output_dir: Path,
+        *,
+        backend: str = "pipeline",
+        method: str = "auto",
+        lang: str = "ch",
+    ) -> tuple[ParseArtifacts, ToolCall]:
+        self.methods.append(method)
+        base = output_dir / input_path.stem / method
+        base.mkdir(parents=True, exist_ok=True)
+        markdown_path = base / f"{input_path.stem}.md"
+        content_path = base / f"{input_path.stem}_content_list.json"
+        markdown = (
+            "# Reviewable PDF\n\n报告日期：2026-05-24\n\n"
+            + f"Method {method} produced readable page-level text. "
+            + ("The content is complete enough for initial validation. " * 12)
+        )
+        content = [{"type": "text", "text": markdown, "page_idx": 0, "source": "native"}]
+        markdown_path.write_text(markdown, encoding="utf-8")
+        content_path.write_text(json.dumps(content, ensure_ascii=False), encoding="utf-8")
+        return (
+            ParseArtifacts(markdown_path=markdown_path, content_list_path=content_path),
+            ToolCall(
+                tool="fake-mineru",
+                command=["fake-mineru", method],
+                status="completed",
+                elapsed_seconds=0.01,
+            ),
+        )
+
+
+class _OcrRetrySuggestionLLM:
+    def plan_execution(self, **kwargs: object) -> tuple[dict, ToolCall]:
+        return (
+            {
+                "enabled": True,
+                "status": "completed",
+                "task_understanding": "reviewable pdf",
+                "recommended_profile": "general_document",
+                "confidence": 0.72,
+                "llm_usage": {
+                    "provider": "fake",
+                    "model": "fake-preplan",
+                    "usage": {"prompt_tokens": 20, "completion_tokens": 10, "total_tokens": 30},
+                    "cost_estimate": {"configured": True, "estimated_cost": 0.0, "currency": "USD"},
+                },
+            },
+            ToolCall(
+                tool="fake-llm-preplan",
+                command=["fake-llm", "preplan"],
+                status="completed",
+                elapsed_seconds=0.01,
+                metadata={"llm_usage": {"usage": {"total_tokens": 30}}},
+            ),
+        )
+
+    def analyze(self, **kwargs: object) -> tuple[dict, ToolCall]:
+        return (
+            {
+                "status": "completed",
+                "task_understanding": "post parse review",
+                "risk_findings": [],
+                "recovery_suggestions": ["retry with OCR to verify faint scan"],
+                "llm_usage": {
+                    "provider": "fake",
+                    "model": "fake-post",
+                    "usage": {"prompt_tokens": 30, "completion_tokens": 15, "total_tokens": 45},
+                    "cost_estimate": {"configured": True, "estimated_cost": 0.0, "currency": "USD"},
+                },
+            },
+            ToolCall(
+                tool="fake-llm",
+                command=["fake-llm", "analyze"],
+                status="completed",
+                elapsed_seconds=0.01,
+                metadata={"llm_usage": {"usage": {"total_tokens": 45}}},
+            ),
+        )
 
 
 class _PreplanningLLM:

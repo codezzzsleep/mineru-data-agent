@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T11:21:20.153469+00:00",
+  "created_at": "2026-05-24T12:14:29.499699+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.708563+00:00",
-      "ended_at": "2026-05-24T11:21:11.708563+00:00",
+      "started_at": "2026-05-24T12:14:09.257934+00:00",
+      "ended_at": "2026-05-24T12:14:09.257934+00:00",
       "detail": {
         "task": "Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.",
         "input_file": "<PROJECT_ROOT>\\examples\\real_pdfs\\standard_contract_cross_page.pdf",
@@ -65,8 +65,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.708563+00:00",
-      "ended_at": "2026-05-24T11:21:11.708563+00:00",
+      "started_at": "2026-05-24T12:14:09.257934+00:00",
+      "ended_at": "2026-05-24T12:14:09.257934+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "standard_or_contract",
@@ -686,6 +686,16 @@
                 "method_change": null,
                 "skip_reason": "",
                 "runtime_status": "executed"
+              },
+              {
+                "action": "llm_suggested_review",
+                "issue_code": "llm_suggested",
+                "source": "llm_post_review.recovery_suggestions",
+                "reason": "Re-run with live ModelScope or DeepSeek key before final live-demo submission.",
+                "runner_change": null,
+                "method_change": null,
+                "skip_reason": "manual_or_advisory_action_only",
+                "runtime_status": "skipped"
               }
             ],
             "loop_policy": {
@@ -693,7 +703,7 @@
               "selection_rule": "choose highest quality score while preserving audit trail",
               "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
             },
-            "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+            "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
           },
           "replan_after_quality": {
             "quality_status": "pass",
@@ -726,8 +736,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.708563+00:00",
-      "ended_at": "2026-05-24T11:21:11.713571+00:00",
+      "started_at": "2026-05-24T12:14:09.257934+00:00",
+      "ended_at": "2026-05-24T12:14:09.258931+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -747,8 +757,8 @@
     {
       "name": "mineru_parse",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.713571+00:00",
-      "ended_at": "2026-05-24T11:21:20.058826+00:00",
+      "started_at": "2026-05-24T12:14:09.258931+00:00",
+      "ended_at": "2026-05-24T12:14:29.307030+00:00",
       "detail": {
         "backend": "pipeline",
         "method": "auto",
@@ -758,8 +768,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:20.058826+00:00",
-      "ended_at": "2026-05-24T11:21:20.127371+00:00",
+      "started_at": "2026-05-24T12:14:29.307030+00:00",
+      "ended_at": "2026-05-24T12:14:29.442395+00:00",
       "detail": {
         "item_count": 15,
         "page_count": 0,
@@ -769,7 +779,7 @@
         },
         "section_count": 6,
         "table_count": 1,
-        "key_value_count": 6,
+        "key_value_count": 8,
         "numeric_fact_count": 1,
         "semantic_signal_counts": {
           "dates": 1,
@@ -801,17 +811,24 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:20.127371+00:00",
-      "ended_at": "2026-05-24T11:21:20.127371+00:00",
+      "started_at": "2026-05-24T12:14:29.442395+00:00",
+      "ended_at": "2026-05-24T12:14:29.442395+00:00",
       "detail": {
         "profile": "standard_or_contract"
       }
     },
     {
+      "name": "llm_agent_analysis",
+      "status": "completed",
+      "started_at": "2026-05-24T12:14:29.442395+00:00",
+      "ended_at": "2026-05-24T12:14:29.442395+00:00",
+      "detail": {}
+    },
+    {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:20.128370+00:00",
-      "ended_at": "2026-05-24T11:21:20.128370+00:00",
+      "started_at": "2026-05-24T12:14:29.442395+00:00",
+      "ended_at": "2026-05-24T12:14:29.442395+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -827,6 +844,16 @@
             "method_change": null,
             "skip_reason": "",
             "runtime_status": "executed"
+          },
+          {
+            "action": "llm_suggested_review",
+            "issue_code": "llm_suggested",
+            "source": "llm_post_review.recovery_suggestions",
+            "reason": "Re-run with live ModelScope or DeepSeek key before final live-demo submission.",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "manual_or_advisory_action_only",
+            "runtime_status": "skipped"
           }
         ],
         "loop_policy": {
@@ -834,14 +861,14 @@
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       }
     },
     {
       "name": "auto_recovery_cli_fallback",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:20.128370+00:00",
-      "ended_at": "2026-05-24T11:21:20.144967+00:00",
+      "started_at": "2026-05-24T12:14:29.442395+00:00",
+      "ended_at": "2026-05-24T12:14:29.479662+00:00",
       "detail": {
         "from_runner": "agent-api",
         "fallback_runner": "cli",
@@ -863,8 +890,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:20.144967+00:00",
-      "ended_at": "2026-05-24T11:21:20.144967+00:00",
+      "started_at": "2026-05-24T12:14:29.479662+00:00",
+      "ended_at": "2026-05-24T12:14:29.479662+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "cli_fallback"
@@ -873,8 +900,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:20.144967+00:00",
-      "ended_at": "2026-05-24T11:21:20.144967+00:00",
+      "started_at": "2026-05-24T12:14:29.479662+00:00",
+      "ended_at": "2026-05-24T12:14:29.479662+00:00",
       "detail": {
         "selected_attempt": "cli_fallback",
         "quality_status": "pass",
@@ -904,8 +931,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:20.144967+00:00",
-      "ended_at": "2026-05-24T11:21:20.147966+00:00",
+      "started_at": "2026-05-24T12:14:29.479662+00:00",
+      "ended_at": "2026-05-24T12:14:29.490179+00:00",
       "detail": {
         "chunks_count": 2,
         "by_type": {
@@ -915,23 +942,16 @@
           1,
           2
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_quality.json"
       }
-    },
-    {
-      "name": "llm_agent_analysis",
-      "status": "completed",
-      "started_at": "2026-05-24T11:21:20.147966+00:00",
-      "ended_at": "2026-05-24T11:21:20.147966+00:00",
-      "detail": {}
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:20.147966+00:00",
-      "ended_at": "2026-05-24T11:21:20.148968+00:00",
+      "started_at": "2026-05-24T12:14:29.490179+00:00",
+      "ended_at": "2026-05-24T12:14:29.490179+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "recovered_accept",
@@ -978,22 +998,8 @@
         "standard_contract_cross_page.pdf"
       ],
       "status": "completed",
-      "elapsed_seconds": 8.344,
-      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"f735fd33-6190-4cb2-bf78-e12d5d599d1805\",\n    \"trace_id\": \"b1f2a107bec3b8b5e722391b259041bb\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"f0d4c3e6bd0f611388b8efaaf4f78932\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"6eef547948efb4ebb03cda0cd33747e0\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"63244c0d88752736d9463666712d235f\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"0236945b93ae19be6e5c932216bf15c9\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"f735fd33-6190-4cb2-bf78-e12d5d599d1805\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-24/34ee771d-890e-4335-824b-ea9470f06c9b/full.md\"\n  }\n]",
-      "stderr_tail": "",
-      "metadata": {}
-    },
-    {
-      "tool": "cached-mineru-cli-fallback",
-      "command": [
-        "cached-mineru-cli",
-        "<PROJECT_ROOT>\\submission_artifacts\\mineru_cases\\case_mineru_cli_contract_pdf\\mineru\\standard_contract_cross_page\\auto",
-        "->",
-        "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto"
-      ],
-      "status": "completed",
-      "elapsed_seconds": 0.001,
-      "stdout_tail": "",
+      "elapsed_seconds": 20.042,
+      "stdout_tail": "[\n  {\n    \"event\": \"task_created\",\n    \"task_id\": \"ae975aaf-e3bd-4672-a5af-80e5e08df0d305\",\n    \"trace_id\": \"6e4e60af65d16ac4a18808662abbcf22\"\n  },\n  {\n    \"event\": \"file_uploaded\",\n    \"status_code\": 200\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"waiting-file\",\n    \"trace_id\": \"4d507813e53edfc6622a9d198df49074\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"d3e54c8c7cc50685ef7ec4676e72808b\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"e62ce033addcd25733131112f95d6d41\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"7e05c1c53ababfc8eab93d37b9c0b85a\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"b8a2670ec075ad3b2688f235c1b0b2eb\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"572a686312f05862f40e8a4f9fb0bf52\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"149c2a0e030e04e3bd0fd024f801ef11\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"running\",\n    \"trace_id\": \"5ee5a8fe75a29fd95e39ab48f3642e8e\"\n  },\n  {\n    \"event\": \"task_polled\",\n    \"state\": \"done\",\n    \"trace_id\": \"379d99cb4f08e0eb8725f0e000654d29\"\n  },\n  {\n    \"event\": \"task_done\",\n    \"task_id\": \"ae975aaf-e3bd-4672-a5af-80e5e08df0d305\",\n    \"markdown_url\": \"https://cdn-mineru.openxlab.org.cn/pdf/2026-05-24/ab2bfe7d-ba1f-4b56-8cb0-ce8806a90f38/full.md\"\n  }\n]",
       "stderr_tail": "",
       "metadata": {}
     },
@@ -1008,12 +1014,26 @@
       "stdout_tail": "",
       "stderr_tail": "",
       "metadata": {}
+    },
+    {
+      "tool": "cached-mineru-cli-fallback",
+      "command": [
+        "cached-mineru-cli",
+        "<PROJECT_ROOT>\\submission_artifacts\\mineru_cases\\case_mineru_cli_contract_pdf\\mineru\\standard_contract_cross_page\\auto",
+        "->",
+        "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 0.001,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "metadata": {}
     }
   ],
-  "run_id": "05435dfdf5de",
+  "run_id": "f64b82d718a0",
   "task": "Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.",
   "profile": "standard_or_contract",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\summary.md"
+  "result_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\summary.md"
 }

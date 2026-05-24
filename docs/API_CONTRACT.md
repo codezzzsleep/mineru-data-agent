@@ -81,8 +81,9 @@ Evidence fields reviewers should inspect:
 - `extracted.content_summary.provenance_level`: `page`, `document`, or `none`.
 - `extracted.field_evidence[*]`: key, value, confidence proxy, evidence text, and line/page/block provenance when available.
 - `extracted.task_result`: task-specific answers derived from the adaptive decision, such as growth ranking candidates, anomaly candidates, entity candidates, or evidence lists.
-- `extracted.tables[*]`: headers, rows, `row_count`, `column_count`, source marker.
+- `extracted.tables[*]`: headers, rows, `row_count`, `column_count`, source marker, optional header levels and inferred merged-cell metadata.
 - `extracted.numeric_facts[*]`: line, text snippet, number tokens.
+- `extracted.cross_page_references[*]`: detected references such as page/table/context references, with source section/page and target hints when resolvable.
 - `quality.issues[*].code`: machine-readable risk flags.
 - `recovery_decision.attempts[*]`: initial/retry/fallback quality and artifact paths.
 - `recovery_decision.llm_quality_decision`: LLM post-parse risk counts, findings, suggested actions, and applied decision effects when LLM is enabled.

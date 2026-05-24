@@ -30,12 +30,13 @@
 3. 若开启 LLM，先执行 `llm_pre_execution_planning`：模型基于任务、文件后缀、文件大小、当前 runner 和初始 profile 给出调度建议；系统只应用白名单内且未被用户显式锁定的 profile/backend/method/lang 建议，并把应用或忽略原因写入 `execution_control` 和 trace。
 4. 执行 `agent_task_decomposition`，生成子任务图、selected tools、dynamic choices、replan triggers 和单次运行上下文策略。
 5. 对 PDF、图片调用 MinerU 在线 API 或本地 CLI；对 HTML、DOCX 和 PPTX 使用轻量结构化提取器。
-6. 读取 MinerU 输出，构造结构化视图，包括 `sections`、`tables`、`key_values`、`key_value_map`、`numeric_facts` 和 `semantic_signals`。
-7. 运行质量校验；若命中可恢复风险，执行文本清理二次 pass、PDF/图片 OCR 重试，或在在线 API 缺页级 provenance 时执行本地 CLI fallback，并按质量评分择优。若恢复尝试失败，失败尝试会进入 `recovery_decision.attempts` 与 trace，系统保留初始可用结果继续输出。
-8. 执行 `agent_replan_after_quality`，把质量 issue code 映射到候选恢复动作，记录已尝试动作、最终选择原因和剩余风险的下一步动作。
-9. 生成检索友好的知识库 chunks，过滤页眉页脚、页码、目录等低价值内容。
-10. 若启用 LLM，执行解析后复核，并把 `risk_findings` 与 `recovery_suggestions` 写入 `recovery_decision.llm_quality_decision`。warning/error 级风险会改变或补充最终 recovery 决策。
-11. 生成 `result.json`、`summary.md`、`trace.json`。
+6. 读取 MinerU 输出，构造结构化视图，包括 `sections`、`tables`、`key_values`、`key_value_map`、`numeric_facts`、`semantic_signals` 和 `cross_page_references`。轻量提取层会额外吸收两列表格键值、多行键值、标题后紧邻段落和简单跨页引用。
+7. 运行质量校验；若启用 LLM，先执行解析后复核，把 `risk_findings` 与 `recovery_suggestions` 写入 `llm_analysis.post_parse_analysis`，并允许白名单内的 recovery suggestion 进入 runtime recovery plan。
+8. 若命中可恢复风险，执行文本清理二次 pass、PDF/图片 OCR 重试，或在在线 API 缺页级 provenance 时执行本地 CLI fallback，并按质量评分择优。若恢复尝试失败，失败尝试会进入 `recovery_decision.attempts` 与 trace，系统保留初始可用结果继续输出。
+9. 执行 `agent_replan_after_quality`，把质量 issue code 映射到候选恢复动作，记录已尝试动作、最终选择原因和剩余风险的下一步动作。
+10. 生成检索友好的知识库 chunks，过滤页眉页脚、页码、目录等低价值内容。
+11. 若启用 LLM，把解析后复核的 risk/suggestion 汇总为 `recovery_decision.llm_quality_decision`。warning/error 级风险会改变或补充最终 recovery 决策。
+12. 生成 `result.json`、`summary.md`、`trace.json`。
 
 每一步都会写入 trace，包含步骤状态、时间、工具命令、耗时、stdout/stderr 摘要，满足可追溯性要求。若解析或工具调用失败，系统也会写出失败态 `trace.json`，避免异常链路只停留在控制台错误里。
 
@@ -124,7 +125,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - LLM 预调度的 `execution_control`，记录 recommended/applied/ignored/resolved 参数
 - Agent action plan 的 `execution_control.agent_action_plan`，记录子任务、工具选择和 replan triggers
 - Agent action plan 的 `state_machine`，记录条件 DAG、质量触发边、runner/method 变化和恢复 loop policy
-- Runtime recovery plan 的 `execution_control.runtime_recovery_plan`，记录由 action plan 与质量问题共同筛出的恢复动作；自动恢复按这个计划执行或跳过
+- Runtime recovery plan 的 `execution_control.runtime_recovery_plan`，记录由 action plan、质量问题和 LLM recovery suggestions 共同筛出的恢复动作；自动恢复按这个计划执行或跳过
 - 质量后再规划的 `execution_control.replan_after_quality`，记录 issue code 到恢复动作的映射和选择原因
 - 严格来源门槛的 `execution_control.strict_page_provenance`，记录是否要求页级来源、是否适用于当前文件类型、最终是否满足
 - 带标注评测脚本 `scripts/build_evaluation_report.py` 与标注文件 `examples/evaluation/labels.json`

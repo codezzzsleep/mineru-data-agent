@@ -30,4 +30,6 @@ Scenario: the table is designed to mimic a PDF where the header and subtotal con
 
 Risk: subtotal and total rows are separated by a page break in the source PDF.
 
+Cross-page reference: 详见第 2 页的 Cost Detail table before accepting the total.
+
 Recommendation: verify that retrieval chunks preserve both page labels and table context.

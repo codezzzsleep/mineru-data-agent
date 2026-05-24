@@ -9,7 +9,7 @@ Recovery effectiveness summary over saved submission artifacts.
 - Selected non-initial result: 6
 - Executed rate: 20.51%
 - Selected non-initial rate: 15.38%
-- Avg non-initial tool seconds when executed: 2.959
+- Avg non-initial tool seconds when executed: 4.421
 - Attempt counts: `{"cli_fallback": 1, "initial": 39, "ocr_retry": 3, "text_cleanup": 4}`
 - Selected attempt counts: `{"cli_fallback": 1, "initial": 33, "ocr_retry": 1, "text_cleanup": 4}`
 - Initial issue counts: `{"document_level_provenance": 21, "expected_anomaly_signal_missing": 2, "no_page_provenance": 11, "numeric_total_mismatch": 6, "numeric_total_needs_review": 1, "numeric_total_verified": 9, "possible_mojibake": 4, "short_text": 2, "weak_clause_structure": 1}`

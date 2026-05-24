@@ -1,56 +1,65 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T11:23:03Z",
+  "generated_at": "2026-05-24T12:15:09Z",
   "scope": "Static repository quality summary generated from local files.",
   "aggregate": {
     "python_files": 51,
-    "physical_lines": 13600,
-    "code_lines": 12077,
-    "classes": 34,
-    "functions": 553,
-    "test_functions": 76,
+    "physical_lines": 14155,
+    "code_lines": 12569,
+    "classes": 36,
+    "functions": 580,
+    "test_functions": 80,
     "test_files": 12,
     "workflow_files": [
       ".github/workflows/tests.yml"
     ],
     "coverage_measured": true,
-    "line_coverage_percent": 81.62,
+    "line_coverage_percent": 81.69,
     "coverage_report": "submission_artifacts/coverage/coverage_report.md"
   },
   "by_area": {
     "src": {
       "python_files": 14,
-      "physical_lines": 6374,
-      "code_lines": 5720,
+      "physical_lines": 6753,
+      "code_lines": 6058,
       "classes": 19,
-      "functions": 254,
+      "functions": 273,
       "test_functions": 0
     },
     "scripts": {
       "python_files": 25,
-      "physical_lines": 5601,
-      "code_lines": 4986,
+      "physical_lines": 5614,
+      "code_lines": 4999,
       "classes": 9,
       "functions": 211,
       "test_functions": 0
     },
     "tests": {
       "python_files": 12,
-      "physical_lines": 1625,
-      "code_lines": 1371,
-      "classes": 6,
-      "functions": 88,
-      "test_functions": 76
+      "physical_lines": 1788,
+      "code_lines": 1512,
+      "classes": 8,
+      "functions": 96,
+      "test_functions": 80
     }
   },
   "largest_files": [
     {
       "path": "src/mineru_data_agent/agent.py",
       "area": "src",
-      "physical_lines": 1651,
-      "code_lines": 1525,
+      "physical_lines": 1711,
+      "code_lines": 1580,
       "classes": 2,
-      "functions": 42,
+      "functions": 44,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/extractors.py",
+      "area": "src",
+      "physical_lines": 1028,
+      "code_lines": 898,
+      "classes": 1,
+      "functions": 59,
       "test_functions": 0
     },
     {
@@ -63,15 +72,6 @@
       "test_functions": 0
     },
     {
-      "path": "src/mineru_data_agent/extractors.py",
-      "area": "src",
-      "physical_lines": 709,
-      "code_lines": 615,
-      "classes": 1,
-      "functions": 42,
-      "test_functions": 0
-    },
-    {
       "path": "src/mineru_data_agent/llm_client.py",
       "area": "src",
       "physical_lines": 556,
@@ -79,6 +79,15 @@
       "classes": 3,
       "functions": 19,
       "test_functions": 0
+    },
+    {
+      "path": "tests/test_agent_recovery.py",
+      "area": "tests",
+      "physical_lines": 550,
+      "code_lines": 493,
+      "classes": 8,
+      "functions": 23,
+      "test_functions": 8
     },
     {
       "path": "src/mineru_data_agent/mineru_client.py",
@@ -108,15 +117,6 @@
       "test_functions": 0
     },
     {
-      "path": "tests/test_agent_recovery.py",
-      "area": "tests",
-      "physical_lines": 439,
-      "code_lines": 392,
-      "classes": 6,
-      "functions": 18,
-      "test_functions": 7
-    },
-    {
       "path": "scripts/run_http_load_test.py",
       "area": "scripts",
       "physical_lines": 427,
@@ -144,12 +144,12 @@
       "test_functions": 0
     },
     {
-      "path": "scripts/run_failure_recovery_cases.py",
+      "path": "scripts/build_agent_value_report.py",
       "area": "scripts",
-      "physical_lines": 318,
-      "code_lines": 283,
-      "classes": 3,
-      "functions": 12,
+      "physical_lines": 320,
+      "code_lines": 284,
+      "classes": 0,
+      "functions": 15,
       "test_functions": 0
     }
   ],
@@ -157,11 +157,11 @@
     {
       "path": "tests/test_agent_recovery.py",
       "area": "tests",
-      "physical_lines": 439,
-      "code_lines": 392,
-      "classes": 6,
-      "functions": 18,
-      "test_functions": 7
+      "physical_lines": 550,
+      "code_lines": 493,
+      "classes": 8,
+      "functions": 23,
+      "test_functions": 8
     },
     {
       "path": "tests/test_api.py",
@@ -211,11 +211,11 @@
     {
       "path": "tests/test_extractors.py",
       "area": "tests",
-      "physical_lines": 174,
-      "code_lines": 143,
+      "physical_lines": 226,
+      "code_lines": 183,
       "classes": 0,
-      "functions": 10,
-      "test_functions": 10
+      "functions": 13,
+      "test_functions": 13
     },
     {
       "path": "tests/test_llm_client.py",

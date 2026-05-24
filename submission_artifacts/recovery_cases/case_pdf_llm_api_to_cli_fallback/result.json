@@ -1,9 +1,9 @@
 {
-  "run_id": "05435dfdf5de",
+  "run_id": "f64b82d718a0",
   "task": "Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.",
   "profile": "standard_or_contract",
   "input_file": "<PROJECT_ROOT>\\examples\\real_pdfs\\standard_contract_cross_page.pdf",
-  "output_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de",
+  "output_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -634,6 +634,16 @@
           "method_change": null,
           "skip_reason": "",
           "runtime_status": "executed"
+        },
+        {
+          "action": "llm_suggested_review",
+          "issue_code": "llm_suggested",
+          "source": "llm_post_review.recovery_suggestions",
+          "reason": "Re-run with live ModelScope or DeepSeek key before final live-demo submission.",
+          "runner_change": null,
+          "method_change": null,
+          "skip_reason": "manual_or_advisory_action_only",
+          "runtime_status": "skipped"
         }
       ],
       "loop_policy": {
@@ -641,7 +651,7 @@
         "selection_rule": "choose highest quality score while preserving audit trail",
         "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
       },
-      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "pass",
@@ -763,7 +773,42 @@
         ],
         "row_count": 4,
         "column_count": 3,
-        "source": "html_table"
+        "source": "html_table",
+        "raw_rows": [
+          [
+            "Clause",
+            "Requirement",
+            "Evidence Field"
+          ],
+          [
+            "2.1",
+            "Supplier must keep trace logs for every parsing run.",
+            "trace_path"
+          ],
+          [
+            "2.2",
+            "Output JSON must include structured sections and tables.",
+            "result.json"
+          ],
+          [
+            "3.1",
+            "Failures must be recoverable without stopping the batch.",
+            "batch_report.json"
+          ],
+          [
+            "4.1",
+            "Keys and tokens must not be written to public artifacts.",
+            "secret_scan"
+          ]
+        ],
+        "header_levels": [
+          [
+            "Clause",
+            "Requirement",
+            "Evidence Field"
+          ]
+        ],
+        "merged_cells": []
       }
     ],
     "key_values": [
@@ -790,6 +835,14 @@
       {
         "key": "Signed by",
         "value": "Data Governance Office / Vendor Engineering Lead"
+      },
+      {
+        "key": "1. Scope",
+        "value": "The vendor provides a traceable document parsing agent for PDF, scanned files, web pages, and structured exports."
+      },
+      {
+        "key": "3. Service Level",
+        "value": "Batch tasks must continue after a single item failure and must record the error message."
       }
     ],
     "key_value_map": {
@@ -798,7 +851,9 @@
       "Parties": "Corpus Producer A and Processing Vendor B",
       "Risk": "missing page provenance must be reported as a quality issue instead of being hidden.",
       "Recommendation": "the reviewer should inspect trace.json and retrieval\\_quality.json.",
-      "Signed by": "Data Governance Office / Vendor Engineering Lead"
+      "Signed by": "Data Governance Office / Vendor Engineering Lead",
+      "1. Scope": "The vendor provides a traceable document parsing agent for PDF, scanned files, web pages, and structured exports.",
+      "3. Service Level": "Batch tasks must continue after a single item failure and must record the error message."
     },
     "field_evidence": [
       {
@@ -920,6 +975,46 @@
           ]
         },
         "candidate_index": 5
+      },
+      {
+        "key": "1. Scope",
+        "value": "The vendor provides a traceable document parsing agent for PDF, scanned files, web pages, and structured exports.",
+        "confidence": 0.95,
+        "confidence_reason": "exact key/value match in page-level content block",
+        "evidence_text": "1. Scope",
+        "provenance": {
+          "line": null,
+          "level": "page",
+          "page_idx": 0,
+          "page_no": 1,
+          "bbox": [
+            92,
+            162,
+            221,
+            186
+          ]
+        },
+        "candidate_index": 6
+      },
+      {
+        "key": "3. Service Level",
+        "value": "Batch tasks must continue after a single item failure and must record the error message.",
+        "confidence": 0.95,
+        "confidence_reason": "exact key/value match in page-level content block",
+        "evidence_text": "3. Service Level",
+        "provenance": {
+          "line": null,
+          "level": "page",
+          "page_idx": 1,
+          "page_no": 2,
+          "bbox": [
+            90,
+            64,
+            326,
+            85
+          ]
+        },
+        "candidate_index": 7
       }
     ],
     "field_evidence_map": {
@@ -1036,6 +1131,44 @@
           },
           "evidence_text": "Signed by: Data Governance Office / Vendor Engineering Lead"
         }
+      ],
+      "1. Scope": [
+        {
+          "value": "The vendor provides a traceable document parsing agent for PDF, scanned files, web pages, and structured exports.",
+          "confidence": 0.95,
+          "provenance": {
+            "line": null,
+            "level": "page",
+            "page_idx": 0,
+            "page_no": 1,
+            "bbox": [
+              92,
+              162,
+              221,
+              186
+            ]
+          },
+          "evidence_text": "1. Scope"
+        }
+      ],
+      "3. Service Level": [
+        {
+          "value": "Batch tasks must continue after a single item failure and must record the error message.",
+          "confidence": 0.95,
+          "provenance": {
+            "line": null,
+            "level": "page",
+            "page_idx": 1,
+            "page_no": 2,
+            "bbox": [
+              90,
+              64,
+              326,
+              85
+            ]
+          },
+          "evidence_text": "3. Service Level"
+        }
       ]
     },
     "numeric_facts": [
@@ -1076,6 +1209,7 @@
         "has_anomaly_signal": true
       }
     },
+    "cross_page_references": [],
     "structure_quality": {
       "heading_section_count": 6,
       "fallback_section_count": 0
@@ -1229,6 +1363,46 @@
               ]
             },
             "candidate_index": 5
+          },
+          {
+            "key": "1. Scope",
+            "value": "The vendor provides a traceable document parsing agent for PDF, scanned files, web pages, and structured exports.",
+            "confidence": 0.95,
+            "confidence_reason": "exact key/value match in page-level content block",
+            "evidence_text": "1. Scope",
+            "provenance": {
+              "line": null,
+              "level": "page",
+              "page_idx": 0,
+              "page_no": 1,
+              "bbox": [
+                92,
+                162,
+                221,
+                186
+              ]
+            },
+            "candidate_index": 6
+          },
+          {
+            "key": "3. Service Level",
+            "value": "Batch tasks must continue after a single item failure and must record the error message.",
+            "confidence": 0.95,
+            "confidence_reason": "exact key/value match in page-level content block",
+            "evidence_text": "3. Service Level",
+            "provenance": {
+              "line": null,
+              "level": "page",
+              "page_idx": 1,
+              "page_no": 2,
+              "bbox": [
+                90,
+                64,
+                326,
+                85
+              ]
+            },
+            "candidate_index": 7
           }
         ]
       }
@@ -1270,10 +1444,10 @@
         ],
         "selected": false,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page_content_list.json",
           "middle_json_path": null,
-          "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page_agent_response.json",
+          "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru\\standard_contract_cross_page\\agent_api\\standard_contract_cross_page_agent_response.json",
           "layout_pdf_path": null,
           "span_pdf_path": null,
           "origin_pdf_path": null,
@@ -1289,14 +1463,14 @@
         "issue_codes": [],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_content_list.json",
-          "middle_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_middle.json",
-          "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_model.json",
-          "layout_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_layout.pdf",
-          "span_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_span.pdf",
-          "origin_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_origin.pdf",
-          "image_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\images"
+          "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_content_list.json",
+          "middle_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_middle.json",
+          "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_model.json",
+          "layout_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_layout.pdf",
+          "span_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_span.pdf",
+          "origin_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_origin.pdf",
+          "image_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\images"
         }
       }
     ],
@@ -1325,9 +1499,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 2,
       "by_type": {
@@ -1986,6 +2160,16 @@
             "method_change": null,
             "skip_reason": "",
             "runtime_status": "executed"
+          },
+          {
+            "action": "llm_suggested_review",
+            "issue_code": "llm_suggested",
+            "source": "llm_post_review.recovery_suggestions",
+            "reason": "Re-run with live ModelScope or DeepSeek key before final live-demo submission.",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "manual_or_advisory_action_only",
+            "runtime_status": "skipped"
           }
         ],
         "loop_policy": {
@@ -1993,7 +2177,7 @@
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       },
       "replan_after_quality": {
         "quality_status": "pass",
@@ -2108,15 +2292,15 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_content_list.json",
-    "middle_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_middle.json",
-    "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_model.json",
-    "layout_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_layout.pdf",
-    "span_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_span.pdf",
-    "origin_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_origin.pdf",
-    "image_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\images"
+    "markdown_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_content_list.json",
+    "middle_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_middle.json",
+    "model_json_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_model.json",
+    "layout_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_layout.pdf",
+    "span_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_span.pdf",
+    "origin_pdf_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\standard_contract_cross_page_origin.pdf",
+    "image_dir": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\mineru_fallback_cli\\standard_contract_cross_page\\auto\\images"
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\05435dfdf5de\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\recovery_evidence\\f64b82d718a0\\summary.md"
 }

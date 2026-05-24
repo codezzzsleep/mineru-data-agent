@@ -18,7 +18,7 @@ Retrieval chunk format and lightweight lexical query validation over saved artif
 | 3 | 0 | 0 | 0 | 144.0 | `{"table": 1, "text": 2}` | `submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/retrieval/retrieval_chunks.jsonl` |
 | 3 | 0 | 0 | 0 | 144.0 | `{"table": 1, "text": 2}` | `submission_artifacts/adaptive_cases/case_financial_growth_query/retrieval/retrieval_chunks.jsonl` |
 | 6 | 0 | 0 | 0 | 224.8 | `{"text": 6}` | `submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/retrieval/retrieval_chunks.jsonl` |
-| 5 | 0 | 0 | 0 | 183.0 | `{"table": 2, "text": 3}` | `submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/retrieval/retrieval_chunks.jsonl` |
+| 5 | 0 | 0 | 0 | 198.4 | `{"table": 2, "text": 3}` | `submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/retrieval/retrieval_chunks.jsonl` |
 | 3 | 0 | 0 | 0 | 144.0 | `{"table": 1, "text": 2}` | `submission_artifacts/agent_decision_cases/financial_growth_agent_plan/retrieval/retrieval_chunks.jsonl` |
 | 4 | 0 | 0 | 0 | 177.0 | `{"table": 1, "text": 3}` | `submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/retrieval/retrieval_chunks.jsonl` |
 | 5 | 0 | 0 | 0 | 49.2 | `{"text": 5}` | `submission_artifacts/agent_decision_cases/standard_clause_entity_plan/retrieval/retrieval_chunks.jsonl` |
@@ -30,7 +30,7 @@ Retrieval chunk format and lightweight lexical query validation over saved artif
 | 5 | 0 | 0 | 0 | 49.2 | `{"text": 5}` | `submission_artifacts/cases/case_3_standard_contract/retrieval/retrieval_chunks.jsonl` |
 | 2 | 0 | 0 | 0 | 133.0 | `{"text": 2}` | `submission_artifacts/cases/case_4_workflow_diagram/retrieval/retrieval_chunks.jsonl` |
 | 3 | 0 | 0 | 0 | 81.0 | `{"table": 1, "text": 2}` | `submission_artifacts/cases/case_5_web_inspection_report/retrieval/retrieval_chunks.jsonl` |
-| 5 | 0 | 0 | 0 | 183.0 | `{"table": 2, "text": 3}` | `submission_artifacts/challenge_cases/case_6_cross_page_financial_table/retrieval/retrieval_chunks.jsonl` |
+| 5 | 0 | 0 | 0 | 198.4 | `{"table": 2, "text": 3}` | `submission_artifacts/challenge_cases/case_6_cross_page_financial_table/retrieval/retrieval_chunks.jsonl` |
 | 4 | 0 | 0 | 0 | 177.0 | `{"table": 1, "text": 3}` | `submission_artifacts/challenge_cases/case_7_noisy_contract_scan/retrieval/retrieval_chunks.jsonl` |
 | 4 | 0 | 0 | 0 | 208.8 | `{"table": 1, "text": 3}` | `submission_artifacts/challenge_cases/case_8_industry_standard_matrix/retrieval/retrieval_chunks.jsonl` |
 | 4 | 0 | 0 | 0 | 206.2 | `{"table": 1, "text": 3}` | `submission_artifacts/challenge_cases/case_9_incident_workflow_report/retrieval/retrieval_chunks.jsonl` |

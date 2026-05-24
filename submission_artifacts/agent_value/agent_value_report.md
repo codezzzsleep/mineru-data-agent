@@ -7,10 +7,11 @@ Saved-artifact report of what the Agent layer adds on top of parser Markdown/con
 - Cases: 37
 - Decision modes: `{"controlled_fault_injection": 5, "deterministic_rules": 25, "llm_enabled_saved_result_without_live_trace": 1, "offline_scripted_decision_regression": 5, "saved_live_llm_trace": 1}`
 - Parser runners: `{"-": 12, "agent-api": 8, "cli": 3, "native": 14}`
-- With state machine: 11
-- With runtime recovery plan: 11
-- With task_result: 13
-- With field evidence: 14
+- With state machine: 15
+- With runtime recovery plan: 15
+- With task_result: 17
+- With field evidence: 19
+- With cross-page references: 2
 - With quality issues: 31
 - With recovery attempts beyond initial: 8
 - Selected non-initial recovery: 6
@@ -28,6 +29,7 @@ Saved-artifact report of what the Agent layer adds on top of parser Markdown/con
 - `quality.issues`
 - `recovery_decision`
 - `extracted.field_evidence`
+- `extracted.cross_page_references`
 - `extracted.task_result`
 - `retrieval_export`
 - `trace.json`
@@ -40,21 +42,21 @@ Saved-artifact report of what the Agent layer adds on top of parser Markdown/con
 | `submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/result.json` | `deterministic_rules` | `native` | 8 | - | pass (100) | accept / initial | 5 | 3 |
 | `submission_artifacts/adaptive_cases/case_financial_growth_query/result.json` | `deterministic_rules` | `native` | 12 | - | pass (100) | accept / initial | 5 | 3 |
 | `submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/result.json` | `deterministic_rules` | `-` | 0 | - | pass_with_warnings (92) | accept_with_review_notes / initial | 0 | 6 |
-| `submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/result.json` | `offline_scripted_decision_regression` | `native` | 12 | yes | pass_with_warnings (92) | manual_numeric_review / initial | 6 | 5 |
+| `submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/result.json` | `offline_scripted_decision_regression` | `native` | 12 | yes | pass_with_warnings (92) | manual_numeric_review / initial | 7 | 5 |
 | `submission_artifacts/agent_decision_cases/financial_growth_agent_plan/result.json` | `offline_scripted_decision_regression` | `native` | 14 | yes | pass (100) | accept / initial | 5 | 3 |
-| `submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/result.json` | `offline_scripted_decision_regression` | `native` | 8 | yes | pass (100) | recovered_accept / text_cleanup | 4 | 4 |
-| `submission_artifacts/agent_decision_cases/standard_clause_entity_plan/result.json` | `offline_scripted_decision_regression` | `native` | 10 | yes | pass (100) | accept / initial | 4 | 5 |
-| `submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/result.json` | `offline_scripted_decision_regression` | `native` | 10 | yes | pass (100) | accept / initial | 5 | 2 |
+| `submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/result.json` | `offline_scripted_decision_regression` | `native` | 8 | yes | pass (100) | recovered_accept / text_cleanup | 5 | 4 |
+| `submission_artifacts/agent_decision_cases/standard_clause_entity_plan/result.json` | `offline_scripted_decision_regression` | `native` | 10 | yes | pass (100) | accept / initial | 7 | 5 |
+| `submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/result.json` | `offline_scripted_decision_regression` | `native` | 10 | yes | pass (100) | accept / initial | 6 | 2 |
 | `submission_artifacts/cases/case_1_financial_report/result.json` | `deterministic_rules` | `-` | 0 | - | pass (100) | accept / initial | 0 | 3 |
 | `submission_artifacts/cases/case_2_low_quality_ocr/result.json` | `deterministic_rules` | `-` | 0 | - | pass (100) | recovered_accept / text_cleanup | 0 | 2 |
 | `submission_artifacts/cases/case_3_standard_contract/result.json` | `deterministic_rules` | `-` | 0 | - | pass (100) | accept / initial | 0 | 5 |
 | `submission_artifacts/cases/case_4_workflow_diagram/result.json` | `deterministic_rules` | `-` | 0 | - | pass (100) | accept / initial | 0 | 2 |
 | `submission_artifacts/cases/case_5_web_inspection_report/result.json` | `deterministic_rules` | `-` | 0 | - | pass (100) | accept / initial | 0 | 3 |
-| `submission_artifacts/challenge_cases/case_6_cross_page_financial_table/result.json` | `deterministic_rules` | `native` | 0 | - | pass_with_warnings (92) | manual_numeric_review / initial | 0 | 5 |
-| `submission_artifacts/challenge_cases/case_7_noisy_contract_scan/result.json` | `deterministic_rules` | `native` | 0 | - | pass (100) | recovered_accept / text_cleanup | 0 | 4 |
-| `submission_artifacts/challenge_cases/case_8_industry_standard_matrix/result.json` | `deterministic_rules` | `native` | 0 | - | pass (100) | accept / initial | 0 | 4 |
-| `submission_artifacts/challenge_cases/case_9_incident_workflow_report/result.json` | `deterministic_rules` | `native` | 0 | - | pass (100) | accept / initial | 0 | 4 |
-| `submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/result.json` | `controlled_fault_injection` | `native` | 7 | yes | pass_with_warnings (92) | manual_numeric_review / initial | 0 | 2 |
+| `submission_artifacts/challenge_cases/case_6_cross_page_financial_table/result.json` | `deterministic_rules` | `native` | 9 | yes | pass_with_warnings (92) | manual_numeric_review / initial | 7 | 5 |
+| `submission_artifacts/challenge_cases/case_7_noisy_contract_scan/result.json` | `deterministic_rules` | `native` | 6 | yes | pass (100) | recovered_accept / text_cleanup | 5 | 4 |
+| `submission_artifacts/challenge_cases/case_8_industry_standard_matrix/result.json` | `deterministic_rules` | `native` | 6 | yes | pass (100) | accept / initial | 6 | 4 |
+| `submission_artifacts/challenge_cases/case_9_incident_workflow_report/result.json` | `deterministic_rules` | `native` | 7 | yes | pass (100) | accept / initial | 9 | 4 |
+| `submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/result.json` | `controlled_fault_injection` | `native` | 7 | yes | pass_with_warnings (92) | manual_numeric_review / initial | 3 | 2 |
 | `submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/result.json` | `controlled_fault_injection` | `cli` | 3 | yes | pass_with_warnings (92) | retry_or_manual_review / initial | 0 | 1 |
 | `submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/result.json` | `controlled_fault_injection` | `cli` | 3 | yes | pass (100) | recovered_accept / ocr_retry | 1 | 1 |
 | `submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/result.json` | `controlled_fault_injection` | `cli` | 6 | yes | needs_review (54) | strict_page_provenance_failed / initial | 1 | 1 |
@@ -73,7 +75,7 @@ Saved-artifact report of what the Agent layer adds on top of parser Markdown/con
 | `submission_artifacts/public_real_cases/public_irs_w4_form/result.json` | `deterministic_rules` | `agent-api` | 0 | - | pass_with_warnings (76) | manual_numeric_review / initial | 0 | 22 |
 | `submission_artifacts/public_real_cases/public_microsoft_annual_report/result.json` | `deterministic_rules` | `agent-api` | 0 | - | pass_with_warnings (76) | manual_numeric_review / initial | 0 | 48 |
 | `submission_artifacts/public_real_cases/public_nist_ai_rmf/result.json` | `deterministic_rules` | `agent-api` | 0 | - | pass_with_warnings (92) | accept_with_review_notes / initial | 0 | 23 |
-| `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json` | `llm_enabled_saved_result_without_live_trace` | `agent-api` | 10 | yes | pass (100) | recovered_accept / cli_fallback | 6 | 2 |
+| `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json` | `llm_enabled_saved_result_without_live_trace` | `agent-api` | 10 | yes | pass (100) | recovered_accept / cli_fallback | 8 | 2 |
 
 ## Boundaries
 

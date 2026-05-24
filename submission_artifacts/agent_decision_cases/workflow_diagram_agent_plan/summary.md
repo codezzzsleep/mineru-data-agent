@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run c7cb56bc440c
+# MinerU Data Agent Run c733182007e0
 
 - Task: 把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。
 - Profile: workflow_or_diagram
@@ -14,8 +14,8 @@
 - Provenance level: document
 - Sections: 2
 - Tables: 0
-- Key-values: 5
-- Field evidence records: 5
+- Key-values: 6
+- Field evidence records: 6
 - Numeric facts: 4
 - Dates detected: 1
 - Recommendation signals: 2
@@ -74,6 +74,7 @@
 
 ## Runtime Recovery Plan
 - Initial issue codes: document_level_provenance
+- llm_suggested_review: skipped for llm_suggested (llm_post_review.recovery_suggestions)
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance
@@ -101,6 +102,7 @@ Suggested execution plan:
 - 流程图说明: 投料 -> 搅拌 -> 过滤 -> 涂布 -> 烘干 -> 收卷 -> 质检。
 - 异常提示: 若温区 3 连续 5 分钟超过 92 摄氏度，需暂停收卷并复核传感器。
 - 处理建议: Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。
+- 关键步骤: 投料阶段核对批次号和固含量。
 
 ## Field Evidence
 - 报告日期: confidence=0.86, location=3, evidence=报告日期：2026-05-20

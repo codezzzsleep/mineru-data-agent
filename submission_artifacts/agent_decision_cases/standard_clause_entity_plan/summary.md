@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run 7197be0be812
+# MinerU Data Agent Run 38961250fefc
 
 - Task: 识别合同条款中的甲方、乙方、义务、例外条件和来源证据。
 - Profile: standard_or_contract
@@ -14,8 +14,8 @@
 - Provenance level: document
 - Sections: 5
 - Tables: 0
-- Key-values: 4
-- Field evidence records: 4
+- Key-values: 7
+- Field evidence records: 7
 - Numeric facts: 1
 - Dates detected: 1
 - Recommendation signals: 2
@@ -75,6 +75,7 @@
 
 ## Runtime Recovery Plan
 - Initial issue codes: document_level_provenance
+- llm_suggested_review: skipped for llm_suggested (llm_post_review.recovery_suggestions)
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance
@@ -100,12 +101,16 @@ Suggested execution plan:
 - 签署日期: 2026-05-19
 - 异常提示: 跨页表格、签章覆盖和乱码文本需要进入人工复核队列。
 - 处理建议: 保留章节标题、条款编号和源文件证据，便于合规审计。
+- 第一条 服务范围: 乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。
+- 第二条 数据安全: 乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。
+- 第三条 验收标准: 验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。
 
 ## Field Evidence
 - 合同编号: confidence=0.86, location=3, evidence=合同编号：DPA-2026-0519
 - 签署日期: confidence=0.86, location=5, evidence=签署日期：2026-05-19
 - 异常提示: confidence=0.86, location=21, evidence=异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。
 - 处理建议: confidence=0.86, location=23, evidence=处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。
+- 第一条 服务范围: confidence=0.86, location=document, evidence=## 第一条 服务范围
 
 ## Recommendation Evidence
 - 处理建议: 保留章节标题、条款编号和源文件证据，便于合规审计。

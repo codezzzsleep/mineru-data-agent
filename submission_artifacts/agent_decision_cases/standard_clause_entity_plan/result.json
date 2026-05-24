@@ -1,9 +1,9 @@
 {
-  "run_id": "7197be0be812",
+  "run_id": "38961250fefc",
   "task": "识别合同条款中的甲方、乙方、义务、例外条件和来源证据。",
   "profile": "standard_or_contract",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_3_standard_contract.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -611,13 +611,24 @@
       "initial_issue_codes": [
         "document_level_provenance"
       ],
-      "actions": [],
+      "actions": [
+        {
+          "action": "llm_suggested_review",
+          "issue_code": "llm_suggested",
+          "source": "llm_post_review.recovery_suggestions",
+          "reason": "manual review if party field is missing",
+          "runner_change": null,
+          "method_change": null,
+          "skip_reason": "manual_or_advisory_action_only",
+          "runtime_status": "skipped"
+        }
+      ],
       "loop_policy": {
         "max_attempts_per_recovery_action": 1,
         "selection_rule": "choose highest quality score while preserving audit trail",
         "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
       },
-      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "pass",
@@ -740,13 +751,28 @@
       {
         "key": "处理建议",
         "value": "保留章节标题、条款编号和源文件证据，便于合规审计。"
+      },
+      {
+        "key": "第一条 服务范围",
+        "value": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。"
+      },
+      {
+        "key": "第二条 数据安全",
+        "value": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。"
+      },
+      {
+        "key": "第三条 验收标准",
+        "value": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。"
       }
     ],
     "key_value_map": {
       "合同编号": "DPA-2026-0519",
       "签署日期": "2026-05-19",
       "异常提示": "跨页表格、签章覆盖和乱码文本需要进入人工复核队列。",
-      "处理建议": "保留章节标题、条款编号和源文件证据，便于合规审计。"
+      "处理建议": "保留章节标题、条款编号和源文件证据，便于合规审计。",
+      "第一条 服务范围": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。",
+      "第二条 数据安全": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。",
+      "第三条 验收标准": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。"
     },
     "field_evidence": [
       {
@@ -800,6 +826,45 @@
           "source": "html"
         },
         "candidate_index": 3
+      },
+      {
+        "key": "第一条 服务范围",
+        "value": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "## 第一条 服务范围",
+        "provenance": {
+          "line": null,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 4
+      },
+      {
+        "key": "第二条 数据安全",
+        "value": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "## 第二条 数据安全",
+        "provenance": {
+          "line": null,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 5
+      },
+      {
+        "key": "第三条 验收标准",
+        "value": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "## 第三条 验收标准",
+        "provenance": {
+          "line": null,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 6
       }
     ],
     "field_evidence_map": {
@@ -850,6 +915,42 @@
           },
           "evidence_text": "处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。"
         }
+      ],
+      "第一条 服务范围": [
+        {
+          "value": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。",
+          "confidence": 0.86,
+          "provenance": {
+            "line": null,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "## 第一条 服务范围"
+        }
+      ],
+      "第二条 数据安全": [
+        {
+          "value": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。",
+          "confidence": 0.86,
+          "provenance": {
+            "line": null,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "## 第二条 数据安全"
+        }
+      ],
+      "第三条 验收标准": [
+        {
+          "value": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。",
+          "confidence": 0.86,
+          "provenance": {
+            "line": null,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "## 第三条 验收标准"
+        }
       ]
     },
     "numeric_facts": [
@@ -895,6 +996,7 @@
         "has_anomaly_signal": true
       }
     },
+    "cross_page_references": [],
     "structure_quality": {
       "heading_section_count": 5,
       "fallback_section_count": 0
@@ -982,6 +1084,45 @@
               "source": "html"
             },
             "candidate_index": 3
+          },
+          {
+            "key": "第一条 服务范围",
+            "value": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。",
+            "confidence": 0.86,
+            "confidence_reason": "exact key/value match in document-level content block",
+            "evidence_text": "## 第一条 服务范围",
+            "provenance": {
+              "line": null,
+              "level": "document",
+              "source": "html"
+            },
+            "candidate_index": 4
+          },
+          {
+            "key": "第二条 数据安全",
+            "value": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。",
+            "confidence": 0.86,
+            "confidence_reason": "exact key/value match in document-level content block",
+            "evidence_text": "## 第二条 数据安全",
+            "provenance": {
+              "line": null,
+              "level": "document",
+              "source": "html"
+            },
+            "candidate_index": 5
+          },
+          {
+            "key": "第三条 验收标准",
+            "value": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。",
+            "confidence": 0.86,
+            "confidence_reason": "exact key/value match in document-level content block",
+            "evidence_text": "## 第三条 验收标准",
+            "provenance": {
+              "line": null,
+              "level": "document",
+              "source": "html"
+            },
+            "candidate_index": 6
           }
         ]
       }
@@ -1037,8 +1178,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\html\\case_3_standard_contract.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\html\\case_3_standard_contract_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\html\\case_3_standard_contract.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\html\\case_3_standard_contract_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1073,9 +1214,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 5,
       "by_type": {
@@ -1721,13 +1862,24 @@
         "initial_issue_codes": [
           "document_level_provenance"
         ],
-        "actions": [],
+        "actions": [
+          {
+            "action": "llm_suggested_review",
+            "issue_code": "llm_suggested",
+            "source": "llm_post_review.recovery_suggestions",
+            "reason": "manual review if party field is missing",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "manual_or_advisory_action_only",
+            "runtime_status": "skipped"
+          }
+        ],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       },
       "replan_after_quality": {
         "quality_status": "pass",
@@ -1907,8 +2059,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\html\\case_3_standard_contract.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\html\\case_3_standard_contract_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\html\\case_3_standard_contract.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\html\\case_3_standard_contract_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1916,6 +2068,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\summary.md"
 }

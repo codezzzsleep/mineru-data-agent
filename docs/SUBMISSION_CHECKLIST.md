@@ -21,7 +21,9 @@
 - [x] Agent action plan 已写入新运行的 `execution_control.agent_action_plan`
 - [x] Agent action plan 已包含 `state_machine`，记录条件 DAG、质量触发边和 loop policy
 - [x] Runtime recovery plan 已写入新运行的 `execution_control.runtime_recovery_plan`，恢复动作按该计划执行或跳过
+- [x] LLM 解析后 `recovery_suggestions` 已进入 `runtime_recovery_plan` 的受限白名单映射，可驱动符合条件的恢复尝试
 - [x] 质量后再规划已写入新运行的 `execution_control.replan_after_quality`
+- [x] 轻量提取层已支持多行键值、两列表格键值、简单 merged-cell 元数据和 `cross_page_references`
 - [x] 5 个 Agent decision 离线回归案例已生成，见 `submission_artifacts/agent_decision_cases/`；不把它们作为 live LLM 证据
 - [x] 真实 PDF 已保存解析前调度 + API-to-CLI fallback 恢复证据，见 `submission_artifacts/recovery_cases/`
 - [x] `recovery_decision.executed=true` 的 PDF 证据已生成，且评测标签会检查 `selected_attempt=cli_fallback`

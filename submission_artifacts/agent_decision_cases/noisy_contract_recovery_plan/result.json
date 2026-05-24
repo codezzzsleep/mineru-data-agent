@@ -1,9 +1,9 @@
 {
-  "run_id": "e07edfdc8fff",
+  "run_id": "e1a2cd2ccb74",
   "task": "解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。",
   "profile": "low_quality_ocr",
   "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -621,7 +621,7 @@
         "selection_rule": "choose highest quality score while preserving audit trail",
         "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
       },
-      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "pass",
@@ -741,7 +741,32 @@
           ]
         ],
         "row_count": 3,
-        "column_count": 3
+        "column_count": 3,
+        "raw_rows": [
+          [
+            "R-01",
+            "stamp overlaps signature field",
+            "manual review"
+          ],
+          [
+            "R-02",
+            "encoding noise appears in clause text",
+            "text cleanup recovery"
+          ],
+          [
+            "R-03",
+            "watermark repeated in footer",
+            "noise filtering"
+          ]
+        ],
+        "header_levels": [
+          [
+            "Risk ID",
+            "Description",
+            "Expected Handling"
+          ]
+        ],
+        "merged_cells": []
       }
     ],
     "key_values": [
@@ -760,13 +785,18 @@
       {
         "key": "Recommendation",
         "value": "run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes."
+      },
+      {
+        "key": "1. OCR Observations",
+        "value": "Scanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: ®."
       }
     ],
     "key_value_map": {
       "Contract No": "OCR-NOISE-2026-17",
       "Effective Date": "2026-05-21",
       "Parties": "North Data Plant / Edge Review Vendor",
-      "Recommendation": "run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes."
+      "Recommendation": "run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.",
+      "1. OCR Observations": "Scanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: ®."
     },
     "field_evidence": [
       {
@@ -820,6 +850,19 @@
           "source": "html"
         },
         "candidate_index": 3
+      },
+      {
+        "key": "1. OCR Observations",
+        "value": "Scanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: ®.",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "## 1. OCR Observations",
+        "provenance": {
+          "line": null,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 4
       }
     ],
     "field_evidence_map": {
@@ -870,6 +913,18 @@
           },
           "evidence_text": "Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes."
         }
+      ],
+      "1. OCR Observations": [
+        {
+          "value": "Scanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: ®.",
+          "confidence": 0.86,
+          "provenance": {
+            "line": null,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "## 1. OCR Observations"
+        }
       ]
     },
     "numeric_facts": [
@@ -918,6 +973,7 @@
         "has_anomaly_signal": true
       }
     },
+    "cross_page_references": [],
     "structure_quality": {
       "heading_section_count": 3,
       "fallback_section_count": 0
@@ -1003,8 +1059,8 @@
         ],
         "selected": false,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\html\\case_7_noisy_contract_scan.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\html\\case_7_noisy_contract_scan_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\html\\case_7_noisy_contract_scan.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\html\\case_7_noisy_contract_scan_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1024,8 +1080,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1060,9 +1116,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 4,
       "by_type": {
@@ -1719,7 +1775,7 @@
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       },
       "replan_after_quality": {
         "quality_status": "pass",
@@ -1898,8 +1954,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1907,6 +1963,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\summary.md"
 }

@@ -3,6 +3,7 @@ import zipfile
 from mineru_data_agent.extractors import (
     build_extracted_view,
     extract_docx,
+    extract_cross_page_references,
     extract_html,
     extract_key_value_candidates,
     extract_markdown_tables,
@@ -48,6 +49,57 @@ def test_extract_key_value_candidates() -> None:
     pairs = extract_key_value_candidates("公司名称：示例公司\nReport date: 2026")
     assert {"key": "公司名称", "value": "示例公司"} in pairs
     assert {"key": "Report date", "value": "2026"} in pairs
+
+
+def test_extract_key_values_from_multiline_lists_and_two_column_tables() -> None:
+    markdown = """
+## 审计结论
+需要复核跨页合计。
+
+- 合同编号：
+  CN-2026-001
+
+| 字段 | 值 |
+| --- | --- |
+| 客户名称 | 示例客户 |
+| 生效日期 | 2026-05-24 |
+"""
+    view = build_extracted_view(markdown, [{"type": "text", "text": markdown, "page_idx": 0}])
+
+    assert {"key": "合同编号", "value": "CN-2026-001"} in view["key_values"]
+    assert {"key": "客户名称", "value": "示例客户"} in view["key_values"]
+    assert {"key": "生效日期", "value": "2026-05-24"} in view["key_values"]
+    assert view["key_value_map"]["审计结论"] == "需要复核跨页合计。"
+
+
+def test_table_normalization_records_inferred_merged_cells() -> None:
+    markdown = """
+| 地区 | 科目 | 金额 |
+| --- | --- | ---: |
+| 华东 | 收入 | 100 |
+|  | 成本 | 60 |
+"""
+    table = extract_markdown_tables(markdown)[0]
+
+    assert table["rows"][1][0] == "华东"
+    assert table["merged_cells"][0]["inferred_from"] == "above"
+    assert table["column_count"] == 3
+
+
+def test_extract_cross_page_references() -> None:
+    sections = extract_sections("# A\n详见第 12 页的风险表。\n## B\n如前述，需要复核。")
+    refs = extract_cross_page_references(
+        sections,
+        [
+            {"type": "heading", "text": "# A", "page_idx": 0},
+            {"type": "heading", "text": "## B", "page_idx": 1},
+        ],
+    )
+
+    assert refs[0]["target_page"] == 12
+    assert refs[0]["relation"] == "page_reference"
+    assert refs[1]["target_hint"] == "前述"
+    assert refs[1]["source_page"] == 2
 
 
 def test_build_extracted_view() -> None:

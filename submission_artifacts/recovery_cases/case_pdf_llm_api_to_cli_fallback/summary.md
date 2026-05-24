@@ -1,4 +1,4 @@
-# MinerU Data Agent Run 05435dfdf5de
+# MinerU Data Agent Run f64b82d718a0
 
 - Task: Parse the contract PDF, let the LLM preplanner define schema and recovery policy, use online API first, and automatically fallback to local CLI when page provenance is missing.
 - Profile: standard_or_contract
@@ -12,8 +12,8 @@
 - Provenance level: page
 - Sections: 6
 - Tables: 1
-- Key-values: 6
-- Field evidence records: 6
+- Key-values: 8
+- Field evidence records: 8
 - Numeric facts: 1
 - Dates detected: 1
 - Recommendation signals: 1
@@ -77,6 +77,7 @@
 ## Runtime Recovery Plan
 - Initial issue codes: no_page_provenance
 - cli_fallback: executed for no_page_provenance (agent_action_plan.replan_triggers)
+- llm_suggested_review: skipped for llm_suggested (llm_post_review.recovery_suggestions)
 
 ## Agent Replan After Quality
 - Issue codes: none
@@ -103,6 +104,8 @@ Suggested execution plan:
 - Risk: missing page provenance must be reported as a quality issue instead of being hidden.
 - Recommendation: the reviewer should inspect trace.json and retrieval\_quality.json.
 - Signed by: Data Governance Office / Vendor Engineering Lead
+- 1. Scope: The vendor provides a traceable document parsing agent for PDF, scanned files, web pages, and structured exports.
+- 3. Service Level: Batch tasks must continue after a single item failure and must record the error message.
 
 ## Field Evidence
 - Contract No: confidence=0.95, location=1, evidence=Contract No: STD-2026-MINERU-07

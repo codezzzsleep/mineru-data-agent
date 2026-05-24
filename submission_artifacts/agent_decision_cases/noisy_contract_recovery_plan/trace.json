@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T11:21:11.806620+00:00",
+  "created_at": "2026-05-24T12:13:19.022218+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.788476+00:00",
-      "ended_at": "2026-05-24T11:21:11.788476+00:00",
+      "started_at": "2026-05-24T12:13:19.005700+00:00",
+      "ended_at": "2026-05-24T12:13:19.005700+00:00",
       "detail": {
         "task": "解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。",
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html",
@@ -54,8 +54,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.788476+00:00",
-      "ended_at": "2026-05-24T11:21:11.788476+00:00",
+      "started_at": "2026-05-24T12:13:19.005700+00:00",
+      "ended_at": "2026-05-24T12:13:19.005700+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "standard_or_contract",
@@ -664,7 +664,7 @@
               "selection_rule": "choose highest quality score while preserving audit trail",
               "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
             },
-            "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+            "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
           },
           "replan_after_quality": {
             "quality_status": "pass",
@@ -717,8 +717,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.788476+00:00",
-      "ended_at": "2026-05-24T11:21:11.788476+00:00",
+      "started_at": "2026-05-24T12:13:19.005700+00:00",
+      "ended_at": "2026-05-24T12:13:19.005700+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -735,8 +735,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.788476+00:00",
-      "ended_at": "2026-05-24T11:21:11.793485+00:00",
+      "started_at": "2026-05-24T12:13:19.005700+00:00",
+      "ended_at": "2026-05-24T12:13:19.010707+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html"
       }
@@ -744,8 +744,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.793485+00:00",
-      "ended_at": "2026-05-24T11:21:11.794486+00:00",
+      "started_at": "2026-05-24T12:13:19.010707+00:00",
+      "ended_at": "2026-05-24T12:13:19.011707+00:00",
       "detail": {
         "item_count": 11,
         "page_count": 0,
@@ -755,7 +755,7 @@
         },
         "section_count": 3,
         "table_count": 1,
-        "key_value_count": 4,
+        "key_value_count": 5,
         "numeric_fact_count": 2,
         "semantic_signal_counts": {
           "dates": 1,
@@ -783,17 +783,24 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.794486+00:00",
-      "ended_at": "2026-05-24T11:21:11.794486+00:00",
+      "started_at": "2026-05-24T12:13:19.011707+00:00",
+      "ended_at": "2026-05-24T12:13:19.011707+00:00",
       "detail": {
         "profile": "low_quality_ocr"
       }
     },
     {
+      "name": "llm_agent_analysis",
+      "status": "completed",
+      "started_at": "2026-05-24T12:13:19.011707+00:00",
+      "ended_at": "2026-05-24T12:13:19.011707+00:00",
+      "detail": {}
+    },
+    {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.794486+00:00",
-      "ended_at": "2026-05-24T11:21:11.794486+00:00",
+      "started_at": "2026-05-24T12:13:19.011707+00:00",
+      "ended_at": "2026-05-24T12:13:19.011707+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -817,14 +824,14 @@
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       }
     },
     {
       "name": "auto_recovery_text_cleanup",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.794486+00:00",
-      "ended_at": "2026-05-24T11:21:11.798187+00:00",
+      "started_at": "2026-05-24T12:13:19.011707+00:00",
+      "ended_at": "2026-05-24T12:13:19.013707+00:00",
       "detail": {
         "from_status": "pass_with_warnings",
         "plan_issue_code": "possible_mojibake",
@@ -834,8 +841,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.798187+00:00",
-      "ended_at": "2026-05-24T11:21:11.798187+00:00",
+      "started_at": "2026-05-24T12:13:19.013707+00:00",
+      "ended_at": "2026-05-24T12:13:19.013707+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "text_cleanup"
@@ -844,8 +851,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.798187+00:00",
-      "ended_at": "2026-05-24T11:21:11.798187+00:00",
+      "started_at": "2026-05-24T12:13:19.013707+00:00",
+      "ended_at": "2026-05-24T12:13:19.013707+00:00",
       "detail": {
         "selected_attempt": "text_cleanup",
         "quality_status": "pass",
@@ -895,8 +902,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.798187+00:00",
-      "ended_at": "2026-05-24T11:21:11.800610+00:00",
+      "started_at": "2026-05-24T12:13:19.013707+00:00",
+      "ended_at": "2026-05-24T12:13:19.017220+00:00",
       "detail": {
         "chunks_count": 4,
         "by_type": {
@@ -906,23 +913,16 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\retrieval\\retrieval_quality.json"
       }
-    },
-    {
-      "name": "llm_agent_analysis",
-      "status": "completed",
-      "started_at": "2026-05-24T11:21:11.800610+00:00",
-      "ended_at": "2026-05-24T11:21:11.800610+00:00",
-      "detail": {}
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.800610+00:00",
-      "ended_at": "2026-05-24T11:21:11.801620+00:00",
+      "started_at": "2026-05-24T12:13:19.017220+00:00",
+      "ended_at": "2026-05-24T12:13:19.017220+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "recovered_accept",
@@ -1006,12 +1006,12 @@
       }
     }
   ],
-  "run_id": "e07edfdc8fff",
+  "run_id": "e1a2cd2ccb74",
   "task": "解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。",
   "profile": "low_quality_ocr",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e07edfdc8fff\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e1a2cd2ccb74\\summary.md",
   "offline_regression_boundary": {
     "enabled": true,
     "not_live_llm": true,

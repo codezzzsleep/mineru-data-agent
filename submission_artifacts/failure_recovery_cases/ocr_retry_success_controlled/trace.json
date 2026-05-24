@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T11:21:11.880264+00:00",
+  "created_at": "2026-05-24T12:13:40.511743+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.842171+00:00",
-      "ended_at": "2026-05-24T11:21:11.843680+00:00",
+      "started_at": "2026-05-24T12:13:40.496405+00:00",
+      "ended_at": "2026-05-24T12:13:40.497912+00:00",
       "detail": {
         "task": "解析稀疏 PDF；初始文本过短时切到 OCR。",
         "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\ocr_retry_success_controlled.pdf",
@@ -61,8 +61,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.843680+00:00",
-      "ended_at": "2026-05-24T11:21:11.843680+00:00",
+      "started_at": "2026-05-24T12:13:40.497912+00:00",
+      "ended_at": "2026-05-24T12:13:40.497912+00:00",
       "detail": {
         "subtask_count": 6,
         "selected_tools": [
@@ -78,8 +78,8 @@
     {
       "name": "mineru_parse",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.843680+00:00",
-      "ended_at": "2026-05-24T11:21:11.853772+00:00",
+      "started_at": "2026-05-24T12:13:40.497912+00:00",
+      "ended_at": "2026-05-24T12:13:40.501227+00:00",
       "detail": {
         "backend": "pipeline",
         "method": "auto",
@@ -89,8 +89,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.853772+00:00",
-      "ended_at": "2026-05-24T11:21:11.854780+00:00",
+      "started_at": "2026-05-24T12:13:40.501227+00:00",
+      "ended_at": "2026-05-24T12:13:40.501227+00:00",
       "detail": {
         "item_count": 1,
         "page_count": 1,
@@ -123,8 +123,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.854780+00:00",
-      "ended_at": "2026-05-24T11:21:11.854780+00:00",
+      "started_at": "2026-05-24T12:13:40.501227+00:00",
+      "ended_at": "2026-05-24T12:13:40.501227+00:00",
       "detail": {
         "profile": "general_document"
       }
@@ -132,8 +132,8 @@
     {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.854780+00:00",
-      "ended_at": "2026-05-24T11:21:11.854780+00:00",
+      "started_at": "2026-05-24T12:13:40.501227+00:00",
+      "ended_at": "2026-05-24T12:13:40.501227+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -156,14 +156,14 @@
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       }
     },
     {
       "name": "auto_recovery_ocr_retry",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.854780+00:00",
-      "ended_at": "2026-05-24T11:21:11.867369+00:00",
+      "started_at": "2026-05-24T12:13:40.501227+00:00",
+      "ended_at": "2026-05-24T12:13:40.505736+00:00",
       "detail": {
         "backend": "pipeline",
         "from_method": "auto",
@@ -175,8 +175,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.867369+00:00",
-      "ended_at": "2026-05-24T11:21:11.867369+00:00",
+      "started_at": "2026-05-24T12:13:40.505736+00:00",
+      "ended_at": "2026-05-24T12:13:40.505736+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "ocr_retry"
@@ -185,8 +185,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.867369+00:00",
-      "ended_at": "2026-05-24T11:21:11.867369+00:00",
+      "started_at": "2026-05-24T12:13:40.505736+00:00",
+      "ended_at": "2026-05-24T12:13:40.505736+00:00",
       "detail": {
         "selected_attempt": "ocr_retry",
         "quality_status": "pass",
@@ -216,8 +216,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.867369+00:00",
-      "ended_at": "2026-05-24T11:21:11.873732+00:00",
+      "started_at": "2026-05-24T12:13:40.505736+00:00",
+      "ended_at": "2026-05-24T12:13:40.507773+00:00",
       "detail": {
         "chunks_count": 1,
         "by_type": {
@@ -226,9 +226,9 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ffa1c91d0e93\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ffa1c91d0e93\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ffa1c91d0e93\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\retrieval\\retrieval_quality.json"
       }
     }
   ],
@@ -258,12 +258,12 @@
       "metadata": {}
     }
   ],
-  "run_id": "ffa1c91d0e93",
+  "run_id": "40786b721414",
   "task": "解析稀疏 PDF；初始文本过短时切到 OCR。",
   "profile": "general_document",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ffa1c91d0e93\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ffa1c91d0e93\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\40786b721414\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

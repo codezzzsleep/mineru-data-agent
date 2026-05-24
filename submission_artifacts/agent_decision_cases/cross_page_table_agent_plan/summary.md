@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run f66df29ec3f0
+# MinerU Data Agent Run 6015703adc96
 
 - Task: 处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。
 - Profile: financial_report
@@ -9,14 +9,14 @@
 - LLM preplan applied changes: 0
 - Input: `<PROJECT_ROOT>\examples\challenge_cases\case_6_cross_page_financial_table.html`
 - Quality: pass_with_warnings (92/100)
-- Content blocks: 12
+- Content blocks: 13
 - Pages with provenance: 0
 - Provenance level: document
 - Sections: 4
 - Tables: 2
-- Key-values: 6
-- Field evidence records: 6
-- Numeric facts: 10
+- Key-values: 7
+- Field evidence records: 7
+- Numeric facts: 11
 - Dates detected: 2
 - Recommendation signals: 1
 - Anomaly signals: 1
@@ -79,6 +79,7 @@
 ## Runtime Recovery Plan
 - Initial issue codes: document_level_provenance, numeric_total_verified, numeric_total_mismatch
 - manual_numeric_review: skipped for numeric_total_mismatch (agent_action_plan.replan_triggers)
+- llm_suggested_review: skipped for llm_suggested (llm_post_review.recovery_suggestions)
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance, numeric_total_verified, numeric_total_mismatch
@@ -107,6 +108,7 @@ Suggested execution plan:
 - Owner: Finance Shared Service Center
 - Scenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.
 - Risk: subtotal and total rows are separated by a page break in the source PDF.
+- Cross-page reference: 详见第 2 页的 Cost Detail table before accepting the total.
 - Recommendation: verify that retrieval chunks preserve both page labels and table context.
 
 ## Field Evidence
@@ -167,5 +169,7 @@ Scenario: the table is designed to mimic a PDF where the header and subtotal con
 ## Audit Notes
 
 Risk: subtotal and total rows are separated by a page break in the source PDF.
+
+Cross-page reference: 详见第 2 页的 Cost Detail table before accepting the total.
 
 Recommendation: verify that retrieval chunks preserve both page labels and table context.

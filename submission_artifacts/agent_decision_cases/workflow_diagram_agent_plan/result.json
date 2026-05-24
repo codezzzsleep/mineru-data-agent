@@ -1,9 +1,9 @@
 {
-  "run_id": "c7cb56bc440c",
+  "run_id": "c733182007e0",
   "task": "把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。",
   "profile": "workflow_or_diagram",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -618,13 +618,24 @@
       "initial_issue_codes": [
         "document_level_provenance"
       ],
-      "actions": [],
+      "actions": [
+        {
+          "action": "llm_suggested_review",
+          "issue_code": "llm_suggested",
+          "source": "llm_post_review.recovery_suggestions",
+          "reason": "visual review if diagram evidence is missing",
+          "runner_change": null,
+          "method_change": null,
+          "skip_reason": "manual_or_advisory_action_only",
+          "runtime_status": "skipped"
+        }
+      ],
       "loop_policy": {
         "max_attempts_per_recovery_action": 1,
         "selection_rule": "choose highest quality score while preserving audit trail",
         "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
       },
-      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "pass",
@@ -731,6 +742,10 @@
       {
         "key": "处理建议",
         "value": "Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+      },
+      {
+        "key": "关键步骤",
+        "value": "投料阶段核对批次号和固含量。"
       }
     ],
     "key_value_map": {
@@ -738,7 +753,8 @@
       "流程名称": "正极浆料涂布与烘干流程",
       "流程图说明": "投料 -> 搅拌 -> 过滤 -> 涂布 -> 烘干 -> 收卷 -> 质检。",
       "异常提示": "若温区 3 连续 5 分钟超过 92 摄氏度，需暂停收卷并复核传感器。",
-      "处理建议": "Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+      "处理建议": "Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。",
+      "关键步骤": "投料阶段核对批次号和固含量。"
     },
     "field_evidence": [
       {
@@ -805,6 +821,19 @@
           "source": "html"
         },
         "candidate_index": 4
+      },
+      {
+        "key": "关键步骤",
+        "value": "投料阶段核对批次号和固含量。",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "## 关键步骤",
+        "provenance": {
+          "line": null,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 5
       }
     ],
     "field_evidence_map": {
@@ -866,6 +895,18 @@
             "source": "html"
           },
           "evidence_text": "处理建议：Agent 应抽取步骤顺序、关键参数、异常节点和待视觉模型复核的图像说明。"
+        }
+      ],
+      "关键步骤": [
+        {
+          "value": "投料阶段核对批次号和固含量。",
+          "confidence": 0.86,
+          "provenance": {
+            "line": null,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "## 关键步骤"
         }
       ]
     },
@@ -934,6 +975,7 @@
         "has_anomaly_signal": true
       }
     },
+    "cross_page_references": [],
     "structure_quality": {
       "heading_section_count": 2,
       "fallback_section_count": 0
@@ -1030,8 +1072,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\html\\case_4_workflow_diagram.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\html\\case_4_workflow_diagram_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\html\\case_4_workflow_diagram.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\html\\case_4_workflow_diagram_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1066,9 +1108,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 2,
       "by_type": {
@@ -1721,13 +1763,24 @@
         "initial_issue_codes": [
           "document_level_provenance"
         ],
-        "actions": [],
+        "actions": [
+          {
+            "action": "llm_suggested_review",
+            "issue_code": "llm_suggested",
+            "source": "llm_post_review.recovery_suggestions",
+            "reason": "visual review if diagram evidence is missing",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "manual_or_advisory_action_only",
+            "runtime_status": "skipped"
+          }
+        ],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       },
       "replan_after_quality": {
         "quality_status": "pass",
@@ -1905,8 +1958,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\html\\case_4_workflow_diagram.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\html\\case_4_workflow_diagram_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\html\\case_4_workflow_diagram.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\html\\case_4_workflow_diagram_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1914,6 +1967,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c733182007e0\\summary.md"
 }

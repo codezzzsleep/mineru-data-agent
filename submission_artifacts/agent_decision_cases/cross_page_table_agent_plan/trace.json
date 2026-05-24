@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T11:21:12.099441+00:00",
+  "created_at": "2026-05-24T12:13:19.182672+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.081800+00:00",
-      "ended_at": "2026-05-24T11:21:12.082305+00:00",
+      "started_at": "2026-05-24T12:13:19.162928+00:00",
+      "ended_at": "2026-05-24T12:13:19.162928+00:00",
       "detail": {
         "task": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html",
@@ -67,8 +67,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.082305+00:00",
-      "ended_at": "2026-05-24T11:21:12.082305+00:00",
+      "started_at": "2026-05-24T12:13:19.162928+00:00",
+      "ended_at": "2026-05-24T12:13:19.163929+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "financial_report",
@@ -708,6 +708,16 @@
                 "method_change": null,
                 "skip_reason": "manual_or_advisory_action_only",
                 "runtime_status": "skipped"
+              },
+              {
+                "action": "llm_suggested_review",
+                "issue_code": "llm_suggested",
+                "source": "llm_post_review.recovery_suggestions",
+                "reason": "manual_numeric_review on total mismatch",
+                "runner_change": null,
+                "method_change": null,
+                "skip_reason": "manual_or_advisory_action_only",
+                "runtime_status": "skipped"
               }
             ],
             "loop_policy": {
@@ -715,7 +725,7 @@
               "selection_rule": "choose highest quality score while preserving audit trail",
               "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
             },
-            "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+            "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
           },
           "replan_after_quality": {
             "quality_status": "pass_with_warnings",
@@ -797,8 +807,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.082305+00:00",
-      "ended_at": "2026-05-24T11:21:12.082305+00:00",
+      "started_at": "2026-05-24T12:13:19.163929+00:00",
+      "ended_at": "2026-05-24T12:13:19.163929+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -816,8 +826,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.082305+00:00",
-      "ended_at": "2026-05-24T11:21:12.087906+00:00",
+      "started_at": "2026-05-24T12:13:19.163929+00:00",
+      "ended_at": "2026-05-24T12:13:19.171485+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html"
       }
@@ -825,19 +835,19 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.087906+00:00",
-      "ended_at": "2026-05-24T11:21:12.087906+00:00",
+      "started_at": "2026-05-24T12:13:19.171485+00:00",
+      "ended_at": "2026-05-24T12:13:19.172483+00:00",
       "detail": {
-        "item_count": 12,
+        "item_count": 13,
         "page_count": 0,
         "provenance_level": "document",
         "source_counts": {
-          "html": 12
+          "html": 13
         },
         "section_count": 4,
         "table_count": 2,
-        "key_value_count": 6,
-        "numeric_fact_count": 10,
+        "key_value_count": 7,
+        "numeric_fact_count": 11,
         "semantic_signal_counts": {
           "dates": 2,
           "recommendations": 1,
@@ -872,17 +882,24 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.087906+00:00",
-      "ended_at": "2026-05-24T11:21:12.087906+00:00",
+      "started_at": "2026-05-24T12:13:19.172483+00:00",
+      "ended_at": "2026-05-24T12:13:19.172483+00:00",
       "detail": {
         "profile": "financial_report"
       }
     },
     {
+      "name": "llm_agent_analysis",
+      "status": "completed",
+      "started_at": "2026-05-24T12:13:19.172483+00:00",
+      "ended_at": "2026-05-24T12:13:19.172483+00:00",
+      "detail": {}
+    },
+    {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.088906+00:00",
-      "ended_at": "2026-05-24T11:21:12.088906+00:00",
+      "started_at": "2026-05-24T12:13:19.172483+00:00",
+      "ended_at": "2026-05-24T12:13:19.172483+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -900,6 +917,16 @@
             "method_change": null,
             "skip_reason": "manual_or_advisory_action_only",
             "runtime_status": "skipped"
+          },
+          {
+            "action": "llm_suggested_review",
+            "issue_code": "llm_suggested",
+            "source": "llm_post_review.recovery_suggestions",
+            "reason": "manual_numeric_review on total mismatch",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "manual_or_advisory_action_only",
+            "runtime_status": "skipped"
           }
         ],
         "loop_policy": {
@@ -907,14 +934,14 @@
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       }
     },
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.088906+00:00",
-      "ended_at": "2026-05-24T11:21:12.088906+00:00",
+      "started_at": "2026-05-24T12:13:19.172483+00:00",
+      "ended_at": "2026-05-24T12:13:19.172483+00:00",
       "detail": {
         "quality_status": "pass_with_warnings",
         "selected_attempt": "initial"
@@ -923,8 +950,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.088906+00:00",
-      "ended_at": "2026-05-24T11:21:12.088906+00:00",
+      "started_at": "2026-05-24T12:13:19.172483+00:00",
+      "ended_at": "2026-05-24T12:13:19.172483+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass_with_warnings",
@@ -1003,8 +1030,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.088906+00:00",
-      "ended_at": "2026-05-24T11:21:12.091905+00:00",
+      "started_at": "2026-05-24T12:13:19.172483+00:00",
+      "ended_at": "2026-05-24T12:13:19.176672+00:00",
       "detail": {
         "chunks_count": 5,
         "by_type": {
@@ -1014,23 +1041,16 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\6015703adc96\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\6015703adc96\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\6015703adc96\\retrieval\\retrieval_quality.json"
       }
-    },
-    {
-      "name": "llm_agent_analysis",
-      "status": "completed",
-      "started_at": "2026-05-24T11:21:12.091905+00:00",
-      "ended_at": "2026-05-24T11:21:12.091905+00:00",
-      "detail": {}
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.091905+00:00",
-      "ended_at": "2026-05-24T11:21:12.091905+00:00",
+      "started_at": "2026-05-24T12:13:19.176672+00:00",
+      "ended_at": "2026-05-24T12:13:19.176672+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "manual_numeric_review",
@@ -1116,12 +1136,12 @@
       }
     }
   ],
-  "run_id": "f66df29ec3f0",
+  "run_id": "6015703adc96",
   "task": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
   "profile": "financial_report",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\6015703adc96\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\6015703adc96\\summary.md",
   "offline_regression_boundary": {
     "enabled": true,
     "not_live_llm": true,

@@ -1,20 +1,29 @@
 {
-  "run_id": "c62b72d418ea",
+  "run_id": "749ca8669a9b",
   "task": "Parse an industry standard compliance matrix, extract standard id, owner, requirements, severity, exception rules, quality logs, and retrieval chunks.",
   "profile": "standard_or_contract",
   "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_8_industry_standard_matrix.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea",
+  "output_dir": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b",
   "plan": [
-    "Inspect input type and task objective",
-    "Parse document with MinerU or native HTML extractor",
+    "Inspect input type, document metadata, and natural-language task objective",
+    "Infer task intents and generate a target extraction schema",
+    "Choose MinerU/native parsing path and record execution rationale",
     "Normalize content blocks with page-level or document-level provenance",
-    "Build markdown, section, key-value, table, and numeric views",
-    "Run quality checks and produce traceable logs",
-    "Prioritize section hierarchy and clause-like paragraph extraction",
-    "Preserve source page or document heading evidence for each clause"
+    "Build markdown, section, key-value, table, numeric, and field-evidence views",
+    "Run task-specific post-processing and quality checks",
+    "Select recovery action from issue codes, retry history, and task priorities",
+    "Produce traceable result, summary, retrieval chunks, and audit logs",
+    "Prioritize section hierarchy, clause-like paragraphs, parties, obligations, and dates",
+    "Preserve source page or document heading evidence for each clause",
+    "Apply task intent `structured_extraction` with schema-aware extraction and verification"
   ],
   "execution_control": {
     "llm_preplan_enabled": false,
+    "strict_page_provenance": {
+      "enabled": false,
+      "required": false,
+      "satisfied": null
+    },
     "requested": {
       "profile": "standard_or_contract",
       "backend": "pipeline",
@@ -35,9 +44,522 @@
       "lang": "ch",
       "runner": "native"
     },
+    "planning_rationale": {
+      "source": "rules",
+      "file_family": "native_office_or_html",
+      "profile_reason": "standard/contract keywords or explicit profile require section and clause preservation",
+      "runner_reason": "HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU",
+      "backend_reason": "backend=pipeline is used for MinerU parsing when the selected runner calls MinerU",
+      "method_reason": "method=auto balances automatic parsing with OCR fallback when quality gates require it",
+      "lang_reason": "lang=ch is passed to MinerU or recorded for native extraction audit",
+      "recovery_policy": [
+        "text_cleanup if mojibake or encoding noise is detected",
+        "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+        "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+        "manual_numeric_review when subtotal/total consistency checks fail"
+      ]
+    },
+    "adaptive_decision": {
+      "profile": "standard_or_contract",
+      "task_intents": [
+        "structured_extraction"
+      ],
+      "target_schema": {
+        "document_title": "standard or contract title",
+        "parties": "contract parties or responsible organizations",
+        "clause_id": "clause or section identifier",
+        "obligation": "requirement or obligation text",
+        "effective_date": "date evidence",
+        "evidence": "source clause evidence"
+      },
+      "post_processors": [
+        "field_evidence_builder"
+      ],
+      "verification_focus": [
+        "schema_fields_have_evidence",
+        "quality_issues_are_not_hidden"
+      ],
+      "quality_thresholds": {
+        "min_quality_score": 80,
+        "require_tables": false,
+        "require_numeric_facts": false,
+        "prefer_page_provenance": false
+      },
+      "recovery_strategy": [
+        {
+          "action": "text_cleanup",
+          "trigger": "mojibake_or_encoding_noise",
+          "priority": "normal"
+        }
+      ],
+      "rationale": [
+        "profile=standard_or_contract selected from task/file signals",
+        "input suffix=.html",
+        "task intents=structured_extraction",
+        "schema and recovery priorities are derived before parsing and saved for audit"
+      ]
+    },
     "runner_class": "MinerURunner",
     "applied": [],
-    "ignored": []
+    "ignored": [],
+    "agent_action_plan": {
+      "objective": "Parse an industry standard compliance matrix, extract standard id, owner, requirements, severity, exception rules, quality logs, and retrieval chunks.",
+      "runner": "native",
+      "subtasks": [
+        {
+          "id": "understand_task",
+          "goal": "Classify the document task and identify intent-specific outputs.",
+          "tools": [
+            "rule_intent_classifier"
+          ],
+          "expected_output": {
+            "profile": "standard_or_contract",
+            "intents": [
+              "structured_extraction"
+            ],
+            "schema_keys": [
+              "document_title",
+              "parties",
+              "clause_id",
+              "obligation",
+              "effective_date",
+              "evidence"
+            ]
+          },
+          "depends_on": []
+        },
+        {
+          "id": "choose_parse_path",
+          "goal": "Pick the cheapest parser path that still preserves required provenance.",
+          "tools": [
+            "native_extractor"
+          ],
+          "expected_output": {
+            "runner": "native"
+          },
+          "depends_on": [
+            "understand_task"
+          ]
+        },
+        {
+          "id": "extract_structure",
+          "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+          "tools": [
+            "structured_extractor"
+          ],
+          "expected_output": {
+            "post_processors": [
+              "field_evidence_builder"
+            ]
+          },
+          "depends_on": [
+            "choose_parse_path"
+          ]
+        },
+        {
+          "id": "validate_quality",
+          "goal": "Run profile and task-specific gates before accepting the result.",
+          "tools": [
+            "quality_validator",
+            "contract_validator"
+          ],
+          "expected_output": {
+            "quality_status": "pass|pass_with_warnings|needs_review"
+          },
+          "depends_on": [
+            "extract_structure"
+          ]
+        },
+        {
+          "id": "replan_if_needed",
+          "goal": "Map quality issues to recovery actions and select the best attempt.",
+          "tools": [
+            "text_cleanup"
+          ],
+          "expected_output": {
+            "selected_attempt": "initial or recovery action"
+          },
+          "depends_on": [
+            "validate_quality"
+          ]
+        },
+        {
+          "id": "export_artifacts",
+          "goal": "Write result, trace, summary, and retrieval artifacts.",
+          "tools": [
+            "retrieval_exporter",
+            "trace_writer"
+          ],
+          "expected_output": {
+            "files": [
+              "result.json",
+              "trace.json",
+              "summary.md",
+              "retrieval_chunks.jsonl"
+            ]
+          },
+          "depends_on": [
+            "replan_if_needed"
+          ]
+        }
+      ],
+      "tool_registry": [
+        {
+          "name": "native_extractor",
+          "capability": "Parse HTML/DOCX/PPTX structure without external OCR",
+          "selected": true,
+          "selection_reason": "file suffix is native text/Office",
+          "parameters": {}
+        },
+        {
+          "name": "mineru_cli",
+          "capability": "Run local MinerU CLI and keep page/layout artifacts",
+          "selected": false,
+          "selection_reason": "runner resolved to cli",
+          "parameters": {
+            "backend": "pipeline",
+            "method": "auto"
+          }
+        },
+        {
+          "name": "mineru_agent_api",
+          "capability": "Run online MinerU Agent API for CPU-friendly PDF parsing",
+          "selected": false,
+          "selection_reason": "runner resolved to agent-api",
+          "parameters": {
+            "backend": "pipeline",
+            "method": "auto"
+          }
+        },
+        {
+          "name": "llm_preplanner",
+          "capability": "Classify task and propose schema/controls before parsing",
+          "selected": false,
+          "selection_reason": "LLM client configured",
+          "parameters": {}
+        },
+        {
+          "name": "structured_extractor",
+          "capability": "Build sections, tables, key-values, numeric facts, and field evidence",
+          "selected": true,
+          "selection_reason": "always needed for output contract",
+          "parameters": {}
+        },
+        {
+          "name": "numeric_validator",
+          "capability": "Check numeric facts and table totals",
+          "selected": false,
+          "selection_reason": "financial or aggregation task",
+          "parameters": {}
+        },
+        {
+          "name": "contract_validator",
+          "capability": "Check section/clause/date evidence",
+          "selected": true,
+          "selection_reason": "contract or standard profile",
+          "parameters": {}
+        },
+        {
+          "name": "workflow_validator",
+          "capability": "Check workflow steps, anomalies, and visual-review hints",
+          "selected": false,
+          "selection_reason": "workflow or diagram profile",
+          "parameters": {}
+        },
+        {
+          "name": "text_cleanup",
+          "capability": "Clean mojibake/encoding noise and re-evaluate quality",
+          "selected": true,
+          "selection_reason": "enabled as recovery candidate",
+          "parameters": {}
+        },
+        {
+          "name": "ocr_retry",
+          "capability": "Retry parse with OCR mode after sparse/weak PDF result",
+          "selected": false,
+          "selection_reason": "PDF/image recovery candidate",
+          "parameters": {
+            "method": "ocr"
+          }
+        },
+        {
+          "name": "cli_fallback",
+          "capability": "Fallback from online API to CLI when page provenance is missing",
+          "selected": false,
+          "selection_reason": "audit-grade provenance candidate",
+          "parameters": {}
+        },
+        {
+          "name": "llm_post_review",
+          "capability": "Review extracted result for risks and recovery suggestions",
+          "selected": false,
+          "selection_reason": "LLM client configured",
+          "parameters": {}
+        },
+        {
+          "name": "retrieval_exporter",
+          "capability": "Write retrieval chunks and manifest",
+          "selected": true,
+          "selection_reason": "always needed for downstream data use",
+          "parameters": {}
+        }
+      ],
+      "dynamic_choices": [
+        {
+          "name": "profile",
+          "selected": "standard_or_contract",
+          "reason": "task and file signals after optional LLM merge"
+        },
+        {
+          "name": "runner",
+          "selected": "native",
+          "reason": "native suffix, CLI/API configuration, and provenance requirement"
+        },
+        {
+          "name": "backend",
+          "selected": "pipeline",
+          "reason": "MinerU backend used when runner calls MinerU"
+        },
+        {
+          "name": "method",
+          "selected": "auto",
+          "reason": "initial parse method; recovery can switch to OCR"
+        },
+        {
+          "name": "lang",
+          "selected": "ch",
+          "reason": "OCR language hint"
+        },
+        {
+          "name": "llm",
+          "selected": false,
+          "reason": "enabled only when a provider client is configured"
+        },
+        {
+          "name": "provenance_requirement",
+          "selected": "document",
+          "reason": "PDF/image outputs benefit most from page-level audit"
+        },
+        {
+          "name": "table_priority",
+          "selected": false,
+          "reason": "financial/aggregation tasks require table checks"
+        }
+      ],
+      "replan_triggers": [
+        {
+          "issue_code": "possible_mojibake",
+          "action": "text_cleanup",
+          "reason": "encoding noise can be improved without rerunning OCR"
+        },
+        {
+          "issue_code": "short_text",
+          "action": "ocr_retry",
+          "reason": "sparse PDF text often needs OCR mode"
+        },
+        {
+          "issue_code": "no_page_provenance",
+          "action": "cli_fallback",
+          "reason": "audit tasks need page-level source evidence"
+        },
+        {
+          "issue_code": "numeric_total_mismatch",
+          "action": "manual_numeric_review",
+          "reason": "numeric mismatch should not be silently repaired"
+        }
+      ],
+      "state_machine": {
+        "model": "single-run conditional DAG",
+        "initial_runner": "native",
+        "initial_method": "auto",
+        "nodes": [
+          {
+            "id": "understand_task",
+            "goal": "Classify the document task and identify intent-specific outputs.",
+            "tools": [
+              "rule_intent_classifier"
+            ]
+          },
+          {
+            "id": "choose_parse_path",
+            "goal": "Pick the cheapest parser path that still preserves required provenance.",
+            "tools": [
+              "native_extractor"
+            ]
+          },
+          {
+            "id": "extract_structure",
+            "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+            "tools": [
+              "structured_extractor"
+            ]
+          },
+          {
+            "id": "validate_quality",
+            "goal": "Run profile and task-specific gates before accepting the result.",
+            "tools": [
+              "quality_validator",
+              "contract_validator"
+            ]
+          },
+          {
+            "id": "replan_if_needed",
+            "goal": "Map quality issues to recovery actions and select the best attempt.",
+            "tools": [
+              "text_cleanup"
+            ]
+          },
+          {
+            "id": "export_artifacts",
+            "goal": "Write result, trace, summary, and retrieval artifacts.",
+            "tools": [
+              "retrieval_exporter",
+              "trace_writer"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "understand_task",
+            "to": "choose_parse_path",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "choose_parse_path",
+            "to": "extract_structure",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "extract_structure",
+            "to": "validate_quality",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "replan_if_needed",
+            "to": "export_artifacts",
+            "condition": "dependency_completed"
+          }
+        ],
+        "conditional_edges": [
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:possible_mojibake",
+            "action": "text_cleanup",
+            "runner_change": null,
+            "method_change": null
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:short_text",
+            "action": "ocr_retry",
+            "runner_change": null,
+            "method_change": "auto->ocr"
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:no_page_provenance",
+            "action": "cli_fallback",
+            "runner_change": "agent-api->cli",
+            "method_change": null
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:numeric_total_mismatch",
+            "action": "manual_numeric_review",
+            "runner_change": null,
+            "method_change": null
+          }
+        ],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        }
+      },
+      "memory_policy": {
+        "scope": "single_run_trace",
+        "writes": [
+          "execution_control.agent_action_plan",
+          "trace.steps",
+          "recovery_decision.attempts",
+          "retrieval_manifest"
+        ],
+        "reads": [
+          "input_metadata",
+          "task_intents",
+          "quality_issues",
+          "retry_history"
+        ],
+        "cross_run_learning": false,
+        "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+      }
+    },
+    "runtime_recovery_plan": {
+      "source": "agent_action_plan.state_machine",
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "actions": [],
+      "loop_policy": {
+        "max_attempts_per_recovery_action": 1,
+        "selection_rule": "choose highest quality score while preserving audit trail",
+        "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+      },
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
+    },
+    "replan_after_quality": {
+      "quality_status": "pass",
+      "quality_score": 100,
+      "issue_codes": [
+        "document_level_provenance"
+      ],
+      "considered_actions": [
+        {
+          "issue_code": "document_level_provenance",
+          "candidate_action": "keep_review_note",
+          "available_in_attempts": false
+        }
+      ],
+      "attempted_actions": [
+        "initial"
+      ],
+      "selected_attempt": "initial",
+      "selected_reason": "initial result remained the best accepted quality attempt",
+      "next_action_if_still_risky": [
+        "accept_with_trace_review"
+      ],
+      "quality_triggered_replan": {
+        "triggered": [
+          {
+            "issue_code": "document_level_provenance",
+            "replanning_decision": "keep_review_note",
+            "available_in_attempts": false,
+            "runner_change": null,
+            "method_change": null
+          }
+        ],
+        "selected_attempt": "initial",
+        "selected_attempt_quality": {
+          "status": "pass",
+          "score": 100,
+          "issue_codes": [
+            "document_level_provenance"
+          ]
+        },
+        "unhandled_issue_codes": [
+          "document_level_provenance"
+        ]
+      }
+    }
   },
   "extracted": {
     "content_summary": {
@@ -121,7 +643,42 @@
           ]
         ],
         "row_count": 4,
-        "column_count": 4
+        "column_count": 4,
+        "raw_rows": [
+          [
+            "REQ-1",
+            "trace.json includes every tool call",
+            "high",
+            "must include retries"
+          ],
+          [
+            "REQ-2",
+            "result.json includes structured sections",
+            "high",
+            "must include tables"
+          ],
+          [
+            "REQ-3",
+            "retrieval manifest includes page coverage",
+            "medium",
+            "pages field required"
+          ],
+          [
+            "REQ-4",
+            "secret scan excludes API keys",
+            "critical",
+            "block release if failed"
+          ]
+        ],
+        "header_levels": [
+          [
+            "Requirement",
+            "Mandatory Evidence",
+            "Severity",
+            "Review Note"
+          ]
+        ],
+        "merged_cells": []
       }
     ],
     "key_values": [
@@ -144,6 +701,10 @@
       {
         "key": "Recommendation",
         "value": "link this standard check to the PDF recovery evidence where executed=true is already recorded."
+      },
+      {
+        "key": "1. Scope",
+        "value": "This standard defines traceability requirements for document parsing agents used in corpus production."
       }
     ],
     "key_value_map": {
@@ -151,7 +712,162 @@
       "Review Date": "2026-05-22",
       "Owner": "Quality Engineering Office",
       "Risk": "if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.",
-      "Recommendation": "link this standard check to the PDF recovery evidence where executed=true is already recorded."
+      "Recommendation": "link this standard check to the PDF recovery evidence where executed=true is already recorded.",
+      "1. Scope": "This standard defines traceability requirements for document parsing agents used in corpus production."
+    },
+    "field_evidence": [
+      {
+        "key": "Standard ID",
+        "value": "STD-MATRIX-2026-09",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Standard ID: STD-MATRIX-2026-09",
+        "provenance": {
+          "line": 3,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 0
+      },
+      {
+        "key": "Review Date",
+        "value": "2026-05-22",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Review Date: 2026-05-22",
+        "provenance": {
+          "line": 5,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 1
+      },
+      {
+        "key": "Owner",
+        "value": "Quality Engineering Office",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Owner: Quality Engineering Office",
+        "provenance": {
+          "line": 7,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 2
+      },
+      {
+        "key": "Risk",
+        "value": "if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Risk: if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.",
+        "provenance": {
+          "line": 24,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 3
+      },
+      {
+        "key": "Recommendation",
+        "value": "link this standard check to the PDF recovery evidence where executed=true is already recorded.",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Recommendation: link this standard check to the PDF recovery evidence where executed=true is already recorded.",
+        "provenance": {
+          "line": 26,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 4
+      },
+      {
+        "key": "1. Scope",
+        "value": "This standard defines traceability requirements for document parsing agents used in corpus production.",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "## 1. Scope",
+        "provenance": {
+          "line": null,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 5
+      }
+    ],
+    "field_evidence_map": {
+      "Standard ID": [
+        {
+          "value": "STD-MATRIX-2026-09",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 3,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Standard ID: STD-MATRIX-2026-09"
+        }
+      ],
+      "Review Date": [
+        {
+          "value": "2026-05-22",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 5,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Review Date: 2026-05-22"
+        }
+      ],
+      "Owner": [
+        {
+          "value": "Quality Engineering Office",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 7,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Owner: Quality Engineering Office"
+        }
+      ],
+      "Risk": [
+        {
+          "value": "if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 24,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Risk: if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only."
+        }
+      ],
+      "Recommendation": [
+        {
+          "value": "link this standard check to the PDF recovery evidence where executed=true is already recorded.",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 26,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Recommendation: link this standard check to the PDF recovery evidence where executed=true is already recorded."
+        }
+      ],
+      "1. Scope": [
+        {
+          "value": "This standard defines traceability requirements for document parsing agents used in corpus production.",
+          "confidence": 0.86,
+          "provenance": {
+            "line": null,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "## 1. Scope"
+        }
+      ]
     },
     "numeric_facts": [],
     "semantic_signals": {
@@ -176,11 +892,33 @@
         "has_anomaly_signal": true
       }
     },
+    "cross_page_references": [],
     "structure_quality": {
       "heading_section_count": 4,
       "fallback_section_count": 0
     },
-    "markdown_preview": "# Industry Standard Compliance Matrix\n\nStandard ID: STD-MATRIX-2026-09\n\nReview Date: 2026-05-22\n\nOwner: Quality Engineering Office\n\n## 1. Scope\n\nThis standard defines traceability requirements for document parsing agents used in corpus production.\n\n## 2. Compliance Matrix\n\n| Requirement | Mandatory Evidence | Severity | Review Note |\n| --- | --- | --- | --- |\n| REQ-1 | trace.json includes every tool call | high | must include retries |\n| REQ-2 | result.json includes structured sections | high | must include tables |\n| REQ-3 | retrieval manifest includes page coverage | medium | pages field required |\n| REQ-4 | secret scan excludes API keys | critical | block release if failed |\n\n## 3. Exception Rule\n\nRisk: if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.\n\nRecommendation: link this standard check to the PDF recovery evidence where executed=true is already recorded."
+    "markdown_preview": "# Industry Standard Compliance Matrix\n\nStandard ID: STD-MATRIX-2026-09\n\nReview Date: 2026-05-22\n\nOwner: Quality Engineering Office\n\n## 1. Scope\n\nThis standard defines traceability requirements for document parsing agents used in corpus production.\n\n## 2. Compliance Matrix\n\n| Requirement | Mandatory Evidence | Severity | Review Note |\n| --- | --- | --- | --- |\n| REQ-1 | trace.json includes every tool call | high | must include retries |\n| REQ-2 | result.json includes structured sections | high | must include tables |\n| REQ-3 | retrieval manifest includes page coverage | medium | pages field required |\n| REQ-4 | secret scan excludes API keys | critical | block release if failed |\n\n## 3. Exception Rule\n\nRisk: if an online parser lacks page provenance, the agent must either fallback to CLI or mark the result as review-only.\n\nRecommendation: link this standard check to the PDF recovery evidence where executed=true is already recorded.",
+    "task_result": {
+      "task_intents": [
+        "structured_extraction"
+      ],
+      "target_schema": {
+        "document_title": "standard or contract title",
+        "parties": "contract parties or responsible organizations",
+        "clause_id": "clause or section identifier",
+        "obligation": "requirement or obligation text",
+        "effective_date": "date evidence",
+        "evidence": "source clause evidence"
+      },
+      "post_processors": [
+        "field_evidence_builder"
+      ],
+      "verification_focus": [
+        "schema_fields_have_evidence",
+        "quality_issues_are_not_hidden"
+      ],
+      "answers": {}
+    }
   },
   "quality": {
     "score": 100,
@@ -231,8 +969,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\html\\case_8_industry_standard_matrix.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\html\\case_8_industry_standard_matrix_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\html\\case_8_industry_standard_matrix.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\html\\case_8_industry_standard_matrix_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -244,9 +982,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 4,
       "by_type": {
@@ -262,8 +1000,8 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\html\\case_8_industry_standard_matrix.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\html\\case_8_industry_standard_matrix_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\html\\case_8_industry_standard_matrix.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\html\\case_8_industry_standard_matrix_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -271,6 +1009,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\c62b72d418ea\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\challenge_cases\\749ca8669a9b\\summary.md"
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T11:21:38Z",
+  "generated_at": "2026-05-24T12:18:56Z",
   "scope": "Retrieval chunk format and lightweight lexical query validation over saved artifacts.",
   "aggregate": {
     "chunk_files": 39,
@@ -71,7 +71,7 @@
         "table": 2,
         "text": 3
       },
-      "avg_chunk_chars": 183.0,
+      "avg_chunk_chars": 198.4,
       "min_chunk_chars": 99,
       "max_chunk_chars": 275
     },
@@ -246,7 +246,7 @@
         "table": 2,
         "text": 3
       },
-      "avg_chunk_chars": 183.0,
+      "avg_chunk_chars": 198.4,
       "min_chunk_chars": 99,
       "max_chunk_chars": 275
     },

@@ -1,11 +1,11 @@
 {
   "doc_id": "case_7_noisy_contract_scan",
   "source_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html",
-  "created_at": "2026-05-23T12:06:06.832125+00:00",
+  "created_at": "2026-05-24T12:18:31.196601+00:00",
   "output_files": {
-    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\retrieval\\retrieval_manifest.json",
-    "quality_report": "<PROJECT_ROOT>\\runs\\challenge_cases\\ee0d71622431\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\challenge_cases\\6bc536ef8ea8\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\challenge_cases\\6bc536ef8ea8\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\challenge_cases\\6bc536ef8ea8\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

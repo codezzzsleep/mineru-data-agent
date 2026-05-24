@@ -51,6 +51,7 @@ def build_report() -> dict[str, Any]:
             "with_runtime_recovery_plan": sum(1 for row in rows if row["has_runtime_recovery_plan"]),
             "with_task_result": sum(1 for row in rows if row["task_result_keys"] > 0),
             "with_field_evidence": sum(1 for row in rows if row["field_evidence_count"] > 0),
+            "with_cross_page_references": sum(1 for row in rows if row["cross_page_reference_count"] > 0),
             "with_quality_issues": sum(1 for row in rows if row["quality_issue_count"] > 0),
             "with_recovery_attempts": sum(1 for row in rows if row["recovery_attempt_count"] > 1),
             "selected_non_initial": sum(1 for row in rows if row["selected_non_initial"]),
@@ -67,6 +68,7 @@ def build_report() -> dict[str, Any]:
             "quality.issues",
             "recovery_decision",
             "extracted.field_evidence",
+            "extracted.cross_page_references",
             "extracted.task_result",
             "retrieval_export",
             "trace.json",
@@ -132,6 +134,11 @@ def summarize_result(path: Path) -> dict[str, Any]:
         "selected_attempt": recovery.get("selected_attempt") if isinstance(recovery, dict) else None,
         "selected_non_initial": recovery.get("selected_attempt") not in {None, "", "initial"} if isinstance(recovery, dict) else False,
         "field_evidence_count": count_field_evidence(extracted),
+        "cross_page_reference_count": (
+            len(extracted.get("cross_page_references", []))
+            if isinstance(extracted.get("cross_page_references"), list)
+            else 0
+        ),
         "task_result_keys": len(extracted.get("task_result", {})) if isinstance(extracted.get("task_result"), dict) else 0,
         "retrieval_chunks": count_retrieval_chunks(retrieval),
         "trace_steps": len(trace.get("steps", [])) if isinstance(trace, dict) and isinstance(trace.get("steps"), list) else 0,
@@ -161,6 +168,11 @@ def parser_artifact_summary(extracted: dict[str, Any]) -> dict[str, Any]:
         "tables": len(extracted.get("tables", [])) if isinstance(extracted.get("tables"), list) else 0,
         "key_values": len(extracted.get("key_values", [])) if isinstance(extracted.get("key_values"), list) else 0,
         "numeric_facts": len(extracted.get("numeric_facts", [])) if isinstance(extracted.get("numeric_facts"), list) else 0,
+        "cross_page_references": (
+            len(extracted.get("cross_page_references", []))
+            if isinstance(extracted.get("cross_page_references"), list)
+            else 0
+        ),
     }
 
 
@@ -239,6 +251,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- With runtime recovery plan: {aggregate['with_runtime_recovery_plan']}",
         f"- With task_result: {aggregate['with_task_result']}",
         f"- With field evidence: {aggregate['with_field_evidence']}",
+        f"- With cross-page references: {aggregate['with_cross_page_references']}",
         f"- With quality issues: {aggregate['with_quality_issues']}",
         f"- With recovery attempts beyond initial: {aggregate['with_recovery_attempts']}",
         f"- Selected non-initial recovery: {aggregate['selected_non_initial']}",

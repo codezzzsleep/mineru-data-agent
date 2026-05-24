@@ -1,9 +1,9 @@
 {
-  "run_id": "988d50383a06",
+  "run_id": "b510f754515f",
   "task": "解析 PDF，并要求字段能追溯到页级来源。",
   "profile": "standard_or_contract",
   "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\strict_provenance_failure_controlled.pdf",
-  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06",
+  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -548,7 +548,7 @@
         "selection_rule": "choose highest quality score while preserving audit trail",
         "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
       },
-      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "needs_review",
@@ -698,6 +698,7 @@
         "has_anomaly_signal": false
       }
     },
+    "cross_page_references": [],
     "structure_quality": {
       "heading_section_count": 1,
       "fallback_section_count": 0
@@ -810,8 +811,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -823,9 +824,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 1,
       "by_type": {
@@ -840,8 +841,8 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -849,8 +850,8 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\summary.md",
+  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

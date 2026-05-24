@@ -31,7 +31,8 @@ MinerU Data Agent 面向赛道二提交：在 MinerU、Office 和 HTML 解析结
 - `execution_control.agent_action_plan` 记录子任务拆解、候选工具、动态选择原因、replan triggers 和单次运行上下文策略。
 - `execution_control.replan_after_quality` 记录质量问题如何映射到恢复候选、已尝试动作和最终选择原因。
 - `execution_control.agent_action_plan.state_machine` 记录单次运行的条件 DAG、质量触发边和恢复 loop policy。
-- `execution_control.runtime_recovery_plan` 记录运行时真正消费的恢复动作；text cleanup、OCR retry 和 CLI fallback 由该计划过滤后执行。
+- `execution_control.runtime_recovery_plan` 记录运行时真正消费的恢复动作；text cleanup、OCR retry 和 CLI fallback 由 action plan、质量问题和受限 LLM recovery suggestions 共同过滤后执行。
+- `extracted` 新增更深的轻量结构化结果：两列表格键值、多行键值、表格 header/merged-cell 元数据和 `cross_page_references`。
 - `submission_artifacts/agent_value/` 单独说明这些字段是 Agent 层相对 parser Markdown/content_list 的增量，不等同第三方 parser benchmark。
 - `execution_control.strict_page_provenance` 记录审计型任务是否要求页级来源；PDF/image 最终仍缺页级来源时会标成 `strict_page_provenance_failed`。
 - LLM 解析后复核现在会写入 `recovery_decision.llm_quality_decision`，可把 warning/error 级风险同步到最终 recovery 决策。

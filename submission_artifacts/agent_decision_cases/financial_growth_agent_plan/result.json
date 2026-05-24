@@ -1,9 +1,9 @@
 {
-  "run_id": "afdf561ed0ad",
+  "run_id": "05183ace2503",
   "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。",
   "profile": "financial_report",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -639,13 +639,24 @@
         "document_level_provenance",
         "numeric_total_verified"
       ],
-      "actions": [],
+      "actions": [
+        {
+          "action": "llm_suggested_review",
+          "issue_code": "llm_suggested",
+          "source": "llm_post_review.recovery_suggestions",
+          "reason": "numeric mismatch requires manual review",
+          "runner_change": null,
+          "method_change": null,
+          "skip_reason": "manual_or_advisory_action_only",
+          "runtime_status": "skipped"
+        }
+      ],
       "loop_policy": {
         "max_attempts_per_recovery_action": 1,
         "selection_rule": "choose highest quality score while preserving audit trail",
         "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
       },
-      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "pass",
@@ -794,7 +805,54 @@
           ]
         ],
         "row_count": 6,
-        "column_count": 4
+        "column_count": 4,
+        "raw_rows": [
+          [
+            "营业收入",
+            "12,860.50",
+            "11,902.10",
+            "8.05%"
+          ],
+          [
+            "营业成本",
+            "8,430.25",
+            "7,921.30",
+            "6.43%"
+          ],
+          [
+            "销售费用",
+            "615.30",
+            "590.00",
+            "4.29%"
+          ],
+          [
+            "管理费用",
+            "781.20",
+            "760.15",
+            "2.77%"
+          ],
+          [
+            "利润总额",
+            "3,033.75",
+            "2,630.65",
+            "15.32%"
+          ],
+          [
+            "合计",
+            "25,721.00",
+            "23,804.20",
+            "8.05%"
+          ]
+        ],
+        "header_levels": [
+          [
+            "项目",
+            "2026Q1",
+            "2025Q4",
+            "变动率"
+          ]
+        ],
+        "merged_cells": []
       }
     ],
     "key_values": [
@@ -1052,6 +1110,7 @@
         "has_anomaly_signal": true
       }
     },
+    "cross_page_references": [],
     "structure_quality": {
       "heading_section_count": 2,
       "fallback_section_count": 0
@@ -1357,8 +1416,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\html\\case_1_financial_report.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\html\\case_1_financial_report_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\html\\case_1_financial_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\html\\case_1_financial_report_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1393,9 +1452,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 3,
       "by_type": {
@@ -2065,13 +2124,24 @@
           "document_level_provenance",
           "numeric_total_verified"
         ],
-        "actions": [],
+        "actions": [
+          {
+            "action": "llm_suggested_review",
+            "issue_code": "llm_suggested",
+            "source": "llm_post_review.recovery_suggestions",
+            "reason": "numeric mismatch requires manual review",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "manual_or_advisory_action_only",
+            "runtime_status": "skipped"
+          }
+        ],
         "loop_policy": {
           "max_attempts_per_recovery_action": 1,
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       },
       "replan_after_quality": {
         "quality_status": "pass",
@@ -2262,8 +2332,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\html\\case_1_financial_report.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\html\\case_1_financial_report_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\html\\case_1_financial_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\html\\case_1_financial_report_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -2271,6 +2341,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\05183ace2503\\summary.md"
 }

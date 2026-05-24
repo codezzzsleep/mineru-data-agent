@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T11:21:12.045404+00:00",
+  "created_at": "2026-05-24T12:13:40.636241+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.015714+00:00",
-      "ended_at": "2026-05-24T11:21:12.015714+00:00",
+      "started_at": "2026-05-24T12:13:40.619091+00:00",
+      "ended_at": "2026-05-24T12:13:40.619091+00:00",
       "detail": {
         "task": "解析 PDF，并要求字段能追溯到页级来源。",
         "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\strict_provenance_failure_controlled.pdf",
@@ -65,8 +65,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.015714+00:00",
-      "ended_at": "2026-05-24T11:21:12.016718+00:00",
+      "started_at": "2026-05-24T12:13:40.619091+00:00",
+      "ended_at": "2026-05-24T12:13:40.619091+00:00",
       "detail": {
         "subtask_count": 6,
         "selected_tools": [
@@ -83,8 +83,8 @@
     {
       "name": "mineru_parse",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.016718+00:00",
-      "ended_at": "2026-05-24T11:21:12.020743+00:00",
+      "started_at": "2026-05-24T12:13:40.619091+00:00",
+      "ended_at": "2026-05-24T12:13:40.624091+00:00",
       "detail": {
         "backend": "pipeline",
         "method": "auto",
@@ -94,8 +94,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.020743+00:00",
-      "ended_at": "2026-05-24T11:21:12.021336+00:00",
+      "started_at": "2026-05-24T12:13:40.624091+00:00",
+      "ended_at": "2026-05-24T12:13:40.624091+00:00",
       "detail": {
         "item_count": 3,
         "page_count": 0,
@@ -133,8 +133,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.021336+00:00",
-      "ended_at": "2026-05-24T11:21:12.021336+00:00",
+      "started_at": "2026-05-24T12:13:40.624091+00:00",
+      "ended_at": "2026-05-24T12:13:40.624091+00:00",
       "detail": {
         "profile": "standard_or_contract"
       }
@@ -142,8 +142,8 @@
     {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.021336+00:00",
-      "ended_at": "2026-05-24T11:21:12.021336+00:00",
+      "started_at": "2026-05-24T12:13:40.625090+00:00",
+      "ended_at": "2026-05-24T12:13:40.625090+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -167,14 +167,14 @@
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       }
     },
     {
       "name": "strict_page_provenance_gate",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.021336+00:00",
-      "ended_at": "2026-05-24T11:21:12.021336+00:00",
+      "started_at": "2026-05-24T12:13:40.625090+00:00",
+      "ended_at": "2026-05-24T12:13:40.625090+00:00",
       "detail": {
         "selected_attempt": "initial",
         "enabled": true,
@@ -188,8 +188,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.021336+00:00",
-      "ended_at": "2026-05-24T11:21:12.021336+00:00",
+      "started_at": "2026-05-24T12:13:40.625090+00:00",
+      "ended_at": "2026-05-24T12:13:40.625090+00:00",
       "detail": {
         "quality_status": "needs_review",
         "selected_attempt": "initial"
@@ -198,8 +198,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.021336+00:00",
-      "ended_at": "2026-05-24T11:21:12.021336+00:00",
+      "started_at": "2026-05-24T12:13:40.625090+00:00",
+      "ended_at": "2026-05-24T12:13:40.625090+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "needs_review",
@@ -277,8 +277,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:12.021336+00:00",
-      "ended_at": "2026-05-24T11:21:12.038442+00:00",
+      "started_at": "2026-05-24T12:13:40.625090+00:00",
+      "ended_at": "2026-05-24T12:13:40.629135+00:00",
       "detail": {
         "chunks_count": 1,
         "by_type": {
@@ -287,9 +287,9 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\retrieval\\retrieval_quality.json"
       }
     }
   ],
@@ -307,12 +307,12 @@
       "metadata": {}
     }
   ],
-  "run_id": "988d50383a06",
+  "run_id": "b510f754515f",
   "task": "解析 PDF，并要求字段能追溯到页级来源。",
   "profile": "standard_or_contract",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\b510f754515f\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

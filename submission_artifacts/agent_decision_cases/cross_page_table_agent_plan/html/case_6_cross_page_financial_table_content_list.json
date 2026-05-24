@@ -122,6 +122,11 @@
   },
   {
     "type": "text",
+    "text": "Cross-page reference: 详见第 2 页的 Cost Detail table before accepting the total.",
+    "source": "html"
+  },
+  {
+    "type": "text",
     "text": "Recommendation: verify that retrieval chunks preserve both page labels and table context.",
     "source": "html"
   }

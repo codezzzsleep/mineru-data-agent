@@ -1,11 +1,11 @@
 {
   "doc_id": "text_cleanup_mojibake",
   "source_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\text_cleanup_mojibake.html",
-  "created_at": "2026-05-24T11:21:11.800610+00:00",
+  "created_at": "2026-05-24T12:13:40.448396+00:00",
   "output_files": {
-    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\retrieval\\retrieval_manifest.json",
-    "quality_report": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

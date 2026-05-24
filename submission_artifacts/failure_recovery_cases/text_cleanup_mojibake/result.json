@@ -1,9 +1,9 @@
 {
-  "run_id": "82531717e1d5",
+  "run_id": "3dad4a05f2ff",
   "task": "清理 OCR 噪声合同并保留质量问题。",
   "profile": "low_quality_ocr",
   "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\text_cleanup_mojibake.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5",
+  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -523,7 +523,7 @@
         "selection_rule": "choose highest quality score while preserving audit trail",
         "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
       },
-      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "pass_with_warnings",
@@ -692,6 +692,7 @@
         "has_anomaly_signal": false
       }
     },
+    "cross_page_references": [],
     "structure_quality": {
       "heading_section_count": 1,
       "fallback_section_count": 0
@@ -780,8 +781,8 @@
         ],
         "selected": false,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\html\\text_cleanup_mojibake.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\html\\text_cleanup_mojibake_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\html\\text_cleanup_mojibake.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\html\\text_cleanup_mojibake_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -802,8 +803,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\recovery\\text_cleanup\\text_cleanup_mojibake.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\recovery\\text_cleanup\\text_cleanup_mojibake_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\recovery\\text_cleanup\\text_cleanup_mojibake.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\recovery\\text_cleanup\\text_cleanup_mojibake_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -815,9 +816,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 1,
       "by_type": {
@@ -832,8 +833,8 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\recovery\\text_cleanup\\text_cleanup_mojibake.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\recovery\\text_cleanup\\text_cleanup_mojibake_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\recovery\\text_cleanup\\text_cleanup_mojibake.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\recovery\\text_cleanup\\text_cleanup_mojibake_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -841,8 +842,8 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\summary.md",
+  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

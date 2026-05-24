@@ -1,4 +1,4 @@
-# MinerU Data Agent Run ee0d71622431
+# MinerU Data Agent Run 6bc536ef8ea8
 
 - Task: Parse an OCR-noisy contract scan review, clean mojibake fragments, preserve initial quality issues, extract contract metadata, risk table, recommendations, trace, and retrieval chunks.
 - Profile: low_quality_ocr
@@ -12,7 +12,8 @@
 - Provenance level: document
 - Sections: 3
 - Tables: 1
-- Key-values: 4
+- Key-values: 5
+- Field evidence records: 5
 - Numeric facts: 2
 - Dates detected: 1
 - Recommendation signals: 1
@@ -21,22 +22,77 @@
 - Recovery decision: recovered_accept
 - Recovery selected attempt: text_cleanup
 - Recovery attempts: 2
+- Task intents: anomaly_detection, evidence_trace
 - LLM analysis: disabled
 
 ## Plan
-1. Inspect input type and task objective
-2. Parse document with MinerU or native HTML extractor
-3. Normalize content blocks with page-level or document-level provenance
-4. Build markdown, section, key-value, table, and numeric views
-5. Run quality checks and produce traceable logs
-6. Prioritize OCR confidence proxies and mojibake/noise checks
-7. Flag pages with sparse extracted text for manual or VLM fallback
+1. Inspect input type, document metadata, and natural-language task objective
+2. Infer task intents and generate a target extraction schema
+3. Choose MinerU/native parsing path and record execution rationale
+4. Normalize content blocks with page-level or document-level provenance
+5. Build markdown, section, key-value, table, numeric, and field-evidence views
+6. Run task-specific post-processing and quality checks
+7. Select recovery action from issue codes, retry history, and task priorities
+8. Produce traceable result, summary, retrieval chunks, and audit logs
+9. Prioritize OCR confidence proxies, mojibake/noise checks, and sparse-text detection
+10. Plan OCR/VLM fallback before accepting low-evidence outputs
+11. Apply task intent `anomaly_detection` with schema-aware extraction and verification
+12. Apply task intent `evidence_trace` with schema-aware extraction and verification
+
+## Planning Rationale
+- scan/OCR/low-quality keywords or explicit profile require OCR/noise checks and recovery readiness
+- HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU
+- backend=pipeline is used for MinerU parsing when the selected runner calls MinerU
+- method=auto balances automatic parsing with OCR fallback when quality gates require it
+- lang=ch is passed to MinerU or recorded for native extraction audit
+- Recovery policy:
+  - text_cleanup if mojibake or encoding noise is detected
+  - ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues
+  - cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available
+  - manual_numeric_review when subtotal/total consistency checks fail
+
+## Adaptive Task Decision
+- Intents: anomaly_detection, evidence_trace
+- Target schema keys: recognized_text, noise_signal, critical_field, recovery_action, evidence, risk_reason
+- Quality thresholds: {"min_quality_score": 88, "require_tables": false, "require_numeric_facts": false, "prefer_page_provenance": false}
+- Recovery strategy:
+  - text_cleanup on mojibake_or_encoding_noise (normal)
+
+## Agent Action Plan
+- Subtasks: 6
+- Selected tools: native_extractor, structured_extractor, text_cleanup, retrieval_exporter
+- understand_task: Classify the document task and identify intent-specific outputs.
+- choose_parse_path: Pick the cheapest parser path that still preserves required provenance.
+- extract_structure: Normalize sections, tables, key-values, numeric facts, and field evidence.
+- validate_quality: Run profile and task-specific gates before accepting the result.
+- replan_if_needed: Map quality issues to recovery actions and select the best attempt.
+- export_artifacts: Write result, trace, summary, and retrieval artifacts.
+
+## Runtime Recovery Plan
+- Initial issue codes: possible_mojibake, document_level_provenance
+- text_cleanup: executed for possible_mojibake (agent_action_plan.replan_triggers)
+
+## Agent Replan After Quality
+- Issue codes: document_level_provenance
+- Attempted actions: initial, text_cleanup
+- Selected reason: text_cleanup had quality_status=pass and score=100
+
+## Task-Specific Answers
+- Anomaly candidates: 3
 
 ## Extracted Fields
 - Contract No: OCR-NOISE-2026-17
 - Effective Date: 2026-05-21
 - Parties: North Data Plant / Edge Review Vendor
 - Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.
+- 1. OCR Observations: Scanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: ®.
+
+## Field Evidence
+- Contract No: confidence=0.86, location=3, evidence=Contract No: OCR-NOISE-2026-17
+- Effective Date: confidence=0.86, location=5, evidence=Effective Date: 2026-05-21
+- Parties: confidence=0.86, location=7, evidence=Parties: North Data Plant / Edge Review Vendor
+- Recommendation: confidence=0.86, location=25, evidence=Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.
+- 1. OCR Observations: confidence=0.86, location=document, evidence=## 1. OCR Observations
 
 ## Recommendation Evidence
 - Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.

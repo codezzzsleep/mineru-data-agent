@@ -1,11 +1,11 @@
 {
   "doc_id": "case_9_incident_workflow_report",
   "source_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_9_incident_workflow_report.html",
-  "created_at": "2026-05-23T12:06:06.929035+00:00",
+  "created_at": "2026-05-24T12:18:31.278722+00:00",
   "output_files": {
-    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\retrieval\\retrieval_manifest.json",
-    "quality_report": "<PROJECT_ROOT>\\runs\\challenge_cases\\591a12766ed6\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\challenge_cases\\849d14871926\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\challenge_cases\\849d14871926\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\challenge_cases\\849d14871926\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
+import unicodedata
 import uuid
 from pathlib import Path
 from typing import Any
@@ -219,6 +221,28 @@ class MinerUDataAgent:
             with trace.step("quality_validation", profile=resolved_profile):
                 quality = build_quality_report(markdown, extracted, resolved_profile, task=task)
 
+            post_llm_analysis: dict[str, Any] = {}
+            llm_analysis: dict[str, Any] = {"enabled": False}
+            if self.llm_client:
+                llm_analysis = {
+                    "enabled": True,
+                    "pre_execution_plan": llm_preplan,
+                    "execution_control": execution_control,
+                }
+                with trace.step("llm_agent_analysis"):
+                    post_llm_analysis, llm_call = self.llm_client.analyze(
+                        task=task,
+                        profile=resolved_profile,
+                        plan=plan,
+                        extracted=extracted,
+                        quality=quality,
+                    )
+                    llm_analysis["post_parse_analysis"] = post_llm_analysis
+                    llm_analysis.update(post_llm_analysis)
+                    llm_analysis["enabled"] = True
+                    llm_analysis["usage_summary"] = _summarize_llm_usage(llm_preplan, post_llm_analysis)
+                    trace.add_tool_call(llm_call.__dict__)
+
             recovery_attempts = [
                 _attempt_summary(
                     name="initial",
@@ -238,6 +262,7 @@ class MinerUDataAgent:
                 method=method,
                 runner=self.mineru_runner,
                 fallback_runner=self.fallback_mineru_runner,
+                llm_recovery_suggestions=post_llm_analysis.get("recovery_suggestions"),
             )
             execution_control["runtime_recovery_plan"] = runtime_recovery_plan
             with trace.step("agent_runtime_recovery_plan") as runtime_plan_step:
@@ -252,6 +277,8 @@ class MinerUDataAgent:
                     method=method,
                     runner=self.mineru_runner,
                     fallback_runner=self.fallback_mineru_runner,
+                    source=str(recovery_action.get("source") or ""),
+                    issue_code=str(recovery_action.get("issue_code") or ""),
                 )
                 if skip_reason:
                     recovery_action["runtime_status"] = "skipped"
@@ -479,26 +506,7 @@ class MinerUDataAgent:
                 )
                 retrieval_step.detail.update(_retrieval_trace_detail(retrieval_export))
 
-            llm_analysis: dict[str, Any] = {"enabled": False}
             if self.llm_client:
-                llm_analysis = {
-                    "enabled": True,
-                    "pre_execution_plan": llm_preplan,
-                    "execution_control": execution_control,
-                }
-                with trace.step("llm_agent_analysis"):
-                    post_llm_analysis, llm_call = self.llm_client.analyze(
-                        task=task,
-                        profile=resolved_profile,
-                        plan=plan,
-                        extracted=extracted,
-                        quality=quality,
-                    )
-                    llm_analysis["post_parse_analysis"] = post_llm_analysis
-                    llm_analysis.update(post_llm_analysis)
-                    llm_analysis["enabled"] = True
-                    llm_analysis["usage_summary"] = _summarize_llm_usage(llm_preplan, post_llm_analysis)
-                    trace.add_tool_call(llm_call.__dict__)
                 with trace.step("llm_quality_decision") as llm_decision_step:
                     llm_quality_decision = _apply_llm_quality_decision(recovery_decision, post_llm_analysis)
                     llm_analysis["quality_decision"] = llm_quality_decision
@@ -1405,6 +1413,7 @@ def _build_runtime_recovery_plan(
     method: str,
     runner: Any,
     fallback_runner: Any | None,
+    llm_recovery_suggestions: Any = None,
 ) -> dict[str, Any]:
     issue_codes = _issue_codes(quality)
     triggers = action_plan.get("replan_triggers", []) if isinstance(action_plan, dict) else []
@@ -1476,6 +1485,16 @@ def _build_runtime_recovery_plan(
                 state_edge=edge_by_issue.get("no_page_provenance"),
             )
         )
+    for suggestion in _iter_llm_recovery_suggestions(llm_recovery_suggestions):
+        actions.append(
+            _runtime_recovery_action(
+                action=_map_llm_recovery_suggestion(suggestion),
+                issue_code="llm_suggested",
+                source="llm_post_review.recovery_suggestions",
+                reason=suggestion,
+                state_edge=None,
+            )
+        )
 
     deduped = _dedupe_runtime_actions(actions)
     for item in deduped:
@@ -1486,6 +1505,8 @@ def _build_runtime_recovery_plan(
             method=method,
             runner=runner,
             fallback_runner=fallback_runner,
+            source=str(item.get("source") or ""),
+            issue_code=str(item.get("issue_code") or ""),
         )
         item["runtime_status"] = "planned" if not item["skip_reason"] else "skipped"
     return {
@@ -1493,7 +1514,7 @@ def _build_runtime_recovery_plan(
         "initial_issue_codes": issue_codes,
         "actions": deduped,
         "loop_policy": state_machine.get("loop_policy", {}) if isinstance(state_machine, dict) else {},
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner.",
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner.",
     }
 
 
@@ -1527,6 +1548,23 @@ def _dedupe_runtime_actions(actions: list[dict[str, Any]]) -> list[dict[str, Any
     return sorted(deduped.values(), key=lambda item: priority.get(str(item.get("action")), 99))
 
 
+def _iter_llm_recovery_suggestions(suggestions: Any) -> list[str]:
+    if not isinstance(suggestions, list):
+        return []
+    return [str(item).strip() for item in suggestions if str(item).strip()][:10]
+
+
+def _map_llm_recovery_suggestion(suggestion: str) -> str:
+    lowered = suggestion.lower()
+    if any(token in lowered for token in ("mojibake", "乱码", "clean", "cleanup", "text cleanup", "normalize text")):
+        return "text_cleanup"
+    if any(token in lowered for token in ("ocr", "识别", "retry", "rerun", "重试", "重跑")):
+        return "ocr_retry"
+    if any(token in lowered for token in ("cli", "fallback", "local", "本地", "页级", "page provenance", "page-level")):
+        return "cli_fallback"
+    return "llm_suggested_review"
+
+
 def _first_matching_issue(issue_codes: list[str], candidates: set[str]) -> str | None:
     for code in issue_codes:
         if code in candidates:
@@ -1542,13 +1580,31 @@ def _runtime_recovery_skip_reason(
     method: str,
     runner: Any,
     fallback_runner: Any | None,
+    source: str = "",
+    issue_code: str = "",
 ) -> str:
+    llm_suggested = source.startswith("llm_post_review") and issue_code == "llm_suggested"
     if action == "text_cleanup":
-        return "" if _should_run_text_cleanup(quality) else "possible_mojibake no longer present"
+        if _should_run_text_cleanup(quality) or llm_suggested:
+            return ""
+        return "possible_mojibake no longer present"
     if action == "ocr_retry":
-        return "" if _should_retry_with_ocr(quality, suffix, method) else "OCR retry is not eligible for current file/method/quality"
+        if _should_retry_with_ocr(quality, suffix, method):
+            return ""
+        if llm_suggested and suffix not in HTML_SUFFIXES | DOCX_SUFFIXES | PPTX_SUFFIXES and method.lower() != "ocr":
+            return ""
+        return "OCR retry is not eligible for current file/method/quality"
     if action == "cli_fallback":
-        return "" if _should_fallback_to_cli(quality, suffix, runner, fallback_runner) else "CLI fallback is not eligible or no fallback runner is configured"
+        if _should_fallback_to_cli(quality, suffix, runner, fallback_runner):
+            return ""
+        if (
+            llm_suggested
+            and fallback_runner is not None
+            and suffix not in HTML_SUFFIXES | DOCX_SUFFIXES | PPTX_SUFFIXES
+            and _runner_kind(runner) != "cli"
+        ):
+            return ""
+        return "CLI fallback is not eligible or no fallback runner is configured"
     if action in {"manual_numeric_review", "visual_review", "chunk_stitch_review", "llm_suggested_review"}:
         return "manual_or_advisory_action_only"
     return "unsupported_recovery_action"
@@ -1611,10 +1667,14 @@ def _clean_text(text: str) -> str:
         "�": "",
         "Ã": "",
         "Â": "",
+        "杳": "查",
+        "曰": "日",
+        "己完成": "已完成",
     }
-    cleaned = text
+    cleaned = unicodedata.normalize("NFC", text)
     for bad, good in replacements.items():
         cleaned = cleaned.replace(bad, good)
+    cleaned = re.sub(r"([^\W\d_])\1{3,}", r"\1\1", cleaned, flags=re.UNICODE)
     return "\n".join(" ".join(line.split()) for line in cleaned.splitlines()).strip()
 
 

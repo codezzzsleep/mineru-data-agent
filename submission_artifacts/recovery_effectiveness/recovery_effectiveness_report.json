@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T11:21:38Z",
+  "generated_at": "2026-05-24T12:14:43Z",
   "scope": "Recovery effectiveness summary over saved submission artifacts.",
   "aggregate": {
     "results_with_recovery": 39,
@@ -8,7 +8,7 @@
     "selected_non_initial": 6,
     "executed_rate": 0.20512820512820512,
     "selected_non_initial_rate": 0.15384615384615385,
-    "average_non_initial_tool_seconds_when_executed": 2.959,
+    "average_non_initial_tool_seconds_when_executed": 4.421,
     "attempt_counts": {
       "cli_fallback": 1,
       "initial": 39,
@@ -109,7 +109,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/result.json",
-      "run_id": "f66df29ec3f0",
+      "run_id": "6015703adc96",
       "profile": "financial_report",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -135,7 +135,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/result.json",
-      "run_id": "afdf561ed0ad",
+      "run_id": "05183ace2503",
       "profile": "financial_report",
       "quality_status": "pass",
       "quality_score": 100,
@@ -159,7 +159,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/result.json",
-      "run_id": "e07edfdc8fff",
+      "run_id": "e1a2cd2ccb74",
       "profile": "low_quality_ocr",
       "quality_status": "pass",
       "quality_score": 100,
@@ -183,7 +183,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/result.json",
-      "run_id": "7197be0be812",
+      "run_id": "38961250fefc",
       "profile": "standard_or_contract",
       "quality_status": "pass",
       "quality_score": 100,
@@ -205,7 +205,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/result.json",
-      "run_id": "c7cb56bc440c",
+      "run_id": "c733182007e0",
       "profile": "workflow_or_diagram",
       "quality_status": "pass",
       "quality_score": 100,
@@ -479,7 +479,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/result.json",
-      "run_id": "daa6aa34148c",
+      "run_id": "9742489ae255",
       "profile": "financial_report",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -503,7 +503,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/result.json",
-      "run_id": "94cf0e17c55b",
+      "run_id": "f4813cc3fed7",
       "profile": "general_document",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -528,7 +528,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/result.json",
-      "run_id": "ffa1c91d0e93",
+      "run_id": "40786b721414",
       "profile": "general_document",
       "quality_status": "pass",
       "quality_score": 100,
@@ -549,7 +549,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/result.json",
-      "run_id": "988d50383a06",
+      "run_id": "b510f754515f",
       "profile": "standard_or_contract",
       "quality_status": "needs_review",
       "quality_score": 54,
@@ -574,7 +574,7 @@
     },
     {
       "result_path": "submission_artifacts/failure_recovery_cases/text_cleanup_mojibake/result.json",
-      "run_id": "82531717e1d5",
+      "run_id": "3dad4a05f2ff",
       "profile": "low_quality_ocr",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -907,7 +907,7 @@
     },
     {
       "result_path": "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json",
-      "run_id": "05435dfdf5de",
+      "run_id": "f64b82d718a0",
       "profile": "standard_or_contract",
       "quality_status": "pass",
       "quality_score": 100,
@@ -923,7 +923,7 @@
       ],
       "final_issue_codes": [],
       "failed_attempts": [],
-      "non_initial_tool_seconds": 8.347,
+      "non_initial_tool_seconds": 20.045,
       "llm_quality_decision_present": true
     }
   ],

@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T11:21:11.804620+00:00",
+  "created_at": "2026-05-24T12:13:40.453430+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.705160+00:00",
-      "ended_at": "2026-05-24T11:21:11.705160+00:00",
+      "started_at": "2026-05-24T12:13:40.357258+00:00",
+      "ended_at": "2026-05-24T12:13:40.357763+00:00",
       "detail": {
         "task": "清理 OCR 噪声合同并保留质量问题。",
         "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\text_cleanup_mojibake.html",
@@ -53,8 +53,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.705160+00:00",
-      "ended_at": "2026-05-24T11:21:11.706162+00:00",
+      "started_at": "2026-05-24T12:13:40.357763+00:00",
+      "ended_at": "2026-05-24T12:13:40.357763+00:00",
       "detail": {
         "subtask_count": 6,
         "selected_tools": [
@@ -69,8 +69,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.706162+00:00",
-      "ended_at": "2026-05-24T11:21:11.795483+00:00",
+      "started_at": "2026-05-24T12:13:40.357763+00:00",
+      "ended_at": "2026-05-24T12:13:40.439023+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\text_cleanup_mojibake.html"
       }
@@ -78,8 +78,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.795483+00:00",
-      "ended_at": "2026-05-24T11:21:11.795483+00:00",
+      "started_at": "2026-05-24T12:13:40.439023+00:00",
+      "ended_at": "2026-05-24T12:13:40.441055+00:00",
       "detail": {
         "item_count": 4,
         "page_count": 0,
@@ -114,8 +114,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.795483+00:00",
-      "ended_at": "2026-05-24T11:21:11.795483+00:00",
+      "started_at": "2026-05-24T12:13:40.441055+00:00",
+      "ended_at": "2026-05-24T12:13:40.441055+00:00",
       "detail": {
         "profile": "low_quality_ocr"
       }
@@ -123,8 +123,8 @@
     {
       "name": "agent_runtime_recovery_plan",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.795483+00:00",
-      "ended_at": "2026-05-24T11:21:11.795483+00:00",
+      "started_at": "2026-05-24T12:13:40.441055+00:00",
+      "ended_at": "2026-05-24T12:13:40.441055+00:00",
       "detail": {
         "source": "agent_action_plan.state_machine",
         "initial_issue_codes": [
@@ -149,14 +149,14 @@
           "selection_rule": "choose highest quality score while preserving audit trail",
           "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
         },
-        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
       }
     },
     {
       "name": "auto_recovery_text_cleanup",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.795483+00:00",
-      "ended_at": "2026-05-24T11:21:11.798187+00:00",
+      "started_at": "2026-05-24T12:13:40.441055+00:00",
+      "ended_at": "2026-05-24T12:13:40.445027+00:00",
       "detail": {
         "from_status": "pass_with_warnings",
         "plan_issue_code": "possible_mojibake",
@@ -166,8 +166,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.798187+00:00",
-      "ended_at": "2026-05-24T11:21:11.798187+00:00",
+      "started_at": "2026-05-24T12:13:40.445027+00:00",
+      "ended_at": "2026-05-24T12:13:40.445027+00:00",
       "detail": {
         "quality_status": "pass_with_warnings",
         "selected_attempt": "text_cleanup"
@@ -176,8 +176,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.798187+00:00",
-      "ended_at": "2026-05-24T11:21:11.798187+00:00",
+      "started_at": "2026-05-24T12:13:40.445027+00:00",
+      "ended_at": "2026-05-24T12:13:40.445027+00:00",
       "detail": {
         "selected_attempt": "text_cleanup",
         "quality_status": "pass_with_warnings",
@@ -242,8 +242,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T11:21:11.798187+00:00",
-      "ended_at": "2026-05-24T11:21:11.801620+00:00",
+      "started_at": "2026-05-24T12:13:40.445027+00:00",
+      "ended_at": "2026-05-24T12:13:40.449431+00:00",
       "detail": {
         "chunks_count": 1,
         "by_type": {
@@ -252,19 +252,19 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\retrieval\\retrieval_quality.json"
       }
     }
   ],
   "tool_calls": [],
-  "run_id": "82531717e1d5",
+  "run_id": "3dad4a05f2ff",
   "task": "清理 OCR 噪声合同并保留质量问题。",
   "profile": "low_quality_ocr",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\82531717e1d5\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\3dad4a05f2ff\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

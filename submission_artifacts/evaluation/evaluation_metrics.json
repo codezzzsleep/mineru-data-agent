@@ -772,7 +772,7 @@
         "actual": {
           "sections": 4,
           "tables": 2,
-          "numeric_facts": 10,
+          "numeric_facts": 11,
           "retrieval_chunks": 5
         },
         "failures": []

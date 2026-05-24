@@ -1,9 +1,9 @@
 {
-  "run_id": "daa6aa34148c",
+  "run_id": "9742489ae255",
   "task": "检查财报表格总计是否一致，并标记人工复核项。",
   "profile": "financial_report",
   "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\numeric_total_mismatch_html.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c",
+  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -542,7 +542,7 @@
         "selection_rule": "choose highest quality score while preserving audit trail",
         "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
       },
-      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers, validator fallback policies, and bounded LLM recovery suggestions; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "pass_with_warnings",
@@ -651,13 +651,128 @@
           ]
         ],
         "row_count": 3,
-        "column_count": 2
+        "column_count": 2,
+        "raw_rows": [
+          [
+            "硬件收入",
+            "100"
+          ],
+          [
+            "软件收入",
+            "200"
+          ],
+          [
+            "合计",
+            "400"
+          ]
+        ],
+        "header_levels": [
+          [
+            "项目",
+            "金额"
+          ]
+        ],
+        "merged_cells": []
       }
     ],
-    "key_values": [],
-    "key_value_map": {},
-    "field_evidence": [],
-    "field_evidence_map": {},
+    "key_values": [
+      {
+        "key": "硬件收入",
+        "value": "100"
+      },
+      {
+        "key": "软件收入",
+        "value": "200"
+      },
+      {
+        "key": "合计",
+        "value": "400"
+      }
+    ],
+    "key_value_map": {
+      "硬件收入": "100",
+      "软件收入": "200",
+      "合计": "400"
+    },
+    "field_evidence": [
+      {
+        "key": "硬件收入",
+        "value": "100",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "| 项目 | 金额 | | --- | --- | | 硬件收入 | 100 | | 软件收入 | 200 | | 合计 | 400 |",
+        "provenance": {
+          "line": 5,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 0
+      },
+      {
+        "key": "软件收入",
+        "value": "200",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "| 项目 | 金额 | | --- | --- | | 硬件收入 | 100 | | 软件收入 | 200 | | 合计 | 400 |",
+        "provenance": {
+          "line": 6,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 1
+      },
+      {
+        "key": "合计",
+        "value": "400",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "| 项目 | 金额 | | --- | --- | | 硬件收入 | 100 | | 软件收入 | 200 | | 合计 | 400 |",
+        "provenance": {
+          "line": 7,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 2
+      }
+    ],
+    "field_evidence_map": {
+      "硬件收入": [
+        {
+          "value": "100",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 5,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "| 项目 | 金额 | | --- | --- | | 硬件收入 | 100 | | 软件收入 | 200 | | 合计 | 400 |"
+        }
+      ],
+      "软件收入": [
+        {
+          "value": "200",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 6,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "| 项目 | 金额 | | --- | --- | | 硬件收入 | 100 | | 软件收入 | 200 | | 合计 | 400 |"
+        }
+      ],
+      "合计": [
+        {
+          "value": "400",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 7,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "| 项目 | 金额 | | --- | --- | | 硬件收入 | 100 | | 软件收入 | 200 | | 合计 | 400 |"
+        }
+      ]
+    },
     "numeric_facts": [
       {
         "line": 5,
@@ -691,6 +806,7 @@
         "has_anomaly_signal": false
       }
     },
+    "cross_page_references": [],
     "structure_quality": {
       "heading_section_count": 1,
       "fallback_section_count": 0
@@ -801,8 +917,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\html\\numeric_total_mismatch_html.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\html\\numeric_total_mismatch_html_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255\\html\\numeric_total_mismatch_html.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255\\html\\numeric_total_mismatch_html_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -814,9 +930,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 2,
       "by_type": {
@@ -832,8 +948,8 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\html\\numeric_total_mismatch_html.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\html\\numeric_total_mismatch_html_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255\\html\\numeric_total_mismatch_html.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255\\html\\numeric_total_mismatch_html_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -841,8 +957,8 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\summary.md",
+  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\9742489ae255\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

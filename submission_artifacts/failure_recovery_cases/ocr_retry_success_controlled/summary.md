@@ -1,6 +1,6 @@
 > Boundary: controlled fake MinerU runner; validates retry selection logic, not live OCR quality.
 
-# MinerU Data Agent Run ffa1c91d0e93
+# MinerU Data Agent Run 40786b721414
 
 - Task: 解析稀疏 PDF；初始文本过短时切到 OCR。
 - Profile: general_document

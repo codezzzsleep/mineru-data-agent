@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run e07edfdc8fff
+# MinerU Data Agent Run e1a2cd2ccb74
 
 - Task: 解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。
 - Profile: low_quality_ocr
@@ -14,8 +14,8 @@
 - Provenance level: document
 - Sections: 3
 - Tables: 1
-- Key-values: 4
-- Field evidence records: 4
+- Key-values: 5
+- Field evidence records: 5
 - Numeric facts: 2
 - Dates detected: 1
 - Recommendation signals: 1
@@ -100,12 +100,14 @@ Suggested execution plan:
 - Effective Date: 2026-05-21
 - Parties: North Data Plant / Edge Review Vendor
 - Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.
+- 1. OCR Observations: Scanned source has skewed stamp overlap, repeated watermark text, and several mojibake-like fragments: ®.
 
 ## Field Evidence
 - Contract No: confidence=0.86, location=3, evidence=Contract No: OCR-NOISE-2026-17
 - Effective Date: confidence=0.86, location=5, evidence=Effective Date: 2026-05-21
 - Parties: confidence=0.86, location=7, evidence=Parties: North Data Plant / Edge Review Vendor
 - Recommendation: confidence=0.86, location=25, evidence=Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.
+- 1. OCR Observations: confidence=0.86, location=document, evidence=## 1. OCR Observations
 
 ## Recommendation Evidence
 - Recommendation: run cleanup first, then preserve the initial issues in recovery_decision.initial_issue_codes.

@@ -1,11 +1,11 @@
 {
   "doc_id": "case_3_standard_contract",
   "source_file": "<PROJECT_ROOT>\\examples\\cases\\case_3_standard_contract.html",
-  "created_at": "2026-05-24T11:21:11.915275+00:00",
+  "created_at": "2026-05-24T12:13:19.063295+00:00",
   "output_files": {
-    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_manifest.json",
-    "quality_report": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\38961250fefc\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",
