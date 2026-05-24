@@ -1,0 +1,1879 @@
+{
+  "run_id": "e9681de1b983",
+  "task": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
+  "profile": "financial_report",
+  "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983",
+  "plan": [
+    "Inspect input type, document metadata, and natural-language task objective",
+    "Infer task intents and generate a target extraction schema",
+    "Choose MinerU/native parsing path and record execution rationale",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, numeric, and field-evidence views",
+    "Run task-specific post-processing and quality checks",
+    "Select recovery action from issue codes, retry history, and task priorities",
+    "Produce traceable result, summary, retrieval chunks, and audit logs",
+    "Prioritize dense table extraction and numeric consistency checks",
+    "Compute trend/comparison candidates when the task asks for growth, decline, max/min, or year-over-year change",
+    "Flag subtotal/total rows and suspicious numeric cells",
+    "Apply task intent `aggregation` with schema-aware extraction and verification",
+    "Apply task intent `cross_page_reasoning` with schema-aware extraction and verification",
+    "LLM preplan: Decompose task into extraction, validation, and recovery decisions",
+    "LLM preplan: Select tools based on profile, provenance need, and quality risks"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": true,
+    "requested": {
+      "profile": "auto",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch"
+    },
+    "initial": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "resolved": {
+      "profile": "financial_report",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "native"
+    },
+    "planning_rationale": {
+      "source": "llm_preplan+rules",
+      "file_family": "native_office_or_html",
+      "profile_reason": "financial keywords or explicit profile require table and numeric consistency checks",
+      "runner_reason": "HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU",
+      "backend_reason": "backend=pipeline is used for MinerU parsing when the selected runner calls MinerU",
+      "method_reason": "method=auto balances automatic parsing with OCR fallback when quality gates require it",
+      "lang_reason": "lang=ch is passed to MinerU or recorded for native extraction audit",
+      "recovery_policy": [
+        "text_cleanup if mojibake or encoding noise is detected",
+        "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+        "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+        "manual_numeric_review when subtotal/total consistency checks fail"
+      ],
+      "adaptive_decision_rationale": [
+        "profile=financial_report selected from task/file signals",
+        "input suffix=.html",
+        "task intents=aggregation, cross_page_reasoning",
+        "schema and recovery priorities are derived before parsing and saved for audit",
+        "LLM preplan target schema and verification focus were merged into the adaptive decision."
+      ]
+    },
+    "adaptive_decision": {
+      "profile": "financial_report",
+      "task_intents": [
+        "aggregation",
+        "cross_page_reasoning"
+      ],
+      "target_schema": {
+        "company_name": "reporting company or organization",
+        "report_period": "reporting period/date",
+        "line_item": "financial statement row name",
+        "current_value": "current period value",
+        "previous_value": "comparison period value",
+        "unit": "currency or unit scale",
+        "evidence": "source text/table evidence",
+        "page_span": "pages or chunks involved in the answer",
+        "跨页表格": "table span",
+        "小计": "subtotal",
+        "总计": "total",
+        "差异": "mismatch"
+      },
+      "post_processors": [
+        "field_evidence_builder",
+        "numeric_fact_extractor",
+        "table_total_validator"
+      ],
+      "verification_focus": [
+        "schema_fields_have_evidence",
+        "quality_issues_are_not_hidden",
+        "numeric_tokens_preserved",
+        "subtotal_total_consistency",
+        "page_or_chunk_span_is_recorded"
+      ],
+      "quality_thresholds": {
+        "min_quality_score": 90,
+        "require_tables": true,
+        "require_numeric_facts": true,
+        "prefer_page_provenance": false
+      },
+      "recovery_strategy": [
+        {
+          "action": "text_cleanup",
+          "trigger": "mojibake_or_encoding_noise",
+          "priority": "normal"
+        },
+        {
+          "action": "manual_numeric_review",
+          "trigger": "total_or_subtotal_mismatch",
+          "priority": "high"
+        },
+        {
+          "action": "llm_suggested_review",
+          "trigger": "manual_numeric_review on total mismatch",
+          "priority": "advisory"
+        },
+        {
+          "action": "llm_suggested_review",
+          "trigger": "chunk_stitch_review for cross-page reference",
+          "priority": "advisory"
+        }
+      ],
+      "rationale": [
+        "profile=financial_report selected from task/file signals",
+        "input suffix=.html",
+        "task intents=aggregation, cross_page_reasoning",
+        "schema and recovery priorities are derived before parsing and saved for audit",
+        "LLM preplan target schema and verification focus were merged into the adaptive decision."
+      ]
+    },
+    "runner_class": "MinerURunner",
+    "applied": [],
+    "ignored": [
+      {
+        "field": "backend",
+        "recommended": "pipeline",
+        "current": "pipeline",
+        "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+      },
+      {
+        "field": "method",
+        "recommended": "auto",
+        "current": "auto",
+        "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+      }
+    ],
+    "llm_preplan_status": "completed",
+    "llm_recommendation": {
+      "profile": "financial_report",
+      "runner": "native",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "confidence": 0.82
+    },
+    "agent_action_plan": {
+      "objective": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
+      "runner": "native",
+      "subtasks": [
+        {
+          "id": "understand_task",
+          "goal": "Classify the document task and identify intent-specific outputs.",
+          "tools": [
+            "llm_preplanner"
+          ],
+          "expected_output": {
+            "profile": "financial_report",
+            "intents": [
+              "aggregation",
+              "cross_page_reasoning"
+            ],
+            "schema_keys": [
+              "company_name",
+              "report_period",
+              "line_item",
+              "current_value",
+              "previous_value",
+              "unit",
+              "evidence",
+              "page_span",
+              "跨页表格",
+              "小计",
+              "总计",
+              "差异"
+            ]
+          },
+          "depends_on": []
+        },
+        {
+          "id": "choose_parse_path",
+          "goal": "Pick the cheapest parser path that still preserves required provenance.",
+          "tools": [
+            "native_extractor"
+          ],
+          "expected_output": {
+            "runner": "native"
+          },
+          "depends_on": [
+            "understand_task"
+          ]
+        },
+        {
+          "id": "extract_structure",
+          "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+          "tools": [
+            "structured_extractor"
+          ],
+          "expected_output": {
+            "post_processors": [
+              "field_evidence_builder",
+              "numeric_fact_extractor",
+              "table_total_validator"
+            ]
+          },
+          "depends_on": [
+            "choose_parse_path"
+          ]
+        },
+        {
+          "id": "validate_quality",
+          "goal": "Run profile and task-specific gates before accepting the result.",
+          "tools": [
+            "quality_validator",
+            "numeric_validator"
+          ],
+          "expected_output": {
+            "quality_status": "pass|pass_with_warnings|needs_review"
+          },
+          "depends_on": [
+            "extract_structure"
+          ]
+        },
+        {
+          "id": "llm_review",
+          "goal": "Review parse output against task-specific risks and propose follow-up actions.",
+          "tools": [
+            "llm_post_review"
+          ],
+          "expected_output": {
+            "risk_findings": "list",
+            "recovery_suggestions": "list"
+          },
+          "depends_on": [
+            "validate_quality"
+          ]
+        },
+        {
+          "id": "replan_if_needed",
+          "goal": "Map quality issues to recovery actions and select the best attempt.",
+          "tools": [
+            "text_cleanup",
+            "manual_numeric_review",
+            "llm_suggested_review",
+            "llm_suggested_review"
+          ],
+          "expected_output": {
+            "selected_attempt": "initial or recovery action"
+          },
+          "depends_on": [
+            "validate_quality"
+          ]
+        },
+        {
+          "id": "export_artifacts",
+          "goal": "Write result, trace, summary, and retrieval artifacts.",
+          "tools": [
+            "retrieval_exporter",
+            "trace_writer"
+          ],
+          "expected_output": {
+            "files": [
+              "result.json",
+              "trace.json",
+              "summary.md",
+              "retrieval_chunks.jsonl"
+            ]
+          },
+          "depends_on": [
+            "replan_if_needed",
+            "llm_review"
+          ]
+        }
+      ],
+      "tool_registry": [
+        {
+          "name": "native_extractor",
+          "capability": "Parse HTML/DOCX/PPTX structure without external OCR",
+          "selected": true,
+          "selection_reason": "file suffix is native text/Office",
+          "parameters": {}
+        },
+        {
+          "name": "mineru_cli",
+          "capability": "Run local MinerU CLI and keep page/layout artifacts",
+          "selected": false,
+          "selection_reason": "runner resolved to cli",
+          "parameters": {
+            "backend": "pipeline",
+            "method": "auto"
+          }
+        },
+        {
+          "name": "mineru_agent_api",
+          "capability": "Run online MinerU Agent API for CPU-friendly PDF parsing",
+          "selected": false,
+          "selection_reason": "runner resolved to agent-api",
+          "parameters": {
+            "backend": "pipeline",
+            "method": "auto"
+          }
+        },
+        {
+          "name": "llm_preplanner",
+          "capability": "Classify task and propose schema/controls before parsing",
+          "selected": true,
+          "selection_reason": "LLM client configured",
+          "parameters": {}
+        },
+        {
+          "name": "structured_extractor",
+          "capability": "Build sections, tables, key-values, numeric facts, and field evidence",
+          "selected": true,
+          "selection_reason": "always needed for output contract",
+          "parameters": {}
+        },
+        {
+          "name": "numeric_validator",
+          "capability": "Check numeric facts and table totals",
+          "selected": true,
+          "selection_reason": "financial or aggregation task",
+          "parameters": {}
+        },
+        {
+          "name": "contract_validator",
+          "capability": "Check section/clause/date evidence",
+          "selected": false,
+          "selection_reason": "contract or standard profile",
+          "parameters": {}
+        },
+        {
+          "name": "workflow_validator",
+          "capability": "Check workflow steps, anomalies, and visual-review hints",
+          "selected": false,
+          "selection_reason": "workflow or diagram profile",
+          "parameters": {}
+        },
+        {
+          "name": "text_cleanup",
+          "capability": "Clean mojibake/encoding noise and re-evaluate quality",
+          "selected": true,
+          "selection_reason": "enabled as recovery candidate",
+          "parameters": {}
+        },
+        {
+          "name": "ocr_retry",
+          "capability": "Retry parse with OCR mode after sparse/weak PDF result",
+          "selected": false,
+          "selection_reason": "PDF/image recovery candidate",
+          "parameters": {
+            "method": "ocr"
+          }
+        },
+        {
+          "name": "cli_fallback",
+          "capability": "Fallback from online API to CLI when page provenance is missing",
+          "selected": false,
+          "selection_reason": "audit-grade provenance candidate",
+          "parameters": {}
+        },
+        {
+          "name": "llm_post_review",
+          "capability": "Review extracted result for risks and recovery suggestions",
+          "selected": true,
+          "selection_reason": "LLM client configured",
+          "parameters": {}
+        },
+        {
+          "name": "retrieval_exporter",
+          "capability": "Write retrieval chunks and manifest",
+          "selected": true,
+          "selection_reason": "always needed for downstream data use",
+          "parameters": {}
+        }
+      ],
+      "dynamic_choices": [
+        {
+          "name": "profile",
+          "selected": "financial_report",
+          "reason": "task and file signals after optional LLM merge"
+        },
+        {
+          "name": "runner",
+          "selected": "native",
+          "reason": "native suffix, CLI/API configuration, and provenance requirement"
+        },
+        {
+          "name": "backend",
+          "selected": "pipeline",
+          "reason": "MinerU backend used when runner calls MinerU"
+        },
+        {
+          "name": "method",
+          "selected": "auto",
+          "reason": "initial parse method; recovery can switch to OCR"
+        },
+        {
+          "name": "lang",
+          "selected": "ch",
+          "reason": "OCR language hint"
+        },
+        {
+          "name": "llm",
+          "selected": true,
+          "reason": "enabled only when a provider client is configured"
+        },
+        {
+          "name": "provenance_requirement",
+          "selected": "document",
+          "reason": "PDF/image outputs benefit most from page-level audit"
+        },
+        {
+          "name": "table_priority",
+          "selected": true,
+          "reason": "financial/aggregation tasks require table checks"
+        }
+      ],
+      "replan_triggers": [
+        {
+          "issue_code": "possible_mojibake",
+          "action": "text_cleanup",
+          "reason": "encoding noise can be improved without rerunning OCR"
+        },
+        {
+          "issue_code": "short_text",
+          "action": "ocr_retry",
+          "reason": "sparse PDF text often needs OCR mode"
+        },
+        {
+          "issue_code": "no_page_provenance",
+          "action": "cli_fallback",
+          "reason": "audit tasks need page-level source evidence"
+        },
+        {
+          "issue_code": "numeric_total_mismatch",
+          "action": "manual_numeric_review",
+          "reason": "numeric mismatch should not be silently repaired"
+        },
+        {
+          "issue_code": "cross_chunk_reference",
+          "action": "chunk_stitch_review",
+          "reason": "answer depends on more than one page/chunk"
+        },
+        {
+          "issue_code": "manual_numeric_review on total mismatch",
+          "action": "llm_suggested_review",
+          "reason": "adaptive recovery strategy"
+        }
+      ],
+      "memory_policy": {
+        "scope": "single_run_trace",
+        "writes": [
+          "execution_control.agent_action_plan",
+          "trace.steps",
+          "recovery_decision.attempts",
+          "retrieval_manifest"
+        ],
+        "reads": [
+          "input_metadata",
+          "task_intents",
+          "quality_issues",
+          "retry_history"
+        ],
+        "cross_run_learning": false,
+        "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+      }
+    },
+    "replan_after_quality": {
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified",
+        "numeric_total_mismatch"
+      ],
+      "considered_actions": [
+        {
+          "issue_code": "document_level_provenance",
+          "candidate_action": "keep_review_note",
+          "available_in_attempts": false
+        },
+        {
+          "issue_code": "numeric_total_verified",
+          "candidate_action": "keep_review_note",
+          "available_in_attempts": false
+        },
+        {
+          "issue_code": "numeric_total_mismatch",
+          "candidate_action": "manual_numeric_review",
+          "available_in_attempts": false
+        }
+      ],
+      "attempted_actions": [
+        "initial"
+      ],
+      "selected_attempt": "initial",
+      "selected_reason": "initial result remained the best accepted quality attempt",
+      "next_action_if_still_risky": [
+        "manual_numeric_review"
+      ]
+    }
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 12,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 4,
+        "text": 6,
+        "table": 2
+      },
+      "source_counts": {
+        "html": 12
+      },
+      "text_characters": 1010
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "Cross Page Financial Control Pack",
+        "line": 1,
+        "source": "heading",
+        "text": "Document ID: FIN-CROSS-2026-06\n\nReporting Period: 2026-01-01 to 2026-03-31\n\nOwner: Finance Shared Service Center"
+      },
+      {
+        "level": 2,
+        "title": "Page 1 - Revenue Detail",
+        "line": 9,
+        "source": "heading",
+        "text": "Scenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.\n\n| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Hardware Subscription | 18400 | invoice batch A17 |\n| Maintenance Service | 7250 | invoice batch B04 |\n| Channel Rebate | -1380 | manual confirmation required |\n| Subtotal Revenue | 24270 | first-page subtotal |"
+      },
+      {
+        "level": 2,
+        "title": "Page 2 - Cost Detail",
+        "line": 20,
+        "source": "heading",
+        "text": "| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Cloud Cost | -6410 | usage statement U23 |\n| Delivery Labor | -3890 | timesheet rollup |\n| Support Expense | -2160 | ticket group S11 |\n| Total Operating Result | 11810 | 24270 - 6410 - 3890 - 2160 |"
+      },
+      {
+        "level": 2,
+        "title": "Audit Notes",
+        "line": 29,
+        "source": "heading",
+        "text": "Risk: subtotal and total rows are separated by a page break in the source PDF.\n\nRecommendation: verify that retrieval chunks preserve both page labels and table context."
+      }
+    ],
+    "tables": [
+      {
+        "start_line": 13,
+        "headers": [
+          "Line Item",
+          "Q1 Amount",
+          "Evidence Note"
+        ],
+        "rows": [
+          [
+            "Hardware Subscription",
+            "18400",
+            "invoice batch A17"
+          ],
+          [
+            "Maintenance Service",
+            "7250",
+            "invoice batch B04"
+          ],
+          [
+            "Channel Rebate",
+            "-1380",
+            "manual confirmation required"
+          ],
+          [
+            "Subtotal Revenue",
+            "24270",
+            "first-page subtotal"
+          ]
+        ],
+        "row_count": 4,
+        "column_count": 3
+      },
+      {
+        "start_line": 22,
+        "headers": [
+          "Line Item",
+          "Q1 Amount",
+          "Evidence Note"
+        ],
+        "rows": [
+          [
+            "Cloud Cost",
+            "-6410",
+            "usage statement U23"
+          ],
+          [
+            "Delivery Labor",
+            "-3890",
+            "timesheet rollup"
+          ],
+          [
+            "Support Expense",
+            "-2160",
+            "ticket group S11"
+          ],
+          [
+            "Total Operating Result",
+            "11810",
+            "24270 - 6410 - 3890 - 2160"
+          ]
+        ],
+        "row_count": 4,
+        "column_count": 3
+      }
+    ],
+    "key_values": [
+      {
+        "key": "Document ID",
+        "value": "FIN-CROSS-2026-06"
+      },
+      {
+        "key": "Reporting Period",
+        "value": "2026-01-01 to 2026-03-31"
+      },
+      {
+        "key": "Owner",
+        "value": "Finance Shared Service Center"
+      },
+      {
+        "key": "Scenario",
+        "value": "the table is designed to mimic a PDF where the header and subtotal continue across pages."
+      },
+      {
+        "key": "Risk",
+        "value": "subtotal and total rows are separated by a page break in the source PDF."
+      },
+      {
+        "key": "Recommendation",
+        "value": "verify that retrieval chunks preserve both page labels and table context."
+      }
+    ],
+    "key_value_map": {
+      "Document ID": "FIN-CROSS-2026-06",
+      "Reporting Period": "2026-01-01 to 2026-03-31",
+      "Owner": "Finance Shared Service Center",
+      "Scenario": "the table is designed to mimic a PDF where the header and subtotal continue across pages.",
+      "Risk": "subtotal and total rows are separated by a page break in the source PDF.",
+      "Recommendation": "verify that retrieval chunks preserve both page labels and table context."
+    },
+    "field_evidence": [
+      {
+        "key": "Document ID",
+        "value": "FIN-CROSS-2026-06",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Document ID: FIN-CROSS-2026-06",
+        "provenance": {
+          "line": 3,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 0
+      },
+      {
+        "key": "Reporting Period",
+        "value": "2026-01-01 to 2026-03-31",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Reporting Period: 2026-01-01 to 2026-03-31",
+        "provenance": {
+          "line": 5,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 1
+      },
+      {
+        "key": "Owner",
+        "value": "Finance Shared Service Center",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Owner: Finance Shared Service Center",
+        "provenance": {
+          "line": 7,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 2
+      },
+      {
+        "key": "Scenario",
+        "value": "the table is designed to mimic a PDF where the header and subtotal continue across pages.",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Scenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.",
+        "provenance": {
+          "line": 11,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 3
+      },
+      {
+        "key": "Risk",
+        "value": "subtotal and total rows are separated by a page break in the source PDF.",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Risk: subtotal and total rows are separated by a page break in the source PDF.",
+        "provenance": {
+          "line": 31,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 4
+      },
+      {
+        "key": "Recommendation",
+        "value": "verify that retrieval chunks preserve both page labels and table context.",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Recommendation: verify that retrieval chunks preserve both page labels and table context.",
+        "provenance": {
+          "line": 33,
+          "level": "document",
+          "source": "html"
+        },
+        "candidate_index": 5
+      }
+    ],
+    "field_evidence_map": {
+      "Document ID": [
+        {
+          "value": "FIN-CROSS-2026-06",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 3,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Document ID: FIN-CROSS-2026-06"
+        }
+      ],
+      "Reporting Period": [
+        {
+          "value": "2026-01-01 to 2026-03-31",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 5,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Reporting Period: 2026-01-01 to 2026-03-31"
+        }
+      ],
+      "Owner": [
+        {
+          "value": "Finance Shared Service Center",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 7,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Owner: Finance Shared Service Center"
+        }
+      ],
+      "Scenario": [
+        {
+          "value": "the table is designed to mimic a PDF where the header and subtotal continue across pages.",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 11,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Scenario: the table is designed to mimic a PDF where the header and subtotal continue across pages."
+        }
+      ],
+      "Risk": [
+        {
+          "value": "subtotal and total rows are separated by a page break in the source PDF.",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 31,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Risk: subtotal and total rows are separated by a page break in the source PDF."
+        }
+      ],
+      "Recommendation": [
+        {
+          "value": "verify that retrieval chunks preserve both page labels and table context.",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 33,
+            "level": "document",
+            "source": "html"
+          },
+          "evidence_text": "Recommendation: verify that retrieval chunks preserve both page labels and table context."
+        }
+      ]
+    },
+    "numeric_facts": [
+      {
+        "line": 9,
+        "text": "## Page 1 - Revenue Detail",
+        "numbers": [
+          "1"
+        ]
+      },
+      {
+        "line": 15,
+        "text": "| Hardware Subscription | 18400 | invoice batch A17 |",
+        "numbers": [
+          "18400"
+        ]
+      },
+      {
+        "line": 16,
+        "text": "| Maintenance Service | 7250 | invoice batch B04 |",
+        "numbers": [
+          "7250"
+        ]
+      },
+      {
+        "line": 17,
+        "text": "| Channel Rebate | -1380 | manual confirmation required |",
+        "numbers": [
+          "-1380"
+        ]
+      },
+      {
+        "line": 18,
+        "text": "| Subtotal Revenue | 24270 | first-page subtotal |",
+        "numbers": [
+          "24270"
+        ]
+      },
+      {
+        "line": 20,
+        "text": "## Page 2 - Cost Detail",
+        "numbers": [
+          "2"
+        ]
+      },
+      {
+        "line": 24,
+        "text": "| Cloud Cost | -6410 | usage statement U23 |",
+        "numbers": [
+          "-6410"
+        ]
+      },
+      {
+        "line": 25,
+        "text": "| Delivery Labor | -3890 | timesheet rollup |",
+        "numbers": [
+          "-3890"
+        ]
+      },
+      {
+        "line": 26,
+        "text": "| Support Expense | -2160 | ticket group S11 |",
+        "numbers": [
+          "-2160"
+        ]
+      },
+      {
+        "line": 27,
+        "text": "| Total Operating Result | 11810 | 24270 - 6410 - 3890 - 2160 |",
+        "numbers": [
+          "11810",
+          "24270",
+          "6410",
+          "3890",
+          "2160"
+        ]
+      }
+    ],
+    "semantic_signals": {
+      "dates": [
+        "2026-01-01",
+        "2026-03-31"
+      ],
+      "recommendations": [
+        {
+          "source": "key_value",
+          "text": "Recommendation: verify that retrieval chunks preserve both page labels and table context."
+        }
+      ],
+      "anomaly_lines": [
+        {
+          "line": 31,
+          "text": "Risk: subtotal and total rows are separated by a page break in the source PDF."
+        }
+      ],
+      "field_coverage": {
+        "has_date": true,
+        "has_recommendation": true,
+        "has_anomaly_signal": true
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 4,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# Cross Page Financial Control Pack\n\nDocument ID: FIN-CROSS-2026-06\n\nReporting Period: 2026-01-01 to 2026-03-31\n\nOwner: Finance Shared Service Center\n\n## Page 1 - Revenue Detail\n\nScenario: the table is designed to mimic a PDF where the header and subtotal continue across pages.\n\n| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Hardware Subscription | 18400 | invoice batch A17 |\n| Maintenance Service | 7250 | invoice batch B04 |\n| Channel Rebate | -1380 | manual confirmation required |\n| Subtotal Revenue | 24270 | first-page subtotal |\n\n## Page 2 - Cost Detail\n\n| Line Item | Q1 Amount | Evidence Note |\n| --- | --- | --- |\n| Cloud Cost | -6410 | usage statement U23 |\n| Delivery Labor | -3890 | timesheet rollup |\n| Support Expense | -2160 | ticket group S11 |\n| Total Operating Result | 11810 | 24270 - 6410 - 3890 - 2160 |\n\n## Audit Notes\n\nRisk: subtotal and total rows are separated by a page break in the source PDF.\n\nRecommendation: verify that retrieval chunks preserve both page labels and table context.",
+    "task_result": {
+      "task_intents": [
+        "aggregation",
+        "cross_page_reasoning"
+      ],
+      "target_schema": {
+        "company_name": "reporting company or organization",
+        "report_period": "reporting period/date",
+        "line_item": "financial statement row name",
+        "current_value": "current period value",
+        "previous_value": "comparison period value",
+        "unit": "currency or unit scale",
+        "evidence": "source text/table evidence",
+        "page_span": "pages or chunks involved in the answer",
+        "跨页表格": "table span",
+        "小计": "subtotal",
+        "总计": "total",
+        "差异": "mismatch"
+      },
+      "post_processors": [
+        "field_evidence_builder",
+        "numeric_fact_extractor",
+        "table_total_validator"
+      ],
+      "verification_focus": [
+        "schema_fields_have_evidence",
+        "quality_issues_are_not_hidden",
+        "numeric_tokens_preserved",
+        "subtotal_total_consistency",
+        "page_or_chunk_span_is_recorded"
+      ],
+      "answers": {
+        "comparisons": [
+          {
+            "label": "Hardware Subscription",
+            "current_value": 18400.0,
+            "baseline_value": 17.0,
+            "delta": 18383.0,
+            "percent_change": 108135.2941,
+            "table_index": 0,
+            "row_index": 0,
+            "headers": [
+              "Line Item",
+              "Q1 Amount",
+              "Evidence Note"
+            ]
+          },
+          {
+            "label": "Maintenance Service",
+            "current_value": 7250.0,
+            "baseline_value": 4.0,
+            "delta": 7246.0,
+            "percent_change": 181150.0,
+            "table_index": 0,
+            "row_index": 1,
+            "headers": [
+              "Line Item",
+              "Q1 Amount",
+              "Evidence Note"
+            ]
+          },
+          {
+            "label": "Cloud Cost",
+            "current_value": -6410.0,
+            "baseline_value": 23.0,
+            "delta": -6433.0,
+            "percent_change": -27969.5652,
+            "table_index": 1,
+            "row_index": 0,
+            "headers": [
+              "Line Item",
+              "Q1 Amount",
+              "Evidence Note"
+            ]
+          },
+          {
+            "label": "Support Expense",
+            "current_value": -2160.0,
+            "baseline_value": 11.0,
+            "delta": -2171.0,
+            "percent_change": -19736.3636,
+            "table_index": 1,
+            "row_index": 2,
+            "headers": [
+              "Line Item",
+              "Q1 Amount",
+              "Evidence Note"
+            ]
+          },
+          {
+            "label": "Total Operating Result",
+            "current_value": 11810.0,
+            "baseline_value": 24270.0,
+            "delta": -12460.0,
+            "percent_change": -51.3391,
+            "table_index": 1,
+            "row_index": 3,
+            "headers": [
+              "Line Item",
+              "Q1 Amount",
+              "Evidence Note"
+            ]
+          }
+        ],
+        "top_growth_candidate": {
+          "label": "Maintenance Service",
+          "current_value": 7250.0,
+          "baseline_value": 4.0,
+          "delta": 7246.0,
+          "percent_change": 181150.0,
+          "table_index": 0,
+          "row_index": 1,
+          "headers": [
+            "Line Item",
+            "Q1 Amount",
+            "Evidence Note"
+          ]
+        }
+      }
+    }
+  },
+  "quality": {
+    "score": 92,
+    "status": "pass_with_warnings",
+    "issue_count": 3,
+    "issue_counts": {
+      "error": 0,
+      "warning": 1,
+      "info": 2
+    },
+    "issues": [
+      {
+        "code": "document_level_provenance",
+        "level": "info",
+        "message": "Native document input has document-level provenance rather than page-level provenance.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 12,
+          "source_counts": {
+            "html": 12
+          }
+        }
+      },
+      {
+        "code": "numeric_total_verified",
+        "level": "info",
+        "message": "A total/subtotal row matched the sum of comparable numeric rows.",
+        "evidence": {
+          "table_index": 0,
+          "row_index": 3,
+          "row_preview": [
+            "Subtotal Revenue",
+            "24270",
+            "first-page subtotal"
+          ],
+          "verified": [
+            {
+              "column_index": 1,
+              "expected_total": 24270.0,
+              "computed_total": 24270.0,
+              "delta": 0.0,
+              "source_value_count": 3
+            }
+          ],
+          "mismatches": []
+        }
+      },
+      {
+        "code": "numeric_total_mismatch",
+        "level": "warning",
+        "message": "A total/subtotal row does not match the sum of comparable numeric rows.",
+        "evidence": {
+          "table_index": 1,
+          "row_index": 3,
+          "row_preview": [
+            "Total Operating Result",
+            "11810",
+            "24270 - 6410 - 3890 - 2160"
+          ],
+          "verified": [],
+          "mismatches": [
+            {
+              "column_index": 1,
+              "expected_total": 11810.0,
+              "computed_total": -12460.0,
+              "delta": -24270.0,
+              "source_value_count": 3
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "manual_numeric_review",
+    "actions": [
+      "Route total/subtotal mismatches to numeric review before downstream use.",
+      "Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit.",
+      "LLM suggested: manual_numeric_review on total mismatch",
+      "LLM suggested: chunk_stitch_review for cross-page reference"
+    ],
+    "issue_codes": [
+      "document_level_provenance",
+      "numeric_total_verified",
+      "numeric_total_mismatch"
+    ],
+    "initial_issue_codes": [
+      "document_level_provenance",
+      "numeric_total_verified",
+      "numeric_total_mismatch"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass_with_warnings",
+        "score": 92,
+        "issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified",
+          "numeric_total_mismatch"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\html\\case_6_cross_page_financial_table.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\html\\case_6_cross_page_financial_table_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ],
+    "llm_quality_decision": {
+      "status": "completed",
+      "previous_decision": "manual_numeric_review",
+      "final_decision": "manual_numeric_review",
+      "risk_counts": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "risk_findings": [
+        {
+          "level": "warning",
+          "message": "cross-page table should remain reviewable",
+          "evidence": "numeric_total_mismatch"
+        }
+      ],
+      "suggested_actions": [
+        "manual_numeric_review on total mismatch",
+        "chunk_stitch_review for cross-page reference"
+      ],
+      "applied_effects": [
+        "append_recovery_suggestion",
+        "append_recovery_suggestion"
+      ]
+    }
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 5,
+      "by_type": {
+        "text": 3,
+        "table": 2
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": true,
+    "pre_execution_plan": {
+      "enabled": true,
+      "status": "completed",
+      "task_understanding": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
+      "recommended_backend": "pipeline",
+      "recommended_lang": "ch",
+      "execution_plan": [
+        "Decompose task into extraction, validation, and recovery decisions",
+        "Select tools based on profile, provenance need, and quality risks"
+      ],
+      "confidence": 0.82,
+      "llm_usage": {
+        "provider": "scripted-local",
+        "model": "scripted-preplan",
+        "usage": {
+          "prompt_tokens": 620,
+          "completion_tokens": 180,
+          "total_tokens": 800
+        },
+        "cost_estimate": {
+          "configured": false,
+          "estimated_cost": null,
+          "currency": "USD"
+        }
+      },
+      "recommended_profile": "financial_report",
+      "recommended_runner": "native",
+      "recommended_method": "auto",
+      "target_schema": {
+        "跨页表格": "table span",
+        "小计": "subtotal",
+        "总计": "total",
+        "差异": "mismatch"
+      },
+      "verification_focus": [
+        "page_or_chunk_span_is_recorded",
+        "subtotal_total_consistency"
+      ],
+      "recovery_policy": [
+        "manual_numeric_review on total mismatch",
+        "chunk_stitch_review for cross-page reference"
+      ]
+    },
+    "execution_control": {
+      "llm_preplan_enabled": true,
+      "requested": {
+        "profile": "auto",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch"
+      },
+      "initial": {
+        "profile": "financial_report",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch",
+        "runner": "native"
+      },
+      "resolved": {
+        "profile": "financial_report",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch",
+        "runner": "native"
+      },
+      "planning_rationale": {
+        "source": "llm_preplan+rules",
+        "file_family": "native_office_or_html",
+        "profile_reason": "financial keywords or explicit profile require table and numeric consistency checks",
+        "runner_reason": "HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU",
+        "backend_reason": "backend=pipeline is used for MinerU parsing when the selected runner calls MinerU",
+        "method_reason": "method=auto balances automatic parsing with OCR fallback when quality gates require it",
+        "lang_reason": "lang=ch is passed to MinerU or recorded for native extraction audit",
+        "recovery_policy": [
+          "text_cleanup if mojibake or encoding noise is detected",
+          "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+          "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+          "manual_numeric_review when subtotal/total consistency checks fail"
+        ],
+        "adaptive_decision_rationale": [
+          "profile=financial_report selected from task/file signals",
+          "input suffix=.html",
+          "task intents=aggregation, cross_page_reasoning",
+          "schema and recovery priorities are derived before parsing and saved for audit",
+          "LLM preplan target schema and verification focus were merged into the adaptive decision."
+        ]
+      },
+      "adaptive_decision": {
+        "profile": "financial_report",
+        "task_intents": [
+          "aggregation",
+          "cross_page_reasoning"
+        ],
+        "target_schema": {
+          "company_name": "reporting company or organization",
+          "report_period": "reporting period/date",
+          "line_item": "financial statement row name",
+          "current_value": "current period value",
+          "previous_value": "comparison period value",
+          "unit": "currency or unit scale",
+          "evidence": "source text/table evidence",
+          "page_span": "pages or chunks involved in the answer",
+          "跨页表格": "table span",
+          "小计": "subtotal",
+          "总计": "total",
+          "差异": "mismatch"
+        },
+        "post_processors": [
+          "field_evidence_builder",
+          "numeric_fact_extractor",
+          "table_total_validator"
+        ],
+        "verification_focus": [
+          "schema_fields_have_evidence",
+          "quality_issues_are_not_hidden",
+          "numeric_tokens_preserved",
+          "subtotal_total_consistency",
+          "page_or_chunk_span_is_recorded"
+        ],
+        "quality_thresholds": {
+          "min_quality_score": 90,
+          "require_tables": true,
+          "require_numeric_facts": true,
+          "prefer_page_provenance": false
+        },
+        "recovery_strategy": [
+          {
+            "action": "text_cleanup",
+            "trigger": "mojibake_or_encoding_noise",
+            "priority": "normal"
+          },
+          {
+            "action": "manual_numeric_review",
+            "trigger": "total_or_subtotal_mismatch",
+            "priority": "high"
+          },
+          {
+            "action": "llm_suggested_review",
+            "trigger": "manual_numeric_review on total mismatch",
+            "priority": "advisory"
+          },
+          {
+            "action": "llm_suggested_review",
+            "trigger": "chunk_stitch_review for cross-page reference",
+            "priority": "advisory"
+          }
+        ],
+        "rationale": [
+          "profile=financial_report selected from task/file signals",
+          "input suffix=.html",
+          "task intents=aggregation, cross_page_reasoning",
+          "schema and recovery priorities are derived before parsing and saved for audit",
+          "LLM preplan target schema and verification focus were merged into the adaptive decision."
+        ]
+      },
+      "runner_class": "MinerURunner",
+      "applied": [],
+      "ignored": [
+        {
+          "field": "backend",
+          "recommended": "pipeline",
+          "current": "pipeline",
+          "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+        },
+        {
+          "field": "method",
+          "recommended": "auto",
+          "current": "auto",
+          "reason": "native HTML/DOCX/PPTX extractor branch does not call MinerU parser"
+        }
+      ],
+      "llm_preplan_status": "completed",
+      "llm_recommendation": {
+        "profile": "financial_report",
+        "runner": "native",
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch",
+        "confidence": 0.82
+      },
+      "agent_action_plan": {
+        "objective": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
+        "runner": "native",
+        "subtasks": [
+          {
+            "id": "understand_task",
+            "goal": "Classify the document task and identify intent-specific outputs.",
+            "tools": [
+              "llm_preplanner"
+            ],
+            "expected_output": {
+              "profile": "financial_report",
+              "intents": [
+                "aggregation",
+                "cross_page_reasoning"
+              ],
+              "schema_keys": [
+                "company_name",
+                "report_period",
+                "line_item",
+                "current_value",
+                "previous_value",
+                "unit",
+                "evidence",
+                "page_span",
+                "跨页表格",
+                "小计",
+                "总计",
+                "差异"
+              ]
+            },
+            "depends_on": []
+          },
+          {
+            "id": "choose_parse_path",
+            "goal": "Pick the cheapest parser path that still preserves required provenance.",
+            "tools": [
+              "native_extractor"
+            ],
+            "expected_output": {
+              "runner": "native"
+            },
+            "depends_on": [
+              "understand_task"
+            ]
+          },
+          {
+            "id": "extract_structure",
+            "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+            "tools": [
+              "structured_extractor"
+            ],
+            "expected_output": {
+              "post_processors": [
+                "field_evidence_builder",
+                "numeric_fact_extractor",
+                "table_total_validator"
+              ]
+            },
+            "depends_on": [
+              "choose_parse_path"
+            ]
+          },
+          {
+            "id": "validate_quality",
+            "goal": "Run profile and task-specific gates before accepting the result.",
+            "tools": [
+              "quality_validator",
+              "numeric_validator"
+            ],
+            "expected_output": {
+              "quality_status": "pass|pass_with_warnings|needs_review"
+            },
+            "depends_on": [
+              "extract_structure"
+            ]
+          },
+          {
+            "id": "llm_review",
+            "goal": "Review parse output against task-specific risks and propose follow-up actions.",
+            "tools": [
+              "llm_post_review"
+            ],
+            "expected_output": {
+              "risk_findings": "list",
+              "recovery_suggestions": "list"
+            },
+            "depends_on": [
+              "validate_quality"
+            ]
+          },
+          {
+            "id": "replan_if_needed",
+            "goal": "Map quality issues to recovery actions and select the best attempt.",
+            "tools": [
+              "text_cleanup",
+              "manual_numeric_review",
+              "llm_suggested_review",
+              "llm_suggested_review"
+            ],
+            "expected_output": {
+              "selected_attempt": "initial or recovery action"
+            },
+            "depends_on": [
+              "validate_quality"
+            ]
+          },
+          {
+            "id": "export_artifacts",
+            "goal": "Write result, trace, summary, and retrieval artifacts.",
+            "tools": [
+              "retrieval_exporter",
+              "trace_writer"
+            ],
+            "expected_output": {
+              "files": [
+                "result.json",
+                "trace.json",
+                "summary.md",
+                "retrieval_chunks.jsonl"
+              ]
+            },
+            "depends_on": [
+              "replan_if_needed",
+              "llm_review"
+            ]
+          }
+        ],
+        "tool_registry": [
+          {
+            "name": "native_extractor",
+            "capability": "Parse HTML/DOCX/PPTX structure without external OCR",
+            "selected": true,
+            "selection_reason": "file suffix is native text/Office",
+            "parameters": {}
+          },
+          {
+            "name": "mineru_cli",
+            "capability": "Run local MinerU CLI and keep page/layout artifacts",
+            "selected": false,
+            "selection_reason": "runner resolved to cli",
+            "parameters": {
+              "backend": "pipeline",
+              "method": "auto"
+            }
+          },
+          {
+            "name": "mineru_agent_api",
+            "capability": "Run online MinerU Agent API for CPU-friendly PDF parsing",
+            "selected": false,
+            "selection_reason": "runner resolved to agent-api",
+            "parameters": {
+              "backend": "pipeline",
+              "method": "auto"
+            }
+          },
+          {
+            "name": "llm_preplanner",
+            "capability": "Classify task and propose schema/controls before parsing",
+            "selected": true,
+            "selection_reason": "LLM client configured",
+            "parameters": {}
+          },
+          {
+            "name": "structured_extractor",
+            "capability": "Build sections, tables, key-values, numeric facts, and field evidence",
+            "selected": true,
+            "selection_reason": "always needed for output contract",
+            "parameters": {}
+          },
+          {
+            "name": "numeric_validator",
+            "capability": "Check numeric facts and table totals",
+            "selected": true,
+            "selection_reason": "financial or aggregation task",
+            "parameters": {}
+          },
+          {
+            "name": "contract_validator",
+            "capability": "Check section/clause/date evidence",
+            "selected": false,
+            "selection_reason": "contract or standard profile",
+            "parameters": {}
+          },
+          {
+            "name": "workflow_validator",
+            "capability": "Check workflow steps, anomalies, and visual-review hints",
+            "selected": false,
+            "selection_reason": "workflow or diagram profile",
+            "parameters": {}
+          },
+          {
+            "name": "text_cleanup",
+            "capability": "Clean mojibake/encoding noise and re-evaluate quality",
+            "selected": true,
+            "selection_reason": "enabled as recovery candidate",
+            "parameters": {}
+          },
+          {
+            "name": "ocr_retry",
+            "capability": "Retry parse with OCR mode after sparse/weak PDF result",
+            "selected": false,
+            "selection_reason": "PDF/image recovery candidate",
+            "parameters": {
+              "method": "ocr"
+            }
+          },
+          {
+            "name": "cli_fallback",
+            "capability": "Fallback from online API to CLI when page provenance is missing",
+            "selected": false,
+            "selection_reason": "audit-grade provenance candidate",
+            "parameters": {}
+          },
+          {
+            "name": "llm_post_review",
+            "capability": "Review extracted result for risks and recovery suggestions",
+            "selected": true,
+            "selection_reason": "LLM client configured",
+            "parameters": {}
+          },
+          {
+            "name": "retrieval_exporter",
+            "capability": "Write retrieval chunks and manifest",
+            "selected": true,
+            "selection_reason": "always needed for downstream data use",
+            "parameters": {}
+          }
+        ],
+        "dynamic_choices": [
+          {
+            "name": "profile",
+            "selected": "financial_report",
+            "reason": "task and file signals after optional LLM merge"
+          },
+          {
+            "name": "runner",
+            "selected": "native",
+            "reason": "native suffix, CLI/API configuration, and provenance requirement"
+          },
+          {
+            "name": "backend",
+            "selected": "pipeline",
+            "reason": "MinerU backend used when runner calls MinerU"
+          },
+          {
+            "name": "method",
+            "selected": "auto",
+            "reason": "initial parse method; recovery can switch to OCR"
+          },
+          {
+            "name": "lang",
+            "selected": "ch",
+            "reason": "OCR language hint"
+          },
+          {
+            "name": "llm",
+            "selected": true,
+            "reason": "enabled only when a provider client is configured"
+          },
+          {
+            "name": "provenance_requirement",
+            "selected": "document",
+            "reason": "PDF/image outputs benefit most from page-level audit"
+          },
+          {
+            "name": "table_priority",
+            "selected": true,
+            "reason": "financial/aggregation tasks require table checks"
+          }
+        ],
+        "replan_triggers": [
+          {
+            "issue_code": "possible_mojibake",
+            "action": "text_cleanup",
+            "reason": "encoding noise can be improved without rerunning OCR"
+          },
+          {
+            "issue_code": "short_text",
+            "action": "ocr_retry",
+            "reason": "sparse PDF text often needs OCR mode"
+          },
+          {
+            "issue_code": "no_page_provenance",
+            "action": "cli_fallback",
+            "reason": "audit tasks need page-level source evidence"
+          },
+          {
+            "issue_code": "numeric_total_mismatch",
+            "action": "manual_numeric_review",
+            "reason": "numeric mismatch should not be silently repaired"
+          },
+          {
+            "issue_code": "cross_chunk_reference",
+            "action": "chunk_stitch_review",
+            "reason": "answer depends on more than one page/chunk"
+          },
+          {
+            "issue_code": "manual_numeric_review on total mismatch",
+            "action": "llm_suggested_review",
+            "reason": "adaptive recovery strategy"
+          }
+        ],
+        "memory_policy": {
+          "scope": "single_run_trace",
+          "writes": [
+            "execution_control.agent_action_plan",
+            "trace.steps",
+            "recovery_decision.attempts",
+            "retrieval_manifest"
+          ],
+          "reads": [
+            "input_metadata",
+            "task_intents",
+            "quality_issues",
+            "retry_history"
+          ],
+          "cross_run_learning": false,
+          "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+        }
+      },
+      "replan_after_quality": {
+        "quality_status": "pass_with_warnings",
+        "quality_score": 92,
+        "issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified",
+          "numeric_total_mismatch"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "numeric_total_verified",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "numeric_total_mismatch",
+            "candidate_action": "manual_numeric_review",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial"
+        ],
+        "selected_attempt": "initial",
+        "selected_reason": "initial result remained the best accepted quality attempt",
+        "next_action_if_still_risky": [
+          "manual_numeric_review"
+        ]
+      }
+    },
+    "post_parse_analysis": {
+      "status": "completed",
+      "task_understanding": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
+      "execution_plan": [
+        "Review quality issues",
+        "Map issue codes to replan actions"
+      ],
+      "target_schema": {
+        "跨页表格": "table span",
+        "小计": "subtotal",
+        "总计": "total",
+        "差异": "mismatch"
+      },
+      "verification_focus": [
+        "page_or_chunk_span_is_recorded",
+        "subtotal_total_consistency"
+      ],
+      "risk_findings": [
+        {
+          "level": "warning",
+          "message": "cross-page table should remain reviewable",
+          "evidence": "numeric_total_mismatch"
+        }
+      ],
+      "recovery_suggestions": [
+        "manual_numeric_review on total mismatch",
+        "chunk_stitch_review for cross-page reference"
+      ],
+      "llm_usage": {
+        "provider": "scripted-local",
+        "model": "scripted-post-review",
+        "usage": {
+          "prompt_tokens": 520,
+          "completion_tokens": 140,
+          "total_tokens": 660
+        },
+        "cost_estimate": {
+          "configured": false,
+          "estimated_cost": null,
+          "currency": "USD"
+        }
+      }
+    },
+    "status": "completed",
+    "task_understanding": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
+    "execution_plan": [
+      "Review quality issues",
+      "Map issue codes to replan actions"
+    ],
+    "target_schema": {
+      "跨页表格": "table span",
+      "小计": "subtotal",
+      "总计": "total",
+      "差异": "mismatch"
+    },
+    "verification_focus": [
+      "page_or_chunk_span_is_recorded",
+      "subtotal_total_consistency"
+    ],
+    "risk_findings": [
+      {
+        "level": "warning",
+        "message": "cross-page table should remain reviewable",
+        "evidence": "numeric_total_mismatch"
+      }
+    ],
+    "recovery_suggestions": [
+      "manual_numeric_review on total mismatch",
+      "chunk_stitch_review for cross-page reference"
+    ],
+    "llm_usage": {
+      "provider": "scripted-local",
+      "model": "scripted-post-review",
+      "usage": {
+        "prompt_tokens": 520,
+        "completion_tokens": 140,
+        "total_tokens": 660
+      },
+      "cost_estimate": {
+        "configured": false,
+        "estimated_cost": null,
+        "currency": "USD"
+      }
+    },
+    "usage_summary": {
+      "tool_call_count": 2,
+      "prompt_tokens": 1140,
+      "completion_tokens": 320,
+      "total_tokens": 1460,
+      "cost_configured_calls": 0,
+      "estimated_cost_usd": null,
+      "providers": [
+        {
+          "provider": "scripted-local",
+          "model": "scripted-preplan"
+        },
+        {
+          "provider": "scripted-local",
+          "model": "scripted-post-review"
+        }
+      ],
+      "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+    },
+    "quality_decision": {
+      "status": "completed",
+      "previous_decision": "manual_numeric_review",
+      "final_decision": "manual_numeric_review",
+      "risk_counts": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "risk_findings": [
+        {
+          "level": "warning",
+          "message": "cross-page table should remain reviewable",
+          "evidence": "numeric_total_mismatch"
+        }
+      ],
+      "suggested_actions": [
+        "manual_numeric_review on total mismatch",
+        "chunk_stitch_review for cross-page reference"
+      ],
+      "applied_effects": [
+        "append_recovery_suggestion",
+        "append_recovery_suggestion"
+      ]
+    }
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\html\\case_6_cross_page_financial_table.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\html\\case_6_cross_page_financial_table_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\summary.md"
+}

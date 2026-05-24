@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-23T19:06:29.745520+00:00",
+  "created_at": "2026-05-24T08:03:20.270949+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-23T19:06:29.659647+00:00",
-      "ended_at": "2026-05-23T19:06:29.661152+00:00",
+      "started_at": "2026-05-24T08:03:20.194092+00:00",
+      "ended_at": "2026-05-24T08:03:20.194092+00:00",
       "detail": {
         "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并给出证据。",
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
@@ -73,10 +73,27 @@
       }
     },
     {
+      "name": "agent_task_decomposition",
+      "status": "completed",
+      "started_at": "2026-05-24T08:03:20.194092+00:00",
+      "ended_at": "2026-05-24T08:03:20.194092+00:00",
+      "detail": {
+        "subtask_count": 6,
+        "selected_tools": [
+          "native_extractor",
+          "structured_extractor",
+          "numeric_validator",
+          "text_cleanup",
+          "retrieval_exporter"
+        ],
+        "replan_trigger_count": 4
+      }
+    },
+    {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-23T19:06:29.661152+00:00",
-      "ended_at": "2026-05-23T19:06:29.735605+00:00",
+      "started_at": "2026-05-24T08:03:20.194092+00:00",
+      "ended_at": "2026-05-24T08:03:20.261948+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html"
       }
@@ -84,8 +101,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-23T19:06:29.735605+00:00",
-      "ended_at": "2026-05-23T19:06:29.736696+00:00",
+      "started_at": "2026-05-24T08:03:20.261948+00:00",
+      "ended_at": "2026-05-24T08:03:20.262948+00:00",
       "detail": {
         "item_count": 8,
         "page_count": 0,
@@ -134,8 +151,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-23T19:06:29.736696+00:00",
-      "ended_at": "2026-05-23T19:06:29.737466+00:00",
+      "started_at": "2026-05-24T08:03:20.262948+00:00",
+      "ended_at": "2026-05-24T08:03:20.263948+00:00",
       "detail": {
         "profile": "financial_report"
       }
@@ -143,18 +160,52 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-23T19:06:29.737466+00:00",
-      "ended_at": "2026-05-23T19:06:29.737466+00:00",
+      "started_at": "2026-05-24T08:03:20.263948+00:00",
+      "ended_at": "2026-05-24T08:03:20.263948+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "initial"
       }
     },
     {
+      "name": "agent_replan_after_quality",
+      "status": "completed",
+      "started_at": "2026-05-24T08:03:20.263948+00:00",
+      "ended_at": "2026-05-24T08:03:20.263948+00:00",
+      "detail": {
+        "selected_attempt": "initial",
+        "quality_status": "pass",
+        "quality_score": 100,
+        "issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "numeric_total_verified",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial"
+        ],
+        "selected_reason": "initial result remained the best accepted quality attempt",
+        "next_action_if_still_risky": [
+          "accept_with_trace_review"
+        ]
+      }
+    },
+    {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-23T19:06:29.737466+00:00",
-      "ended_at": "2026-05-23T19:06:29.740986+00:00",
+      "started_at": "2026-05-24T08:03:20.263948+00:00",
+      "ended_at": "2026-05-24T08:03:20.266986+00:00",
       "detail": {
         "chunks_count": 3,
         "by_type": {
@@ -164,17 +215,17 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c731abb69fe2\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c731abb69fe2\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c731abb69fe2\\retrieval\\retrieval_quality.json"
       }
     }
   ],
   "tool_calls": [],
-  "run_id": "17e56a82ebc2",
+  "run_id": "c731abb69fe2",
   "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并给出证据。",
   "profile": "financial_report",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\summary.md"
+  "result_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c731abb69fe2\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c731abb69fe2\\summary.md"
 }

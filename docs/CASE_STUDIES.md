@@ -144,7 +144,29 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 
 口径说明：该案例检查任务级规划和后处理是否随任务变化；多轮对话规划和大规模语义 benchmark 可在后续基准集中补充。
 
-## 8. 官方公开真实文档案例
+## 8. Agent Decision 案例
+
+Agent decision 位置：`submission_artifacts/agent_decision_cases/`
+
+该案例包使用 5 个本地可复跑输入，检查新运行是否输出 `execution_control.agent_action_plan` 和 `execution_control.replan_after_quality`。每个案例都包含子任务图、selected tools、dynamic choices、replan triggers、LLM-compatible pre/post decision hooks 和 trace 步骤 `agent_task_decomposition` / `agent_replan_after_quality`。
+
+| Case | 任务重点 | 关键字段 |
+| --- | --- | --- |
+| `financial_growth_agent_plan` | 财报增长排名 | `comparison/ranking/growth_analysis/evidence_trace`、`numeric_validator`、`top_growth_candidate` |
+| `noisy_contract_recovery_plan` | OCR 噪声合同 | LLM 建议切到 `low_quality_ocr`，触发 `text_cleanup` 并选择恢复结果 |
+| `standard_clause_entity_plan` | 条款实体与证据 | `entity_resolution/evidence_trace`、`contract_validator` |
+| `workflow_diagram_agent_plan` | 流程图文档 | `workflow_validator`、异常候选与视觉复核提示 |
+| `cross_page_table_agent_plan` | 跨页表格与合计 | `aggregation/cross_page_reasoning`、`manual_numeric_review` 下一步动作 |
+
+复跑方式：
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\run_agent_decision_cases.py
+```
+
+口径说明：该包使用 scripted local LLM client，保证无 API key 也能复查字段结构和执行路径。真实 provider 的保存案例仍见 `submission_artifacts/llm_cases/`。
+
+## 9. 官方公开真实文档案例
 
 公开真实文档位置：`submission_artifacts/public_real_cases/`
 
@@ -165,7 +187,7 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 .\.venv\Scripts\python.exe .\scripts\run_public_real_cases.py
 ```
 
-## 9. 长文档分片执行案例
+## 10. 长文档分片执行案例
 
 长文档证据位置：`submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/`
 
@@ -185,7 +207,7 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 
 口径说明：这是在线 API 长文档分片编排结果；本地 MinerU CLI/GPU pages-per-second 和公网压测需在对应环境单独运行。在线 API 路径仍可能缺少页级 provenance。
 
-## 10. LLM-Enabled 财报复核案例
+## 11. LLM-Enabled 财报复核案例
 
 LLM 案例位置：`submission_artifacts/llm_cases/case_llm_financial_review/`
 
@@ -206,7 +228,7 @@ LLM impact 对比位置：`submission_artifacts/llm_impact/`
 
 该报告由 `scripts/build_llm_impact_report.py` 生成。当前保存结果对比财报 HTML 的规则运行与 LLM-enabled 运行：两者质量分都是 `pass` 100；LLM-enabled 运行额外记录 4309 tokens、目标 schema、复核重点和 5 条 recovery suggestion。当前保存的旧 LLM artifact 还没有 `llm_quality_decision` 字段；新运行会把解析后复核写入 `recovery_decision.llm_quality_decision`。
 
-## 11. 带标注评测指标
+## 12. 带标注评测指标
 
 评测报告位置：`submission_artifacts/evaluation/`
 
@@ -224,7 +246,7 @@ LLM impact 对比位置：`submission_artifacts/llm_impact/`
 
 该评测把关键字段、结构输出和可追溯性变成可复跑指标。OCR 字符级和表格逐格标注可按 `docs/BENCHMARK_AND_ROADMAP.md` 扩展。
 
-## 12. 稳定性、耗时与 API 并发 Smoke
+## 13. 稳定性、耗时与 API 并发 Smoke
 
 稳定性报告位置：`submission_artifacts/stability/`
 
@@ -267,7 +289,7 @@ Artifact 总索引位置：`submission_artifacts/ARTIFACTS_INDEX.md`
 
 该索引由 `scripts/build_artifacts_index.py` 生成，用于让评审快速定位各目录的 result/trace 数量和主报告。
 
-## 13. 后续补充项
+## 14. 后续补充项
 
 当前案例覆盖 HTML/网页结构化处理、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出。
 

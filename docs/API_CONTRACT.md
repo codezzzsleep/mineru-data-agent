@@ -58,7 +58,7 @@ Stable top-level fields:
 | `input_file` | Saved input path. |
 | `output_dir` | Persistent run directory. |
 | `plan` | Ordered execution plan. |
-| `execution_control` | Requested, initial, resolved, applied/ignored LLM control changes, planning rationale, and adaptive task decision. |
+| `execution_control` | Requested, initial, resolved, applied/ignored LLM control changes, planning rationale, adaptive task decision, agent action plan, and quality replan summary. |
 | `extracted` | Structured output: sections, tables, key-values, field evidence, numeric facts, semantic signals, task result, content summary. |
 | `quality` | Rule-based quality status, score, issue list, and issue counts. |
 | `recovery_decision` | Decision, actions, attempts, selected attempt, initial issue codes, and optional LLM post-parse quality decision. |
@@ -72,6 +72,8 @@ Evidence fields reviewers should inspect:
 
 - `execution_control.planning_rationale`: why profile, runner, backend, method, language, and recovery policy were selected.
 - `execution_control.adaptive_decision`: task intents, target schema, post-processors, quality thresholds, and recovery strategy chosen for this request.
+- `execution_control.agent_action_plan`: subtask graph, selected tool registry, dynamic choices, replan triggers, and single-run memory policy.
+- `execution_control.replan_after_quality`: quality issue codes, considered actions, attempted actions, selected attempt, and next action if risk remains.
 - `extracted.content_summary.provenance_level`: `page`, `document`, or `none`.
 - `extracted.field_evidence[*]`: key, value, confidence proxy, evidence text, and line/page/block provenance when available.
 - `extracted.task_result`: task-specific answers derived from the adaptive decision, such as growth ranking candidates, anomaly candidates, entity candidates, or evidence lists.

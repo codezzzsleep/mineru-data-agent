@@ -1,0 +1,72 @@
+[
+  {
+    "type": "heading",
+    "text": "# 数据处理服务合同关键条款",
+    "source": "html",
+    "level": 1,
+    "title": "数据处理服务合同关键条款"
+  },
+  {
+    "type": "text",
+    "text": "合同编号：DPA-2026-0519",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "签署日期：2026-05-19",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 第一条 服务范围",
+    "source": "html",
+    "level": 2,
+    "title": "第一条 服务范围"
+  },
+  {
+    "type": "text",
+    "text": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 第二条 数据安全",
+    "source": "html",
+    "level": 2,
+    "title": "第二条 数据安全"
+  },
+  {
+    "type": "text",
+    "text": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 第三条 验收标准",
+    "source": "html",
+    "level": 2,
+    "title": "第三条 验收标准"
+  },
+  {
+    "type": "text",
+    "text": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。",
+    "source": "html"
+  },
+  {
+    "type": "heading",
+    "text": "## 第四条 异常处理",
+    "source": "html",
+    "level": 2,
+    "title": "第四条 异常处理"
+  },
+  {
+    "type": "text",
+    "text": "异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。",
+    "source": "html"
+  },
+  {
+    "type": "text",
+    "text": "处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。",
+    "source": "html"
+  }
+]

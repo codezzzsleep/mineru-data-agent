@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T07:17:51Z",
+  "generated_at": "2026-05-24T08:05:51Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -27,6 +27,21 @@
       "llm_trace_tool_calls": 4,
       "total_tokens": 4309,
       "estimated_cost_usd": null
+    },
+    "agent_decision_cases": {
+      "cases": 5,
+      "selected_tool_names": [
+        "contract_validator",
+        "llm_post_review",
+        "llm_preplanner",
+        "native_extractor",
+        "numeric_validator",
+        "retrieval_exporter",
+        "structured_extractor",
+        "text_cleanup",
+        "workflow_validator"
+      ],
+      "boundary": "scripted local LLM client; live provider case remains in llm_cases"
     },
     "llm_impact": {
       "compared_pairs": 1,
@@ -98,12 +113,12 @@
       }
     },
     "code_quality": {
-      "python_files": 46,
-      "physical_lines": 11089,
-      "code_lines": 9798,
-      "classes": 29,
-      "functions": 468,
-      "test_functions": 69,
+      "python_files": 47,
+      "physical_lines": 11834,
+      "code_lines": 10488,
+      "classes": 31,
+      "functions": 488,
+      "test_functions": 71,
       "test_files": 12,
       "workflow_files": [
         ".github/workflows/tests.yml"
@@ -338,6 +353,45 @@
         "submission_artifacts/adaptive_cases/case_financial_growth_query/html/case_1_financial_report_content_list.json",
         "submission_artifacts/adaptive_cases/case_financial_growth_query/retrieval/retrieval_manifest.json",
         "submission_artifacts/adaptive_cases/case_financial_growth_query/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "agent_decision_cases",
+      "title": "Agent decision cases",
+      "description": "Task decomposition, dynamic tool selection, quality replanning, and scripted LLM decision hooks.",
+      "path": "submission_artifacts/agent_decision_cases",
+      "exists": true,
+      "result_files": 5,
+      "trace_files": 5,
+      "readmes": [
+        "submission_artifacts/agent_decision_cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/html/case_6_cross_page_financial_table.md",
+        "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/summary.md",
+        "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/html/case_1_financial_report.md",
+        "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/summary.md",
+        "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/html/case_7_noisy_contract_scan.md",
+        "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/recovery/text_cleanup/case_7_noisy_contract_scan.md",
+        "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/summary.md",
+        "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/html/case_3_standard_contract.md",
+        "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/summary.md",
+        "submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/html/case_4_workflow_diagram.md",
+        "submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/agent_decision_cases/artifact_index.json",
+        "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/html/case_6_cross_page_financial_table_content_list.json",
+        "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/retrieval/retrieval_manifest.json",
+        "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/retrieval/retrieval_quality.json",
+        "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/html/case_1_financial_report_content_list.json",
+        "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/retrieval/retrieval_manifest.json",
+        "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/retrieval/retrieval_quality.json",
+        "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/html/case_7_noisy_contract_scan_content_list.json",
+        "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/recovery/text_cleanup/case_7_noisy_contract_scan_content_list.json",
+        "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/retrieval/retrieval_manifest.json",
+        "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/retrieval/retrieval_quality.json",
+        "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/html/case_3_standard_contract_content_list.json"
       ]
     },
     {

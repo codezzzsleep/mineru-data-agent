@@ -1,0 +1,338 @@
+{
+  "cases": [
+    {
+      "id": "financial_growth_agent_plan",
+      "input": "examples/cases/case_1_financial_report.html",
+      "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。",
+      "profile": "financial_report",
+      "result_path": "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/result.json",
+      "trace_path": "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/trace.json",
+      "summary_path": "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/summary.md",
+      "task_intents": [
+        "comparison",
+        "ranking",
+        "growth_analysis",
+        "evidence_trace"
+      ],
+      "selected_tools": [
+        "native_extractor",
+        "llm_preplanner",
+        "structured_extractor",
+        "numeric_validator",
+        "text_cleanup",
+        "llm_post_review",
+        "retrieval_exporter"
+      ],
+      "replan_after_quality": {
+        "quality_status": "pass",
+        "quality_score": 100,
+        "issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "numeric_total_verified",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial"
+        ],
+        "selected_attempt": "initial",
+        "selected_reason": "initial result remained the best accepted quality attempt",
+        "next_action_if_still_risky": [
+          "accept_with_trace_review"
+        ]
+      },
+      "llm_usage_summary": {
+        "tool_call_count": 2,
+        "prompt_tokens": 1140,
+        "completion_tokens": 320,
+        "total_tokens": 1460,
+        "cost_configured_calls": 0,
+        "estimated_cost_usd": null,
+        "providers": [
+          {
+            "provider": "scripted-local",
+            "model": "scripted-preplan"
+          },
+          {
+            "provider": "scripted-local",
+            "model": "scripted-post-review"
+          }
+        ],
+        "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+      }
+    },
+    {
+      "id": "noisy_contract_recovery_plan",
+      "input": "examples/challenge_cases/case_7_noisy_contract_scan.html",
+      "task": "解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。",
+      "profile": "low_quality_ocr",
+      "result_path": "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/result.json",
+      "trace_path": "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/trace.json",
+      "summary_path": "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/summary.md",
+      "task_intents": [
+        "structured_extraction"
+      ],
+      "selected_tools": [
+        "native_extractor",
+        "llm_preplanner",
+        "structured_extractor",
+        "text_cleanup",
+        "llm_post_review",
+        "retrieval_exporter"
+      ],
+      "replan_after_quality": {
+        "quality_status": "pass",
+        "quality_score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial",
+          "text_cleanup"
+        ],
+        "selected_attempt": "text_cleanup",
+        "selected_reason": "text_cleanup had quality_status=pass and score=100",
+        "next_action_if_still_risky": [
+          "accept_with_trace_review"
+        ]
+      },
+      "llm_usage_summary": {
+        "tool_call_count": 2,
+        "prompt_tokens": 1140,
+        "completion_tokens": 320,
+        "total_tokens": 1460,
+        "cost_configured_calls": 0,
+        "estimated_cost_usd": null,
+        "providers": [
+          {
+            "provider": "scripted-local",
+            "model": "scripted-preplan"
+          },
+          {
+            "provider": "scripted-local",
+            "model": "scripted-post-review"
+          }
+        ],
+        "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+      }
+    },
+    {
+      "id": "standard_clause_entity_plan",
+      "input": "examples/cases/case_3_standard_contract.html",
+      "task": "识别合同条款中的甲方、乙方、义务、例外条件和来源证据。",
+      "profile": "standard_or_contract",
+      "result_path": "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/result.json",
+      "trace_path": "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/trace.json",
+      "summary_path": "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/summary.md",
+      "task_intents": [
+        "entity_resolution",
+        "evidence_trace"
+      ],
+      "selected_tools": [
+        "native_extractor",
+        "llm_preplanner",
+        "structured_extractor",
+        "contract_validator",
+        "text_cleanup",
+        "llm_post_review",
+        "retrieval_exporter"
+      ],
+      "replan_after_quality": {
+        "quality_status": "pass",
+        "quality_score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial"
+        ],
+        "selected_attempt": "initial",
+        "selected_reason": "initial result remained the best accepted quality attempt",
+        "next_action_if_still_risky": [
+          "accept_with_trace_review"
+        ]
+      },
+      "llm_usage_summary": {
+        "tool_call_count": 2,
+        "prompt_tokens": 1140,
+        "completion_tokens": 320,
+        "total_tokens": 1460,
+        "cost_configured_calls": 0,
+        "estimated_cost_usd": null,
+        "providers": [
+          {
+            "provider": "scripted-local",
+            "model": "scripted-preplan"
+          },
+          {
+            "provider": "scripted-local",
+            "model": "scripted-post-review"
+          }
+        ],
+        "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+      }
+    },
+    {
+      "id": "workflow_diagram_agent_plan",
+      "input": "examples/cases/case_4_workflow_diagram.html",
+      "task": "把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。",
+      "profile": "workflow_or_diagram",
+      "result_path": "submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/result.json",
+      "trace_path": "submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/trace.json",
+      "summary_path": "submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/summary.md",
+      "task_intents": [
+        "anomaly_detection"
+      ],
+      "selected_tools": [
+        "native_extractor",
+        "llm_preplanner",
+        "structured_extractor",
+        "workflow_validator",
+        "text_cleanup",
+        "llm_post_review",
+        "retrieval_exporter"
+      ],
+      "replan_after_quality": {
+        "quality_status": "pass",
+        "quality_score": 100,
+        "issue_codes": [
+          "document_level_provenance"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial"
+        ],
+        "selected_attempt": "initial",
+        "selected_reason": "initial result remained the best accepted quality attempt",
+        "next_action_if_still_risky": [
+          "accept_with_trace_review"
+        ]
+      },
+      "llm_usage_summary": {
+        "tool_call_count": 2,
+        "prompt_tokens": 1140,
+        "completion_tokens": 320,
+        "total_tokens": 1460,
+        "cost_configured_calls": 0,
+        "estimated_cost_usd": null,
+        "providers": [
+          {
+            "provider": "scripted-local",
+            "model": "scripted-preplan"
+          },
+          {
+            "provider": "scripted-local",
+            "model": "scripted-post-review"
+          }
+        ],
+        "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+      }
+    },
+    {
+      "id": "cross_page_table_agent_plan",
+      "input": "examples/challenge_cases/case_6_cross_page_financial_table.html",
+      "task": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
+      "profile": "financial_report",
+      "result_path": "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/result.json",
+      "trace_path": "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/trace.json",
+      "summary_path": "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/summary.md",
+      "task_intents": [
+        "aggregation",
+        "cross_page_reasoning"
+      ],
+      "selected_tools": [
+        "native_extractor",
+        "llm_preplanner",
+        "structured_extractor",
+        "numeric_validator",
+        "text_cleanup",
+        "llm_post_review",
+        "retrieval_exporter"
+      ],
+      "replan_after_quality": {
+        "quality_status": "pass_with_warnings",
+        "quality_score": 92,
+        "issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified",
+          "numeric_total_mismatch"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "numeric_total_verified",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "numeric_total_mismatch",
+            "candidate_action": "manual_numeric_review",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial"
+        ],
+        "selected_attempt": "initial",
+        "selected_reason": "initial result remained the best accepted quality attempt",
+        "next_action_if_still_risky": [
+          "manual_numeric_review"
+        ]
+      },
+      "llm_usage_summary": {
+        "tool_call_count": 2,
+        "prompt_tokens": 1140,
+        "completion_tokens": 320,
+        "total_tokens": 1460,
+        "cost_configured_calls": 0,
+        "estimated_cost_usd": null,
+        "providers": [
+          {
+            "provider": "scripted-local",
+            "model": "scripted-preplan"
+          },
+          {
+            "provider": "scripted-local",
+            "model": "scripted-post-review"
+          }
+        ],
+        "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
+      }
+    }
+  ],
+  "boundary": "scripted local LLM client; live provider case remains in llm_cases"
+}

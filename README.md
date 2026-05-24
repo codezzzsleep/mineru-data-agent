@@ -9,6 +9,7 @@
 项目在 MinerU/HTML/Office 解析结果之上增加：
 
 - 任务意图识别、自适应执行计划、动态 schema、任务级后处理和恢复优先级
+- Agent action plan：每次运行记录子任务拆解、候选工具、动态选择原因、replan triggers 和质量后的再规划结果
 - PDF/图片的 MinerU 解析适配，以及 DOCX/PPTX/HTML 的轻量结构化适配；当前提交包已包含 4 个 PDF 文件级本地 MinerU CLI 证据和 2 个 Office 文件级证据
 - HTML 文档的轻量结构化适配，保留标题层级、段落、列表和表格
 - DOCX/PPTX 文档的轻量结构化适配，保留 Word 章节/表格与 PPT slide-level provenance
@@ -29,6 +30,7 @@
 - 4 个更贴近评审挑战的复杂文档 fixture，并附人工标注表，覆盖跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流
 - 4 个官方公开真实 PDF 案例，覆盖 IRS 表单、NIST AI RMF、Microsoft SEC 年报和 CDC 公共卫生说明，并附人工轻量标注和来源元数据
 - 1 个自适应规划案例：同一财报输入在“增长最快项目”和“异常/证据复核”两个任务下生成不同 task intents、target schema、post-processors 和 task-specific answers
+- 5 个 Agent decision 案例：覆盖财报增长、OCR 噪声合同、条款实体、流程图文档和跨页表格，展示任务拆解、动态工具选择和质量后 replan
 - 1 个实际启用 DeepSeek-V4-Flash 的 LLM 证据案例，用于任务理解、schema 建议、复核重点和恢复建议；当前 live rerun 已记录 2 次 LLM 调用、4309 tokens
 - 1 份 LLM impact 报告，对比保存的规则运行与 LLM-enabled 运行，列出 LLM 决策点、token、应用/忽略项和 recovery suggestion
 - 1 份成本模型报告，把 native、CLI、在线 API、LLM 四类路径拆开，并用环境变量填入价格后自动估算 100 份文档成本
@@ -338,6 +340,15 @@ python scripts/build_artifacts_index.py
 
 当前报告分别位于 `submission_artifacts/cost_model/`、`submission_artifacts/recovery_effectiveness/`、`submission_artifacts/long_document_risk/` 和 `submission_artifacts/code_quality/`。成本报告默认只给公式；设置 `MINERU_DATA_AGENT_GPU_CNY_PER_HOUR`、`MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE`、`MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF`、`MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS` 后会给出人民币估算。
 
+Agent decision 案例包可通过以下命令生成：
+
+```bash
+python scripts/run_agent_decision_cases.py
+python scripts/build_artifacts_index.py
+```
+
+当前结果位于 `submission_artifacts/agent_decision_cases/`。该包使用本地 scripted LLM client，目的是离线复现 Agent 子任务拆解、工具选择和 replan 字段；真实 provider 调用仍以 `submission_artifacts/llm_cases/` 中的 ModelScope 案例为准。
+
 ## Recommended HeyWhale Setup
 
 - 项目类型：IDE
@@ -377,7 +388,7 @@ python scripts/build_artifacts_index.py
 
 当前提交包按以下材料组织：
 
-- 案例：HTML/网页 fixture、PDF CLI、Agent API PDF、PDF recovery、DOCX/PPTX、挑战样本、公开真实 PDF、长文档分片、LLM-enabled 财报复核。
+- 案例：HTML/网页 fixture、PDF CLI、Agent API PDF、PDF recovery、DOCX/PPTX、挑战样本、Agent decision case pack、公开真实 PDF、长文档分片、LLM-enabled 财报复核。
 - 指标：`submission_artifacts/evaluation/` 统计 17 个案例、45 个字段、22 条文本证据、11 条数字证据、6 条表格证据和字段级 precision/recall/F1。
 - 稳定性：`submission_artifacts/stability/` 汇总 trace、工具调用、耗时、质量状态和恢复执行。
 - API：`submission_artifacts/api_load_smoke/`、`submission_artifacts/http_load_test/`、`submission_artifacts/http_load_test_100/` 保存本地接口验证和 100 请求并发结果。
@@ -386,4 +397,4 @@ python scripts/build_artifacts_index.py
 
 新运行还会输出 `extracted.field_evidence` 和 `extracted.task_result`，为键值字段、任务级答案和 schema 决策提供可复查字段。公开真实文档样本使用轻量人工标注；如果需要 OCR 字符级或表格逐格 benchmark，应按 `docs/BENCHMARK_AND_ROADMAP.md` 扩展。
 
-针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；对标与后续真实 benchmark 路线见 `docs/BENCHMARK_AND_ROADMAP.md`；artifact 总索引见 `submission_artifacts/ARTIFACTS_INDEX.md`；稳定性摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`，真实 HTTP 压测见 `submission_artifacts/http_load_test/http_load_test_report.md` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`，长文档分片证据见 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`，长文档风险拆解见 `submission_artifacts/long_document_risk/long_document_risk_report.md`，成本/速度/质量对比见 `submission_artifacts/baseline_comparison/baseline_comparison.md`，成本模型见 `submission_artifacts/cost_model/cost_model.md`，LLM token/cost 审计见 `submission_artifacts/llm_cost/llm_cost_report.md`，LLM impact 对比见 `submission_artifacts/llm_impact/llm_impact_report.md`，恢复有效性见 `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md`，代码质量摘要见 `submission_artifacts/code_quality/code_quality_report.md`。
+针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；对标与后续真实 benchmark 路线见 `docs/BENCHMARK_AND_ROADMAP.md`；artifact 总索引见 `submission_artifacts/ARTIFACTS_INDEX.md`；稳定性摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`，真实 HTTP 压测见 `submission_artifacts/http_load_test/http_load_test_report.md` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`，Agent decision 案例见 `submission_artifacts/agent_decision_cases/README.md`，长文档分片证据见 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`，长文档风险拆解见 `submission_artifacts/long_document_risk/long_document_risk_report.md`，成本/速度/质量对比见 `submission_artifacts/baseline_comparison/baseline_comparison.md`，成本模型见 `submission_artifacts/cost_model/cost_model.md`，LLM token/cost 审计见 `submission_artifacts/llm_cost/llm_cost_report.md`，LLM impact 对比见 `submission_artifacts/llm_impact/llm_impact_report.md`，恢复有效性见 `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md`，代码质量摘要见 `submission_artifacts/code_quality/code_quality_report.md`。

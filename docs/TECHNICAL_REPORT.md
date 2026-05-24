@@ -14,7 +14,7 @@
 
 系统由六层组成：
 
-1. Task Planner：根据任务描述和文件名推断场景 profile，例如财报、合同/规范、流程图、低质量 OCR，并在 `execution_control.planning_rationale` 中解释 profile、runner、backend、method、语言和恢复策略的选择原因。可选接入 DeepSeek v4-flash 或 ModelScope 上的 `deepseek-ai/DeepSeek-V4-Flash` 执行解析前调度，建议 profile、runner、backend、method、语言、目标 schema、复核重点和恢复策略。
+1. Task Planner：根据任务描述和文件名推断场景 profile，例如财报、合同/规范、流程图、低质量 OCR，并在 `execution_control.planning_rationale` 中解释 profile、runner、backend、method、语言和恢复策略的选择原因。可选接入 DeepSeek v4-flash 或 ModelScope 上的 `deepseek-ai/DeepSeek-V4-Flash` 执行解析前调度，建议 profile、runner、backend、method、语言、目标 schema、复核重点和恢复策略。新运行还会写入 `execution_control.agent_action_plan`，记录子任务、候选工具、动态选择和 replan triggers。
 2. MinerU Adapter：支持在线 Agent API 与本地 MinerU CLI 两种后端。在线 API 用于 CPU 环境快速验证，本地 CLI 用于保留 Markdown、content list、middle json、layout pdf 等 artifact。在线 API 的轻量 Markdown 路径若缺少页级 provenance，会被质量校验标注；当检测到本地 CLI 或显式配置 fallback runner 时，系统会自动执行本地 CLI fallback 并择优。
 3. Structured Extractor：从 Markdown 与内容块中生成章节、表格、键值对、键值字典、数字事实、日期/建议/异常语义信号和页级溯源摘要。HTML 输入会保留标题层级、段落、列表和表格，避免网页语料被压平成不可复用纯文本。
 4. Retrieval Exporter：把解析结果整理为 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`，便于检索、向量库入库与评审复查。跨页文本不会再合并到第一页；chunk 保留 `page_no` 起始页和 `pages` 覆盖页列表。
@@ -28,18 +28,20 @@
 1. 接收输入文件、自然语言任务、profile、MinerU backend。
 2. 推断任务类型并生成基础执行计划。
 3. 若开启 LLM，先执行 `llm_pre_execution_planning`：模型基于任务、文件后缀、文件大小、当前 runner 和初始 profile 给出调度建议；系统只应用白名单内且未被用户显式锁定的 profile/backend/method/lang 建议，并把应用或忽略原因写入 `execution_control` 和 trace。
-4. 对 PDF、图片调用 MinerU 在线 API 或本地 CLI；对 HTML、DOCX 和 PPTX 使用轻量结构化提取器。
-5. 读取 MinerU 输出，构造结构化视图，包括 `sections`、`tables`、`key_values`、`key_value_map`、`numeric_facts` 和 `semantic_signals`。
-6. 生成检索友好的知识库 chunks，过滤页眉页脚、页码、目录等低价值内容。
+4. 执行 `agent_task_decomposition`，生成子任务图、selected tools、dynamic choices、replan triggers 和单次运行上下文策略。
+5. 对 PDF、图片调用 MinerU 在线 API 或本地 CLI；对 HTML、DOCX 和 PPTX 使用轻量结构化提取器。
+6. 读取 MinerU 输出，构造结构化视图，包括 `sections`、`tables`、`key_values`、`key_value_map`、`numeric_facts` 和 `semantic_signals`。
 7. 运行质量校验；若命中可恢复风险，执行文本清理二次 pass、PDF/图片 OCR 重试，或在在线 API 缺页级 provenance 时执行本地 CLI fallback，并按质量评分择优。若恢复尝试失败，失败尝试会进入 `recovery_decision.attempts` 与 trace，系统保留初始可用结果继续输出。
-8. 若启用 LLM，执行解析后复核，并把 `risk_findings` 与 `recovery_suggestions` 写入 `recovery_decision.llm_quality_decision`。warning/error 级风险会改变或补充最终 recovery 决策。
-9. 生成 `result.json`、`summary.md`、`trace.json`。
+8. 执行 `agent_replan_after_quality`，把质量 issue code 映射到候选恢复动作，记录已尝试动作、最终选择原因和剩余风险的下一步动作。
+9. 生成检索友好的知识库 chunks，过滤页眉页脚、页码、目录等低价值内容。
+10. 若启用 LLM，执行解析后复核，并把 `risk_findings` 与 `recovery_suggestions` 写入 `recovery_decision.llm_quality_decision`。warning/error 级风险会改变或补充最终 recovery 决策。
+11. 生成 `result.json`、`summary.md`、`trace.json`。
 
 每一步都会写入 trace，包含步骤状态、时间、工具命令、耗时、stdout/stderr 摘要，满足可追溯性要求。若解析或工具调用失败，系统也会写出失败态 `trace.json`，避免异常链路只停留在控制台错误里。
 
 对于生产化稳定性，系统提供批处理 manifest 入口。批处理中单个任务失败不会中断整批，最终生成 `batch_report.json`，记录每个任务的状态、run id、输出路径、质量评分和错误信息。在线 API 调用对 429、5xx 和网络异常等瞬时错误提供重试，并把重试事件写入工具调用日志。
 
-大模型层默认关闭。配置 DeepSeek 官方或 ModelScope 推理入口后，系统会先让 LLM 参与解析前调度，再进行解析后复核。解析前调度的结果保存在 `execution_control` 与 `llm_analysis.pre_execution_plan`，解析后复核保存在 `llm_analysis.post_parse_analysis`。本提交包已保存 1 个实际启用 ModelScope `deepseek-ai/DeepSeek-V4-Flash` 的案例，见 `submission_artifacts/llm_cases/`；另保存 1 个真实 PDF 的解析前调度 + API-to-CLI fallback recovery 演练，见 `submission_artifacts/recovery_cases/`。后者使用离线确定性预调度器和缓存 CLI artifact 回放，运行条件写在案例 README 中。
+大模型层默认关闭。配置 DeepSeek 官方或 ModelScope 推理入口后，系统会先让 LLM 参与解析前调度，再进行解析后复核。解析前调度的结果保存在 `execution_control` 与 `llm_analysis.pre_execution_plan`，解析后复核保存在 `llm_analysis.post_parse_analysis`。本提交包已保存 1 个实际启用 ModelScope `deepseek-ai/DeepSeek-V4-Flash` 的案例，见 `submission_artifacts/llm_cases/`；另保存 1 个真实 PDF 的解析前调度 + API-to-CLI fallback recovery 演练，见 `submission_artifacts/recovery_cases/`。`submission_artifacts/agent_decision_cases/` 使用本地 scripted LLM client 展示 5 个任务的 pre/post decision hooks，便于无 key 环境复查字段结构；它不替代 live provider 证据。
 
 ## 4. MinerU 使用方式
 
@@ -68,6 +70,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 | Office | `submission_artifacts/office_cases/` | 2 个 DOCX/PPTX native extractor 案例 |
 | 挑战样本 | `submission_artifacts/challenge_cases/` | 4 个跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流样本，附人工标注表 |
 | 自适应规划 | `submission_artifacts/adaptive_cases/` | 同一财报输入在增长排名与异常证据任务下生成不同 intents、schema、post-processors 和 `task_result` |
+| Agent decision | `submission_artifacts/agent_decision_cases/` | 5 个本地案例展示子任务拆解、动态工具选择、质量后 replan 和 scripted LLM hooks |
 | 公开真实 PDF | `submission_artifacts/public_real_cases/` | IRS、NIST、SEC、CDC 4 份官方公开 PDF，保存 source metadata、human labels、trace、result 和 retrieval 导出 |
 | 长文档分片 | `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/` | NIST AI RMF 48 页拆成 3 个 page range，3/3 成功，58 个 retrieval chunks |
 | LLM case | `submission_artifacts/llm_cases/case_llm_financial_review/` | ModelScope DeepSeek-V4-Flash 预调度和复核，`usage_summary.total_tokens=4309` |
@@ -114,6 +117,8 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - 批处理 manifest 与 `batch_report.json`
 - 可选 DeepSeek v4-flash / ModelScope 接入，不把 API key 写入日志或输出文件
 - LLM 预调度的 `execution_control`，记录 recommended/applied/ignored/resolved 参数
+- Agent action plan 的 `execution_control.agent_action_plan`，记录子任务、工具选择和 replan triggers
+- 质量后再规划的 `execution_control.replan_after_quality`，记录 issue code 到恢复动作的映射和选择原因
 - 带标注评测脚本 `scripts/build_evaluation_report.py` 与标注文件 `examples/evaluation/labels.json`
 - 每次运行的 trace 文件
 - 失败运行也会保留 trace 文件
@@ -129,6 +134,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - `submission_artifacts/challenge_cases/` 中包含 4 个挑战 fixture、结果日志和人工标注表
 - `submission_artifacts/public_real_cases/` 中包含 4 个官方公开真实 PDF 案例、来源元数据和人工轻量标注
 - `submission_artifacts/llm_cases/` 中包含 1 个实际启用 DeepSeek-V4-Flash 的 LLM 运行证据
+- `submission_artifacts/agent_decision_cases/` 中包含 5 个本地 Agent decision 案例，用 scripted LLM client 离线复现 pre/post decision hooks
 - `submission_artifacts/llm_impact/` 中包含保存的规则运行与 LLM-enabled 运行对比
 - `submission_artifacts/evaluation/` 中包含 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、字段 precision/recall/F1 和 failed-check 分布的带标注评测指标
 - `submission_artifacts/stability/` 中包含 17 个保存案例的 trace、工具耗时、质量状态和恢复统计

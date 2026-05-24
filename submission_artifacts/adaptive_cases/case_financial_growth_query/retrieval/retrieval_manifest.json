@@ -1,11 +1,11 @@
 {
   "doc_id": "case_1_financial_report",
   "source_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
-  "created_at": "2026-05-23T19:06:29.738981+00:00",
+  "created_at": "2026-05-24T08:03:20.264979+00:00",
   "output_files": {
-    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\retrieval\\retrieval_manifest.json",
-    "quality_report": "<PROJECT_ROOT>\\runs\\adaptive_cases\\17e56a82ebc2\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c731abb69fe2\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c731abb69fe2\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\adaptive_cases\\c731abb69fe2\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

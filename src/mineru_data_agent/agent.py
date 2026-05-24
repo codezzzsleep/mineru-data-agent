@@ -11,7 +11,7 @@ from .retrieval_exporter import build_retrieval_export
 from .logging_utils import TraceRecorder
 from .mineru_client import MinerUParseError, MinerURunner
 from .models import AgentResult, ParseArtifacts, ToolCall
-from .planner import analyze_requirement, build_plan, build_task_result, infer_profile
+from .planner import analyze_requirement, build_agent_action_plan, build_plan, build_quality_replan, build_task_result, infer_profile
 from .validators import build_quality_report
 
 
@@ -149,6 +149,31 @@ class MinerUDataAgent:
                         llm_preplan.get("execution_plan", []),
                     )
                     pre_step.detail["execution_control"] = execution_control
+
+            with trace.step("agent_task_decomposition") as agent_plan_step:
+                agent_action_plan = build_agent_action_plan(
+                    task,
+                    resolved_profile,
+                    adaptive_decision,
+                    input_metadata=input_metadata,
+                    runner=execution_control.get("resolved", {}).get("runner", _runner_kind(self.mineru_runner)),
+                    backend=backend,
+                    method=method,
+                    lang=lang,
+                    llm_enabled=self.llm_client is not None,
+                )
+                execution_control["agent_action_plan"] = agent_action_plan.to_jsonable()
+                agent_plan_step.detail.update(
+                    {
+                        "subtask_count": len(agent_action_plan.subtasks),
+                        "selected_tools": [
+                            item["name"]
+                            for item in agent_action_plan.tool_registry
+                            if isinstance(item, dict) and item.get("selected")
+                        ],
+                        "replan_trigger_count": len(agent_action_plan.replan_triggers),
+                    }
+                )
 
             artifacts = ParseArtifacts()
             markdown = ""
@@ -368,6 +393,17 @@ class MinerUDataAgent:
                     attempts=recovery_attempts,
                     selected_attempt=selected_attempt,
                 )
+
+            with trace.step("agent_replan_after_quality", selected_attempt=selected_attempt) as replan_step:
+                replan_after_quality = build_quality_replan(
+                    quality=quality,
+                    attempts=recovery_attempts,
+                    selected_attempt=selected_attempt,
+                    decision=adaptive_decision,
+                    action_plan=execution_control.get("agent_action_plan", {}),
+                )
+                execution_control["replan_after_quality"] = replan_after_quality
+                replan_step.detail.update(replan_after_quality)
 
             with trace.step("build_retrieval_export") as retrieval_step:
                 retrieval_export = build_retrieval_export(
@@ -843,6 +879,26 @@ def _build_summary(result: AgentResult) -> str:
             for item in recovery[:6]:
                 if isinstance(item, dict):
                     lines.append(f"  - {item.get('action')} on {item.get('trigger')} ({item.get('priority')})")
+    agent_plan = result.execution_control.get("agent_action_plan", {})
+    if isinstance(agent_plan, dict) and agent_plan:
+        selected_tools = [
+            item.get("name")
+            for item in agent_plan.get("tool_registry", [])
+            if isinstance(item, dict) and item.get("selected")
+        ]
+        subtasks = agent_plan.get("subtasks", []) if isinstance(agent_plan.get("subtasks"), list) else []
+        lines.extend(["", "## Agent Action Plan"])
+        lines.append(f"- Subtasks: {len(subtasks)}")
+        lines.append(f"- Selected tools: {', '.join(str(item) for item in selected_tools[:12])}")
+        for subtask in subtasks[:6]:
+            if isinstance(subtask, dict):
+                lines.append(f"- {subtask.get('id')}: {subtask.get('goal')}")
+    quality_replan = result.execution_control.get("replan_after_quality", {})
+    if isinstance(quality_replan, dict) and quality_replan:
+        lines.extend(["", "## Agent Replan After Quality"])
+        lines.append(f"- Issue codes: {', '.join(quality_replan.get('issue_codes', [])) or 'none'}")
+        lines.append(f"- Attempted actions: {', '.join(quality_replan.get('attempted_actions', []))}")
+        lines.append(f"- Selected reason: {quality_replan.get('selected_reason')}")
     answers = task_result.get("answers", {}) if isinstance(task_result.get("answers"), dict) else {}
     if answers:
         lines.extend(["", "## Task-Specific Answers"])

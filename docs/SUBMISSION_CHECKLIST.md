@@ -18,6 +18,9 @@
 - [x] LLM 已接入解析前调度，输出 `execution_control`、`llm_analysis.pre_execution_plan` 和 `llm_pre_execution_planning` trace 步骤
 - [x] 至少 1 个提交级结果实际启用 LLM，见 `submission_artifacts/llm_cases/`
 - [x] 同一文档不同自然语言任务的自适应规划证据已生成，见 `submission_artifacts/adaptive_cases/`
+- [x] Agent action plan 已写入新运行的 `execution_control.agent_action_plan`
+- [x] 质量后再规划已写入新运行的 `execution_control.replan_after_quality`
+- [x] 5 个 Agent decision 案例已生成，见 `submission_artifacts/agent_decision_cases/`
 - [x] 真实 PDF 已保存解析前调度 + API-to-CLI fallback 恢复证据，见 `submission_artifacts/recovery_cases/`
 - [x] `recovery_decision.executed=true` 的 PDF 证据已生成，且评测标签会检查 `selected_attempt=cli_fallback`
 - [x] 带标注评测指标已生成，见 `submission_artifacts/evaluation/`

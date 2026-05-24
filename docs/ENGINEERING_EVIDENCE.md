@@ -5,6 +5,7 @@ This matrix maps likely Track 2 review questions to local files that can be chec
 | Risk | Current Evidence | Remaining Boundary |
 | --- | --- | --- |
 | Task planning explainability is weak | `result.json.execution_control` records requested/initial/resolved controls, applied/ignored LLM recommendations, planning rationale, and `adaptive_decision` with task intents, target schema, post-processors, quality thresholds, and recovery strategy. `submission_artifacts/adaptive_cases/` shows the same input document producing different plans and `task_result` for growth ranking vs anomaly-evidence review. | It is deterministic adaptive planning plus optional LLM merge, not a full multi-turn conversation planner. |
+| The system looks like a pipeline rather than an Agent | New runs write `execution_control.agent_action_plan` with subtask graph, selected tool registry, dynamic choices, replan triggers, and single-run memory policy. `trace.json` now includes `agent_task_decomposition` and `agent_replan_after_quality` steps. `submission_artifacts/agent_decision_cases/` contains 5 local cases covering financial ranking, OCR cleanup, clause/entity extraction, workflow review, and cross-page table review. | The 5-case pack uses a scripted local LLM client for reproducibility. Live external LLM evidence is still limited to the saved ModelScope case unless a provider key is used to rerun the pack. |
 | LLM only suggests but does not affect decisions | LLM preplanning can change whitelisted profile/backend/method/lang controls. New runs also write post-parse `risk_findings` and `recovery_suggestions` into `recovery_decision.llm_quality_decision`, and warning/error findings can change the final recovery decision. `submission_artifacts/llm_impact/llm_impact_report.md` compares saved rule and LLM-enabled runs. | Current saved live LLM comparison has one pair; a larger 10-case on/off run is still the next useful benchmark. |
 | Recovery chain is incomplete | `recovery_decision.attempts` records initial, text cleanup, OCR retry, and CLI fallback attempts. Evidence includes `case_pdf_llm_api_to_cli_fallback` and `case_7_noisy_contract_scan`. `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md` scans saved results and reports 29 recovery records, 4 executed recoveries, 3 non-initial selections, issue-code distribution, and extra tool seconds. | API-to-CLI fallback evidence currently uses cached CLI artifact in this environment; live full-chain evidence needs a real MinerU CLI executable. |
 | Cost/speed/quality tradeoff is not quantified | `submission_artifacts/stability/stability_report.md` summarizes 17 saved cases, tool calls, tool elapsed seconds, recovery count, quality status, and provenance distribution. `submission_artifacts/baseline_comparison/baseline_comparison.md` groups saved artifacts by runner/scenario and compares labeled checks, quality, tool seconds, page provenance, and recovery. `submission_artifacts/http_load_test/http_load_test_report.md` and `submission_artifacts/http_load_test_100/http_load_test_report.md` add 12-request/concurrency-6 and 100-request/concurrency-20 live HTTP loopback results. `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md` adds a 48-page, 3-chunk live online API long-document run. `submission_artifacts/cost_model/cost_model.md` adds a price-parameterized cost model for native, CLI, online API, and LLM modes. `submission_artifacts/llm_cost/llm_cost_report.md` audits live LLM token usage. | The comparison is based on saved artifacts and lightweight labels; the HTTP tests are local loopback, not public network/GPU/cloud-cost benchmarks. Cost formulas produce currency values only when price environment variables are configured. |
@@ -16,12 +17,13 @@ This matrix maps likely Track 2 review questions to local files that can be chec
 | Reproducibility material is incomplete | `Dockerfile`, `docker-compose.yml`, `README.md`, `docs/DEPLOYMENT_AND_API.md`, `docs/API_CONTRACT.md`, `pyproject.toml`, tests, and artifact scripts document install, run, API, testing, logs, and evidence generation. | Docker covers CPU API reproduction; full MinerU CLI/GPU pipeline still depends on HeyWhale MinerU image or a local MinerU installation. |
 | API is not evaluation-friendly | `docs/API_CONTRACT.md` defines request fields, response schema, async `/v1/jobs`, polling `/v1/jobs/{job_id}`, and structured error codes. API persists trace/result/summary paths after response. | Public auth/rate limiting is expected at deployment gateway; this repo does not ship a permanent hosted endpoint. |
 | Technical report is too feature-oriented | `docs/TECHNICAL_REPORT.md`, `docs/CASE_STUDIES.md`, `docs/EVALUATION_STRATEGY.md`, and this matrix point to evidence artifacts, failures, boundaries, and metrics. | A short PPT or demo video would improve reviewer scanning speed. |
-| Open-source quality is weak | MIT license, README, `CONTRIBUTING.md`, issue templates, tests, GitHub Actions, docs, scripts, examples, submission artifacts, and `docs/BENCHMARK_AND_ROADMAP.md` are included. `submission_artifacts/code_quality/code_quality_report.md` reports 46 Python files, 69 test functions, and the CI workflow file. | The roadmap is documented, but external baselines and larger public benchmark labels are still future work. Code coverage is not measured unless a coverage tool is added. |
+| Open-source quality is weak | MIT license, README, `CONTRIBUTING.md`, issue templates, tests, GitHub Actions, docs, scripts, examples, submission artifacts, and `docs/BENCHMARK_AND_ROADMAP.md` are included. `submission_artifacts/code_quality/code_quality_report.md` reports 47 Python files, 71 test functions, and the CI workflow file. | The roadmap is documented, but external baselines and larger public benchmark labels are still future work. Code coverage is not measured unless a coverage tool is added. |
 
 ## Key Artifact Pointers
 
 - Evaluation metrics: `submission_artifacts/evaluation/evaluation_metrics.md`
 - Adaptive planning evidence: `submission_artifacts/adaptive_cases/`
+- Agent decision cases: `submission_artifacts/agent_decision_cases/README.md`
 - Stability report: `submission_artifacts/stability/stability_report.md`
 - API load smoke: `submission_artifacts/api_load_smoke/api_load_smoke_report.md`
 - Live HTTP load smoke: `submission_artifacts/http_load_test/http_load_test_report.md`
@@ -50,8 +52,9 @@ This matrix maps likely Track 2 review questions to local files that can be chec
 5. `docs/API_CONTRACT.md`
 6. `submission_artifacts/evaluation/evaluation_metrics.md`
 7. `submission_artifacts/stability/stability_report.md`
-8. `submission_artifacts/baseline_comparison/baseline_comparison.md`
-9. `submission_artifacts/cost_model/cost_model.md`
-10. `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md`
-11. `submission_artifacts/llm_impact/llm_impact_report.md`
-12. `docs/CASE_STUDIES.md`
+8. `submission_artifacts/agent_decision_cases/README.md`
+9. `submission_artifacts/baseline_comparison/baseline_comparison.md`
+10. `submission_artifacts/cost_model/cost_model.md`
+11. `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md`
+12. `submission_artifacts/llm_impact/llm_impact_report.md`
+13. `docs/CASE_STUDIES.md`

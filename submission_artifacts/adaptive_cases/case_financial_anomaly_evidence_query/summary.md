@@ -1,4 +1,4 @@
-# MinerU Data Agent Run e9423ebeff1a
+# MinerU Data Agent Run 1c00873d82d9
 
 - Task: 找出财报中需要复核的异常或风险信号，列出来源证据和建议处理动作。
 - Profile: financial_report
@@ -59,6 +59,21 @@
 - Recovery strategy:
   - text_cleanup on mojibake_or_encoding_noise (normal)
   - manual_numeric_review on total_or_subtotal_mismatch (high)
+
+## Agent Action Plan
+- Subtasks: 6
+- Selected tools: native_extractor, structured_extractor, numeric_validator, text_cleanup, retrieval_exporter
+- understand_task: Classify the document task and identify intent-specific outputs.
+- choose_parse_path: Pick the cheapest parser path that still preserves required provenance.
+- extract_structure: Normalize sections, tables, key-values, numeric facts, and field evidence.
+- validate_quality: Run profile and task-specific gates before accepting the result.
+- replan_if_needed: Map quality issues to recovery actions and select the best attempt.
+- export_artifacts: Write result, trace, summary, and retrieval artifacts.
+
+## Agent Replan After Quality
+- Issue codes: document_level_provenance, numeric_total_verified
+- Attempted actions: initial
+- Selected reason: initial result remained the best accepted quality attempt
 
 ## Task-Specific Answers
 - Anomaly candidates: 3

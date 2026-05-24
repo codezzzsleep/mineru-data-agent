@@ -29,6 +29,20 @@ class AdaptivePlanningDecision:
         return asdict(self)
 
 
+@dataclass
+class AgentActionPlan:
+    objective: str
+    runner: str
+    subtasks: list[dict[str, Any]]
+    tool_registry: list[dict[str, Any]]
+    dynamic_choices: list[dict[str, Any]]
+    replan_triggers: list[dict[str, Any]]
+    memory_policy: dict[str, Any]
+
+    def to_jsonable(self) -> dict[str, Any]:
+        return asdict(self)
+
+
 def infer_profile(task: str, filename: str) -> str:
     text = f"{task} {filename}".lower()
     if any(word in text for word in ["财报", "报表", "资产", "负债", "利润", "cash", "finance", "table"]):
@@ -145,6 +159,126 @@ def build_plan(task: str, profile: str, decision: AdaptivePlanningDecision | dic
     return common + profile_steps.get(profile, []) + dynamic_steps
 
 
+def build_agent_action_plan(
+    task: str,
+    profile: str,
+    decision: AdaptivePlanningDecision | dict[str, Any],
+    *,
+    input_metadata: dict[str, Any],
+    runner: str,
+    backend: str,
+    method: str,
+    lang: str,
+    llm_enabled: bool,
+) -> AgentActionPlan:
+    payload = decision.to_jsonable() if isinstance(decision, AdaptivePlanningDecision) else decision
+    intents = payload.get("task_intents", []) if isinstance(payload.get("task_intents"), list) else []
+    schema = payload.get("target_schema", {}) if isinstance(payload.get("target_schema"), dict) else {}
+    post_processors = payload.get("post_processors", []) if isinstance(payload.get("post_processors"), list) else []
+    recovery_strategy = payload.get("recovery_strategy", []) if isinstance(payload.get("recovery_strategy"), list) else []
+    tools = _tool_registry(
+        profile=profile,
+        intents=intents,
+        runner=runner,
+        backend=backend,
+        method=method,
+        input_metadata=input_metadata,
+        llm_enabled=llm_enabled,
+    )
+    subtasks = _subtasks_for_agent(
+        profile=profile,
+        intents=intents,
+        schema=schema,
+        post_processors=post_processors,
+        recovery_strategy=recovery_strategy,
+        runner=runner,
+        llm_enabled=llm_enabled,
+    )
+    dynamic_choices = _dynamic_choices(
+        profile=profile,
+        intents=intents,
+        runner=runner,
+        backend=backend,
+        method=method,
+        lang=lang,
+        input_metadata=input_metadata,
+        llm_enabled=llm_enabled,
+    )
+    return AgentActionPlan(
+        objective=task,
+        runner=runner,
+        subtasks=subtasks,
+        tool_registry=tools,
+        dynamic_choices=dynamic_choices,
+        replan_triggers=_replan_triggers(profile, intents, recovery_strategy),
+        memory_policy={
+            "scope": "single_run_trace",
+            "writes": [
+                "execution_control.agent_action_plan",
+                "trace.steps",
+                "recovery_decision.attempts",
+                "retrieval_manifest",
+            ],
+            "reads": [
+                "input_metadata",
+                "task_intents",
+                "quality_issues",
+                "retry_history",
+            ],
+            "cross_run_learning": False,
+            "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces.",
+        },
+    )
+
+
+def build_quality_replan(
+    *,
+    quality: dict[str, Any],
+    attempts: list[dict[str, Any]],
+    selected_attempt: str,
+    decision: AdaptivePlanningDecision | dict[str, Any],
+    action_plan: AgentActionPlan | dict[str, Any] | None,
+) -> dict[str, Any]:
+    payload = decision.to_jsonable() if isinstance(decision, AdaptivePlanningDecision) else decision
+    issue_codes = [
+        str(item.get("code"))
+        for item in quality.get("issues", [])
+        if isinstance(item, dict) and item.get("code")
+    ]
+    trigger_map = {
+        "possible_mojibake": "text_cleanup",
+        "empty_markdown": "ocr_retry",
+        "no_content_blocks": "ocr_retry",
+        "short_text": "ocr_retry",
+        "expected_anomaly_signal_missing": "ocr_retry",
+        "no_page_provenance": "cli_fallback",
+        "numeric_total_mismatch": "manual_numeric_review",
+        "numeric_total_needs_review": "manual_numeric_review",
+    }
+    considered = []
+    for code in issue_codes:
+        action = trigger_map.get(code, "keep_review_note")
+        considered.append(
+            {
+                "issue_code": code,
+                "candidate_action": action,
+                "available_in_attempts": any(item.get("name") == action for item in attempts if isinstance(item, dict)),
+            }
+        )
+    attempted = [str(item.get("name")) for item in attempts if isinstance(item, dict)]
+    plan_payload = action_plan.to_jsonable() if isinstance(action_plan, AgentActionPlan) else (action_plan or {})
+    return {
+        "quality_status": quality.get("status"),
+        "quality_score": quality.get("score"),
+        "issue_codes": issue_codes,
+        "considered_actions": considered,
+        "attempted_actions": attempted,
+        "selected_attempt": selected_attempt,
+        "selected_reason": _selected_attempt_reason(selected_attempt, attempts),
+        "next_action_if_still_risky": _next_action_if_still_risky(issue_codes, payload, plan_payload),
+    }
+
+
 def build_task_result(extracted: dict[str, Any], decision: AdaptivePlanningDecision | dict[str, Any]) -> dict[str, Any]:
     payload = decision.to_jsonable() if isinstance(decision, AdaptivePlanningDecision) else decision
     intents = payload.get("task_intents", []) if isinstance(payload.get("task_intents"), list) else []
@@ -173,6 +307,215 @@ def build_task_result(extracted: dict[str, Any], decision: AdaptivePlanningDecis
         sections = extracted.get("sections", []) if isinstance(extracted.get("sections"), list) else []
         result["answers"]["section_titles"] = [item.get("title") for item in sections[:20] if isinstance(item, dict)]
     return result
+
+
+def _tool_registry(
+    *,
+    profile: str,
+    intents: list[str],
+    runner: str,
+    backend: str,
+    method: str,
+    input_metadata: dict[str, Any],
+    llm_enabled: bool,
+) -> list[dict[str, Any]]:
+    suffix = str(input_metadata.get("suffix") or "").lower()
+    is_native = suffix in {".html", ".htm", ".docx", ".pptx"}
+    definitions = [
+        ("native_extractor", "Parse HTML/DOCX/PPTX structure without external OCR", is_native, "file suffix is native text/Office"),
+        ("mineru_cli", "Run local MinerU CLI and keep page/layout artifacts", runner == "cli" and not is_native, "runner resolved to cli"),
+        ("mineru_agent_api", "Run online MinerU Agent API for CPU-friendly PDF parsing", runner == "agent-api" and not is_native, "runner resolved to agent-api"),
+        ("llm_preplanner", "Classify task and propose schema/controls before parsing", llm_enabled, "LLM client configured"),
+        ("structured_extractor", "Build sections, tables, key-values, numeric facts, and field evidence", True, "always needed for output contract"),
+        ("numeric_validator", "Check numeric facts and table totals", profile == "financial_report" or "aggregation" in intents, "financial or aggregation task"),
+        ("contract_validator", "Check section/clause/date evidence", profile == "standard_or_contract", "contract or standard profile"),
+        ("workflow_validator", "Check workflow steps, anomalies, and visual-review hints", profile == "workflow_or_diagram", "workflow or diagram profile"),
+        ("text_cleanup", "Clean mojibake/encoding noise and re-evaluate quality", True, "enabled as recovery candidate"),
+        ("ocr_retry", "Retry parse with OCR mode after sparse/weak PDF result", not is_native, "PDF/image recovery candidate"),
+        ("cli_fallback", "Fallback from online API to CLI when page provenance is missing", runner == "agent-api" and not is_native, "audit-grade provenance candidate"),
+        ("llm_post_review", "Review extracted result for risks and recovery suggestions", llm_enabled, "LLM client configured"),
+        ("retrieval_exporter", "Write retrieval chunks and manifest", True, "always needed for downstream data use"),
+    ]
+    tools = []
+    for name, capability, selected, reason in definitions:
+        tools.append(
+            {
+                "name": name,
+                "capability": capability,
+                "selected": bool(selected),
+                "selection_reason": reason,
+                "parameters": _tool_parameters(name, backend=backend, method=method),
+            }
+        )
+    return tools
+
+
+def _tool_parameters(name: str, *, backend: str, method: str) -> dict[str, Any]:
+    if name in {"mineru_cli", "mineru_agent_api"}:
+        return {"backend": backend, "method": method}
+    if name == "ocr_retry":
+        return {"method": "ocr"}
+    return {}
+
+
+def _subtasks_for_agent(
+    *,
+    profile: str,
+    intents: list[str],
+    schema: dict[str, str],
+    post_processors: list[str],
+    recovery_strategy: list[dict[str, Any]],
+    runner: str,
+    llm_enabled: bool,
+) -> list[dict[str, Any]]:
+    subtasks = [
+        {
+            "id": "understand_task",
+            "goal": "Classify the document task and identify intent-specific outputs.",
+            "tools": ["llm_preplanner"] if llm_enabled else ["rule_intent_classifier"],
+            "expected_output": {"profile": profile, "intents": intents, "schema_keys": list(schema.keys())[:20]},
+            "depends_on": [],
+        },
+        {
+            "id": "choose_parse_path",
+            "goal": "Pick the cheapest parser path that still preserves required provenance.",
+            "tools": ["native_extractor"] if runner == "native" else [f"mineru_{runner.replace('-', '_')}"],
+            "expected_output": {"runner": runner},
+            "depends_on": ["understand_task"],
+        },
+        {
+            "id": "extract_structure",
+            "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+            "tools": ["structured_extractor"],
+            "expected_output": {"post_processors": post_processors},
+            "depends_on": ["choose_parse_path"],
+        },
+        {
+            "id": "validate_quality",
+            "goal": "Run profile and task-specific gates before accepting the result.",
+            "tools": _quality_tools(profile, intents),
+            "expected_output": {"quality_status": "pass|pass_with_warnings|needs_review"},
+            "depends_on": ["extract_structure"],
+        },
+        {
+            "id": "replan_if_needed",
+            "goal": "Map quality issues to recovery actions and select the best attempt.",
+            "tools": [str(item.get("action")) for item in recovery_strategy if isinstance(item, dict)][:8],
+            "expected_output": {"selected_attempt": "initial or recovery action"},
+            "depends_on": ["validate_quality"],
+        },
+        {
+            "id": "export_artifacts",
+            "goal": "Write result, trace, summary, and retrieval artifacts.",
+            "tools": ["retrieval_exporter", "trace_writer"],
+            "expected_output": {"files": ["result.json", "trace.json", "summary.md", "retrieval_chunks.jsonl"]},
+            "depends_on": ["replan_if_needed"],
+        },
+    ]
+    if llm_enabled:
+        subtasks.insert(
+            4,
+            {
+                "id": "llm_review",
+                "goal": "Review parse output against task-specific risks and propose follow-up actions.",
+                "tools": ["llm_post_review"],
+                "expected_output": {"risk_findings": "list", "recovery_suggestions": "list"},
+                "depends_on": ["validate_quality"],
+            },
+        )
+        subtasks[-1]["depends_on"] = ["replan_if_needed", "llm_review"]
+    return subtasks
+
+
+def _quality_tools(profile: str, intents: list[str]) -> list[str]:
+    tools = ["quality_validator"]
+    if profile == "financial_report" or "aggregation" in intents:
+        tools.append("numeric_validator")
+    if profile == "standard_or_contract":
+        tools.append("contract_validator")
+    if profile == "workflow_or_diagram":
+        tools.append("workflow_validator")
+    if "evidence_trace" in intents:
+        tools.append("provenance_checker")
+    return tools
+
+
+def _dynamic_choices(
+    *,
+    profile: str,
+    intents: list[str],
+    runner: str,
+    backend: str,
+    method: str,
+    lang: str,
+    input_metadata: dict[str, Any],
+    llm_enabled: bool,
+) -> list[dict[str, Any]]:
+    suffix = str(input_metadata.get("suffix") or "").lower()
+    return [
+        {"name": "profile", "selected": profile, "reason": "task and file signals after optional LLM merge"},
+        {"name": "runner", "selected": runner, "reason": "native suffix, CLI/API configuration, and provenance requirement"},
+        {"name": "backend", "selected": backend, "reason": "MinerU backend used when runner calls MinerU"},
+        {"name": "method", "selected": method, "reason": "initial parse method; recovery can switch to OCR"},
+        {"name": "lang", "selected": lang, "reason": "OCR language hint"},
+        {"name": "llm", "selected": bool(llm_enabled), "reason": "enabled only when a provider client is configured"},
+        {"name": "provenance_requirement", "selected": "page" if suffix not in {".html", ".htm", ".docx"} else "document", "reason": "PDF/image outputs benefit most from page-level audit"},
+        {"name": "table_priority", "selected": profile == "financial_report" or "aggregation" in intents, "reason": "financial/aggregation tasks require table checks"},
+    ]
+
+
+def _replan_triggers(
+    profile: str,
+    intents: list[str],
+    recovery_strategy: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    triggers = [
+        {"issue_code": "possible_mojibake", "action": "text_cleanup", "reason": "encoding noise can be improved without rerunning OCR"},
+        {"issue_code": "short_text", "action": "ocr_retry", "reason": "sparse PDF text often needs OCR mode"},
+        {"issue_code": "no_page_provenance", "action": "cli_fallback", "reason": "audit tasks need page-level source evidence"},
+        {"issue_code": "numeric_total_mismatch", "action": "manual_numeric_review", "reason": "numeric mismatch should not be silently repaired"},
+    ]
+    if profile == "workflow_or_diagram":
+        triggers.append({"issue_code": "visual_signal_missing", "action": "visual_review", "reason": "diagram-like tasks can need a visual model"})
+    if "cross_page_reasoning" in intents:
+        triggers.append({"issue_code": "cross_chunk_reference", "action": "chunk_stitch_review", "reason": "answer depends on more than one page/chunk"})
+    for item in recovery_strategy:
+        if isinstance(item, dict) and item.get("action"):
+            action = str(item.get("action"))
+            if not any(trigger["action"] == action for trigger in triggers):
+                triggers.append({"issue_code": str(item.get("trigger", action)), "action": action, "reason": "adaptive recovery strategy"})
+    return triggers
+
+
+def _selected_attempt_reason(selected_attempt: str, attempts: list[dict[str, Any]]) -> str:
+    if selected_attempt == "initial":
+        return "initial result remained the best accepted quality attempt"
+    for item in attempts:
+        if isinstance(item, dict) and item.get("name") == selected_attempt:
+            return f"{selected_attempt} had quality_status={item.get('quality_status')} and score={item.get('score')}"
+    return "selected attempt was recorded by recovery policy"
+
+
+def _next_action_if_still_risky(
+    issue_codes: list[str],
+    decision: dict[str, Any],
+    action_plan: dict[str, Any],
+) -> list[str]:
+    actions = []
+    trigger_actions = {
+        str(item.get("issue_code")): str(item.get("action"))
+        for item in action_plan.get("replan_triggers", [])
+        if isinstance(item, dict)
+    }
+    for code in issue_codes:
+        action = trigger_actions.get(code)
+        if action and action not in actions:
+            actions.append(action)
+    if "numeric_total_mismatch" in issue_codes and "manual_numeric_review" not in actions:
+        actions.append("manual_numeric_review")
+    if not actions and decision.get("task_intents"):
+        actions.append("accept_with_trace_review")
+    return actions[:8]
 
 
 def _infer_intents(text: str) -> list[str]:

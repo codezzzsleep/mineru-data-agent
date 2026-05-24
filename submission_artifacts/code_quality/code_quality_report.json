@@ -1,14 +1,14 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T07:16:39Z",
+  "generated_at": "2026-05-24T08:05:51Z",
   "scope": "Static repository quality summary generated from local files.",
   "aggregate": {
-    "python_files": 46,
-    "physical_lines": 11089,
-    "code_lines": 9798,
-    "classes": 29,
-    "functions": 468,
-    "test_functions": 69,
+    "python_files": 47,
+    "physical_lines": 11834,
+    "code_lines": 10488,
+    "classes": 31,
+    "functions": 488,
+    "test_functions": 71,
     "test_files": 12,
     "workflow_files": [
       ".github/workflows/tests.yml"
@@ -18,37 +18,46 @@
   "by_area": {
     "src": {
       "python_files": 14,
-      "physical_lines": 5507,
-      "code_lines": 4909,
-      "classes": 18,
-      "functions": 232,
+      "physical_lines": 5906,
+      "code_lines": 5283,
+      "classes": 19,
+      "functions": 243,
       "test_functions": 0
     },
     "scripts": {
-      "python_files": 20,
-      "physical_lines": 4142,
-      "code_lines": 3680,
-      "classes": 5,
-      "functions": 155,
+      "python_files": 21,
+      "physical_lines": 4414,
+      "code_lines": 3929,
+      "classes": 6,
+      "functions": 162,
       "test_functions": 0
     },
     "tests": {
       "python_files": 12,
-      "physical_lines": 1440,
-      "code_lines": 1209,
+      "physical_lines": 1514,
+      "code_lines": 1276,
       "classes": 6,
-      "functions": 81,
-      "test_functions": 69
+      "functions": 83,
+      "test_functions": 71
     }
   },
   "largest_files": [
     {
       "path": "src/mineru_data_agent/agent.py",
       "area": "src",
-      "physical_lines": 1268,
-      "code_lines": 1168,
+      "physical_lines": 1324,
+      "code_lines": 1222,
       "classes": 2,
       "functions": 34,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/planner.py",
+      "area": "src",
+      "physical_lines": 732,
+      "code_lines": 667,
+      "classes": 2,
+      "functions": 27,
       "test_functions": 0
     },
     {
@@ -106,30 +115,21 @@
       "test_functions": 0
     },
     {
+      "path": "tests/test_agent_recovery.py",
+      "area": "tests",
+      "physical_lines": 403,
+      "code_lines": 360,
+      "classes": 6,
+      "functions": 17,
+      "test_functions": 6
+    },
+    {
       "path": "src/mineru_data_agent/api.py",
       "area": "src",
       "physical_lines": 409,
       "code_lines": 354,
       "classes": 1,
       "functions": 23,
-      "test_functions": 0
-    },
-    {
-      "path": "tests/test_agent_recovery.py",
-      "area": "tests",
-      "physical_lines": 393,
-      "code_lines": 350,
-      "classes": 6,
-      "functions": 17,
-      "test_functions": 6
-    },
-    {
-      "path": "src/mineru_data_agent/planner.py",
-      "area": "src",
-      "physical_lines": 389,
-      "code_lines": 347,
-      "classes": 1,
-      "functions": 16,
       "test_functions": 0
     },
     {
@@ -155,8 +155,8 @@
     {
       "path": "tests/test_agent_recovery.py",
       "area": "tests",
-      "physical_lines": 393,
-      "code_lines": 350,
+      "physical_lines": 403,
+      "code_lines": 360,
       "classes": 6,
       "functions": 17,
       "test_functions": 6
@@ -236,11 +236,11 @@
     {
       "path": "tests/test_planner.py",
       "area": "tests",
-      "physical_lines": 39,
-      "code_lines": 32,
+      "physical_lines": 103,
+      "code_lines": 89,
       "classes": 0,
-      "functions": 2,
-      "test_functions": 2
+      "functions": 4,
+      "test_functions": 4
     },
     {
       "path": "tests/test_retrieval_exporter.py",

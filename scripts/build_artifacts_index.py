@@ -20,6 +20,7 @@ CATEGORIES = [
     ("office_cases", "Office files", "DOCX/PPTX native extraction runs."),
     ("challenge_cases", "Challenge fixtures", "Cross-page table, OCR noise, standard matrix, and incident workflow fixtures."),
     ("adaptive_cases", "Adaptive planning", "Same input with different natural-language tasks and task-specific results."),
+    ("agent_decision_cases", "Agent decision cases", "Task decomposition, dynamic tool selection, quality replanning, and scripted LLM decision hooks."),
     ("public_real_cases", "Public real PDFs", "IRS, NIST, SEC, and CDC public PDF cases with lightweight labels."),
     ("long_document_chunks", "Long document chunks", "NIST AI RMF page-range chunking across the online API page limit."),
     ("llm_cases", "LLM cases", "OpenAI-compatible LLM preplanning and post-parse review results."),
@@ -128,6 +129,21 @@ def quick_metrics() -> dict[str, Any]:
             "llm_trace_tool_calls": aggregate.get("llm_trace_tool_calls"),
             "total_tokens": aggregate.get("total_tokens"),
             "estimated_cost_usd": aggregate.get("estimated_cost_usd"),
+        }
+    agent_decision = load_json(ARTIFACT_ROOT / "agent_decision_cases" / "artifact_index.json")
+    if isinstance(agent_decision, dict):
+        cases = agent_decision.get("cases", []) if isinstance(agent_decision.get("cases"), list) else []
+        metrics["agent_decision_cases"] = {
+            "cases": len(cases),
+            "selected_tool_names": sorted(
+                {
+                    str(tool)
+                    for case in cases
+                    if isinstance(case, dict)
+                    for tool in case.get("selected_tools", [])
+                }
+            ),
+            "boundary": agent_decision.get("boundary"),
         }
     llm_impact = load_json(ARTIFACT_ROOT / "llm_impact" / "llm_impact_report.json")
     if isinstance(llm_impact, dict):
