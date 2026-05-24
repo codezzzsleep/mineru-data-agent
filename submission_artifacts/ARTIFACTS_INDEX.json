@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T10:17:15Z",
+  "generated_at": "2026-05-24T10:43:28Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -128,13 +128,37 @@
         "hit_rate_top3": 0.9210526315789473
       }
     },
+    "agent_value": {
+      "cases": 37,
+      "decision_modes": {
+        "controlled_fault_injection": 5,
+        "deterministic_rules": 25,
+        "llm_enabled_saved_result_without_live_trace": 1,
+        "offline_scripted_decision_regression": 5,
+        "saved_live_llm_trace": 1
+      },
+      "parser_runners": {
+        "-": 12,
+        "agent-api": 8,
+        "cli": 3,
+        "native": 14
+      },
+      "with_state_machine": 10,
+      "with_task_result": 12,
+      "with_field_evidence": 13,
+      "with_quality_issues": 31,
+      "with_recovery_attempts": 8,
+      "selected_non_initial": 6,
+      "with_retrieval_chunks": 37,
+      "with_live_llm_trace": 1
+    },
     "code_quality": {
-      "python_files": 50,
-      "physical_lines": 13035,
-      "code_lines": 11569,
+      "python_files": 51,
+      "physical_lines": 13353,
+      "code_lines": 11848,
       "classes": 34,
-      "functions": 531,
-      "test_functions": 75,
+      "functions": 547,
+      "test_functions": 76,
       "test_files": 12,
       "workflow_files": [
         ".github/workflows/tests.yml"
@@ -681,6 +705,22 @@
       ],
       "json_reports": [
         "submission_artifacts/baseline_comparison/baseline_comparison.json"
+      ]
+    },
+    {
+      "id": "agent_value",
+      "title": "Agent value report",
+      "description": "Saved-artifact report of Agent-layer schema, audit, recovery, retrieval, and decision-mode additions over parser artifacts.",
+      "path": "submission_artifacts/agent_value",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/agent_value/agent_value_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/agent_value/agent_value_report.json"
       ]
     },
     {

@@ -19,6 +19,7 @@ MinerU Data Agent 面向赛道二提交：在 MinerU、Office 和 HTML 解析结
 | 恢复统计 | 汇总保存结果中的 recovery 记录、自动恢复次数和非初始结果选择；以当前报告为准 | `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md` |
 | 长文档风险 | 单独列出在线 API 分片的页级来源、跨分片上下文和 GPU/CLI 长文档缺口 | `submission_artifacts/long_document_risk/long_document_risk_report.md` |
 | Retrieval validation | 检查 chunk schema、重复率、空文本和轻量 lexical top-k 命中率 | `submission_artifacts/retrieval_validation/retrieval_validation_report.md` |
+| Agent value | 37 个保存结果按 deterministic/offline/live/controlled 决策模式拆分，并统计 Agent 层新增字段 | `submission_artifacts/agent_value/agent_value_report.md` |
 | 覆盖率 | 本地 pytest 覆盖 `src/mineru_data_agent` 的行覆盖率 | `submission_artifacts/coverage/coverage_report.md` |
 | 代码与测试 | Python 文件、测试函数、GitHub Actions workflow | `submission_artifacts/code_quality/code_quality_report.md` |
 | Artifact 总索引 | 按目录列出 result/trace 数量和主报告 | `submission_artifacts/ARTIFACTS_INDEX.md` |
@@ -30,6 +31,7 @@ MinerU Data Agent 面向赛道二提交：在 MinerU、Office 和 HTML 解析结
 - `execution_control.agent_action_plan` 记录子任务拆解、候选工具、动态选择原因、replan triggers 和单次运行上下文策略。
 - `execution_control.replan_after_quality` 记录质量问题如何映射到恢复候选、已尝试动作和最终选择原因。
 - `execution_control.agent_action_plan.state_machine` 记录单次运行的条件 DAG、质量触发边和恢复 loop policy。
+- `submission_artifacts/agent_value/` 单独说明这些字段是 Agent 层相对 parser Markdown/content_list 的增量，不等同第三方 parser benchmark。
 - `execution_control.strict_page_provenance` 记录审计型任务是否要求页级来源；PDF/image 最终仍缺页级来源时会标成 `strict_page_provenance_failed`。
 - LLM 解析后复核现在会写入 `recovery_decision.llm_quality_decision`，可把 warning/error 级风险同步到最终 recovery 决策。
 - `trace.json`、`result.json`、`summary.md`、`retrieval_chunks.jsonl` 每次运行落盘，便于按文件复查。

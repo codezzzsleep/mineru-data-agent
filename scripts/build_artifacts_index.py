@@ -32,6 +32,7 @@ CATEGORIES = [
     ("http_load_test", "HTTP load test", "Local TCP loopback sync/async API load test with request artifacts."),
     ("http_load_test_100", "HTTP load test 100", "100-request local TCP loopback sync/async API load test."),
     ("baseline_comparison", "Tradeoff comparison", "Saved-artifact cost/speed/quality comparison by runner/scenario group."),
+    ("agent_value", "Agent value report", "Saved-artifact report of Agent-layer schema, audit, recovery, retrieval, and decision-mode additions over parser artifacts."),
     ("cost_model", "Cost model", "Price-parameterized cost estimates for native, CLI, online API, and LLM modes."),
     ("llm_cost", "LLM cost", "Provider token usage and optional price-based cost estimate."),
     ("llm_impact", "LLM impact", "With/without LLM artifact comparison."),
@@ -173,6 +174,9 @@ def quick_metrics() -> dict[str, Any]:
             "duplicate_text_rate": aggregate.get("duplicate_text_rate"),
             "label_query_checks": aggregate.get("label_query_checks"),
         }
+    agent_value = load_json(ARTIFACT_ROOT / "agent_value" / "agent_value_report.json")
+    if isinstance(agent_value, dict):
+        metrics["agent_value"] = agent_value.get("aggregate", {})
     code_quality = load_json(ARTIFACT_ROOT / "code_quality" / "code_quality_report.json")
     if isinstance(code_quality, dict):
         metrics["code_quality"] = code_quality.get("aggregate", {})

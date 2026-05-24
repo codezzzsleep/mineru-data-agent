@@ -1,14 +1,14 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T10:17:15Z",
+  "generated_at": "2026-05-24T10:43:28Z",
   "scope": "Static repository quality summary generated from local files.",
   "aggregate": {
-    "python_files": 50,
-    "physical_lines": 13035,
-    "code_lines": 11569,
+    "python_files": 51,
+    "physical_lines": 13353,
+    "code_lines": 11848,
     "classes": 34,
-    "functions": 531,
-    "test_functions": 75,
+    "functions": 547,
+    "test_functions": 76,
     "test_files": 12,
     "workflow_files": [
       ".github/workflows/tests.yml"
@@ -27,20 +27,20 @@
       "test_functions": 0
     },
     "scripts": {
-      "python_files": 24,
-      "physical_lines": 5290,
-      "code_lines": 4711,
+      "python_files": 25,
+      "physical_lines": 5597,
+      "code_lines": 4982,
       "classes": 9,
-      "functions": 196,
+      "functions": 211,
       "test_functions": 0
     },
     "tests": {
       "python_files": 12,
-      "physical_lines": 1604,
-      "code_lines": 1353,
+      "physical_lines": 1615,
+      "code_lines": 1361,
       "classes": 6,
-      "functions": 87,
-      "test_functions": 75
+      "functions": 88,
+      "test_functions": 76
     }
   },
   "largest_files": [
@@ -175,11 +175,11 @@
     {
       "path": "tests/test_artifact_reports.py",
       "area": "tests",
-      "physical_lines": 62,
-      "code_lines": 42,
+      "physical_lines": 73,
+      "code_lines": 50,
       "classes": 0,
-      "functions": 6,
-      "test_functions": 5
+      "functions": 7,
+      "test_functions": 6
     },
     {
       "path": "tests/test_batch.py",

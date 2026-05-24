@@ -119,17 +119,19 @@ Response:
 
 ## Error Responses
 
-| HTTP | `detail.error` | Cause |
-| ---: | --- | --- |
-| 400 | `invalid_runner` | `runner` is not `cli` or `agent-api`. |
-| 400 | `invalid_llm` | `llm` is not `none`, `deepseek`, or `modelscope`. |
-| 400 | `invalid_api_max_retries` | retry value outside `0..10`. |
-| 400 | `invalid_llm_timeout` | timeout outside `0..600`. |
-| 400 | `output_root_outside_allowed_base` | requested output directory violates `MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE`. |
-| 400 | `empty_upload` | uploaded file has zero bytes. |
-| 413 | `upload_too_large` | upload exceeds configured limit. |
-| 404 | `job_not_found` | async job id was not found. |
-| 500 | `parse_failed` | parser or agent execution failed. Includes `run_id`, `output_dir`, `trace_path`, `result_path`, and `summary_path` when available. |
+| HTTP | `detail.error` | Cause | Suggested handling |
+| ---: | --- | --- | --- |
+| 400 | `invalid_runner` | `runner` is not `cli` or `agent-api`. | Use `agent-api` for CPU review or `cli` when local MinerU is installed. |
+| 400 | `invalid_llm` | `llm` is not `none`, `deepseek`, or `modelscope`. | Use `none` for deterministic runs unless provider credentials are configured. |
+| 400 | `invalid_api_max_retries` | retry value outside `0..10`. | Lower retry count and rerun. |
+| 400 | `invalid_llm_timeout` | timeout outside `0..600`. | Lower timeout and rerun. |
+| 400 | `output_root_outside_allowed_base` | requested output directory violates `MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE`. | Choose an output root under the configured base directory. |
+| 400 | `empty_upload` | uploaded file has zero bytes. | Re-upload a non-empty document. |
+| 413 | `upload_too_large` | upload exceeds configured limit. | Split the file or raise the deployment upload limit. |
+| 404 | `job_not_found` | async job id was not found. | Check the job id or resubmit the job. |
+| 500 | `parse_failed` | parser or agent execution failed. Includes `run_id`, `output_dir`, `trace_path`, `result_path`, and `summary_path` when available. | Inspect `trace_path`; if parser artifacts exist, treat the result as partial evidence and rerun with a safer runner or lower concurrency. |
+
+Quality and recovery risks are returned with HTTP 200 when a parse completes but should not be auto-accepted. Examples include `no_page_provenance`, `strict_page_provenance_failed`, `short_text`, `possible_mojibake`, and `numeric_total_mismatch`.
 
 ## Review-Friendly cURL
 

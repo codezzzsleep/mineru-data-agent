@@ -36,6 +36,7 @@
 - [x] controlled failure/recovery 负样本已生成，见 `submission_artifacts/failure_recovery_cases/`
 - [x] 长文档分片风险汇总已生成，见 `submission_artifacts/long_document_risk/`
 - [x] retrieval chunk 格式/重复率/lexical top-k 冒烟报告已生成，见 `submission_artifacts/retrieval_validation/`
+- [x] Agent 层增量字段与决策模式报告已生成，见 `submission_artifacts/agent_value/`
 - [x] coverage.py 本地行覆盖率报告已生成，见 `submission_artifacts/coverage/`
 - [x] 代码质量摘要已生成，见 `submission_artifacts/code_quality/`
 - [x] Artifact 总索引已生成，见 `submission_artifacts/ARTIFACTS_INDEX.md`

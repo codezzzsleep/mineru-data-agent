@@ -79,6 +79,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 | Evaluation | `submission_artifacts/evaluation/` | 17 个案例、45 个字段、22 条文本证据、11 条数字证据、6 条表格证据和字段级 precision/recall/F1 |
 | Coverage | `submission_artifacts/coverage/` | coverage.py 对 `src/mineru_data_agent` 的本地 pytest 行覆盖率 |
 | Retrieval validation | `submission_artifacts/retrieval_validation/` | chunk schema、重复率、空文本和 lightweight lexical query smoke；不等同 embedding benchmark |
+| Agent value | `submission_artifacts/agent_value/` | 统计 Agent 层相对 parser Markdown/content_list 增加的 schema、质量、恢复、field evidence、retrieval 和决策模式字段；不等同 parser 准确率 benchmark |
 | Stability/API/Tradeoff | `submission_artifacts/stability/`、`submission_artifacts/http_load_test_100/`、`submission_artifacts/baseline_comparison/`、`submission_artifacts/llm_cost/` | trace 完整性、工具耗时、100 请求本地 HTTP loopback、runner 分组对比和 LLM token 审计 |
 | Artifact index | `submission_artifacts/ARTIFACTS_INDEX.md` | 提交 artifact 总导航，列出各目录 result/trace 数量和主报告 |
 
@@ -149,6 +150,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - `submission_artifacts/http_load_test/` 中包含 12 请求、并发 6 的本地 HTTP loopback 压测，混合同步 `/v1/parse` 和异步 `/v1/jobs`
 - `submission_artifacts/http_load_test_100/` 中包含 100 请求、并发 20 的本地 HTTP loopback 压测，混合同步 `/v1/parse` 和异步 `/v1/jobs`
 - `submission_artifacts/baseline_comparison/` 中包含保存 artifact 的成本/速度/质量分组对比
+- `submission_artifacts/agent_value/` 中包含 Agent 层增量字段和决策模式分布，明确区分 deterministic、offline scripted、controlled fault injection 和 saved live LLM trace
 - `submission_artifacts/llm_cost/` 中包含 LLM token/cost 审计报告
 - `docs/BENCHMARK_AND_ROADMAP.md` 中包含外部 baseline 矩阵、真实文档 benchmark 设计和后续 roadmap
 

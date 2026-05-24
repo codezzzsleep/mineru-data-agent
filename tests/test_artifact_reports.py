@@ -53,6 +53,17 @@ def test_retrieval_validation_report_scans_saved_chunks() -> None:
     assert "label_query_checks" in report["aggregate"]
 
 
+def test_agent_value_report_separates_live_and_offline_decisions() -> None:
+    module = _load_script("build_agent_value_report.py")
+    report = module.build_report()
+
+    modes = report["aggregate"]["decision_modes"]
+    assert modes["offline_scripted_decision_regression"] >= 5
+    assert modes["controlled_fault_injection"] >= 5
+    assert report["aggregate"]["with_live_llm_trace"] >= 1
+    assert "execution_control.agent_action_plan.state_machine" in report["agent_layer_fields"]
+
+
 def _load_script(name: str) -> ModuleType:
     path = PROJECT_ROOT / "scripts" / name
     spec = importlib.util.spec_from_file_location(path.stem, path)

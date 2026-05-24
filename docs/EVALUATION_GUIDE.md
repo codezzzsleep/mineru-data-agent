@@ -15,6 +15,7 @@ pip install -e ".[dev]"
 python scripts/build_evaluation_report.py
 python scripts/run_failure_recovery_cases.py
 python scripts/build_retrieval_validation_report.py
+python scripts/build_agent_value_report.py
 python scripts/build_coverage_report.py
 python scripts/build_artifacts_index.py
 ```
@@ -61,6 +62,7 @@ python scripts/build_llm_impact_report.py
 | Recovery aggregate | Saved-result recovery records, executed recovery count, selected non-initial count, issue-code distribution | `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md` |
 | Controlled failure/recovery cases | Fault-injection cases for text cleanup, OCR retry success/failure, strict provenance failure, and numeric mismatch | `submission_artifacts/failure_recovery_cases/README.md` |
 | Retrieval validation | Chunk schema errors, duplicate rate, empty chunks, and lightweight lexical top-3 query smoke | `submission_artifacts/retrieval_validation/retrieval_validation_report.md` |
+| Agent value | 37 saved result files; separates deterministic, offline scripted, controlled fault-injection, and saved live LLM decision modes | `submission_artifacts/agent_value/agent_value_report.md` |
 | Coverage | Local pytest line coverage for `src/mineru_data_agent` | `submission_artifacts/coverage/coverage_report.md` |
 | Code/test scale | Python files, test functions, GitHub Actions workflow present | `submission_artifacts/code_quality/code_quality_report.md` |
 

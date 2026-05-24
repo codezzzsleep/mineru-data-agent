@@ -4,13 +4,13 @@ Static repository quality summary generated from local files.
 
 ## Aggregate
 
-- Python files: 50
-- Physical lines: 13035
-- Code lines: 11569
+- Python files: 51
+- Physical lines: 13353
+- Code lines: 11848
 - Classes: 34
-- Functions: 531
+- Functions: 547
 - Test files: 12
-- Test functions: 75
+- Test functions: 76
 - CI workflows: `[".github/workflows/tests.yml"]`
 - Coverage measured: true
 - Line coverage: 81.31
@@ -21,8 +21,8 @@ Static repository quality summary generated from local files.
 | Area | Files | Physical Lines | Code Lines | Classes | Functions | Test Functions |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | src | 14 | 6141 | 5505 | 19 | 248 | 0 |
-| scripts | 24 | 5290 | 4711 | 9 | 196 | 0 |
-| tests | 12 | 1604 | 1353 | 6 | 87 | 75 |
+| scripts | 25 | 5597 | 4982 | 9 | 211 | 0 |
+| tests | 12 | 1615 | 1361 | 6 | 88 | 76 |
 
 ## Largest Python Files
 
@@ -47,7 +47,7 @@ Static repository quality summary generated from local files.
 | --- | ---: |
 | `tests/test_agent_recovery.py` | 7 |
 | `tests/test_api.py` | 11 |
-| `tests/test_artifact_reports.py` | 5 |
+| `tests/test_artifact_reports.py` | 6 |
 | `tests/test_batch.py` | 2 |
 | `tests/test_cli.py` | 3 |
 | `tests/test_evaluation.py` | 1 |
