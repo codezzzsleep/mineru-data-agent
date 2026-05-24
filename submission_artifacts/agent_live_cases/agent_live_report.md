@@ -3,12 +3,20 @@
 This report separates live provider tool-call completion from semantic answer quality.
 A case counts as tool-call evidence when it reached completed, used provider tokens, and called finalize; it counts as semantic success only when answer_quality_pass=true after manual review.
 
+Boundary: this saved provider pack is `legacy_pre_skill_gate`. It was generated
+before the 2026-05-25 skill-guided validation gate, so it is live-provider
+evidence for the older tool-calling loop, not proof that the newer
+`select_skill -> parse -> validate_answer -> finalize` gate has completed a
+provider rerun.
+
 ## Summary
 
 - Provider: **modelscope**
 - Model: **Qwen/Qwen3-235B-A22B-Instruct-2507**
+- Evidence generation: **legacy_pre_skill_gate**
 - Total attempted cases: **8**
 - Tool-call completed cases: **4**
+- Skill-gated tool-validated cases: **0**
 - Answer-quality pass cases: **2**
 - Answer-quality questionable cases: **2**
 - Failed or incomplete cases: **4**

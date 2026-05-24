@@ -19,7 +19,7 @@ This document was extracted from the README to keep it concise.
 
 ## Live LLM Agent Evidence
 
-`agent_live.py` provides a real OpenAI-compatible tool-calling harness exposed as the CLI command `data-agent agent-run`. The HTTP API is optional and intentionally does not expose a live-agent endpoint. The saved report in `submission_artifacts/agent_live_cases/agent_live_report.json` currently records 8 attempted ModelScope Qwen3-235B live runs: 4 reached `completed`, consumed provider tokens, and called `finalize`; after manual answer-quality review, 2 are semantic pass examples and 2 are retained only as live tool-call traces because their final answers are questionable.
+`agent_live.py` provides a real OpenAI-compatible tool-calling harness exposed as the CLI command `data-agent agent-run`. It is now skill-guided: the LLM must first select a high-level skill (`financial_total_audit`, `not_found_guard`, `text_recovery_then_extract`, `contract_clause_review`, `workflow_risk_review`, or `structured_extraction`), can switch skills when evidence contradicts the first plan, and must call `validate_answer` before `finalize`. The tool layer enforces this loop: tools are rejected until `select_skill` succeeds, answer validation requires a parsed document, and `finalize` requires the exact answer and evidence list already validated. The HTTP API is optional and intentionally does not expose a live-agent endpoint. The saved report in `submission_artifacts/agent_live_cases/agent_live_report.json` is a legacy provider pack generated before this stricter 2026-05-25 skill/validation gate: it records 8 attempted ModelScope Qwen3-235B live runs, 4 finalize/tool-call completions, 2 manually reviewed semantic pass examples, and 0 tool-validated skill-gated rerun cases.
 
 | Trace | Turns | Tokens | Tool-call completed | Answer-quality pass | Key observation |
 | --- | ---: | ---: | --- | --- | --- |
@@ -36,6 +36,6 @@ Total attempted live-agent tokens: 61,890. Tool-call-completed tokens: 59,366. A
 - 4 public real PDFs (IRS W-4, NIST AI RMF, Microsoft 10-K, CDC VIS)
 - Public real-document evidence in `submission_artifacts/public_real_cases/` and long-document chunk evidence in `submission_artifacts/long_document_chunks/`
 - 5 controlled failure/recovery negative cases
-- 8 attempted live LLM agent traces, with 4 finalize/tool-call completions and 2 manually reviewed answer-quality pass examples
+- 8 attempted legacy live LLM agent traces, with 4 finalize/tool-call completions, 2 manually reviewed answer-quality pass examples, and 0 saved skill-gated tool-validated rerun cases
 - Cost/speed/quality tradeoff model with replaceable May 2026 scenario assumptions, not contractual pricing claims
 - Saved HTTP load evidence is retained as secondary engineering evidence; CI now uses CLI smoke commands as the primary regression gate

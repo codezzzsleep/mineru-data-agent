@@ -72,7 +72,10 @@ def test_artifact_index_reports_live_agent_and_cost_schema() -> None:
 
     category_ids = {item["id"] for item in report["categories"]}
     assert "agent_live_cases" in category_ids
+    assert report["quick_metrics"]["agent_live_cases"]["evidence_generation"] == "legacy_pre_skill_gate"
+    assert report["quick_metrics"]["agent_live_cases"]["skill_gate_live_rerun_completed"] is False
     assert report["quick_metrics"]["agent_live_cases"]["tool_call_completed_cases"] >= 4
+    assert report["quick_metrics"]["agent_live_cases"]["tool_validated_cases"] == 0
     assert report["quick_metrics"]["agent_live_cases"]["answer_quality_pass_cases"] >= 2
     assert report["quick_metrics"]["agent_live_cases"]["answer_quality_questionable_cases"] >= 2
     assert report["quick_metrics"]["agent_live_cases"]["total_tokens"] > 0

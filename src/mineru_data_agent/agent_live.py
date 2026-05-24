@@ -16,8 +16,10 @@ Design constraints:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import re
 import time
 import uuid
 from dataclasses import asdict, dataclass, field
@@ -46,6 +48,71 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MAX_TURNS = 12
 DEFAULT_MAX_TOKENS = 1024
 DEFAULT_TIMEOUT = 120.0
+SKILL_CATALOG_VERSION = "2026-05-25"
+
+
+LIVE_AGENT_SKILLS: dict[str, dict[str, Any]] = {
+    "financial_total_audit": {
+        "name": "Financial total audit",
+        "when_to_use": "financial reports, totals, growth rates, dense numeric tables, consistency checks",
+        "objective": "extract relevant figures, verify arithmetic, and explain mismatches with evidence",
+        "recommended_tools": ["parse_*", "build_extracted", "validate_quality", "query_extracted", "validate_answer", "finalize"],
+        "completion_checks": [
+            "answer cites exact numeric evidence",
+            "answer_validation has no blocking arithmetic or unsupported-number issue",
+        ],
+    },
+    "not_found_guard": {
+        "name": "Not-found guard",
+        "when_to_use": "user asks for a period/entity/field that may be absent from the document",
+        "objective": "search for the requested item and nearby alternatives, then decline explicitly if absent",
+        "recommended_tools": ["parse_*", "build_extracted", "query_extracted", "export_retrieval", "validate_answer", "finalize"],
+        "completion_checks": [
+            "not_found answer lists what was searched and what related values are actually present",
+            "answer_validation has no potential_not_found_conflict issue",
+        ],
+    },
+    "text_recovery_then_extract": {
+        "name": "Text recovery then extract",
+        "when_to_use": "OCR noise, mojibake, unreadable snippets, low quality scans, text_encoding_noise",
+        "objective": "detect noise, clean text when needed, rebuild extraction, revalidate, and answer with remaining uncertainty",
+        "recommended_tools": ["parse_*", "build_extracted", "validate_quality", "clean_text", "query_extracted", "validate_answer", "finalize"],
+        "completion_checks": [
+            "if quality reports text noise, clean_text is tried before final extraction",
+            "answer says unreadable/not_found only after evidence search",
+        ],
+    },
+    "contract_clause_review": {
+        "name": "Contract clause review",
+        "when_to_use": "contracts, obligations, parties, dispute clauses, acceptance, data security, liability",
+        "objective": "extract responsibilities/clauses and rank risk using evidence rather than keyword-only matching",
+        "recommended_tools": ["parse_*", "build_extracted", "validate_quality", "query_extracted", "validate_answer", "finalize"],
+        "completion_checks": [
+            "not_found is not used merely because the literal requested word is absent",
+            "answer cites clause snippets or section titles",
+        ],
+    },
+    "workflow_risk_review": {
+        "name": "Workflow risk review",
+        "when_to_use": "process diagrams, incident timelines, workflow reports, SLA or responsibility gaps",
+        "objective": "reconstruct steps or timeline, identify risk nodes, and prioritize actions",
+        "recommended_tools": ["parse_*", "build_extracted", "query_extracted", "export_retrieval", "validate_answer", "finalize"],
+        "completion_checks": [
+            "answer lists ordered steps or timeline items",
+            "risk ranking is grounded in document snippets",
+        ],
+    },
+    "structured_extraction": {
+        "name": "Structured extraction",
+        "when_to_use": "general key-value, table, profile, or summary extraction tasks",
+        "objective": "produce structured fields/tables with evidence and quality status",
+        "recommended_tools": ["parse_*", "build_extracted", "validate_quality", "query_extracted", "export_retrieval", "validate_answer", "finalize"],
+        "completion_checks": [
+            "answer includes requested fields or an explicit not_found for missing fields",
+            "answer_validation reports no missing evidence",
+        ],
+    },
+}
 
 
 def _now() -> str:
@@ -102,6 +169,9 @@ class AgentState:
         self.extracted: dict[str, Any] | None = None
         self.quality: dict[str, Any] | None = None
         self.retrieval: dict[str, Any] | None = None
+        self.selected_skill: dict[str, Any] | None = None
+        self.skill_history: list[dict[str, Any]] = []
+        self.answer_validation: dict[str, Any] | None = None
         self.notes: list[str] = []
 
 
@@ -305,12 +375,256 @@ def _tool_query_extracted(state: AgentState, *, query: str, limit: int = 5) -> d
     return {"ok": True, "matches": hits, "raw_text_match_count": text.count(q)}
 
 
+def _tool_select_skill(
+    state: AgentState,
+    *,
+    skill_id: str,
+    reason: str,
+    plan: list[str] | None = None,
+) -> dict[str, Any]:
+    if skill_id not in LIVE_AGENT_SKILLS:
+        return {
+            "ok": False,
+            "error": f"unknown skill_id: {skill_id}",
+            "available_skill_ids": sorted(LIVE_AGENT_SKILLS),
+        }
+    skill = LIVE_AGENT_SKILLS[skill_id]
+    record = {
+        "skill_id": skill_id,
+        "name": skill["name"],
+        "reason": reason,
+        "plan": plan or [],
+        "selected_at": _now(),
+    }
+    state.selected_skill = record
+    state.skill_history.append(record)
+    state.notes.append(f"selected_skill: {skill_id} :: {reason}")
+    return {
+        "ok": True,
+        "selected_skill": record,
+        "skill_policy": skill,
+        "instruction": "Follow this skill, but switch skill if the evidence contradicts the initial choice.",
+    }
+
+
+def _normalize_number_token(token: str) -> float | None:
+    clean = token.replace(",", "").replace("，", "").strip()
+    clean = clean.rstrip("%")
+    try:
+        return float(clean)
+    except ValueError:
+        return None
+
+
+def _number_tokens(text: str) -> list[str]:
+    return re.findall(r"[-+]?\d[\d,，]*(?:\.\d+)?%?", text)
+
+
+def _number_in_text(token: str, text: str) -> bool:
+    plain = token.replace(",", "").replace("，", "")
+    compact_text = text.replace(",", "").replace("，", "")
+    return token in text or plain in compact_text
+
+
+def _answer_fingerprint(answer: str) -> str:
+    return hashlib.sha256(answer.encode("utf-8")).hexdigest()
+
+
+def _evidence_fingerprint(evidence: list[str]) -> str:
+    payload = json.dumps(evidence, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _arithmetic_issues(answer: str) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    for match in re.finditer(r"([-\d,，.\s+]+)=\s*([-+]?\d[\d,，]*(?:\.\d+)?)", answer):
+        left_tokens = _number_tokens(match.group(1))
+        right_tokens = _number_tokens(match.group(2))
+        if len(left_tokens) < 2 or not right_tokens:
+            continue
+        left_values = [_normalize_number_token(item) for item in left_tokens]
+        right_value = _normalize_number_token(right_tokens[-1])
+        if any(value is None for value in left_values) or right_value is None:
+            continue
+        total = sum(value for value in left_values if value is not None)
+        tolerance = max(0.01, abs(right_value) * 0.0001)
+        is_equal = abs(total - right_value) <= tolerance
+        window = answer[max(0, match.start() - 30): min(len(answer), match.end() + 30)]
+        if is_equal and any(term in window for term in ["不等于", "不一致", "mismatch", "does not equal", "!="]):
+            issues.append(
+                {
+                    "code": "self_contradictory_arithmetic",
+                    "severity": "error",
+                    "message": "The answer says the equation does not match, but the displayed arithmetic balances.",
+                    "expression": match.group(0),
+                    "computed_sum": total,
+                    "reported_total": right_value,
+                }
+            )
+        if not is_equal and any(term in window for term in ["一致", "相等", "无异常", "match", "equals"]):
+            issues.append(
+                {
+                    "code": "incorrect_arithmetic_match_claim",
+                    "severity": "error",
+                    "message": "The answer claims arithmetic consistency, but the displayed equation does not balance.",
+                    "expression": match.group(0),
+                    "computed_sum": total,
+                    "reported_total": right_value,
+                }
+            )
+    return issues
+
+
+def _tool_validate_answer(
+    state: AgentState,
+    *,
+    answer: str,
+    evidence: list[str] | None = None,
+    claims: list[str] | None = None,
+) -> dict[str, Any]:
+    evidence = evidence or []
+    claims = claims or []
+    primary = next(iter(state.parses.values()), {})
+    markdown = primary.get("markdown") or ""
+    corpus = markdown + "\n" + json.dumps(state.extracted or {}, ensure_ascii=False, default=str)
+    issues: list[dict[str, Any]] = []
+    warnings: list[dict[str, Any]] = []
+
+    if not state.selected_skill:
+        issues.append(
+            {
+                "code": "missing_selected_skill",
+                "severity": "error",
+                "message": "The live Agent must call select_skill before answer validation.",
+            }
+        )
+    if not state.parses:
+        issues.append(
+            {
+                "code": "missing_parse",
+                "severity": "error",
+                "message": "The live Agent must parse the input document before validating the final answer.",
+            }
+        )
+    if not answer.strip():
+        issues.append({"code": "empty_answer", "severity": "error", "message": "Answer is empty."})
+    if not evidence:
+        warnings.append({"code": "missing_evidence_list", "severity": "warning", "message": "No evidence list was supplied."})
+
+    lower_answer = answer.lower()
+    is_not_found_answer = "not_found" in lower_answer or "未找到" in answer or "无法提取" in answer
+    support_text = corpus
+    if is_not_found_answer:
+        support_text = "\n".join([corpus, *evidence, *claims])
+
+    unsupported_numbers = [token for token in _number_tokens(answer) if not _number_in_text(token, support_text)]
+    if unsupported_numbers:
+        issues.append(
+            {
+                "code": "unsupported_numbers",
+                "severity": "error",
+                "message": "Some numbers in the answer were not found in parsed evidence.",
+                "numbers": unsupported_numbers[:10],
+            }
+        )
+
+    for issue in _arithmetic_issues(answer):
+        issues.append(issue)
+
+    if is_not_found_answer:
+        if not evidence and not claims:
+            issues.append(
+                {
+                    "code": "not_found_without_search_record",
+                    "severity": "error",
+                    "message": "A not_found answer must include searched evidence or claims.",
+                }
+            )
+        contract_markers = ["责任", "义务", "应当", "需", "必须", "服务范围", "数据安全", "验收", "异常处理"]
+        if state.selected_skill and state.selected_skill.get("skill_id") == "contract_clause_review":
+            present = [marker for marker in contract_markers if marker in corpus]
+            if present:
+                issues.append(
+                    {
+                        "code": "potential_not_found_conflict",
+                        "severity": "error",
+                        "message": "Contract responsibility markers exist in the document, so not_found is likely too strong.",
+                        "markers": present[:8],
+                    }
+                )
+
+    if state.quality and state.quality.get("status") == "needs_review":
+        warnings.append(
+            {
+                "code": "quality_needs_review",
+                "severity": "warning",
+                "message": "Current extraction quality is needs_review; final answer should state uncertainty.",
+            }
+        )
+
+    result = {
+        "ok": not issues,
+        "blocking_issues": issues,
+        "warnings": warnings,
+        "selected_skill_id": state.selected_skill.get("skill_id") if state.selected_skill else None,
+        "checked_claims": claims,
+        "recommendation": "finalize" if not issues else "revise_or_gather_more_evidence",
+    }
+    state.answer_validation = {
+        **result,
+        "answer_preview": answer[:600],
+        "answer_sha256": _answer_fingerprint(answer),
+        "answer_length": len(answer),
+        "evidence_sha256": _evidence_fingerprint(evidence),
+        "evidence_count": len(evidence),
+        "validated_at": _now(),
+    }
+    return result
+
+
 def _tool_finalize(state: AgentState, *, answer: str, evidence: list[str] | None = None) -> dict[str, Any]:
+    validation = state.answer_validation
+    evidence = evidence or []
+    if not validation or validation.get("answer_sha256") != _answer_fingerprint(answer) or validation.get("answer_length") != len(answer):
+        return {
+            "ok": False,
+            "error": "finalize requires validate_answer for the exact answer first",
+            "required_tool": "validate_answer",
+        }
+    if validation.get("evidence_sha256") != _evidence_fingerprint(evidence):
+        return {
+            "ok": False,
+            "error": "finalize requires validate_answer for the exact evidence list first",
+            "required_tool": "validate_answer",
+        }
+    if validation.get("blocking_issues"):
+        return {
+            "ok": False,
+            "error": "answer validation has blocking issues; revise or gather more evidence before finalizing",
+            "blocking_issues": validation.get("blocking_issues"),
+            "required_tool": "validate_answer",
+        }
     state.notes.append(f"final_answer: {answer}")
-    return {"ok": True, "answer": answer, "evidence": evidence or []}
+    return {"ok": True, "answer": answer, "evidence": evidence}
 
 
 TOOL_SCHEMA = [
+    {
+        "type": "function",
+        "function": {
+            "name": "select_skill",
+            "description": "Select or switch a high-level task skill. Call this before parsing, and call it again if evidence shows the first skill was wrong.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "skill_id": {"type": "string", "enum": sorted(LIVE_AGENT_SKILLS)},
+                    "reason": {"type": "string"},
+                    "plan": {"type": "array", "items": {"type": "string"}},
+                },
+                "required": ["skill_id", "reason"],
+            },
+        },
+    },
     {
         "type": "function",
         "function": {
@@ -399,12 +713,28 @@ TOOL_SCHEMA = [
         "type": "function",
         "function": {
             "name": "finalize",
-            "description": "Submit the final answer for the user task. Provide the answer and an evidence list (snippets/section titles you grounded on). After calling this the agent loop ends.",
+            "description": "Submit the final answer for the user task. You must call validate_answer for the exact answer first. Provide the answer and an evidence list. After a successful finalize the agent loop ends.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "answer": {"type": "string"},
                     "evidence": {"type": "array", "items": {"type": "string"}},
+                },
+                "required": ["answer"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "validate_answer",
+            "description": "Validate the proposed final answer before finalize. Checks evidence support, unsupported numbers, simple arithmetic contradictions, and not_found conflicts for the selected skill.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "answer": {"type": "string"},
+                    "evidence": {"type": "array", "items": {"type": "string"}},
+                    "claims": {"type": "array", "items": {"type": "string"}, "description": "Short claim list or searched terms to audit, especially for not_found answers."},
                 },
                 "required": ["answer"],
             },
@@ -448,6 +778,10 @@ class LiveAgentTrace:
     finished_at: str | None = None
     final_answer: str | None = None
     final_evidence: list[str] = field(default_factory=list)
+    selected_skill: dict[str, Any] | None = None
+    skill_history: list[dict[str, Any]] = field(default_factory=list)
+    answer_validation: dict[str, Any] | None = None
+    autonomy_controls: dict[str, Any] = field(default_factory=dict)
     status: str = "running"
     error: str | None = None
 
@@ -465,8 +799,9 @@ def live_trace_to_jsonable(
     path_value = _display_path if display_paths else lambda value: str(Path(value))
     tool_sequence = [turn.tool_call["name"] for turn in trace.turns if turn.tool_call]
     tool_call_completed = trace.status == "completed" and trace.total_tokens > 0 and "finalize" in tool_sequence
-    quality_status = "unreviewed" if tool_call_completed else "not_applicable"
-    notes = ["answer quality requires manual or benchmark review"] if tool_call_completed else []
+    validation_ok = bool(trace.answer_validation and trace.answer_validation.get("ok"))
+    quality_status = "tool_validated_unreviewed" if tool_call_completed and validation_ok else "unreviewed" if tool_call_completed else "not_applicable"
+    notes = ["answer passed built-in validate_answer but still requires manual or benchmark review"] if tool_call_completed and validation_ok else ["answer quality requires manual or benchmark review"] if tool_call_completed else []
     response = {
         "agent_mode": "live_tool_calling",
         "status": trace.status,
@@ -477,10 +812,15 @@ def live_trace_to_jsonable(
         "input_file": path_value(trace.input_file),
         "output_dir": path_value(output_dir),
         "tool_sequence": tool_sequence,
+        "selected_skill": trace.selected_skill,
+        "skill_history": trace.skill_history,
+        "skill_catalog_version": SKILL_CATALOG_VERSION,
+        "autonomy_controls": trace.autonomy_controls,
         "tool_call_completed": tool_call_completed,
         "live_evidence": tool_call_completed,
         "answer_quality_pass": None,
         "quality_review": {"status": quality_status, "notes": notes},
+        "answer_validation": trace.answer_validation,
         "turns": len(trace.turns),
         "tokens": {
             "prompt": trace.prompt_tokens,
@@ -500,20 +840,27 @@ def live_trace_to_jsonable(
 
 
 def _system_prompt() -> str:
+    skills = "\n".join(
+        f"- {skill_id}: {skill['name']} | use for {skill['when_to_use']} | objective: {skill['objective']}"
+        for skill_id, skill in LIVE_AGENT_SKILLS.items()
+    )
     return (
         "You are MinerU Data Agent — a tool-using planner for document understanding tasks.\n"
-        "You receive a user task and an input file path. Decide which tools to call and in what order.\n\n"
-        "WORKFLOW:\n"
-        "1. Call the appropriate parser (parse_pdf / parse_html / parse_office) first. "
-        "Do NOT pass any path argument — omit 'path' entirely to use the default input file.\n"
-        "2. Call build_extracted, then validate_quality with the right profile and task description.\n"
-        "3. If validate_quality reports 'text_encoding_noise' or 'mojibake', call clean_text then re-run build_extracted+validate_quality.\n"
-        "4. Use query_extracted to ground specific facts before answering.\n"
-        "5. Call export_retrieval once near the end.\n"
-        "6. Call finalize with a concrete answer plus an evidence list.\n\n"
+        "You receive a user task and an input file path. You must autonomously choose a high-level skill, then decide which tools to call.\n\n"
+        "AVAILABLE SKILLS:\n"
+        f"{skills}\n\n"
+        "OPERATING LOOP:\n"
+        "1. First call select_skill with the skill that best matches the task. You may call select_skill again to switch skills when evidence contradicts your initial choice.\n"
+        "2. Pick the parser that matches the file suffix (parse_pdf / parse_html / parse_office). Omit path unless the user explicitly asks for a sibling file.\n"
+        "3. Build extraction and validate quality when it helps. If validation reports text noise, decide whether clean_text is needed, then rebuild and revalidate.\n"
+        "4. Use query_extracted to ground facts; use export_retrieval when retrieval artifacts help review.\n"
+        "5. Draft the exact final answer, call validate_answer with that exact answer and evidence, then revise or gather more evidence if validation reports blocking issues.\n"
+        "6. Only after validate_answer passes, call finalize with the same answer and evidence.\n\n"
         "RULES:\n"
         "- Only ONE tool call per turn.\n"
-        "- Never invent values. If information is not in the document, call finalize with an explicit 'not_found' explanation.\n"
+        "- Never invent values. If information is not in the document, validate a not_found answer with searched terms and evidence before finalizing.\n"
+        "- For arithmetic, use validate_answer; do not claim totals match or mismatch without tool validation.\n"
+        "- For contract tasks, do not answer not_found merely because the literal word '义务' is absent; search responsibilities, shall/must language, service scope, security, acceptance, and dispute clauses.\n"
         "- Keep reasoning concise.\n"
     )
 
@@ -615,6 +962,14 @@ def run_live_agent(
         provider=provider,
         model=model,
         started_at=_now(),
+        autonomy_controls={
+            "mode": "skill_guided_tool_calling",
+            "skill_catalog_version": SKILL_CATALOG_VERSION,
+            "llm_must_select_skill": True,
+            "llm_may_switch_skill": True,
+            "finalize_requires_validate_answer": True,
+            "one_tool_call_per_turn": True,
+        },
     )
 
     messages: list[dict[str, Any]] = [
@@ -625,7 +980,7 @@ def run_live_agent(
                 f"Task: {task}\n"
                 f"Input file: {input_path.name} (suffix={input_path.suffix})\n"
                 f"Input path is available to tools; do not repeat local filesystem paths in the final answer.\n"
-                f"Plan and execute. End by calling finalize."
+                f"Choose a skill with select_skill, plan, execute, validate the answer, then call finalize."
             ),
         },
     ]
@@ -699,7 +1054,11 @@ def run_live_agent(
                 messages.append(
                     {
                         "role": "user",
-                        "content": "You answered without calling the finalize tool. Call finalize now with your answer and evidence.",
+                        "content": (
+                            "You answered without using the required tool chain. If you have not selected a skill, call "
+                            "`select_skill`; if you have not parsed the document, call the parser; then call "
+                            "`validate_answer` for your exact answer and evidence before `finalize`."
+                        ),
                     }
                 )
                 continue
@@ -717,6 +1076,9 @@ def run_live_agent(
         call_id = call.get("id") or f"call_{turn_index}"
 
         result = _dispatch_tool(name, args, state=state, runner=runner)
+        trace.selected_skill = state.selected_skill
+        trace.skill_history = list(state.skill_history)
+        trace.answer_validation = state.answer_validation
         turn.tool_call = {"name": name, "arguments": args, "id": call_id}
         turn.tool_result_preview = _preview(result, 1000)
         turn.ended_at = _now()
@@ -749,9 +1111,9 @@ def run_live_agent(
                     "role": "user",
                     "content": (
                         f"You have called `{recent[-1]}` {len(recent)} times in a row. "
-                        "Stop searching. Use what you already have, call `export_retrieval` if you haven't, "
-                        "then call `finalize` with your best answer. If the information is genuinely not in the document, "
-                        "finalize with an explicit 'not_found' explanation listing what IS in the document."
+                        "Stop repeating. Use what you already have, call `export_retrieval` if useful, "
+                        "then call `validate_answer` for your exact answer. If validation passes, call `finalize`; "
+                        "if the information is genuinely not in the document, validate a not_found answer listing what IS in the document."
                     ),
                 }
             )
@@ -765,6 +1127,9 @@ def run_live_agent(
         trace.status = "max_turns_exceeded"
 
     trace.finished_at = _now()
+    trace.selected_skill = state.selected_skill
+    trace.skill_history = list(state.skill_history)
+    trace.answer_validation = state.answer_validation
 
     # Persist artifacts
     trace_path = output_dir / "live_agent_trace.json"
@@ -789,8 +1154,29 @@ def run_live_agent(
 def _dispatch_tool(name: str, args: dict[str, Any], *, state: AgentState, runner: MinerURunner) -> dict[str, Any]:
     started = time.perf_counter()
     try:
-        if name == "parse_html":
+        if name != "select_skill" and not state.selected_skill:
+            result = {
+                "ok": False,
+                "error": "select_skill_required_before_tool_use",
+                "required_tool": "select_skill",
+                "available_skill_ids": sorted(LIVE_AGENT_SKILLS),
+            }
+        elif name == "validate_answer" and not state.parses:
+            result = {
+                "ok": False,
+                "error": "parse_required_before_answer_validation",
+                "required_tools": ["parse_html", "parse_office", "parse_pdf"],
+            }
+        elif name == "finalize" and not state.parses:
+            result = {
+                "ok": False,
+                "error": "parse_required_before_finalize",
+                "required_tools": ["parse_html", "parse_office", "parse_pdf"],
+            }
+        elif name == "parse_html":
             result = _tool_parse_html(state, **args)
+        elif name == "select_skill":
+            result = _tool_select_skill(state, **args)
         elif name == "parse_office":
             result = _tool_parse_office(state, **args)
         elif name == "parse_pdf":
@@ -805,6 +1191,8 @@ def _dispatch_tool(name: str, args: dict[str, Any], *, state: AgentState, runner
             result = _tool_export_retrieval(state)
         elif name == "query_extracted":
             result = _tool_query_extracted(state, **args)
+        elif name == "validate_answer":
+            result = _tool_validate_answer(state, **args)
         elif name == "finalize":
             result = _tool_finalize(state, **args)
         else:
@@ -829,6 +1217,8 @@ def _build_summary(trace: LiveAgentTrace, state: AgentState) -> str:
         f"- Finished: {trace.finished_at}",
         f"- Turns: {len(trace.turns)}",
         f"- Tokens: prompt={trace.prompt_tokens}, completion={trace.completion_tokens}, total={trace.total_tokens}",
+        f"- Agent mode: skill-guided tool calling",
+        f"- Selected skill: `{(trace.selected_skill or {}).get('skill_id', 'none')}`",
         "",
         "## Tool-call sequence",
         "",
@@ -849,6 +1239,15 @@ def _build_summary(trace: LiveAgentTrace, state: AgentState) -> str:
             lines.append("### Evidence")
             for ev in trace.final_evidence:
                 lines.append(f"- {ev}")
+    if trace.answer_validation:
+        lines.append("")
+        lines.append("## Answer validation")
+        lines.append(f"- ok: {trace.answer_validation.get('ok')}")
+        lines.append(f"- recommendation: {trace.answer_validation.get('recommendation')}")
+        blocking = trace.answer_validation.get("blocking_issues") or []
+        warnings = trace.answer_validation.get("warnings") or []
+        lines.append(f"- blocking issues: {[item.get('code') for item in blocking]}")
+        lines.append(f"- warnings: {[item.get('code') for item in warnings]}")
     if state.quality:
         lines.append("")
         lines.append("## Quality")

@@ -83,8 +83,23 @@ The command writes:
 
 Evidence semantics:
 
+- The live Agent is **skill-guided**: the LLM must call `select_skill` to choose
+  a high-level strategy before executing tools, and it may switch skills if the
+  evidence contradicts the initial plan.
+- Current skills include `financial_total_audit`, `not_found_guard`,
+  `text_recovery_then_extract`, `contract_clause_review`,
+  `workflow_risk_review`, and `structured_extraction`.
+- The LLM must call `validate_answer` before `finalize`. This tool checks
+  unsupported numbers, simple arithmetic contradictions, missing evidence, and
+  selected-skill not_found conflicts.
+- The tool layer enforces the minimum loop: tools other than `select_skill` are
+  rejected until a skill is selected, `validate_answer` is rejected until a
+  document has been parsed, and `finalize` is rejected unless the exact answer
+  and exact evidence list were already validated.
 - `tool_call_completed=true`: a real provider call reached `finalize`, consumed
   provider tokens, and produced a completed trace.
+- `answer_validation.ok=true`: built-in validation passed. This improves the
+  evidence trail but still does not replace manual or benchmark review.
 - `answer_quality_pass=true`: separate manual or benchmark review says the final
   answer is semantically correct.
 - Tool-call completion must not be cited as semantic success unless
@@ -115,3 +130,6 @@ Review scripts should inspect these top-level `result.json` fields:
 - Offline scripted decision cases are regression fixtures, not live LLM evidence.
 - The saved live-agent pack currently contains 8 attempted provider runs, 4
   tool-call completions, and 2 manually reviewed answer-quality pass examples.
+  It was generated before the stricter 2026-05-25 skill/validation gate, so it
+  is legacy live-provider evidence, not proof that the new gate has completed a
+  provider rerun.

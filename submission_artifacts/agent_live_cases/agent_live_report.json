@@ -2,10 +2,13 @@
   "generated_at": "2026-05-24T17:10:01.373776+00:00",
   "provider": "modelscope",
   "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+  "evidence_generation": "legacy_pre_skill_gate",
+  "skill_gate_live_rerun_completed": false,
   "summary": {
     "total": 8,
     "live_evidence_cases": 4,
     "tool_call_completed_cases": 4,
+    "tool_validated_cases": 0,
     "answer_quality_pass_cases": 2,
     "semantic_success_cases": 2,
     "answer_quality_questionable_cases": 2,
@@ -219,6 +222,8 @@
   "schema_version": "2026-05-25",
   "updated_at": "2026-05-24T19:00:30Z",
   "boundary": [
+    "This saved provider pack was generated before the 2026-05-25 skill-guided validation gate; it is legacy live-provider evidence, not proof that the new gate has completed a provider rerun.",
+    "For new skill-gated runs, cite tool_validated_cases and per-case selected_skill/answer_validation fields after rerunning scripts/run_agent_live_cases.py with a provider key.",
     "tool_call_completed/live_evidence means a real provider call reached completed status, consumed tokens, and called finalize.",
     "answer_quality_pass is a separate manual-review field; only pass=true cases should be cited as semantic success examples.",
     "b09a230d6597 and f93eb9dcdc0d are retained as live tool-call traces but not counted as answer-quality passes."

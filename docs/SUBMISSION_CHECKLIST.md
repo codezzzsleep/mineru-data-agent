@@ -45,7 +45,7 @@
 - [x] coverage.py 本地行覆盖率报告已生成，见 `submission_artifacts/coverage/`
 - [x] 代码质量摘要已生成，见 `submission_artifacts/code_quality/`
 - [x] Artifact 总索引已生成，见 `submission_artifacts/ARTIFACTS_INDEX.md`
-- [x] Live ModelScope DeepSeek-V4-Flash 预调度/复核案例已记录 provider token usage：4309 tokens；另有 CLI-only `data-agent agent-run`/`agent_live_cases` 记录 8 次 Qwen3 tool-calling 尝试、4 次 finalize/tool-call completion、2 次 answer-quality pass
+- [x] Live ModelScope DeepSeek-V4-Flash 预调度/复核案例已记录 provider token usage：4309 tokens；另有 CLI-only `data-agent agent-run`/`agent_live_cases` legacy provider 包记录 8 次 Qwen3 tool-calling 尝试、4 次 finalize/tool-call completion、2 次 answer-quality pass、0 次 skill-gated tool-validated rerun；新版 `select_skill -> parse -> validate_answer -> finalize` gate 需要重新跑 provider 才可作为新版 live 证据引用
 - [x] 对标矩阵与后续 benchmark/roadmap 已写入 `docs/BENCHMARK_AND_ROADMAP.md`
 - [x] 至少 5 个典型任务案例，见 `submission_artifacts/cases/`
 - [x] 额外 4 个复杂挑战样本与人工标注表已生成，见 `submission_artifacts/challenge_cases/`

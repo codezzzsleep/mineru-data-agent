@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T20:14:01Z",
+  "generated_at": "2026-05-24T21:25:52Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -52,8 +52,11 @@
     "agent_live_cases": {
       "provider": "modelscope",
       "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "evidence_generation": "legacy_pre_skill_gate",
+      "skill_gate_live_rerun_completed": false,
       "total_cases": 8,
       "tool_call_completed_cases": 4,
+      "tool_validated_cases": 0,
       "answer_quality_pass_cases": 2,
       "answer_quality_questionable_cases": 2,
       "answer_quality_unreviewed_cases": 0,

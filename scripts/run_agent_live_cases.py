@@ -26,12 +26,17 @@ import shutil
 import sys
 import time
 import traceback
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from mineru_data_agent.agent_live import run_live_agent
+
+
+REPORT_SCHEMA_VERSION = "2026-05-25"
+EVIDENCE_GENERATION = "skill_guided_validation_gate"
 
 
 CASES = [
@@ -152,6 +157,9 @@ def run_one(case: dict, *, output_root: Path, sleep_between: float, args: argpar
         "final_answer_preview": None,
         "evidence_count": 0,
         "tool_call_completed": False,
+        "selected_skill": None,
+        "answer_validation_ok": None,
+        "answer_validation_issue_codes": [],
         "answer_quality_pass": None,
         "answer_quality_note": None,
         "trace_path": None,
@@ -180,6 +188,13 @@ def run_one(case: dict, *, output_root: Path, sleep_between: float, args: argpar
         record["evidence_count"] = len(trace.final_evidence)
         record["tool_call_completed"] = _tool_call_completed(record)
         record["live_evidence"] = record["tool_call_completed"]
+        record["selected_skill"] = (trace.selected_skill or {}).get("skill_id")
+        record["answer_validation_ok"] = (trace.answer_validation or {}).get("ok")
+        record["answer_validation_issue_codes"] = [
+            item.get("code")
+            for item in (trace.answer_validation or {}).get("blocking_issues", [])
+            if isinstance(item, dict)
+        ]
         record["answer_quality_pass"] = None
         record["answer_quality_note"] = "not manually reviewed"
         record["trace_path"] = _display_path(Path(trace.output_dir) / "live_agent_trace.json")
@@ -242,9 +257,15 @@ def main() -> int:
 
     results = []
     for i, case in enumerate(selected, 1):
-        if args.skip_existing and case["id"] in existing and existing[case["id"]].get("status") == "completed":
+        existing_case = existing.get(case["id"])
+        if (
+            args.skip_existing
+            and existing_case
+            and existing_case.get("status") == "completed"
+            and existing_case.get("answer_validation_ok") is not None
+        ):
             print(f"[{i}/{len(selected)}] SKIP (already completed) {case['id']}")
-            results.append(existing[case["id"]])
+            results.append(existing_case)
             continue
         print(f"[{i}/{len(selected)}] RUN {case['id']} :: {case['task'][:60]}")
         rec = run_one(case, output_root=output_root, sleep_between=args.sleep_between, args=args)
@@ -255,15 +276,7 @@ def main() -> int:
         results.append(rec)
         # incremental save so we never lose progress
         report_path.write_text(
-            json.dumps(
-                {
-                    "cases": results,
-                    "summary": _summary(results),
-                },
-                ensure_ascii=False,
-                indent=2,
-                default=str,
-            ),
+            json.dumps(_report_payload(results, args=args), ensure_ascii=False, indent=2, default=str),
             encoding="utf-8",
         )
 
@@ -281,15 +294,36 @@ def main() -> int:
     return 0
 
 
+def _report_payload(results: list[dict], *, args: argparse.Namespace) -> dict:
+    summary = _summary(results)
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "schema_version": REPORT_SCHEMA_VERSION,
+        "evidence_generation": EVIDENCE_GENERATION,
+        "skill_gate_live_rerun_completed": summary["tool_validated_cases"] > 0,
+        "provider": args.provider,
+        "model": args.model,
+        "cases": results,
+        "summary": summary,
+        "boundary": [
+            "tool_call_completed/live_evidence means a real provider call reached completed status, consumed tokens, and called finalize.",
+            "tool_validated_cases counts completed provider runs whose final answer passed the built-in skill-gated validate_answer step.",
+            "answer_quality_pass is a separate manual-review field; built-in validation does not replace manual or benchmark review.",
+        ],
+    }
+
+
 def _summary(results: list[dict]) -> dict:
     tool_completed = [r for r in results if _tool_call_completed(r)]
     quality_pass = [r for r in tool_completed if _answer_quality_pass(r)]
     quality_questionable = [r for r in tool_completed if r.get("answer_quality_pass") is False]
     quality_unreviewed = [r for r in tool_completed if r.get("answer_quality_pass") is None]
+    tool_validated = [r for r in tool_completed if r.get("answer_validation_ok") is True]
     return {
         "total": len(results),
         "live_evidence_cases": len(tool_completed),
         "tool_call_completed_cases": len(tool_completed),
+        "tool_validated_cases": len(tool_validated),
         "answer_quality_pass_cases": len(quality_pass),
         "semantic_success_cases": len(quality_pass),
         "answer_quality_questionable_cases": len(quality_questionable),
@@ -315,6 +349,7 @@ def _render_markdown(results: list[dict]) -> str:
         "",
         f"- Total attempted cases: **{s['total']}**",
         f"- Tool-call completed cases: **{s['tool_call_completed_cases']}** ({s['tool_call_completed_cases']*100//max(1,s['total'])}%)",
+        f"- Tool-validated cases: **{s['tool_validated_cases']}**",
         f"- Answer-quality pass cases: **{s['answer_quality_pass_cases']}**",
         f"- Answer-quality questionable cases: **{s['answer_quality_questionable_cases']}**",
         f"- Answer-quality unreviewed cases: **{s['answer_quality_unreviewed_cases']}**",
@@ -326,15 +361,15 @@ def _render_markdown(results: list[dict]) -> str:
         "",
         "## Cases",
         "",
-        "| # | Case | Difficulty | Tool-call completed | Answer-quality pass | Status | Turns | Tokens | Duration | Tool sequence |",
-        "| - | --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |",
+        "| # | Case | Skill | Difficulty | Tool-call completed | Tool-validated | Answer-quality pass | Status | Turns | Tokens | Duration | Tool sequence |",
+        "| - | --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |",
     ]
     for i, r in enumerate(results, 1):
         seq = " → ".join(r["tool_sequence"] or []) or "-"
         quality = r.get("answer_quality_pass")
         quality_display = "unreviewed" if quality is None else str(quality).lower()
         lines.append(
-            f"| {i} | `{r['id']}` | {r['difficulty']} | {str(_tool_call_completed(r)).lower()} | {quality_display} | {r['status']} | {r['turns']} | {r['tokens']:,} | "
+            f"| {i} | `{r['id']}` | `{r.get('selected_skill') or '-'}` | {r['difficulty']} | {str(_tool_call_completed(r)).lower()} | {str(r.get('answer_validation_ok') is True).lower()} | {quality_display} | {r['status']} | {r['turns']} | {r['tokens']:,} | "
             f"{r['duration_seconds']}s | {seq} |"
         )
     lines.append("")
@@ -346,6 +381,10 @@ def _render_markdown(results: list[dict]) -> str:
         lines.append(f"- **Task**: {r['task']}")
         lines.append(f"- **Why hard**: {r['difficulty']}")
         lines.append(f"- **Tool-call completed**: `{str(_tool_call_completed(r)).lower()}`")
+        lines.append(f"- **Selected skill**: `{r.get('selected_skill') or '-'}`")
+        lines.append(f"- **Tool validation**: `{str(r.get('answer_validation_ok') is True).lower()}`")
+        if r.get("answer_validation_issue_codes"):
+            lines.append(f"- **Validation issues**: {', '.join(r['answer_validation_issue_codes'])}")
         quality = r.get("answer_quality_pass")
         quality_display = "unreviewed" if quality is None else str(quality).lower()
         lines.append(f"- **Answer-quality pass**: `{quality_display}`")

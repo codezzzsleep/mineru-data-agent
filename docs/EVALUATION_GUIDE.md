@@ -78,7 +78,7 @@ Missing provider keys do not generate fake evidence.
 | Text evidence checks | 22 | `submission_artifacts/evaluation/evaluation_metrics.md` |
 | Numeric evidence checks | 11 | `submission_artifacts/evaluation/evaluation_metrics.md` |
 | Table evidence checks | 6 | `submission_artifacts/evaluation/evaluation_metrics.md` |
-| Live tool-calling Agent | 8 attempted, 4 tool-call completed, 2 answer-quality pass | `submission_artifacts/agent_live_cases/agent_live_report.md` |
+| Live tool-calling Agent | Legacy pre-skill-gate provider pack: 8 attempted, 4 tool-call completed, 2 answer-quality pass, 0 skill-gated tool-validated rerun cases | `submission_artifacts/agent_live_cases/agent_live_report.md` |
 | Long document chunking | NIST AI RMF 48 pages, 3 chunks, 3/3 success, 58 retrieval chunks | `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md` |
 | LLM preplan/review usage | 2 calls, 4309 tokens in saved ModelScope case | `submission_artifacts/llm_cost/llm_cost_report.md` |
 | Agent decision regression cases | 5 offline local cases with subtask graph, selected tools, quality replan, and scripted decision hooks | `submission_artifacts/agent_decision_cases/README.md` |
@@ -102,5 +102,9 @@ client; it does not count as live LLM evidence. Saved live-provider evidence is
 split between one ModelScope LLM preplan/review case in
 `submission_artifacts/llm_cases/` and the `submission_artifacts/agent_live_cases/`
 tool-calling report: 8 attempted runs, 4 finalize/tool-call completions, and 2
-manually reviewed answer-quality pass examples. The optional HTTP API and Docker
-files are secondary integration materials, not the primary review surface.
+manually reviewed answer-quality pass examples. That provider pack was generated
+before the 2026-05-25 skill/validation gate and should be treated as legacy
+live-provider evidence; rerun `scripts/run_agent_live_cases.py` with a provider
+key to produce `selected_skill` / `answer_validation` tool-validated evidence
+for the newer live Agent. The optional HTTP API and Docker files are secondary
+integration materials, not the primary review surface.

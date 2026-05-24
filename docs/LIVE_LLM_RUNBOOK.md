@@ -26,7 +26,7 @@ $env:MODELSCOPE_MODEL="Qwen/Qwen3-235B-A22B-Instruct-2507"
   --task "识别 2026Q1 的营业收入和利润总额，验证合计行是否一致"
 ```
 
-Each run writes `result.json`, `live_agent_trace.json`, and `live_agent_summary.md`. `result.json` uses the evidence semantics `attempted`, `tool_call_completed`, `answer_quality_pass`, `quality_review`, and `tool_sequence`.
+Each run writes `result.json`, `live_agent_trace.json`, and `live_agent_summary.md`. `result.json` uses the evidence semantics `selected_skill`, `skill_history`, `answer_validation`, `tool_call_completed`, `answer_quality_pass`, `quality_review`, and `tool_sequence`. A successful skill-gated run should show the LLM choosing a skill with `select_skill`, parsing the document, validating the exact final answer with `validate_answer`, and only then calling `finalize`.
 
 ## Batch Tool-Calling Evidence
 
@@ -34,11 +34,11 @@ Each run writes `result.json`, `live_agent_trace.json`, and `live_agent_summary.
 .\.venv\Scripts\python.exe scripts\run_agent_live_cases.py `
   --provider modelscope `
   --model $env:MODELSCOPE_MODEL `
-  --skip-existing `
+  --reset-output `
   --min-completed-rate 0
 ```
 
-This script updates `submission_artifacts/agent_live_cases/agent_live_report.json` and `.md`. Failed, quota-limited, and answer-quality-questionable cases are retained rather than hidden.
+This script updates `submission_artifacts/agent_live_cases/agent_live_report.json` and `.md`. New reports use `evidence_generation=skill_guided_validation_gate` and include `tool_validated_cases`, `selected_skill`, and `answer_validation` fields. Failed, quota-limited, and answer-quality-questionable cases are retained rather than hidden. If you use `--skip-existing`, legacy completed rows without `answer_validation_ok` are not skipped; they are rerun so they can produce skill-gated evidence.
 
 ## LLM Preplan/Review Matrix
 

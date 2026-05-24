@@ -175,8 +175,14 @@ def quick_metrics() -> dict[str, Any]:
         metrics["agent_live_cases"] = {
             "provider": live_agent.get("provider"),
             "model": live_agent.get("model"),
+            "evidence_generation": live_agent.get("evidence_generation"),
+            "skill_gate_live_rerun_completed": live_agent.get("skill_gate_live_rerun_completed"),
             "total_cases": summary.get("total", len(cases)),
             "tool_call_completed_cases": summary.get("tool_call_completed_cases", len(tool_completed)),
+            "tool_validated_cases": summary.get(
+                "tool_validated_cases",
+                sum(1 for item in tool_completed if item.get("answer_validation_ok") is True),
+            ),
             "answer_quality_pass_cases": summary.get(
                 "answer_quality_pass_cases",
                 sum(1 for item in tool_completed if item.get("answer_quality_pass") is True),

@@ -116,8 +116,29 @@ def test_post_chat_normalizes_base_url(monkeypatch) -> None:
 def test_run_live_agent_writes_result_json_with_unified_schema(tmp_path: Path, monkeypatch) -> None:
     input_path = tmp_path / "input.html"
     input_path.write_text("<html><body>ok</body></html>", encoding="utf-8")
+    calls = iter(
+        [
+            (
+                "select_skill",
+                '{"skill_id":"structured_extraction","reason":"simple HTML smoke","plan":["validate answer then finalize"]}',
+            ),
+            (
+                "parse_html",
+                "{}",
+            ),
+            (
+                "validate_answer",
+                '{"answer":"ok","evidence":["input contained ok"],"claims":["ok"]}',
+            ),
+            (
+                "finalize",
+                '{"answer":"ok","evidence":["input contained ok"]}',
+            ),
+        ]
+    )
 
     def fake_post_chat(**kwargs):
+        name, arguments = next(calls)
         return {
             "choices": [
                 {
@@ -128,8 +149,8 @@ def test_run_live_agent_writes_result_json_with_unified_schema(tmp_path: Path, m
                                 "id": "call_1",
                                 "type": "function",
                                 "function": {
-                                    "name": "finalize",
-                                    "arguments": '{"answer":"ok","evidence":["input contained ok"]}',
+                                    "name": name,
+                                    "arguments": arguments,
                                 },
                             }
                         ],
@@ -148,7 +169,7 @@ def test_run_live_agent_writes_result_json_with_unified_schema(tmp_path: Path, m
         task="answer directly",
         provider="deepseek",
         api_key="test-key",
-        max_turns=1,
+        max_turns=4,
     )
 
     result_path = Path(trace.output_dir) / "result.json"
@@ -157,11 +178,134 @@ def test_run_live_agent_writes_result_json_with_unified_schema(tmp_path: Path, m
     assert data["status"] == "completed"
     assert data["tool_call_completed"] is True
     assert data["answer_quality_pass"] is None
-    assert data["quality_review"]["status"] == "unreviewed"
+    assert data["quality_review"]["status"] == "tool_validated_unreviewed"
     assert data["final_answer"] == "ok"
-    assert data["tool_sequence"] == ["finalize"]
+    assert data["tool_sequence"] == ["select_skill", "parse_html", "validate_answer", "finalize"]
+    assert data["selected_skill"]["skill_id"] == "structured_extraction"
+    assert data["answer_validation"]["ok"] is True
+    assert data["autonomy_controls"]["mode"] == "skill_guided_tool_calling"
     assert Path(trace.output_dir, "live_agent_trace.json").exists()
     assert Path(trace.output_dir, "live_agent_summary.md").exists()
+
+
+def test_finalize_requires_prior_answer_validation(tmp_path: Path) -> None:
+    state = agent_live.AgentState(input_path=tmp_path / "input.html", output_dir=tmp_path)
+
+    result = agent_live._tool_finalize(state, answer="ok", evidence=["x"])
+
+    assert result["ok"] is False
+    assert result["required_tool"] == "validate_answer"
+
+
+def test_dispatch_requires_skill_before_tool_use(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.html"
+    input_path.write_text("<html><body>ok</body></html>", encoding="utf-8")
+    state = agent_live.AgentState(input_path=input_path, output_dir=tmp_path)
+
+    result = agent_live._dispatch_tool("parse_html", {}, state=state, runner=object())
+
+    assert result["ok"] is False
+    assert result["error"] == "select_skill_required_before_tool_use"
+    assert result["required_tool"] == "select_skill"
+
+
+def test_validate_answer_requires_parse_after_skill(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.html"
+    input_path.write_text("<html><body>ok</body></html>", encoding="utf-8")
+    state = agent_live.AgentState(input_path=input_path, output_dir=tmp_path)
+    agent_live._tool_select_skill(state, skill_id="structured_extraction", reason="test")
+
+    result = agent_live._dispatch_tool(
+        "validate_answer",
+        {"answer": "ok", "evidence": ["input contained ok"]},
+        state=state,
+        runner=object(),
+    )
+
+    assert result["ok"] is False
+    assert result["error"] == "parse_required_before_answer_validation"
+
+
+def test_finalize_requires_exact_answer_and_evidence_fingerprint(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.html"
+    input_path.write_text("<html><body>alpha beta</body></html>", encoding="utf-8")
+    state = agent_live.AgentState(input_path=input_path, output_dir=tmp_path)
+    agent_live._tool_select_skill(state, skill_id="structured_extraction", reason="test")
+    agent_live._tool_parse_html(state)
+    validation = agent_live._tool_validate_answer(
+        state,
+        answer="alpha beta",
+        evidence=["alpha"],
+        claims=["alpha"],
+    )
+    assert validation["ok"] is True
+
+    changed_answer = agent_live._tool_finalize(state, answer="alpha beta changed", evidence=["alpha"])
+    changed_evidence = agent_live._tool_finalize(state, answer="alpha beta", evidence=["beta"])
+
+    assert changed_answer["ok"] is False
+    assert changed_answer["required_tool"] == "validate_answer"
+    assert changed_evidence["ok"] is False
+    assert changed_evidence["required_tool"] == "validate_answer"
+
+
+def test_validate_answer_flags_self_contradictory_arithmetic(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.html"
+    state = agent_live.AgentState(input_path=input_path, output_dir=tmp_path)
+    state.parses["html"] = {
+        "markdown": "Product 12860.50 Service 8430.25 Other 615.30 Tax 781.20 Profit 3033.75 Total 25721.00",
+        "content_list": [],
+    }
+    agent_live._tool_select_skill(state, skill_id="financial_total_audit", reason="test")
+
+    result = agent_live._tool_validate_answer(
+        state,
+        answer="合计行（25,721.00）不等于明细项之和（12,860.50 + 8,430.25 + 615.30 + 781.20 + 3,033.75 = 25,721.00），但计算一致。",
+        evidence=["financial table"],
+    )
+
+    assert result["ok"] is False
+    assert any(issue["code"] == "self_contradictory_arithmetic" for issue in result["blocking_issues"])
+
+
+def test_validate_answer_flags_contract_not_found_conflict(tmp_path: Path) -> None:
+    input_path = tmp_path / "contract.html"
+    state = agent_live.AgentState(input_path=input_path, output_dir=tmp_path)
+    state.parses["html"] = {
+        "markdown": "服务范围：乙方应当提供数据安全服务。验收标准：甲方需在五日内确认。",
+        "content_list": [],
+    }
+    agent_live._tool_select_skill(state, skill_id="contract_clause_review", reason="test")
+
+    result = agent_live._tool_validate_answer(
+        state,
+        answer="not_found: 文档中未明确列出甲方或乙方的义务条款。",
+        evidence=["searched 甲方/乙方/义务"],
+        claims=["甲方", "乙方", "义务"],
+    )
+
+    assert result["ok"] is False
+    assert any(issue["code"] == "potential_not_found_conflict" for issue in result["blocking_issues"])
+
+
+def test_validate_answer_allows_not_found_query_numbers_when_search_recorded(tmp_path: Path) -> None:
+    input_path = tmp_path / "financial.html"
+    state = agent_live.AgentState(input_path=input_path, output_dir=tmp_path)
+    state.parses["html"] = {
+        "markdown": "2026Q1 revenue 12860.50. 2025Q4 revenue 11320.20.",
+        "content_list": [],
+    }
+    agent_live._tool_select_skill(state, skill_id="not_found_guard", reason="missing quarter")
+
+    result = agent_live._tool_validate_answer(
+        state,
+        answer="not_found: 文档中没有 2025Q3 的营业收入。实际包含 2026Q1 和 2025Q4。",
+        evidence=["searched 2025Q3; found 2026Q1 and 2025Q4"],
+        claims=["2025Q3", "2026Q1", "2025Q4"],
+    )
+
+    assert result["ok"] is True
+    assert not any(issue["code"] == "unsupported_numbers" for issue in result["blocking_issues"])
 
 
 def test_summary_counts_only_completed_finalize_token_cases() -> None:
@@ -176,6 +320,7 @@ def test_summary_counts_only_completed_finalize_token_cases() -> None:
     assert summary["total"] == 3
     assert summary["live_evidence_cases"] == 1
     assert summary["tool_call_completed_cases"] == 1
+    assert summary["tool_validated_cases"] == 0
     assert summary["answer_quality_pass_cases"] == 0
     assert summary["answer_quality_unreviewed_cases"] == 1
     assert summary["completed_status"] == 2
@@ -217,5 +362,6 @@ def test_report_markdown_marks_incomplete_cases_as_non_evidence() -> None:
     markdown = runner._render_markdown(rows)
 
     assert "Tool-call completed cases: **1**" in markdown
+    assert "Tool-validated cases: **0**" in markdown
     assert "Answer-quality pass cases: **0**" in markdown
-    assert "| 2 | `bad` | empty | false | unreviewed | assistant_answer_without_finalize" in markdown
+    assert "| 2 | `bad` | `-` | empty | false | false | unreviewed | assistant_answer_without_finalize" in markdown

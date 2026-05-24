@@ -21,7 +21,7 @@ LLM Agent path when a provider key is available.
 
 - `data-agent run`: one document in, structured JSON/trace/summary/retrieval chunks out.
 - `data-agent batch`: manifest-driven batch execution; one failed task does not stop the batch.
-- `data-agent agent-run`: live LLM tool-calling loop for dynamic tool choice and evidence traces.
+- `data-agent agent-run`: skill-guided live LLM tool-calling loop for autonomous tool choice, answer validation, and evidence traces.
 - PDF paths through MinerU online Agent API or local MinerU CLI.
 - Native HTML/DOCX/PPTX parsing for CPU-friendly review and regression tests.
 - Quality checks for empty extraction, text noise, page provenance, financial totals, weak structure, and profile-specific risks.
@@ -164,10 +164,22 @@ regression fixtures, and live-provider evidence.
 | Long document chunking | NIST AI RMF 48 pages split into 3 online Agent API chunks in `submission_artifacts/long_document_chunks/` |
 | Failure/recovery | Controlled negative and recovery cases in `submission_artifacts/failure_recovery_cases/` |
 | Retrieval validation | Schema, duplicate, density, and lexical retrieval smoke checks in `submission_artifacts/retrieval_validation/` |
-| Live tool-calling Agent | 8 attempted ModelScope Qwen3 runs; 4 reached finalize/tool-call completion; 2 manually reviewed answer-quality pass examples in `submission_artifacts/agent_live_cases/` |
+| Live tool-calling Agent | Saved legacy provider pack: 8 attempted ModelScope Qwen3 runs; 4 reached finalize/tool-call completion; 2 manually reviewed answer-quality pass examples in `submission_artifacts/agent_live_cases/` |
 
 Live evidence semantics:
 
+- `selected_skill` records the LLM-selected high-level skill, such as financial
+  total audit, not-found guard, text recovery, contract review, workflow risk, or
+  structured extraction.
+- `answer_validation.ok=true` means the proposed final answer passed built-in
+  checks for evidence support, unsupported numbers, simple arithmetic
+  contradictions, and selected-skill not_found conflicts.
+- New `agent-run` executions enforce the loop at tool level: no tool can run
+  before `select_skill`, answer validation requires a parsed document, and
+  `finalize` requires the exact answer and evidence list previously validated.
+- The saved `agent_live_cases` pack was generated before this stricter
+  skill/validation gate and is kept as legacy live-provider evidence, not as
+  proof that the new gate has already passed a provider rerun.
 - `tool_call_completed=true` means a real provider call consumed tokens and
   reached the `finalize` tool.
 - `answer_quality_pass=true` is a separate manual review field.
