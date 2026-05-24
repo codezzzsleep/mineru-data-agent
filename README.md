@@ -20,6 +20,7 @@
 - 质量异常后的自动恢复执行：编码噪声清理二次 pass，以及 PDF/图片类低质量结果的 OCR 重试择优
 - 在线 Agent API 缺少页级 provenance 时，如果检测到本地 MinerU CLI 或显式配置了 CLI 路径，可自动触发 CLI fallback，并把初始问题码、两次尝试和最终择优结果写入 `recovery_decision`
 - 跨运行本地记忆：同一输出根目录下的 `.mineru_data_agent/memory.sqlite` 记录 profile、问题码和恢复结果，后续运行可把历史成功恢复路径纳入 `runtime_recovery_plan`；这是本地统计，不是模型训练
+- 恢复决策逻辑已拆分到 `src/mineru_data_agent/recovery.py`，主 Agent 保留编排职责，降低 `agent.py` 单体复杂度
 - 面向检索/评测入库的 `retrieval_chunks.jsonl` 导出
 - `result.json`、`trace.json`、`summary.md` 三类可复查输出；新结果含 `schema_version`，便于下游兼容性检查
 - FastAPI 同步接口与异步 job/polling 接口，方便组委会或评审脚本调用

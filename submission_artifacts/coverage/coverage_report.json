@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T13:01:10Z",
+  "generated_at": "2026-05-24T14:02:07Z",
   "scope": "Line coverage measured by coverage.py while running the local pytest suite.",
   "aggregate": {
     "measured": true,
-    "line_coverage_percent": 82.22,
-    "covered_lines": 2914,
-    "num_statements": 3544,
+    "line_coverage_percent": 82.24,
+    "covered_lines": 2918,
+    "num_statements": 3548,
     "missing_lines": 630,
     "excluded_lines": 2,
     "pytest_command": "python.exe -m coverage run --source src/mineru_data_agent -m pytest -q",
@@ -16,21 +16,21 @@
     {
       "command": "-m coverage erase",
       "returncode": 0,
-      "elapsed_seconds": 0.447,
+      "elapsed_seconds": 0.575,
       "stdout_tail": "",
       "stderr_tail": ""
     },
     {
       "command": "-m coverage run --source src/mineru_data_agent -m pytest -q",
       "returncode": 0,
-      "elapsed_seconds": 8.602,
-      "stdout_tail": "........................................................................ [ 86%]\n...........                                                              [100%]\n83 passed in 7.11s\n",
+      "elapsed_seconds": 8.692,
+      "stdout_tail": "........................................................................ [ 86%]\n...........                                                              [100%]\n83 passed in 7.31s\n",
       "stderr_tail": ""
     },
     {
       "command": "-m coverage json -o submission_artifacts/coverage/coverage_raw.json",
       "returncode": 0,
-      "elapsed_seconds": 0.65,
+      "elapsed_seconds": 0.742,
       "stdout_tail": "Wrote JSON report to submission_artifacts/coverage/coverage_raw.json\n",
       "stderr_tail": ""
     }
@@ -46,10 +46,10 @@
     },
     {
       "path": "src/mineru_data_agent/agent.py",
-      "line_coverage_percent": 91.18,
-      "covered_lines": 693,
-      "num_statements": 760,
-      "missing_lines": 67,
+      "line_coverage_percent": 93.05,
+      "covered_lines": 455,
+      "num_statements": 489,
+      "missing_lines": 34,
       "excluded_lines": 0
     },
     {
@@ -149,6 +149,14 @@
       "excluded_lines": 0
     },
     {
+      "path": "src/mineru_data_agent/recovery.py",
+      "line_coverage_percent": 88.0,
+      "covered_lines": 242,
+      "num_statements": 275,
+      "missing_lines": 33,
+      "excluded_lines": 0
+    },
+    {
       "path": "src/mineru_data_agent/retrieval_exporter.py",
       "line_coverage_percent": 65.98,
       "covered_lines": 192,
@@ -231,6 +239,14 @@
       "excluded_lines": 0
     },
     {
+      "path": "src/mineru_data_agent/recovery.py",
+      "line_coverage_percent": 88.0,
+      "covered_lines": 242,
+      "num_statements": 275,
+      "missing_lines": 33,
+      "excluded_lines": 0
+    },
+    {
       "path": "src/mineru_data_agent/profile_config.py",
       "line_coverage_percent": 89.89,
       "covered_lines": 80,
@@ -244,14 +260,6 @@
       "covered_lines": 300,
       "num_statements": 332,
       "missing_lines": 32,
-      "excluded_lines": 0
-    },
-    {
-      "path": "src/mineru_data_agent/agent.py",
-      "line_coverage_percent": 91.18,
-      "covered_lines": 693,
-      "num_statements": 760,
-      "missing_lines": 67,
       "excluded_lines": 0
     },
     {

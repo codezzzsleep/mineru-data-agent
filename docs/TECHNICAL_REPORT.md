@@ -19,7 +19,8 @@
 3. Structured Extractor：从 Markdown 与内容块中生成章节、表格、键值对、键值字典、数字事实、日期/建议/异常语义信号和页级溯源摘要。HTML 输入会保留标题层级、段落、列表和表格，避免网页语料被压平成不可复用纯文本。
 4. Retrieval Exporter：把解析结果整理为 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`，便于检索、向量库入库与评审复查。跨页文本不会再合并到第一页；chunk 保留 `page_no` 起始页和 `pages` 覆盖页列表。
 5. Quality Validator：检查空结果、编码噪声、页码覆盖、profile 预期、表格合计行等风险。
-6. API/CLI Layer：提供命令行、批处理、FastAPI 同步接口和异步 job/polling 接口，便于评审脚本调用和复现实验。
+6. Recovery Orchestrator：`src/mineru_data_agent/recovery.py` 集中处理严格页级来源门槛、质量择优、恢复计划、LLM 复核影响、attempt 摘要和文本清理，主 `agent.py` 只负责按计划调用解析/恢复步骤。
+7. API/CLI Layer：提供命令行、批处理、FastAPI 同步接口和异步 job/polling 接口，便于评审脚本调用和复现实验。
 
 ## 3. Agent 执行机制
 

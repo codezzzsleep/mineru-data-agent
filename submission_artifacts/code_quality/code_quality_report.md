@@ -4,23 +4,23 @@ Static repository quality summary generated from local files.
 
 ## Aggregate
 
-- Python files: 54
-- Physical lines: 14855
-- Code lines: 13186
+- Python files: 55
+- Physical lines: 14881
+- Code lines: 13208
 - Classes: 38
 - Functions: 610
 - Test files: 12
 - Test functions: 83
 - CI workflows: `[".github/workflows/tests.yml"]`
 - Coverage measured: true
-- Line coverage: 82.22
+- Line coverage: 82.24
 - Coverage report: `submission_artifacts/coverage/coverage_report.md`
 
 ## By Area
 
 | Area | Files | Physical Lines | Code Lines | Classes | Functions | Test Functions |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| src | 16 | 7152 | 6416 | 21 | 291 | 0 |
+| src | 17 | 7178 | 6438 | 21 | 291 | 0 |
 | scripts | 26 | 5807 | 5165 | 9 | 220 | 0 |
 | tests | 12 | 1896 | 1605 | 8 | 99 | 83 |
 
@@ -28,9 +28,10 @@ Static repository quality summary generated from local files.
 
 | File | Area | Code Lines | Functions | Classes |
 | --- | --- | ---: | ---: | ---: |
-| `src/mineru_data_agent/agent.py` | src | 1675 | 45 | 2 |
+| `src/mineru_data_agent/agent.py` | src | 1162 | 19 | 2 |
 | `src/mineru_data_agent/extractors.py` | src | 898 | 59 | 1 |
 | `src/mineru_data_agent/planner.py` | src | 786 | 30 | 2 |
+| `src/mineru_data_agent/recovery.py` | src | 535 | 26 | 0 |
 | `tests/test_agent_recovery.py` | tests | 529 | 24 | 8 |
 | `src/mineru_data_agent/llm_client.py` | src | 509 | 19 | 3 |
 | `src/mineru_data_agent/mineru_client.py` | src | 451 | 23 | 3 |
@@ -39,7 +40,6 @@ Static repository quality summary generated from local files.
 | `scripts/run_http_load_test.py` | scripts | 385 | 17 | 0 |
 | `src/mineru_data_agent/api.py` | src | 362 | 23 | 1 |
 | `src/mineru_data_agent/validators.py` | src | 294 | 13 | 0 |
-| `scripts/build_agent_value_report.py` | scripts | 284 | 15 | 0 |
 
 ## Test Modules
 

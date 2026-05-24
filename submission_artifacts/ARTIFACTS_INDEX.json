@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T13:33:49Z",
+  "generated_at": "2026-05-24T14:02:08Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -155,9 +155,9 @@
       "with_live_llm_trace": 1
     },
     "code_quality": {
-      "python_files": 54,
-      "physical_lines": 14855,
-      "code_lines": 13186,
+      "python_files": 55,
+      "physical_lines": 14881,
+      "code_lines": 13208,
       "classes": 38,
       "functions": 610,
       "test_functions": 83,
@@ -166,13 +166,13 @@
         ".github/workflows/tests.yml"
       ],
       "coverage_measured": true,
-      "line_coverage_percent": 82.22,
+      "line_coverage_percent": 82.24,
       "coverage_report": "submission_artifacts/coverage/coverage_report.md"
     },
     "coverage": {
       "measured": true,
-      "line_coverage_percent": 82.22,
-      "num_statements": 3544,
+      "line_coverage_percent": 82.24,
+      "num_statements": 3548,
       "missing_lines": 630
     }
   },

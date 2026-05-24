@@ -15,8 +15,8 @@ This file is a single navigation page for saved submission artifacts.
 - `long_document_risk`: `{"page_count": 48, "chunk_size": 20, "total_chunks": 3, "completed_chunks": 3, "failed_chunks": 0, "success_rate": 1.0, "elapsed_seconds": 42.418, "total_retrieval_chunks": 58, "quality_status_counts": {"pass_with_warnings": 3}, "issue_counts": {"no_page_provenance": 3}, "provenance_level_counts": {"document": 3}}`
 - `retrieval_validation`: `{"chunk_files": 39, "total_chunks": 255, "schema_error_count": 0, "duplicate_text_rate": 0.00392156862745098, "label_query_checks": {"queries": 76, "hits_top3": 70, "hit_rate_top3": 0.9210526315789473}}`
 - `agent_value`: `{"cases": 37, "decision_modes": {"controlled_fault_injection": 5, "deterministic_rules": 25, "llm_enabled_saved_result_without_live_trace": 1, "offline_scripted_decision_regression": 5, "saved_live_llm_trace": 1}, "parser_runners": {"-": 12, "agent-api": 8, "cli": 3, "native": 14}, "with_state_machine": 17, "with_runtime_recovery_plan": 17, "with_task_result": 17, "with_field_evidence": 19, "with_cross_page_references": 2, "with_quality_issues": 31, "with_recovery_attempts": 8, "selected_non_initial": 6, "with_retrieval_chunks": 37, "with_live_llm_trace": 1}`
-- `code_quality`: `{"python_files": 54, "physical_lines": 14855, "code_lines": 13186, "classes": 38, "functions": 610, "test_functions": 83, "test_files": 12, "workflow_files": [".github/workflows/tests.yml"], "coverage_measured": true, "line_coverage_percent": 82.22, "coverage_report": "submission_artifacts/coverage/coverage_report.md"}`
-- `coverage`: `{"measured": true, "line_coverage_percent": 82.22, "num_statements": 3544, "missing_lines": 630}`
+- `code_quality`: `{"python_files": 55, "physical_lines": 14881, "code_lines": 13208, "classes": 38, "functions": 610, "test_functions": 83, "test_files": 12, "workflow_files": [".github/workflows/tests.yml"], "coverage_measured": true, "line_coverage_percent": 82.24, "coverage_report": "submission_artifacts/coverage/coverage_report.md"}`
+- `coverage`: `{"measured": true, "line_coverage_percent": 82.24, "num_statements": 3548, "missing_lines": 630}`
 
 ## Directories
 

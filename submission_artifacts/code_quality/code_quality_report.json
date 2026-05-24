@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T13:33:48Z",
+  "generated_at": "2026-05-24T14:02:08Z",
   "scope": "Static repository quality summary generated from local files.",
   "aggregate": {
-    "python_files": 54,
-    "physical_lines": 14855,
-    "code_lines": 13186,
+    "python_files": 55,
+    "physical_lines": 14881,
+    "code_lines": 13208,
     "classes": 38,
     "functions": 610,
     "test_functions": 83,
@@ -14,14 +14,14 @@
       ".github/workflows/tests.yml"
     ],
     "coverage_measured": true,
-    "line_coverage_percent": 82.22,
+    "line_coverage_percent": 82.24,
     "coverage_report": "submission_artifacts/coverage/coverage_report.md"
   },
   "by_area": {
     "src": {
-      "python_files": 16,
-      "physical_lines": 7152,
-      "code_lines": 6416,
+      "python_files": 17,
+      "physical_lines": 7178,
+      "code_lines": 6438,
       "classes": 21,
       "functions": 291,
       "test_functions": 0
@@ -47,10 +47,10 @@
     {
       "path": "src/mineru_data_agent/agent.py",
       "area": "src",
-      "physical_lines": 1809,
-      "code_lines": 1675,
+      "physical_lines": 1233,
+      "code_lines": 1162,
       "classes": 2,
-      "functions": 45,
+      "functions": 19,
       "test_functions": 0
     },
     {
@@ -69,6 +69,15 @@
       "code_lines": 786,
       "classes": 2,
       "functions": 30,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/recovery.py",
+      "area": "src",
+      "physical_lines": 602,
+      "code_lines": 535,
+      "classes": 0,
+      "functions": 26,
       "test_functions": 0
     },
     {
@@ -141,15 +150,6 @@
       "code_lines": 294,
       "classes": 0,
       "functions": 13,
-      "test_functions": 0
-    },
-    {
-      "path": "scripts/build_agent_value_report.py",
-      "area": "scripts",
-      "physical_lines": 320,
-      "code_lines": 284,
-      "classes": 0,
-      "functions": 15,
       "test_functions": 0
     }
   ],
