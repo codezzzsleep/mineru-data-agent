@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T14:02:07Z",
+  "generated_at": "2026-05-24T15:03:13Z",
   "scope": "Line coverage measured by coverage.py while running the local pytest suite.",
   "aggregate": {
     "measured": true,
@@ -16,21 +16,21 @@
     {
       "command": "-m coverage erase",
       "returncode": 0,
-      "elapsed_seconds": 0.575,
+      "elapsed_seconds": 0.461,
       "stdout_tail": "",
       "stderr_tail": ""
     },
     {
       "command": "-m coverage run --source src/mineru_data_agent -m pytest -q",
       "returncode": 0,
-      "elapsed_seconds": 8.692,
-      "stdout_tail": "........................................................................ [ 86%]\n...........                                                              [100%]\n83 passed in 7.31s\n",
+      "elapsed_seconds": 8.975,
+      "stdout_tail": "........................................................................ [ 81%]\n................                                                         [100%]\n88 passed in 7.52s\n",
       "stderr_tail": ""
     },
     {
       "command": "-m coverage json -o submission_artifacts/coverage/coverage_raw.json",
       "returncode": 0,
-      "elapsed_seconds": 0.742,
+      "elapsed_seconds": 0.664,
       "stdout_tail": "Wrote JSON report to submission_artifacts/coverage/coverage_raw.json\n",
       "stderr_tail": ""
     }

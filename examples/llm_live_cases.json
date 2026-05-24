@@ -1,0 +1,71 @@
+{
+  "schema_version": "2026-05-24",
+  "description": "Live LLM rerun manifest. These cases require a real DeepSeek or ModelScope API key; the manifest itself is not live provider evidence.",
+  "cases": [
+    {
+      "id": "financial_review",
+      "input": "examples/cases/case_1_financial_report.html",
+      "profile": "financial_report",
+      "method": "auto",
+      "lang": "ch",
+      "task": "启用大模型预调度和复核，解析财报 HTML，抽取报告日期、公司名称、合计数字，检查表格总计并给出可验证证据。",
+      "expected_focus": [
+        "target schema suggestion",
+        "table total verification",
+        "numeric evidence review"
+      ]
+    },
+    {
+      "id": "low_quality_ocr_review",
+      "input": "examples/cases/case_2_low_quality_ocr.html",
+      "profile": "low_quality_ocr",
+      "method": "auto",
+      "lang": "ch",
+      "task": "启用大模型预调度和复核，检查低质量 OCR 文本中的乱码、缺失字段和可恢复风险，给出是否需要 text cleanup 或 OCR retry 的建议。",
+      "expected_focus": [
+        "OCR noise risk detection",
+        "recovery suggestion",
+        "field evidence review"
+      ]
+    },
+    {
+      "id": "contract_clause_review",
+      "input": "examples/cases/case_3_standard_contract.html",
+      "profile": "standard_or_contract",
+      "method": "auto",
+      "lang": "ch",
+      "task": "启用大模型预调度和复核，解析合同条款，识别甲方乙方、金额、日期、违约责任和缺失条款风险，并给出结构化复核重点。",
+      "expected_focus": [
+        "party and clause schema",
+        "risk finding review",
+        "contract evidence review"
+      ]
+    },
+    {
+      "id": "workflow_diagram_review",
+      "input": "examples/cases/case_4_workflow_diagram.html",
+      "profile": "workflow_or_diagram",
+      "method": "auto",
+      "lang": "ch",
+      "task": "启用大模型预调度和复核，解析流程图文档中的节点、边、责任人和异常分支，检查是否存在断点、循环或缺少审批节点。",
+      "expected_focus": [
+        "workflow schema suggestion",
+        "node and edge review",
+        "process risk detection"
+      ]
+    },
+    {
+      "id": "cross_page_financial_review",
+      "input": "examples/challenge_cases/case_6_cross_page_financial_table.html",
+      "profile": "financial_report",
+      "method": "auto",
+      "lang": "ch",
+      "task": "启用大模型预调度和复核，解析跨页财务表格，关注跨页引用、分部合计、单位一致性和数字证据是否完整。",
+      "expected_focus": [
+        "cross-page reference review",
+        "financial total verification",
+        "unit consistency risk"
+      ]
+    }
+  ]
+}

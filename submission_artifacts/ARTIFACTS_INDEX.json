@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T14:02:08Z",
+  "generated_at": "2026-05-24T15:03:44Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -155,13 +155,13 @@
       "with_live_llm_trace": 1
     },
     "code_quality": {
-      "python_files": 55,
-      "physical_lines": 14881,
-      "code_lines": 13208,
+      "python_files": 57,
+      "physical_lines": 15411,
+      "code_lines": 13671,
       "classes": 38,
-      "functions": 610,
-      "test_functions": 83,
-      "test_files": 12,
+      "functions": 635,
+      "test_functions": 88,
+      "test_files": 13,
       "workflow_files": [
         ".github/workflows/tests.yml"
       ],

@@ -35,6 +35,7 @@
 - [x] 成本模型已生成，见 `submission_artifacts/cost_model/`
 - [x] LLM token 与成本审计报告已生成，见 `submission_artifacts/llm_cost/`
 - [x] LLM impact 对比报告已生成，见 `submission_artifacts/llm_impact/`
+- [x] 多案例 live LLM 复跑脚本与 manifest 已加入，见 `scripts/run_live_llm_matrix.py`、`examples/llm_live_cases.json` 和 `docs/LIVE_LLM_RUNBOOK.md`；未配置 provider key 时不会伪造 live evidence
 - [x] 恢复有效性汇总已生成，见 `submission_artifacts/recovery_effectiveness/`
 - [x] controlled failure/recovery 负样本已生成，见 `submission_artifacts/failure_recovery_cases/`
 - [x] 长文档分片风险汇总已生成，见 `submission_artifacts/long_document_risk/`

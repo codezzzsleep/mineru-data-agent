@@ -45,7 +45,7 @@ def build_report() -> dict[str, Any]:
         "aggregate": aggregate(pairs),
         "pairs": pairs,
         "rerun_plan": {
-            "goal": "Run the same manifest twice, once with --llm none and once with --llm deepseek or --llm modelscope.",
+            "goal": "Use scripts/run_live_llm_matrix.py with a real provider key for a 5-case live rerun, then run the same manifest without LLM for a larger on/off comparison.",
             "metrics": [
                 "quality status and score",
                 "field precision/recall/F1",
@@ -54,6 +54,8 @@ def build_report() -> dict[str, Any]:
                 "token usage and estimated cost",
                 "recovery decision changes",
             ],
+            "current_live_matrix_manifest": "examples/llm_live_cases.json",
+            "live_matrix_runbook": "docs/LIVE_LLM_RUNBOOK.md",
             "minimum_next_set": "10 cases: 4 financial, 2 noisy OCR, 2 contract/standard, 1 workflow, 1 long document chunk.",
         },
     }

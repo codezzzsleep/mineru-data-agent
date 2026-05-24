@@ -287,6 +287,16 @@ API 调用时传 `llm=deepseek` 或 `llm=modelscope` 即可。输出中的 `exec
 
 本提交包保存了一次实际启用 ModelScope DeepSeek-V4-Flash 的证据，见 `submission_artifacts/llm_cases/`。该案例的 `trace.json` 记录 `modelscope-llm-preplan completed` 与 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`，`usage_summary.total_tokens=4309`。API key 只通过环境变量传入，没有写入输出文件。
 
+多案例 live 复跑脚本见 `scripts/run_live_llm_matrix.py`，默认读取 `examples/llm_live_cases.json`，覆盖财报、低质量 OCR、合同条款、流程图和跨页财务表格 5 个本地 HTML 场景。它需要真实 DeepSeek 或 ModelScope key；未配置 key 时默认非零退出。若显式传 `--write-skip-report`，只会写 `live_provider_evidence=false` 的 skip report，不能作为 live LLM 证据。
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_live_llm_matrix.py `
+  --provider modelscope `
+  --model $env:MODELSCOPE_MODEL
+```
+
+完整复跑说明见 `docs/LIVE_LLM_RUNBOOK.md`。
+
 另有 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 保存真实 PDF 的解析前调度和 API-to-CLI fallback 结果。当前环境没有 DeepSeek/ModelScope key，也没有可直接调用的 MinerU CLI 可执行文件，因此该案例使用离线确定性预调度器和已保存的本地 CLI artifact 回放来记录代码级恢复路径；`README.md`、`trace.json` 和 `result.json` 都标注了运行条件。配置真实 LLM key 与 MinerU CLI 后，同一机制可转为在线全链路运行。
 
 ## Output

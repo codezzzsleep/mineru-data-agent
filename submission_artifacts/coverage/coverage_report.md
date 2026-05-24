@@ -32,9 +32,9 @@ Line coverage measured by coverage.py while running the local pytest suite.
 
 | Command | Exit | Seconds |
 | --- | ---: | ---: |
-| `-m coverage erase` | 0 | 0.575 |
-| `-m coverage run --source src/mineru_data_agent -m pytest -q` | 0 | 8.692 |
-| `-m coverage json -o submission_artifacts/coverage/coverage_raw.json` | 0 | 0.742 |
+| `-m coverage erase` | 0 | 0.461 |
+| `-m coverage run --source src/mineru_data_agent -m pytest -q` | 0 | 8.975 |
+| `-m coverage json -o submission_artifacts/coverage/coverage_raw.json` | 0 | 0.664 |
 
 ## Notes
 

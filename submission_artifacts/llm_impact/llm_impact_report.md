@@ -29,7 +29,7 @@ Saved-artifact comparison of LLM-enabled runs against deterministic runs.
 
 ## Rerun Plan
 
-Run the same manifest twice, once with --llm none and once with --llm deepseek or --llm modelscope.
+Use scripts/run_live_llm_matrix.py with a real provider key for a 5-case live rerun, then run the same manifest without LLM for a larger on/off comparison.
 
 Metrics:
 - quality status and score

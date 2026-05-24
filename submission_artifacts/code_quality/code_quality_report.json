@@ -1,15 +1,15 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T14:02:08Z",
+  "generated_at": "2026-05-24T15:03:26Z",
   "scope": "Static repository quality summary generated from local files.",
   "aggregate": {
-    "python_files": 55,
-    "physical_lines": 14881,
-    "code_lines": 13208,
+    "python_files": 57,
+    "physical_lines": 15411,
+    "code_lines": 13671,
     "classes": 38,
-    "functions": 610,
-    "test_functions": 83,
-    "test_files": 12,
+    "functions": 635,
+    "test_functions": 88,
+    "test_files": 13,
     "workflow_files": [
       ".github/workflows/tests.yml"
     ],
@@ -27,20 +27,20 @@
       "test_functions": 0
     },
     "scripts": {
-      "python_files": 26,
-      "physical_lines": 5807,
-      "code_lines": 5165,
+      "python_files": 27,
+      "physical_lines": 6254,
+      "code_lines": 5563,
       "classes": 9,
-      "functions": 220,
+      "functions": 240,
       "test_functions": 0
     },
     "tests": {
-      "python_files": 12,
-      "physical_lines": 1896,
-      "code_lines": 1605,
+      "python_files": 13,
+      "physical_lines": 1979,
+      "code_lines": 1670,
       "classes": 8,
-      "functions": 99,
-      "test_functions": 83
+      "functions": 104,
+      "test_functions": 88
     }
   },
   "largest_files": [
@@ -117,6 +117,15 @@
       "test_functions": 0
     },
     {
+      "path": "scripts/run_live_llm_matrix.py",
+      "area": "scripts",
+      "physical_lines": 445,
+      "code_lines": 396,
+      "classes": 0,
+      "functions": 20,
+      "test_functions": 0
+    },
+    {
       "path": "src/mineru_data_agent/retrieval_exporter.py",
       "area": "src",
       "physical_lines": 460,
@@ -141,15 +150,6 @@
       "code_lines": 362,
       "classes": 1,
       "functions": 23,
-      "test_functions": 0
-    },
-    {
-      "path": "src/mineru_data_agent/validators.py",
-      "area": "src",
-      "physical_lines": 327,
-      "code_lines": 294,
-      "classes": 0,
-      "functions": 13,
       "test_functions": 0
     }
   ],
@@ -216,6 +216,15 @@
       "classes": 0,
       "functions": 13,
       "test_functions": 13
+    },
+    {
+      "path": "tests/test_live_llm_matrix.py",
+      "area": "tests",
+      "physical_lines": 83,
+      "code_lines": 65,
+      "classes": 0,
+      "functions": 5,
+      "test_functions": 5
     },
     {
       "path": "tests/test_llm_client.py",
