@@ -11,5 +11,9 @@ dist/
 build/
 *.egg-info/
 .env
+logs/
+review_exchange/
+examples/real_world_docs/
 output/
 *.zip
+scripts/_audit_traces.py

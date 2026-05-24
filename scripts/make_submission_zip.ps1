@@ -43,8 +43,8 @@ if ($IncludeReviewExchange) {
   $items += "review_exchange"
 }
 
-$excludeDirs = @("__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".venv", ".mineru_data_agent", "runs", "dist")
-$excludeFiles = @("*.pyc", "*.pyo", "*.log", ".env")
+$excludeDirs = @("__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".venv", ".mineru_data_agent", "runs", "dist", "logs", "real_world_docs")
+$excludeFiles = @("*.pyc", "*.pyo", "*.log", ".env", "_audit_traces.py")
 
 foreach ($item in $items) {
   $source = Join-Path $root $item
@@ -74,12 +74,30 @@ foreach ($item in $items) {
   }
 }
 
-$textExtensions = @(".md", ".json", ".jsonl", ".txt", ".py", ".toml", ".ps1", ".html")
+$textExtensions = @(".md", ".json", ".jsonl", ".txt", ".py", ".toml", ".ps1", ".html", ".yml", ".yaml")
+$jsonEscapedRoot = $root.Replace('\', '\\')
+$slashRoot = $root.Replace('\', '/')
+$userHome = [Environment]::GetFolderPath("UserProfile")
+$jsonEscapedUserHome = $userHome.Replace('\', '\\')
+$slashUserHome = $userHome.Replace('\', '/')
 $pathReplacements = @(
+  @{ Pattern = [regex]::Escape($jsonEscapedRoot); Replacement = "<PROJECT_ROOT>" },
+  @{ Pattern = [regex]::Escape($slashRoot); Replacement = "<PROJECT_ROOT>" },
   @{ Pattern = [regex]::Escape($root); Replacement = "<PROJECT_ROOT>" },
-  @{ Pattern = "(?i)[A-Z]:\\data_agent\\MinerU"; Replacement = "<MINERU_ROOT>" },
-  @{ Pattern = "(?i)<USER_HOME>"; Replacement = "<USER_HOME>" }
+  @{ Pattern = "(?i)[A-Z]:\\\\data_agent\\\\mineru-data-agent"; Replacement = "<PROJECT_ROOT>" },
+  @{ Pattern = "(?i)[A-Z]:\\data_agent\\mineru-data-agent"; Replacement = "<PROJECT_ROOT>" },
+  @{ Pattern = "(?i)[A-Z]:\\\\data_agent\\\\MinerU"; Replacement = "<MINERU_ROOT>" },
+  @{ Pattern = "(?i)[A-Z]:\\data_agent\\MinerU"; Replacement = "<MINERU_ROOT>" }
 )
+if ($userHome) {
+  $pathReplacements += @(
+    @{ Pattern = [regex]::Escape($jsonEscapedUserHome); Replacement = "<USER_HOME>" },
+    @{ Pattern = [regex]::Escape($slashUserHome); Replacement = "<USER_HOME>" },
+    @{ Pattern = [regex]::Escape($userHome); Replacement = "<USER_HOME>" },
+    @{ Pattern = "(?i)C:\\\\Users\\\\[^\\\\/\s`"']+"; Replacement = "<USER_HOME>" },
+    @{ Pattern = "(?i)C:\\Users\\[^\\/\s`"']+"; Replacement = "<USER_HOME>" }
+  )
+}
 Get-ChildItem -LiteralPath $stage -Recurse -File | Where-Object {
   $textExtensions -contains $_.Extension.ToLowerInvariant()
 } | ForEach-Object {

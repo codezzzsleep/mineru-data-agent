@@ -2,8 +2,8 @@
   "run_id": "43589089cb7d",
   "task": "清理网页巡检日报并输出结构化结果",
   "profile": "general_document",
-  "input_file": "F:\\data_agent\\mineru-data-agent\\submission_artifacts\\memory_cases\\cross_run_text_cleanup_memory\\input.html",
-  "output_dir": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d",
+  "input_file": "<PROJECT_ROOT>\\submission_artifacts\\memory_cases\\cross_run_text_cleanup_memory\\input.html",
+  "output_dir": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -505,7 +505,7 @@
     },
     "cross_run_memory": {
       "enabled": true,
-      "path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\.mineru_data_agent\\memory.sqlite",
+      "path": "<PROJECT_ROOT>\\runs\\memory_cases\\.mineru_data_agent\\memory.sqlite",
       "profile": "general_document",
       "issue_codes": [
         "possible_mojibake",
@@ -749,8 +749,8 @@
         ],
         "selected": false,
         "artifacts": {
-          "markdown_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\html\\input.md",
-          "content_list_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\html\\input_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\html\\input.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\html\\input_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -770,8 +770,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\recovery\\text_cleanup\\input.md",
-          "content_list_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\recovery\\text_cleanup\\input_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\recovery\\text_cleanup\\input.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\recovery\\text_cleanup\\input_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -783,9 +783,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 1,
       "by_type": {
@@ -800,8 +800,8 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\recovery\\text_cleanup\\input.md",
-    "content_list_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\recovery\\text_cleanup\\input_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\recovery\\text_cleanup\\input.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\recovery\\text_cleanup\\input_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -809,7 +809,7 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\trace.json",
-  "summary_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\summary.md",
+  "trace_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\summary.md",
   "schema_version": "2026-05-24"
 }

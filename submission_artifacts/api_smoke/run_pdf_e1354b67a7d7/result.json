@@ -2,8 +2,8 @@
   "run_id": "e1354b67a7d7",
   "task": "API smoke: parse contract PDF and return structured result, trace, summary, and retrieval files",
   "profile": "standard_or_contract",
-  "input_file": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\_uploads\\8828ab01efa846f98d524719bb9d8b69.pdf",
-  "output_dir": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7",
+  "input_file": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\_uploads\\8828ab01efa846f98d524719bb9d8b69.pdf",
+  "output_dir": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7",
   "plan": [
     "Inspect input type and task objective",
     "Parse document with MinerU or native HTML extractor",
@@ -258,10 +258,10 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69.md",
-          "content_list_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69_content_list.json",
           "middle_json_path": null,
-          "model_json_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69_agent_response.json",
+          "model_json_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69_agent_response.json",
           "layout_pdf_path": null,
           "span_pdf_path": null,
           "origin_pdf_path": null,
@@ -271,9 +271,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 6,
       "by_type": {
@@ -289,15 +289,15 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69.md",
-    "content_list_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69_content_list.json",
     "middle_json_path": null,
-    "model_json_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69_agent_response.json",
+    "model_json_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\mineru\\8828ab01efa846f98d524719bb9d8b69\\agent_api\\8828ab01efa846f98d524719bb9d8b69_agent_response.json",
     "layout_pdf_path": null,
     "span_pdf_path": null,
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\trace.json",
-  "summary_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\summary.md"
 }

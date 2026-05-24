@@ -10,7 +10,7 @@
 
 该赛题不是单纯比拼 PDF 解析准确率，而是要求构建一个能理解任务需求、调用工具或模块完成数据处理、生成结构化结果并输出可验证日志的智能体。处理对象覆盖 PDF、Word、PPT、HTML 等文档或网页，重点关注单一多模态模型难以稳定解决的复杂文档解析问题，例如财务报表数字解析、跨页指代消解、复杂图表与工程图解析、低质量文档处理等。
 
-官方页面同时说明，参赛需使用 MinerU 工具链，范围包括 SaaS 端与开源项目。因此，本项目采用「在线 Agent API + 本地 MinerU CLI」双后端策略，便于在不同资源条件下复现。
+官方页面同时说明，参赛需使用 MinerU 工具链，范围包括 SaaS 端与开源项目。因此，本项目采用 CLI-first 策略：所有核心能力通过 `data-agent` 命令复现；PDF 后端可在命令行中选择在线 Agent API 或本地 MinerU CLI，便于在不同资源条件下运行。
 
 官方入口：https://mineru.net/MDIC2026
 
@@ -19,12 +19,12 @@
 | 赛题要求 | 本项目实现 |
 | --- | --- |
 | 理解任务需求 | `TaskPlanner` 根据自然语言任务、文件类型和场景 profile 生成基础计划；开启 LLM 时，DeepSeek/ModelScope 会在解析前输出任务理解、目标 schema、profile/runner/backend/method/lang 建议、复核重点和恢复策略 |
-| 调用工具或模块 | `MinerUAgentAPIRunner` 调用在线 API；`MinerURunner` 调用本地 MinerU CLI；HTML/DOCX/PPTX 使用轻量结构化模块；在线 API 支持瞬时错误重试；质量异常时可执行 text cleanup 或 OCR retry；LLM 预调度建议会通过安全白名单进入 `execution_control.applied` |
+| 调用工具或模块 | `data-agent run` 在 CLI 中调度 `MinerUAgentAPIRunner` 在线 API、`MinerURunner` 本地 MinerU CLI 或 HTML/DOCX/PPTX 轻量结构化模块；质量异常时可执行 text cleanup、OCR retry 或 CLI fallback；LLM 预调度建议会通过安全白名单进入 `execution_control.applied` |
 | 完成数据处理 | 抽取 Markdown、内容块、章节、表格、键值对、键值字典、数字事实、日期/建议/异常信号、页级或文档级线索和 `recovery_decision` |
 | 生成结构化结果 | 每次运行生成 `result.json` 与 `retrieval_chunks.jsonl`，供程序、评审脚本或检索入库流程直接消费；HTML/DOCX/PPTX 输入保留标题、段落、列表、表格和 slide-level provenance；新运行额外输出 `field_evidence`，记录字段 confidence proxy、证据文本和行/页/块级 provenance |
 | 输出可验证日志 | 每次运行生成 `trace.json`，记录执行步骤、工具调用、耗时、状态、重试事件、LLM 预调度、自动恢复尝试和错误摘要；失败运行也会落 trace；提交包内包含 5 个 HTML fixture artifact、4 个 PDF 文件级 CLI artifact、1 个 Agent API PDF artifact、1 个 API-to-CLI recovery artifact、2 个 Office 文件级 artifact、4 个挑战 fixture、4 个官方公开真实 PDF artifact、1 个 LLM-enabled artifact、1 份带标注评测报告和 1 份 artifact 级稳定性报告 |
 | 面向复杂文档 | 内置财报、合同/规范、低质量 OCR、流程/工程资料、HTML 语料等 profile |
-| 可部署可复现 | 提供 CLI、批处理、FastAPI 同步/异步接口、Docker/Compose、单元测试、提交压缩包、HeyWhale 部署建议、`docs/API_CONTRACT.md` API 合约、`docs/ENGINEERING_EVIDENCE.md` 扣分点证据矩阵、`scripts/run_adaptive_planning_cases.py` 自适应规划证据脚本、`scripts/build_evaluation_report.py` 评测脚本、`scripts/build_stability_report.py` 稳定性摘要脚本、`scripts/run_api_load_smoke.py` 本地并发 smoke 脚本、`scripts/run_http_load_test.py` 本地 HTTP loopback 压测脚本和 `scripts/build_baseline_comparison.py` 成本/速度/质量对比脚本 |
+| 可部署可复现 | 提供 CLI、批处理、live tool-calling CLI、单元测试、提交压缩包、HeyWhale/本地 MinerU 运行建议、`docs/CLI_CONTRACT.md` CLI 合约、`docs/ENGINEERING_EVIDENCE.md` 扣分点证据矩阵、`scripts/run_adaptive_planning_cases.py` 自适应规划证据脚本、`scripts/build_evaluation_report.py` 评测脚本、`scripts/build_stability_report.py` 稳定性摘要脚本和 `scripts/build_baseline_comparison.py` 成本/速度/质量对比脚本；FastAPI/Docker 仅作为可选 HTTP wrapper 材料保留 |
 
 ## 3. 为什么先用在线 API
 

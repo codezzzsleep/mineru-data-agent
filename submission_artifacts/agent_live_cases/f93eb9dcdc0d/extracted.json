@@ -1,0 +1,321 @@
+{
+  "content_summary": {
+    "item_count": 12,
+    "page_indices": [],
+    "page_count": 0,
+    "provenance_level": "document",
+    "type_counts": {
+      "heading": 5,
+      "text": 7
+    },
+    "source_counts": {
+      "html": 12
+    },
+    "text_characters": 302
+  },
+  "sections": [
+    {
+      "level": 1,
+      "title": "数据处理服务合同关键条款",
+      "line": 1,
+      "source": "heading",
+      "text": "合同编号：DPA-2026-0519\n\n签署日期：2026-05-19"
+    },
+    {
+      "level": 2,
+      "title": "第一条 服务范围",
+      "line": 7,
+      "source": "heading",
+      "text": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。"
+    },
+    {
+      "level": 2,
+      "title": "第二条 数据安全",
+      "line": 11,
+      "source": "heading",
+      "text": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。"
+    },
+    {
+      "level": 2,
+      "title": "第三条 验收标准",
+      "line": 15,
+      "source": "heading",
+      "text": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。"
+    },
+    {
+      "level": 2,
+      "title": "第四条 异常处理",
+      "line": 19,
+      "source": "heading",
+      "text": "异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。\n\n处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。"
+    }
+  ],
+  "tables": [],
+  "key_values": [
+    {
+      "key": "合同编号",
+      "value": "DPA-2026-0519"
+    },
+    {
+      "key": "签署日期",
+      "value": "2026-05-19"
+    },
+    {
+      "key": "异常提示",
+      "value": "跨页表格、签章覆盖和乱码文本需要进入人工复核队列。"
+    },
+    {
+      "key": "处理建议",
+      "value": "保留章节标题、条款编号和源文件证据，便于合规审计。"
+    },
+    {
+      "key": "第一条 服务范围",
+      "value": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。"
+    },
+    {
+      "key": "第二条 数据安全",
+      "value": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。"
+    },
+    {
+      "key": "第三条 验收标准",
+      "value": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。"
+    }
+  ],
+  "key_value_map": {
+    "合同编号": "DPA-2026-0519",
+    "签署日期": "2026-05-19",
+    "异常提示": "跨页表格、签章覆盖和乱码文本需要进入人工复核队列。",
+    "处理建议": "保留章节标题、条款编号和源文件证据，便于合规审计。",
+    "第一条 服务范围": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。",
+    "第二条 数据安全": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。",
+    "第三条 验收标准": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。"
+  },
+  "field_evidence": [
+    {
+      "key": "合同编号",
+      "value": "DPA-2026-0519",
+      "confidence": 0.86,
+      "confidence_reason": "exact key/value match in document-level content block",
+      "evidence_text": "合同编号：DPA-2026-0519",
+      "provenance": {
+        "line": 3,
+        "level": "document",
+        "source": "html"
+      },
+      "candidate_index": 0
+    },
+    {
+      "key": "签署日期",
+      "value": "2026-05-19",
+      "confidence": 0.86,
+      "confidence_reason": "exact key/value match in document-level content block",
+      "evidence_text": "签署日期：2026-05-19",
+      "provenance": {
+        "line": 5,
+        "level": "document",
+        "source": "html"
+      },
+      "candidate_index": 1
+    },
+    {
+      "key": "异常提示",
+      "value": "跨页表格、签章覆盖和乱码文本需要进入人工复核队列。",
+      "confidence": 0.86,
+      "confidence_reason": "exact key/value match in document-level content block",
+      "evidence_text": "异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。",
+      "provenance": {
+        "line": 21,
+        "level": "document",
+        "source": "html"
+      },
+      "candidate_index": 2
+    },
+    {
+      "key": "处理建议",
+      "value": "保留章节标题、条款编号和源文件证据，便于合规审计。",
+      "confidence": 0.86,
+      "confidence_reason": "exact key/value match in document-level content block",
+      "evidence_text": "处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。",
+      "provenance": {
+        "line": 23,
+        "level": "document",
+        "source": "html"
+      },
+      "candidate_index": 3
+    },
+    {
+      "key": "第一条 服务范围",
+      "value": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。",
+      "confidence": 0.86,
+      "confidence_reason": "exact key/value match in document-level content block",
+      "evidence_text": "## 第一条 服务范围",
+      "provenance": {
+        "line": null,
+        "level": "document",
+        "source": "html"
+      },
+      "candidate_index": 4
+    },
+    {
+      "key": "第二条 数据安全",
+      "value": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。",
+      "confidence": 0.86,
+      "confidence_reason": "exact key/value match in document-level content block",
+      "evidence_text": "## 第二条 数据安全",
+      "provenance": {
+        "line": null,
+        "level": "document",
+        "source": "html"
+      },
+      "candidate_index": 5
+    },
+    {
+      "key": "第三条 验收标准",
+      "value": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。",
+      "confidence": 0.86,
+      "confidence_reason": "exact key/value match in document-level content block",
+      "evidence_text": "## 第三条 验收标准",
+      "provenance": {
+        "line": null,
+        "level": "document",
+        "source": "html"
+      },
+      "candidate_index": 6
+    }
+  ],
+  "field_evidence_map": {
+    "合同编号": [
+      {
+        "value": "DPA-2026-0519",
+        "confidence": 0.86,
+        "provenance": {
+          "line": 3,
+          "level": "document",
+          "source": "html"
+        },
+        "evidence_text": "合同编号：DPA-2026-0519"
+      }
+    ],
+    "签署日期": [
+      {
+        "value": "2026-05-19",
+        "confidence": 0.86,
+        "provenance": {
+          "line": 5,
+          "level": "document",
+          "source": "html"
+        },
+        "evidence_text": "签署日期：2026-05-19"
+      }
+    ],
+    "异常提示": [
+      {
+        "value": "跨页表格、签章覆盖和乱码文本需要进入人工复核队列。",
+        "confidence": 0.86,
+        "provenance": {
+          "line": 21,
+          "level": "document",
+          "source": "html"
+        },
+        "evidence_text": "异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。"
+      }
+    ],
+    "处理建议": [
+      {
+        "value": "保留章节标题、条款编号和源文件证据，便于合规审计。",
+        "confidence": 0.86,
+        "provenance": {
+          "line": 23,
+          "level": "document",
+          "source": "html"
+        },
+        "evidence_text": "处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。"
+      }
+    ],
+    "第一条 服务范围": [
+      {
+        "value": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。",
+        "confidence": 0.86,
+        "provenance": {
+          "line": null,
+          "level": "document",
+          "source": "html"
+        },
+        "evidence_text": "## 第一条 服务范围"
+      }
+    ],
+    "第二条 数据安全": [
+      {
+        "value": "乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。",
+        "confidence": 0.86,
+        "provenance": {
+          "line": null,
+          "level": "document",
+          "source": "html"
+        },
+        "evidence_text": "## 第二条 数据安全"
+      }
+    ],
+    "第三条 验收标准": [
+      {
+        "value": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。",
+        "confidence": 0.86,
+        "provenance": {
+          "line": null,
+          "level": "document",
+          "source": "html"
+        },
+        "evidence_text": "## 第三条 验收标准"
+      }
+    ]
+  },
+  "numeric_facts": [
+    {
+      "line": 17,
+      "text": "验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。",
+      "numbers": [
+        "2"
+      ]
+    }
+  ],
+  "semantic_signals": {
+    "dates": [
+      "2026-05-19"
+    ],
+    "recommendations": [
+      {
+        "source": "key_value",
+        "text": "处理建议: 保留章节标题、条款编号和源文件证据，便于合规审计。"
+      },
+      {
+        "source": "line",
+        "text": "处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。"
+      }
+    ],
+    "anomaly_lines": [
+      {
+        "line": 9,
+        "text": "乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。"
+      },
+      {
+        "line": 19,
+        "text": "## 第四条 异常处理"
+      },
+      {
+        "line": 21,
+        "text": "异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。"
+      }
+    ],
+    "field_coverage": {
+      "has_date": true,
+      "has_recommendation": true,
+      "has_anomaly_signal": true
+    }
+  },
+  "cross_page_references": [],
+  "structure_quality": {
+    "heading_section_count": 5,
+    "fallback_section_count": 0
+  },
+  "markdown_preview": "# 数据处理服务合同关键条款\n\n合同编号：DPA-2026-0519\n\n签署日期：2026-05-19\n\n## 第一条 服务范围\n\n乙方负责对甲方提供的 PDF、HTML、Word 与扫描图片进行解析、清洗、结构化抽取和质量复核。\n\n## 第二条 数据安全\n\n乙方不得将甲方原始文件、API 密钥或中间处理结果用于合同外目的，日志中不得记录敏感密钥。\n\n## 第三条 验收标准\n\n验收以结构化 JSON、执行 trace、质量报告和可复跑命令为准；若发现关键字段缺失，应在 2 个工作日内补正。\n\n## 第四条 异常处理\n\n异常提示：跨页表格、签章覆盖和乱码文本需要进入人工复核队列。\n\n处理建议：保留章节标题、条款编号和源文件证据，便于合规审计。"
+}

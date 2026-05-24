@@ -4,16 +4,17 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import os
+import re
 import threading
 import uuid
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse
 
 from . import __version__
-from .agent import AgentRunError, MinerUDataAgent
+from .agent import AgentRunError, BACKEND_CHOICES, LANG_CHOICES, METHOD_CHOICES, PROFILE_CHOICES, MinerUDataAgent
 from .llm_client import DeepSeekLLMClient, ModelScopeLLMClient
 from .mineru_client import MinerUAgentAPIRunner, MinerURunner, resolve_mineru_executable
 
@@ -21,6 +22,19 @@ app = FastAPI(title="MinerU Data Agent", version=__version__)
 
 VALID_RUNNERS = {"cli", "agent-api"}
 VALID_LLMS = {"none", "deepseek", "modelscope"}
+VALID_PROFILES = set(PROFILE_CHOICES) | {"auto"}
+ALLOWED_UPLOAD_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".html", ".htm", ".docx", ".pptx"}
+FORBIDDEN_FORM_FIELDS = {
+    "api_key",
+    "base_url",
+    "llm_api_key",
+    "llm_base_url",
+    "provider_api_key",
+    "mineru_executable",
+    "fallback_mineru_executable",
+}
+JOB_ID_PATTERN = re.compile(r"^[a-f0-9]{32}$")
+MAX_TASK_CHARS = 8000
 UPLOAD_CHUNK_BYTES = 1024 * 1024
 ASYNC_WORKERS = max(1, int(os.getenv("MINERU_DATA_AGENT_ASYNC_WORKERS", "2")))
 _EXECUTOR = ThreadPoolExecutor(max_workers=ASYNC_WORKERS, thread_name_prefix="mineru-agent-job")
@@ -35,15 +49,12 @@ class ParseRequestConfig:
     backend: str = "pipeline"
     method: str = "auto"
     lang: str = "ch"
-    runner: str = "cli"
-    mineru_executable: str | None = None
+    runner: str = "agent-api"
     cli_fallback_on_no_page_provenance: bool = True
     strict_page_provenance: bool = False
-    fallback_mineru_executable: str | None = None
     api_max_retries: int = 2
     llm: str = "none"
     llm_model: str | None = None
-    llm_base_url: str | None = None
     llm_timeout: float = 60.0
 
 
@@ -54,24 +65,23 @@ def health() -> dict[str, str]:
 
 @app.post("/v1/parse")
 async def parse_document(
+    request: Request,
     file: UploadFile = File(...),
     task: str = Form(...),
     profile: str = Form("auto"),
     backend: str = Form("pipeline"),
     method: str = Form("auto"),
     lang: str = Form("ch"),
-    runner: str = Form("cli"),
-    mineru_executable: str | None = Form(None),
+    runner: str | None = Form(None),
     cli_fallback_on_no_page_provenance: bool = Form(True),
     strict_page_provenance: bool = Form(False),
-    fallback_mineru_executable: str | None = Form(None),
     api_max_retries: int = Form(2),
     llm: str = Form("none"),
     llm_model: str | None = Form(None),
-    llm_base_url: str | None = Form(None),
     llm_timeout: float = Form(60.0),
     output_root: str | None = Form(None),
 ) -> JSONResponse:
+    await _reject_forbidden_form_fields(request)
     config = _parse_config(
         task=task,
         profile=profile,
@@ -79,14 +89,11 @@ async def parse_document(
         method=method,
         lang=lang,
         runner=runner,
-        mineru_executable=mineru_executable,
         cli_fallback_on_no_page_provenance=cli_fallback_on_no_page_provenance,
         strict_page_provenance=strict_page_provenance,
-        fallback_mineru_executable=fallback_mineru_executable,
         api_max_retries=api_max_retries,
         llm=llm,
         llm_model=llm_model,
-        llm_base_url=llm_base_url,
         llm_timeout=llm_timeout,
     )
     root = _resolve_output_root(output_root)
@@ -96,24 +103,23 @@ async def parse_document(
 
 @app.post("/v1/jobs")
 async def create_parse_job(
+    request: Request,
     file: UploadFile = File(...),
     task: str = Form(...),
     profile: str = Form("auto"),
     backend: str = Form("pipeline"),
     method: str = Form("auto"),
     lang: str = Form("ch"),
-    runner: str = Form("cli"),
-    mineru_executable: str | None = Form(None),
+    runner: str | None = Form(None),
     cli_fallback_on_no_page_provenance: bool = Form(True),
     strict_page_provenance: bool = Form(False),
-    fallback_mineru_executable: str | None = Form(None),
     api_max_retries: int = Form(2),
     llm: str = Form("none"),
     llm_model: str | None = Form(None),
-    llm_base_url: str | None = Form(None),
     llm_timeout: float = Form(60.0),
     output_root: str | None = Form(None),
 ) -> JSONResponse:
+    await _reject_forbidden_form_fields(request)
     config = _parse_config(
         task=task,
         profile=profile,
@@ -121,14 +127,11 @@ async def create_parse_job(
         method=method,
         lang=lang,
         runner=runner,
-        mineru_executable=mineru_executable,
         cli_fallback_on_no_page_provenance=cli_fallback_on_no_page_provenance,
         strict_page_provenance=strict_page_provenance,
-        fallback_mineru_executable=fallback_mineru_executable,
         api_max_retries=api_max_retries,
         llm=llm,
         llm_model=llm_model,
-        llm_base_url=llm_base_url,
         llm_timeout=llm_timeout,
     )
     root = _resolve_output_root(output_root)
@@ -157,6 +160,7 @@ async def create_parse_job(
 
 @app.get("/v1/jobs/{job_id}")
 def get_parse_job(job_id: str, output_root: str | None = None) -> JSONResponse:
+    _validate_job_id(job_id)
     record = _get_job(job_id)
     if record is None:
         record = _load_job_record(job_id, output_root=output_root)
@@ -172,62 +176,58 @@ def _parse_config(
     backend: str,
     method: str,
     lang: str,
-    runner: str,
-    mineru_executable: str | None,
+    runner: str | None,
     cli_fallback_on_no_page_provenance: bool,
     strict_page_provenance: bool,
-    fallback_mineru_executable: str | None,
     api_max_retries: int,
     llm: str,
     llm_model: str | None,
-    llm_base_url: str | None,
     llm_timeout: float,
 ) -> ParseRequestConfig:
-    runner = _normalize_choice(runner, "runner", VALID_RUNNERS)
+    clean_task = (task or "").strip()
+    if not clean_task:
+        raise HTTPException(status_code=400, detail={"error": "invalid_task", "message": "task must not be empty"})
+    if len(clean_task) > MAX_TASK_CHARS:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "invalid_task", "message": f"task must be <= {MAX_TASK_CHARS} characters"},
+        )
+    runner = _normalize_choice(runner or _default_api_runner(), "runner", VALID_RUNNERS)
+    profile = _normalize_choice(profile, "profile", VALID_PROFILES)
+    backend = _normalize_choice(backend, "backend", BACKEND_CHOICES)
+    method = _normalize_choice(method, "method", METHOD_CHOICES)
+    lang = _normalize_choice(lang, "lang", LANG_CHOICES)
     llm = _normalize_choice(llm, "llm", VALID_LLMS)
     if api_max_retries < 0 or api_max_retries > 10:
         raise HTTPException(status_code=400, detail={"error": "invalid_api_max_retries", "allowed_range": "0..10"})
     if llm_timeout <= 0 or llm_timeout > 600:
         raise HTTPException(status_code=400, detail={"error": "invalid_llm_timeout", "allowed_range": "0..600"})
     return ParseRequestConfig(
-        task=task,
+        task=clean_task,
         profile=profile,
         backend=backend,
         method=method,
         lang=lang,
         runner=runner,
-        mineru_executable=mineru_executable,
         cli_fallback_on_no_page_provenance=cli_fallback_on_no_page_provenance,
         strict_page_provenance=strict_page_provenance,
-        fallback_mineru_executable=fallback_mineru_executable,
         api_max_retries=api_max_retries,
         llm=llm,
         llm_model=llm_model,
-        llm_base_url=llm_base_url,
         llm_timeout=llm_timeout,
     )
 
 
 def _run_parse(*, input_path: Path, root: Path, config: ParseRequestConfig) -> dict[str, Any]:
-    parser_runner = (
-        MinerUAgentAPIRunner(max_retries=config.api_max_retries)
-        if config.runner == "agent-api"
-        else MinerURunner(executable=config.mineru_executable)
-    )
+    parser_runner = MinerUAgentAPIRunner(max_retries=config.api_max_retries) if config.runner == "agent-api" else MinerURunner()
     fallback_runner = _build_fallback_runner(
         runner=config.runner,
         enabled=config.cli_fallback_on_no_page_provenance,
-        fallback_mineru_executable=config.fallback_mineru_executable,
-        mineru_executable=config.mineru_executable,
     )
     if config.llm == "modelscope":
-        llm_client = ModelScopeLLMClient(
-            model=config.llm_model, base_url=config.llm_base_url, timeout_seconds=config.llm_timeout
-        )
+        llm_client = ModelScopeLLMClient(model=config.llm_model, timeout_seconds=config.llm_timeout)
     elif config.llm == "deepseek":
-        llm_client = DeepSeekLLMClient(
-            model=config.llm_model, base_url=config.llm_base_url, timeout_seconds=config.llm_timeout
-        )
+        llm_client = DeepSeekLLMClient(model=config.llm_model, timeout_seconds=config.llm_timeout)
     else:
         llm_client = None
     try:
@@ -289,6 +289,20 @@ async def _persist_upload(file: UploadFile, root: Path) -> Path:
     return input_path
 
 
+async def _reject_forbidden_form_fields(request: Request) -> None:
+    form = await request.form()
+    received = sorted(field for field in FORBIDDEN_FORM_FIELDS if field in form)
+    if received:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "request_field_not_allowed",
+                "fields": received,
+                "message": "These fields are server-side deployment configuration, not public API parameters.",
+            },
+        )
+
+
 def _normalize_choice(value: str, name: str, allowed: set[str]) -> str:
     normalized = (value or "").strip().lower()
     if normalized not in allowed:
@@ -297,6 +311,10 @@ def _normalize_choice(value: str, name: str, allowed: set[str]) -> str:
             detail={"error": f"invalid_{name}", "allowed": sorted(allowed), "received": value},
         )
     return normalized
+
+
+def _default_api_runner() -> str:
+    return _normalize_choice(os.getenv("MINERU_DATA_AGENT_API_DEFAULT_RUNNER", "agent-api"), "runner", VALID_RUNNERS)
 
 
 def _set_job(job_id: str, record: dict[str, Any]) -> None:
@@ -322,9 +340,21 @@ def _write_job_record(record: dict[str, Any]) -> None:
     Path(record["job_path"]).write_text(json_dumps(record), encoding="utf-8")
 
 
+def _validate_job_id(job_id: str) -> None:
+    if not JOB_ID_PATTERN.fullmatch(job_id or ""):
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "invalid_job_id", "message": "job_id must be a 32-character lowercase hex string"},
+        )
+
+
 def _load_job_record(job_id: str, *, output_root: str | None) -> dict[str, Any] | None:
+    _validate_job_id(job_id)
     root = _resolve_output_root(output_root)
-    path = root / "_jobs" / f"{job_id}.json"
+    jobs_dir = (root / "_jobs").resolve()
+    path = (jobs_dir / f"{job_id}.json").resolve()
+    if not path.is_relative_to(jobs_dir):
+        raise HTTPException(status_code=400, detail={"error": "invalid_job_id"})
     if not path.exists():
         return None
     import json
@@ -335,11 +365,7 @@ def _load_job_record(job_id: str, *, output_root: str | None) -> dict[str, Any] 
 
 
 def _public_config(config: ParseRequestConfig) -> dict[str, Any]:
-    data = asdict(config)
-    data.pop("llm_base_url", None)
-    data.pop("mineru_executable", None)
-    data.pop("fallback_mineru_executable", None)
-    return data
+    return asdict(config)
 
 
 def _utc_now() -> str:
@@ -356,12 +382,10 @@ def _build_fallback_runner(
     *,
     runner: str,
     enabled: bool,
-    fallback_mineru_executable: str | None,
-    mineru_executable: str | None,
 ) -> MinerURunner | None:
     if runner != "agent-api" or not enabled:
         return None
-    executable = resolve_mineru_executable(fallback_mineru_executable or mineru_executable)
+    executable = resolve_mineru_executable()
     if not executable:
         return None
     return MinerURunner(executable=executable)
@@ -370,32 +394,40 @@ def _build_fallback_runner(
 def _resolve_output_root(output_root: str | None) -> Path:
     default_root = os.getenv("MINERU_DATA_AGENT_OUTPUT_DIR", "runs/api")
     root = Path(output_root or default_root).expanduser().resolve()
-    if output_root:
-        allowed_base = Path(os.getenv("MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE", Path.cwd())).expanduser().resolve()
-        if not root.is_relative_to(allowed_base):
-            raise HTTPException(
-                status_code=400,
-                detail={
-                    "error": "output_root_outside_allowed_base",
-                    "allowed_base": str(allowed_base),
-                    "received": str(root),
-                },
-            )
+    allowed_base = Path(os.getenv("MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE", Path.cwd())).expanduser().resolve()
+    if not root.is_relative_to(allowed_base):
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "output_root_outside_allowed_base",
+                "allowed_base": str(allowed_base),
+                "received": str(root),
+            },
+        )
     return root
 
 
 def _safe_suffix(filename: str | None) -> str:
     suffix = Path(filename or "input.pdf").suffix.lower()
-    if not suffix or len(suffix) > 12 or not suffix.startswith("."):
-        return ".pdf"
-    return suffix
+    if suffix in ALLOWED_UPLOAD_SUFFIXES:
+        return suffix
+    raise HTTPException(
+        status_code=415,
+        detail={"error": "unsupported_upload_suffix", "allowed": sorted(ALLOWED_UPLOAD_SUFFIXES), "received": suffix or None},
+    )
 
 
 def _max_upload_bytes() -> int:
     raw_bytes = os.getenv("MINERU_DATA_AGENT_MAX_UPLOAD_BYTES")
     if raw_bytes:
-        return max(1, int(raw_bytes))
-    max_mb = float(os.getenv("MINERU_DATA_AGENT_MAX_UPLOAD_MB", "200"))
+        try:
+            return max(1, int(raw_bytes))
+        except ValueError as exc:
+            raise HTTPException(status_code=500, detail={"error": "invalid_upload_limit_config"}) from exc
+    try:
+        max_mb = float(os.getenv("MINERU_DATA_AGENT_MAX_UPLOAD_MB", "200"))
+    except ValueError as exc:
+        raise HTTPException(status_code=500, detail={"error": "invalid_upload_limit_config"}) from exc
     return max(1, int(max_mb * 1024 * 1024))
 
 

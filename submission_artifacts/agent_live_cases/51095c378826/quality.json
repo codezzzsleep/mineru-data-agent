@@ -1,0 +1,56 @@
+{
+  "score": 100,
+  "status": "pass",
+  "issue_count": 2,
+  "issue_counts": {
+    "error": 0,
+    "warning": 0,
+    "info": 2
+  },
+  "issues": [
+    {
+      "code": "document_level_provenance",
+      "level": "info",
+      "message": "Native document input has document-level provenance rather than page-level provenance.",
+      "evidence": {
+        "page_count": 0,
+        "item_count": 8,
+        "source_counts": {
+          "html": 8
+        }
+      }
+    },
+    {
+      "code": "numeric_total_verified",
+      "level": "info",
+      "message": "A total/subtotal row matched the sum of comparable numeric rows.",
+      "evidence": {
+        "table_index": 0,
+        "row_index": 5,
+        "row_preview": [
+          "合计",
+          "25,721.00",
+          "23,804.20",
+          "8.05%"
+        ],
+        "verified": [
+          {
+            "column_index": 1,
+            "expected_total": 25721.0,
+            "computed_total": 25721.0,
+            "delta": 0.0,
+            "source_value_count": 5
+          },
+          {
+            "column_index": 2,
+            "expected_total": 23804.2,
+            "computed_total": 23804.2,
+            "delta": 0.0,
+            "source_value_count": 5
+          }
+        ],
+        "mismatches": []
+      }
+    }
+  ]
+}

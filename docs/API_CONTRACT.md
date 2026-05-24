@@ -1,6 +1,9 @@
-# API Contract
+# Optional API Contract
 
-This document is the stable interface surface intended for competition review scripts.
+This document describes the optional local HTTP wrapper. The competition
+submission is CLI-first; reviewers should treat `docs/CLI_CONTRACT.md` and the
+`data-agent` command as the primary stable interface. The API is retained for
+local integration tests and secondary engineering evidence.
 
 ## Health
 
@@ -31,19 +34,17 @@ Optional fields:
 | Field | Default | Allowed / Meaning |
 | --- | --- | --- |
 | `profile` | `auto` | `auto`, `financial_report`, `standard_or_contract`, `workflow_or_diagram`, `low_quality_ocr`, `general_document` |
-| `runner` | `cli` | `cli` or `agent-api` |
+| `runner` | `MINERU_DATA_AGENT_API_DEFAULT_RUNNER` or `agent-api` | `cli` or `agent-api` |
 | `backend` | `pipeline` | MinerU backend when `runner=cli` |
-| `method` | `auto` | MinerU parse method, usually `auto` or `ocr` |
-| `lang` | `ch` | MinerU language hint |
+| `method` | `auto` | MinerU parse method: `auto`, `ocr`, or `txt` |
+| `lang` | `ch` | `ch` or `en` |
 | `api_max_retries` | `2` | `0..10` for online Agent API transient retry |
 | `llm` | `none` | `none`, `deepseek`, `modelscope` |
 | `llm_model` | unset | Provider model override |
-| `llm_base_url` | provider default | Provider base URL override |
 | `llm_timeout` | `60` | `0..600` seconds |
-| `output_root` | `MINERU_DATA_AGENT_OUTPUT_DIR` or `runs/api` | Persistent output directory |
-| `cli_fallback_on_no_page_provenance` | `true` | Enables local CLI fallback when online API lacks page provenance and a CLI is available |
+| `output_root` | `MINERU_DATA_AGENT_OUTPUT_DIR` or `runs/api` | Persistent output directory; always constrained by `MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE` |
+| `cli_fallback_on_no_page_provenance` | `true` | Enables server-configured local CLI fallback when online API lacks page provenance and a CLI is available |
 | `strict_page_provenance` | `false` | For PDF/image inputs, marks the result as `needs_review` with `strict_page_provenance_failed` if page-level provenance is still missing after recovery |
-| `fallback_mineru_executable` | unset | Explicit MinerU CLI path for fallback |
 
 ## Successful Response Schema
 
@@ -102,9 +103,9 @@ Response:
 
 ```json
 {
-  "job_id": "abc123",
+  "job_id": "0123456789abcdef0123456789abcdef",
   "status": "queued",
-  "status_url": "/v1/jobs/abc123"
+  "status_url": "/v1/jobs/0123456789abcdef0123456789abcdef"
 }
 ```
 
@@ -126,13 +127,17 @@ Response:
 
 | HTTP | `detail.error` | Cause | Suggested handling |
 | ---: | --- | --- | --- |
+| 400 | `request_field_not_allowed` | Request tried to set server-side deployment fields such as `llm_base_url`, `mineru_executable`, or `fallback_mineru_executable`. | Configure these on the server with environment variables instead. |
 | 400 | `invalid_runner` | `runner` is not `cli` or `agent-api`. | Use `agent-api` for CPU review or `cli` when local MinerU is installed. |
+| 400 | `invalid_profile` / `invalid_backend` / `invalid_method` / `invalid_lang` | Parse option outside the documented allowlist. | Use the documented enum values. |
+| 400 | `invalid_task` | Task is empty or too long. | Send a concise non-empty objective. |
 | 400 | `invalid_llm` | `llm` is not `none`, `deepseek`, or `modelscope`. | Use `none` for deterministic runs unless provider credentials are configured. |
 | 400 | `invalid_api_max_retries` | retry value outside `0..10`. | Lower retry count and rerun. |
 | 400 | `invalid_llm_timeout` | timeout outside `0..600`. | Lower timeout and rerun. |
-| 400 | `output_root_outside_allowed_base` | requested output directory violates `MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE`. | Choose an output root under the configured base directory. |
+| 400 | `output_root_outside_allowed_base` | requested or server-default output directory violates `MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE`. | Choose an output root under the configured base directory. |
 | 400 | `empty_upload` | uploaded file has zero bytes. | Re-upload a non-empty document. |
 | 413 | `upload_too_large` | upload exceeds configured limit. | Split the file or raise the deployment upload limit. |
+| 415 | `unsupported_upload_suffix` | Upload filename suffix is not one of PDF/image/HTML/DOCX/PPTX. | Upload a supported document type. |
 | 404 | `job_not_found` | async job id was not found. | Check the job id or resubmit the job. |
 | 500 | `parse_failed` | parser or agent execution failed. Includes `run_id`, `output_dir`, `trace_path`, `result_path`, and `summary_path` when available. | Inspect `trace_path`; if parser artifacts exist, treat the result as partial evidence and rerun with a safer runner or lower concurrency. |
 
@@ -151,4 +156,4 @@ curl -X POST http://127.0.0.1:8080/v1/parse \
 
 ## Current Boundary
 
-This submission provides a local API and saved API smoke artifacts. It does not claim a permanently hosted public endpoint. For public deployment, set upload limits, output base restrictions, and external authentication/rate limiting at the gateway or reverse proxy layer.
+This submission provides a local deterministic/LLM-preplan API and saved API smoke artifacts. It does not claim a permanently hosted public endpoint. The live tool-calling Agent is exposed only as the CLI command `data-agent agent-run`, not as an HTTP endpoint. Request-level LLM base URL, API key, and local executable overrides are deliberately rejected; configure provider endpoints and MinerU executables only on the server or local CLI environment. For public deployment, set upload limits, output base restrictions, and external authentication/rate limiting at the gateway or reverse proxy layer.

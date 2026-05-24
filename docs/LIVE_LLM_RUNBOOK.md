@@ -1,16 +1,53 @@
-# Live LLM Matrix Runbook
+# Live LLM Runbook
 
-This runbook is for rerunning multiple end-to-end LLM cases with a real DeepSeek or ModelScope key. It is intentionally separate from the offline scripted decision cases: a matrix result counts as live LLM evidence only when the provider key is present and the script actually calls the provider.
+This runbook is for rerunning live DeepSeek/ModelScope evidence. It is intentionally separate from offline scripted decision cases: a result counts as live LLM evidence only when a provider key is present and the code actually calls the provider.
 
 ## Scope
+
+- Official single-case live tool-calling CLI: `data-agent agent-run`
+- Batch tool-calling evidence script: `scripts/run_agent_live_cases.py`
+- LLM preplan/review matrix script: `scripts/run_live_llm_matrix.py`
+- Providers: `modelscope` or `deepseek`
+
+The live tool-calling Agent is exposed as a CLI tool only. The HTTP API remains the stable deterministic/LLM-preplan path and does not expose `/v1/agent/parse`.
+
+## Official CLI: `data-agent agent-run`
+
+```powershell
+$env:MODELSCOPE_API_KEY="<your-modelscope-token>"
+$env:MODELSCOPE_BASE_URL="https://api-inference.modelscope.cn/v1"
+$env:MODELSCOPE_MODEL="Qwen/Qwen3-235B-A22B-Instruct-2507"
+
+.\.venv\Scripts\data-agent.exe agent-run `
+  --provider modelscope `
+  --model $env:MODELSCOPE_MODEL `
+  --input examples/cases/case_1_financial_report.html `
+  --out runs/agent_live `
+  --task "识别 2026Q1 的营业收入和利润总额，验证合计行是否一致"
+```
+
+Each run writes `result.json`, `live_agent_trace.json`, and `live_agent_summary.md`. `result.json` uses the evidence semantics `attempted`, `tool_call_completed`, `answer_quality_pass`, `quality_review`, and `tool_sequence`.
+
+## Batch Tool-Calling Evidence
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_agent_live_cases.py `
+  --provider modelscope `
+  --model $env:MODELSCOPE_MODEL `
+  --skip-existing `
+  --min-completed-rate 0
+```
+
+This script updates `submission_artifacts/agent_live_cases/agent_live_report.json` and `.md`. Failed, quota-limited, and answer-quality-questionable cases are retained rather than hidden.
+
+## LLM Preplan/Review Matrix
+
+The matrix script uses local HTML fixtures to isolate LLM preplanning and post-parse review without needing a MinerU CLI/GPU environment. It covers financial review, low-quality OCR review, contract clause review, workflow review, and cross-page financial review.
 
 - Manifest: `examples/llm_live_cases.json`
 - Runner: `scripts/run_live_llm_matrix.py`
 - Default output: `submission_artifacts/llm_live_matrix/`
 - Default run scratch: `runs/live_llm_matrix/`
-- Providers: `modelscope` or `deepseek`
-
-The default manifest uses local HTML fixtures so the run isolates LLM preplanning and post-parse review without needing a MinerU CLI/GPU environment. It covers financial review, low-quality OCR review, contract clause review, workflow review, and cross-page financial review.
 
 ## ModelScope
 

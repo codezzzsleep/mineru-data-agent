@@ -5,14 +5,15 @@
 - [x] 开源发布材料已准备：`LICENSE`、`.gitignore`、`CONTRIBUTING.md`、`.github/ISSUE_TEMPLATE/`、`docs/OPEN_SOURCE_RELEASE.md`
 - [x] GitHub 公开仓库已创建：https://github.com/codezzzsleep/mineru-data-agent
 - [x] GitHub Actions 测试工作流已加入，push/PR 会运行 pytest
-- [x] README 写清安装、CLI、API 和输出说明
+- [x] README 写清 CLI-first 定位、安装、命令行运行和输出说明
 - [x] 评审导航已写入 `docs/EVALUATION_GUIDE.md`，包含评分维度、复现步骤和关键指标入口
-- [x] API 合约、参数、返回 schema 和错误码已写入 `docs/API_CONTRACT.md`
+- [x] CLI 合约、输出字段和 live-agent 证据口径已写入 `docs/CLI_CONTRACT.md`
+- [x] 可选 HTTP wrapper 合约、参数、返回 schema 和错误码已写入 `docs/API_CONTRACT.md`
 - [x] 评审扣分点回应和证据矩阵已写入 `docs/ENGINEERING_EVIDENCE.md`
 - [x] 技术报告包含系统架构、执行机制、质量控制、应用价值
 - [x] 赛题对齐说明包含官方 MDIC2026 要求、项目实现映射和在线 API 边界
 - [x] 评分对齐说明覆盖五项评分维度和当前实现证据
-- [x] 部署与 API 文档写清环境、启动、接口、参数、返回格式和日志路径
+- [x] 部署文档写清 CLI 环境、命令、输出路径和可选 HTTP wrapper 边界
 - [x] 明确说明在线 Agent API 后端与本地 MinerU CLI 后端的适用边界
 - [x] 明确说明 DeepSeek/ModelScope 大模型是可选增强，API key 通过环境变量配置且不进入提交包
 - [x] LLM 已接入解析前调度，输出 `execution_control`、`llm_analysis.pre_execution_plan` 和 `llm_pre_execution_planning` trace 步骤
@@ -44,22 +45,22 @@
 - [x] coverage.py 本地行覆盖率报告已生成，见 `submission_artifacts/coverage/`
 - [x] 代码质量摘要已生成，见 `submission_artifacts/code_quality/`
 - [x] Artifact 总索引已生成，见 `submission_artifacts/ARTIFACTS_INDEX.md`
-- [x] Live ModelScope DeepSeek-V4-Flash 复跑已记录 provider token usage：4309 tokens
+- [x] Live ModelScope DeepSeek-V4-Flash 预调度/复核案例已记录 provider token usage：4309 tokens；另有 CLI-only `data-agent agent-run`/`agent_live_cases` 记录 8 次 Qwen3 tool-calling 尝试、4 次 finalize/tool-call completion、2 次 answer-quality pass
 - [x] 对标矩阵与后续 benchmark/roadmap 已写入 `docs/BENCHMARK_AND_ROADMAP.md`
 - [x] 至少 5 个典型任务案例，见 `submission_artifacts/cases/`
 - [x] 额外 4 个复杂挑战样本与人工标注表已生成，见 `submission_artifacts/challenge_cases/`
 - [x] 额外 4 个官方公开真实 PDF 样本、来源元数据和人工轻量标注已生成，见 `submission_artifacts/public_real_cases/`
 - [x] NIST 48 页长文档在线 API 分片执行证据已生成，见 `submission_artifacts/long_document_chunks/`
 - [x] 每个案例包含输入、输出、日志和关键 artifact
-- [x] API `/health` 可访问
-- [x] API `/v1/parse` 可上传文件并返回结构化 JSON
-- [x] API `/v1/jobs` 和 `/v1/jobs/{job_id}` 可提交异步任务并轮询状态
-- [x] API 返回的 `trace_path`、`summary_path` 和 artifact 路径在请求结束后仍存在
+- [x] `data-agent run` 可处理单文件并返回结构化 JSON
+- [x] `data-agent batch` 可提交 manifest 并生成 `batch_report.json`
+- [x] `data-agent agent-run` 暴露真实 live tool-calling Agent CLI；provider key 仅从环境变量读取
+- [x] 可选 HTTP wrapper 的 `trace_path`、`summary_path` 和 artifact 路径在请求结束后仍存在
 - [x] trace 中包含任务输入、执行步骤、工具调用、最终输出
 - [x] 新运行的 `execution_control.planning_rationale` 会解释 profile、runner、backend、method、语言和恢复策略选择
 - [x] 新运行支持 `strict_page_provenance`，PDF/image 最终缺页级来源时返回 partial result 并标为 `strict_page_provenance_failed`
 - [x] 失败路径也会写出 `trace.json`，记录失败步骤和错误摘要
-- [x] API 失败响应会返回失败 run 的 `trace_path`，便于评审脚本定位证据
+- [x] 失败运行会保留失败态 `trace.json`，便于评审定位证据
 - [x] `result.json` 包含章节、表格、键值对、数字事实、日期/建议/异常语义信号
 - [x] 新运行的 `result.json` 包含 `field_evidence` 和 `field_evidence_map`，记录字段 confidence proxy、证据文本和 provenance
 - [x] 批处理 `batch_report.json` 记录失败不中断和多任务调度结果
@@ -74,7 +75,6 @@
 - [x] 在线 API 缺页级 provenance 后自动 CLI fallback 的代码路径有单元测试和提交 artifact
 - [x] 无本地 CLI 环境下不会盲目创建 fallback runner，避免 CPU 评审环境产生无意义失败记录
 - [x] 最终提交压缩包或项目链接前完成一次全流程复跑
-- [x] 本地 API 并发 smoke 已生成，见 `submission_artifacts/api_load_smoke/`
-- [x] 本地 HTTP loopback 压测已生成，见 `submission_artifacts/http_load_test/`
-- [x] 增强版 100 请求/并发 20 HTTP loopback 压测已生成，见 `submission_artifacts/http_load_test_100/`
-- [x] Dockerfile 与 docker-compose 已加入，支持一条命令启动 API
+- [x] CI 主门禁已切换为 CLI smoke：`data-agent --help`、`run`、`batch`、`agent-run --help`
+- [x] 本地 API/HTTP loopback 压测材料作为可选 wrapper 的二级工程证据保留
+- [x] Dockerfile 与 docker-compose 作为可选 HTTP wrapper 本地集成材料保留，不作为主提交面

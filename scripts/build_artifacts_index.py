@@ -26,12 +26,13 @@ CATEGORIES = [
     ("public_real_cases", "Public real PDFs", "IRS, NIST, SEC, and CDC public PDF cases with lightweight labels."),
     ("long_document_chunks", "Long document chunks", "NIST AI RMF page-range chunking across the online API page limit."),
     ("llm_cases", "LLM cases", "OpenAI-compatible LLM preplanning and post-parse review results."),
+    ("agent_live_cases", "Live LLM agent traces", "Real OpenAI-compatible tool-calling traces; finalize completion and answer-quality pass are reported separately."),
     ("evaluation", "Evaluation metrics", "Saved label checks and field precision/recall/F1."),
     ("stability", "Stability report", "Trace, tool timing, quality, provenance, and recovery aggregation."),
-    ("api_smoke", "API smoke", "Health, sync parse, and PDF API smoke results."),
-    ("api_load_smoke", "API load smoke", "Local FastAPI TestClient concurrency results."),
-    ("http_load_test", "HTTP load test", "Local TCP loopback sync/async API load test with request artifacts."),
-    ("http_load_test_100", "HTTP load test 100", "100-request local TCP loopback sync/async API load test."),
+    ("api_smoke", "Optional API smoke", "Secondary HTTP wrapper health, sync parse, and PDF smoke results."),
+    ("api_load_smoke", "Optional API load smoke", "Secondary local FastAPI TestClient concurrency results."),
+    ("http_load_test", "Optional HTTP load test", "Secondary local TCP loopback sync/async API load test with request artifacts."),
+    ("http_load_test_100", "Optional HTTP load test 100", "Secondary 100-request local TCP loopback sync/async API load test."),
     ("baseline_comparison", "Tradeoff comparison", "Saved-artifact cost/speed/quality comparison by runner/scenario group."),
     ("agent_value", "Agent value report", "Saved-artifact report of Agent-layer schema, audit, recovery, retrieval, and decision-mode additions over parser artifacts."),
     ("cost_model", "Cost model", "Price-parameterized cost estimates for native, CLI, online API, and LLM modes."),
@@ -153,11 +154,56 @@ def quick_metrics() -> dict[str, Any]:
     llm_impact = load_json(ARTIFACT_ROOT / "llm_impact" / "llm_impact_report.json")
     if isinstance(llm_impact, dict):
         metrics["llm_impact"] = llm_impact.get("aggregate", {})
+    live_agent = load_json(ARTIFACT_ROOT / "agent_live_cases" / "agent_live_report.json")
+    if isinstance(live_agent, dict):
+        summary = live_agent.get("summary", {}) if isinstance(live_agent.get("summary"), dict) else {}
+        cases = live_agent.get("cases", []) if isinstance(live_agent.get("cases"), list) else []
+        tool_completed = [
+            item
+            for item in cases
+            if isinstance(item, dict)
+            and (
+                item.get("tool_call_completed") is True
+                or item.get("live_evidence") is True
+                or (
+                    item.get("status") == "completed"
+                    and int(item.get("tokens") or 0) > 0
+                    and "finalize" in (item.get("tool_sequence") or [])
+                )
+            )
+        ]
+        metrics["agent_live_cases"] = {
+            "provider": live_agent.get("provider"),
+            "model": live_agent.get("model"),
+            "total_cases": summary.get("total", len(cases)),
+            "tool_call_completed_cases": summary.get("tool_call_completed_cases", len(tool_completed)),
+            "answer_quality_pass_cases": summary.get(
+                "answer_quality_pass_cases",
+                sum(1 for item in tool_completed if item.get("answer_quality_pass") is True),
+            ),
+            "answer_quality_questionable_cases": summary.get(
+                "answer_quality_questionable_cases",
+                sum(1 for item in tool_completed if item.get("answer_quality_pass") is False),
+            ),
+            "answer_quality_unreviewed_cases": summary.get(
+                "answer_quality_unreviewed_cases",
+                sum(1 for item in tool_completed if item.get("answer_quality_pass") is None),
+            ),
+            "live_evidence_cases": summary.get("live_evidence_cases", len(tool_completed)),
+            "completed_status": sum(1 for item in cases if isinstance(item, dict) and item.get("status") == "completed"),
+            "failed_or_incomplete": sum(1 for item in cases if isinstance(item, dict) and item.get("status") != "completed"),
+            "total_tokens": summary.get(
+                "total_tokens",
+                sum(int(item.get("tokens") or 0) for item in cases if isinstance(item, dict)),
+            ),
+        }
     cost_model = load_json(ARTIFACT_ROOT / "cost_model" / "cost_model.json")
     if isinstance(cost_model, dict):
+        tradeoff_table = cost_model.get("tradeoff_table", []) if isinstance(cost_model.get("tradeoff_table"), list) else []
         metrics["cost_model"] = {
-            "scenarios": len(cost_model.get("scenarios", [])),
-            "pricing_inputs": cost_model.get("pricing_inputs", {}),
+            "scenarios": len(cost_model.get("scenarios", [])) or len(tradeoff_table),
+            "pricing_inputs": cost_model.get("pricing_inputs") or cost_model.get("pricing_assumptions", {}),
+            "live_evidence_available": cost_model.get("live_evidence_available"),
         }
     recovery = load_json(ARTIFACT_ROOT / "recovery_effectiveness" / "recovery_effectiveness_report.json")
     if isinstance(recovery, dict):

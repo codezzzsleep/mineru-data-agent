@@ -8,7 +8,7 @@
       "ended_at": "2026-05-23T10:22:12.976989+00:00",
       "detail": {
         "task": "API smoke: parse contract PDF and return structured result, trace, summary, and retrieval files",
-        "input_file": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\_uploads\\8828ab01efa846f98d524719bb9d8b69.pdf"
+        "input_file": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\_uploads\\8828ab01efa846f98d524719bb9d8b69.pdf"
       }
     },
     {
@@ -78,9 +78,9 @@
         "pages": [
           1
         ],
-        "chunks_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_quality.json"
       }
     }
   ],
@@ -102,6 +102,6 @@
   "task": "API smoke: parse contract PDF and return structured result, trace, summary, and retrieval files",
   "profile": "standard_or_contract",
   "status": "completed",
-  "result_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\result.json",
-  "summary_path": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\summary.md"
+  "result_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\summary.md"
 }

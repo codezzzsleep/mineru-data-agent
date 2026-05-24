@@ -65,6 +65,21 @@ def test_agent_value_report_separates_live_and_offline_decisions() -> None:
     assert "execution_control.runtime_recovery_plan" in report["agent_layer_fields"]
 
 
+
+def test_artifact_index_reports_live_agent_and_cost_schema() -> None:
+    module = _load_script("build_artifacts_index.py")
+    report = module.build_report()
+
+    category_ids = {item["id"] for item in report["categories"]}
+    assert "agent_live_cases" in category_ids
+    assert report["quick_metrics"]["agent_live_cases"]["tool_call_completed_cases"] >= 4
+    assert report["quick_metrics"]["agent_live_cases"]["answer_quality_pass_cases"] >= 2
+    assert report["quick_metrics"]["agent_live_cases"]["answer_quality_questionable_cases"] >= 2
+    assert report["quick_metrics"]["agent_live_cases"]["total_tokens"] > 0
+    assert report["quick_metrics"]["cost_model"]["scenarios"] >= 4
+    assert report["quick_metrics"]["cost_model"]["pricing_inputs"]
+
+
 def _load_script(name: str) -> ModuleType:
     path = PROJECT_ROOT / "scripts" / name
     spec = importlib.util.spec_from_file_location(path.stem, path)

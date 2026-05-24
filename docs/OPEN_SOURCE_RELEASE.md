@@ -5,7 +5,7 @@
 ## 1. 发布前必须确认
 
 - 使用公开仓库名 `mineru-data-agent` 或等价名称，避免使用第三方项目名造成来源混淆。
-- 保留 `LICENSE`、`README.md`、`CONTRIBUTING.md`、`.github/ISSUE_TEMPLATE/`、`Dockerfile`、`docker-compose.yml`、`docs/`、`src/`、`tests/`、`examples/`、`scripts/` 和 `submission_artifacts/`。
+- 保留 `LICENSE`、`README.md`、`CONTRIBUTING.md`、`.github/ISSUE_TEMPLATE/`、`docs/`、`src/`、`tests/`、`examples/`、`scripts/` 和 `submission_artifacts/`。`Dockerfile` 与 `docker-compose.yml` 可保留为可选 HTTP wrapper 材料，但不是 CLI 主提交面。
 - 不提交 `.env`、真实 API key、个人 token、浏览器会话、平台登录凭据或私有客户文档。
 - 不提交 `runs/`、`dist/`、`.venv/`、`__pycache__/`、`.pytest_cache/`、`*.pyc` 等本地运行产物。
 - 确认 `frondesce/mineru-kb-packager` 只在 `docs/ORIGINALITY_AND_COMPLIANCE.md` 中作为方向参考说明，没有复制源码、README 叙事或项目命名。
@@ -32,5 +32,5 @@ git push -u origin main
 - 最后提交 commit hash
 - 测试命令与通过结果
 - 提交压缩包文件名和生成时间
-- 典型案例目录：`submission_artifacts/cases/`、`submission_artifacts/mineru_cases/`、`submission_artifacts/agent_api_cases/`、`submission_artifacts/recovery_cases/`、`submission_artifacts/office_cases/`、`submission_artifacts/challenge_cases/`、`submission_artifacts/adaptive_cases/`、`submission_artifacts/public_real_cases/`、`submission_artifacts/long_document_chunks/`、`submission_artifacts/llm_cases/`、`submission_artifacts/evaluation/`、`submission_artifacts/stability/`、`submission_artifacts/api_load_smoke/`、`submission_artifacts/http_load_test/`、`submission_artifacts/http_load_test_100/`、`submission_artifacts/baseline_comparison/`、`submission_artifacts/agent_value/`、`submission_artifacts/llm_cost/`
+- 典型案例目录：`submission_artifacts/cases/`、`submission_artifacts/mineru_cases/`、`submission_artifacts/agent_live_cases/`、`submission_artifacts/agent_api_cases/`、`submission_artifacts/recovery_cases/`、`submission_artifacts/office_cases/`、`submission_artifacts/challenge_cases/`、`submission_artifacts/adaptive_cases/`、`submission_artifacts/public_real_cases/`、`submission_artifacts/long_document_chunks/`、`submission_artifacts/llm_cases/`、`submission_artifacts/evaluation/`、`submission_artifacts/stability/`、`submission_artifacts/baseline_comparison/`、`submission_artifacts/agent_value/`、`submission_artifacts/llm_cost/`
 - 开源协作材料：`CONTRIBUTING.md`、`.github/ISSUE_TEMPLATE/bug_report.md`、`.github/ISSUE_TEMPLATE/evidence_gap.md`

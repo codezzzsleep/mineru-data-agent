@@ -1,11 +1,11 @@
 {
   "doc_id": "input",
-  "source_file": "F:\\data_agent\\mineru-data-agent\\submission_artifacts\\memory_cases\\cross_run_text_cleanup_memory\\input.html",
+  "source_file": "<PROJECT_ROOT>\\submission_artifacts\\memory_cases\\cross_run_text_cleanup_memory\\input.html",
   "created_at": "2026-05-24T13:05:40.600257+00:00",
   "output_files": {
-    "chunks_jsonl": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_manifest.json",
-    "quality_report": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\memory_cases\\43589089cb7d\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

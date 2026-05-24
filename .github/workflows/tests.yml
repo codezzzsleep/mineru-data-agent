@@ -22,12 +22,14 @@ jobs:
         run: python -m pip install -e ".[dev]"
       - name: Run tests
         run: pytest -q
-      - name: API performance smoke
-        run: >
-          python scripts/run_api_load_smoke.py
-          --requests 6
-          --concurrency 3
-          --output-dir runs/ci_api_load_smoke
-          --min-success-rate 1.0
-          --min-artifact-complete-rate 1.0
-          --max-p95-seconds 5.0
+      - name: CLI smoke
+        run: |
+          data-agent --help
+          data-agent run --input examples/cases/case_1_financial_report.html --out runs/ci_cli_smoke --task "抽取财报关键字段并输出结构化结果" --profile auto
+          data-agent batch --manifest examples/batch_manifest.json --out runs/ci_batch_smoke
+          data-agent agent-run --help
+      - name: Build submission zip
+        shell: pwsh
+        run: ./scripts/make_submission_zip.ps1 -Output "dist/mineru-data-agent-submission.zip"
+      - name: Validate submission zip
+        run: SUBMISSION_ZIP_PATH=dist/mineru-data-agent-submission.zip pytest -q tests/test_submission_zip_inventory.py

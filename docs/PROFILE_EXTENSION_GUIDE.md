@@ -1,6 +1,6 @@
 # Profile Extension Guide
 
-This project treats a document profile as a deterministic routing and validation policy. A new profile does not require changing the API contract, but it should add its own schema, checks, fixtures, and labels.
+This project treats a document profile as a deterministic routing and validation policy. A new profile does not require changing the CLI contract, but it should add its own schema, checks, fixtures, and labels.
 
 ## Tune Existing Profiles Without Code
 

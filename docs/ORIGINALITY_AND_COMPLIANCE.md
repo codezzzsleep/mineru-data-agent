@@ -16,14 +16,14 @@
 当前提交的核心实现包括：
 
 - 任务 profile 推断与执行计划。
-- MinerU 在线 Agent API 与本地 CLI 双后端适配。
+- CLI-first MinerU 在线 Agent API 与本地 CLI 双后端适配。
 - HTML 轻量解析。
 - Markdown、内容块、章节、表格、键值对、数字事实抽取。
 - 质量校验与风险标注。
 - Retrieval Exporter 检索导出。
 - 批处理 manifest、失败不中断与 batch report。
 - DeepSeek/ModelScope 可选 LLM 任务理解和复核层。
-- FastAPI 服务接口。
+- 可选 FastAPI wrapper 接口。
 
 这些模块围绕赛题要求组织，重点不是复刻某个知识库打包工具，而是构建一个可执行、可追溯、可复现的 Data Agent。
 

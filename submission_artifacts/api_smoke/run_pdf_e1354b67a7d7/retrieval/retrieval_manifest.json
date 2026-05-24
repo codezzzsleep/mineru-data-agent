@@ -1,11 +1,11 @@
 {
   "doc_id": "8828ab01efa846f98d524719bb9d8b69",
-  "source_file": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\_uploads\\8828ab01efa846f98d524719bb9d8b69.pdf",
+  "source_file": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\_uploads\\8828ab01efa846f98d524719bb9d8b69.pdf",
   "created_at": "2026-05-23T10:22:20.742528+00:00",
   "output_files": {
-    "chunks_jsonl": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_manifest.json",
-    "quality_report": "F:\\data_agent\\mineru-data-agent\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\api_pdf_smoke\\e1354b67a7d7\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

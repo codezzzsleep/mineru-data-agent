@@ -1,4 +1,8 @@
-# 部署与 API 说明
+# CLI 部署与可选 API 说明
+
+本项目当前按 **CLI-first** 方式提交。评审和复现应优先使用
+`data-agent run`、`data-agent batch` 和 `data-agent agent-run`；HTTP API
+只是本地集成测试用的可选 wrapper，不是主要交付面。
 
 ## 1. 环境要求
 
@@ -122,7 +126,10 @@ powershell -ExecutionPolicy Bypass -File .\scripts\collect_mineru_case.ps1 -RunD
 
 当前结果位于 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/`。脚本会计算 PDF 页数，并按在线 MinerU Agent API 20 页上限拆分 page ranges。本次 NIST 48 页公开 PDF 保存 3 个分片、3/3 成功、42.418 秒、58 个 retrieval chunks；该结果展示在线 API 长文档分片执行，不是本地 CLI/GPU benchmark。
 
-## 5. API 服务
+## 5. 可选 HTTP API wrapper
+
+以下接口仅用于本地集成或二次封装。CLI 是默认评审入口；没有公网 API
+服务地址也不影响 CLI 提交包复现。
 
 启动：
 
@@ -136,9 +143,9 @@ Docker 一键启动：
 docker compose up --build
 ```
 
-容器默认监听 `8080`，把 `./runs` 挂载到 `/app/runs`，并设置 `MINERU_DATA_AGENT_OUTPUT_DIR=/app/runs/api`、`MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE=/app` 和上传大小限制。该镜像用于 CPU 友好的 API 复现；如要跑本地 MinerU CLI/GPU pipeline，仍建议使用 HeyWhale MinerU 官方镜像或在容器内额外安装 `mineru[pipeline]`。
+容器默认监听 `8080`，把 `./runs` 挂载到 `/app/runs`，并设置 `MINERU_DATA_AGENT_API_DEFAULT_RUNNER=agent-api`、`MINERU_DATA_AGENT_OUTPUT_DIR=/app/runs/api`、`MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE=/app` 和上传大小限制。该镜像用于 CPU 友好的在线 Agent API 复现；如要跑本地 MinerU CLI/GPU pipeline，仍建议使用 HeyWhale MinerU 官方镜像或在容器内额外安装 `mineru[pipeline]`。
 
-稳定接口、参数、返回 schema 和错误码见 `docs/API_CONTRACT.md`。该文档是评审脚本优先参考的 API 合约。
+可选 HTTP wrapper 的接口、参数、返回 schema 和错误码见 `docs/API_CONTRACT.md`。评审脚本应优先参考 `docs/CLI_CONTRACT.md` 和 `data-agent` 命令。
 
 健康检查：
 
@@ -148,7 +155,7 @@ curl http://127.0.0.1:8080/health
 
 本提交包保存了本地 API 冒烟测试证据，见 `submission_artifacts/api_smoke/`。该证据覆盖 `/health`、一次 HTML 文件上传解析和一次 PDF 文件上传解析，返回的 `trace_path`、`summary_path` 和 retrieval 输出均已落盘。另保存 1 个 CPU 环境下 `--runner agent-api` PDF 复跑证据，见 `submission_artifacts/agent_api_cases/`。
 
-当前提交提供本地可启动 API 与本地烟测证据，尚未提供长期公网服务地址。评审若需要联网调用，可按本节命令在 HeyWhale 或自有服务器启动服务；公开部署属于加分项，不是当前提交包已完成的事实。
+当前提交提供本地可启动的可选 HTTP wrapper 与本地烟测证据，尚未提供长期公网服务地址。评审默认不需要联网调用；若确有集成需要，可按本节命令在 HeyWhale 或自有服务器启动服务。
 
 解析接口：
 
@@ -180,7 +187,7 @@ export MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE="/home/mw/project/mineru-data-agent
 export MINERU_DATA_AGENT_MAX_UPLOAD_MB="200"
 ```
 
-如果请求传入的 `output_root` 不在 `MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE` 内，接口会返回 400；如果上传文件超过限制，会返回 413。`runner` 只允许 `cli` 或 `agent-api`，`llm` 只允许 `none`、`deepseek` 或 `modelscope`，非法值会返回结构化错误。
+如果请求传入的 `output_root` 或服务端默认输出目录不在 `MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE` 内，接口会返回 400；如果上传文件超过限制，会返回 413。`runner` 只允许 `cli` 或 `agent-api`，`profile`、`backend`、`method`、`lang`、`llm` 都有枚举校验，非法值会返回结构化错误。HTTP API 不接受 `api_key`、`base_url`、`llm_base_url`、`mineru_executable` 或 `fallback_mineru_executable` 表单字段；LLM provider endpoint 和 MinerU CLI 路径只能由服务端环境变量或本地 CLI 参数配置。真实 live tool-calling Agent 只通过 `data-agent agent-run` CLI 暴露，不提供 HTTP endpoint。
 
 开启 DeepSeek 大模型增强：
 
@@ -220,7 +227,20 @@ curl -X POST http://127.0.0.1:8080/v1/parse \
 
 本提交包保存了一次实际启用 ModelScope DeepSeek-V4-Flash 的运行证据，见 `submission_artifacts/llm_cases/`。该证据的 `trace.json` 记录了 `modelscope-llm-preplan completed` 和 `modelscope-llm completed`，`result.json` 中 `llm_analysis.enabled=true`，`usage_summary.total_tokens=4309`。当前代码还会在解析前新增 `llm_pre_execution_planning` 步骤：LLM 建议 profile、runner、backend、method、语言、目标 schema 和恢复策略，系统把白名单内且未被显式锁定的建议写入 `execution_control.applied` 并用于本次解析。API key 只通过环境变量传入，不进入输出文件。
 
-API 同样支持 provenance fallback 参数：`cli_fallback_on_no_page_provenance=true` 默认开启，`fallback_mineru_executable` 可指定本地 MinerU CLI 路径。实际 fallback runner 只有在显式路径、`MINERU_EXECUTABLE` 或系统 `mineru` 命令可用时才会创建。当前提交包的 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 已保存一个真实 PDF 的恢复演练：在线 API 首次解析后触发 `no_page_provenance`，随后选择 `cli_fallback`，最终 `recovery_decision.executed=true`。该案例在无真实 key/CLI 的当前环境下使用离线确定性预调度器和缓存 CLI artifact 回放，文档和 trace 已标注边界。
+真实 live tool-calling Agent 使用 CLI 入口：
+
+```bash
+data-agent agent-run \
+  --provider modelscope \
+  --model "$MODELSCOPE_MODEL" \
+  --input examples/cases/case_1_financial_report.html \
+  --out runs/agent_live \
+  --task "识别 2026Q1 的营业收入和利润总额，验证合计行是否一致"
+```
+
+该 CLI 会生成 `result.json`、`live_agent_trace.json` 和 `live_agent_summary.md`，并用 `tool_call_completed` 与 `answer_quality_pass` 分开记录工具链完成和答案质量。HTTP API 不提供 `/v1/agent/parse`。
+
+API 同样支持 provenance fallback 参数：`cli_fallback_on_no_page_provenance=true` 默认开启；HTTP 请求不能指定本地 MinerU 可执行文件路径，fallback runner 只会使用服务端配置的 `MINERU_EXECUTABLE` 或系统 `mineru` 命令。CLI 本地运行仍可使用 `--fallback-mineru-executable`。当前提交包的 `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/` 已保存一个真实 PDF 的恢复演练：在线 API 首次解析后触发 `no_page_provenance`，随后选择 `cli_fallback`，最终 `recovery_decision.executed=true`。该案例在无真实 key/CLI 的当前环境下使用离线确定性预调度器和缓存 CLI artifact 回放，文档和 trace 已标注边界。
 
 ### 异步 Job 接口
 
@@ -294,7 +314,7 @@ runs/api/<run_id>/
 
 日志脱敏策略：
 
-- DeepSeek/ModelScope API key 只通过环境变量或请求参数进入运行时，不写入输出文件。
+- DeepSeek/ModelScope API key 只通过环境变量进入运行时，不写入输出文件。
 - LLM 调用失败摘要会过滤真实 key、Bearer token 和 `api_key=` 参数。
 - MinerU 在线 Agent API 的重试事件、异常文本和保存的事件 JSON 会过滤 `token=`、`access_token=`、`signature=`、`X-Amz-*` 等签名字段。
 - 提交材料收集脚本会对本机路径做 `<PROJECT_ROOT>`、`<USER_HOME>`、`<MINERU_ROOT>` 一类占位替换，减少本地环境泄露。
@@ -329,7 +349,7 @@ python scripts/build_stability_report.py
 
 当前报告位于 `submission_artifacts/stability/stability_report.json` 和 `submission_artifacts/stability/stability_report.md`。它检查 `examples/evaluation/labels.json` 覆盖的 17 个保存案例，汇总 result/trace 存在性、trace 步骤数、工具调用次数、工具耗时、质量状态分布、provenance 分布和自动恢复执行数量。
 
-生成本地 API 并发 smoke：
+生成可选 HTTP wrapper 并发 smoke：
 
 ```bash
 python scripts/run_api_load_smoke.py --requests 8 --concurrency 4 --keep-runs

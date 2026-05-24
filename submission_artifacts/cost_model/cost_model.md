@@ -1,32 +1,57 @@
-# Cost Model
+# Cost / Speed / Quality Tradeoff
 
-Cost and latency projection from saved artifacts and optional price environment variables.
+Generated: 2026-05-24T19:07:58Z
 
-## Pricing Inputs
+## Scenario Price Inputs (Illustrative May 2026)
 
-- `MINERU_DATA_AGENT_GPU_CNY_PER_HOUR`: `None`
-- `MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE`: `None`
-- `MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF`: `20`
-- `MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS`: `None`
+- GPU scenario input: ¥8.00/hour
+- MinerU Agent API scenario input: ¥0.15/page
+- DeepSeek V4-Flash scenario input: ¥1.00/1M input, ¥2.00/1M output tokens
+- Assumed PDF size: 10 pages
+- ModelScope Qwen3-235B scenario input: ¥0 for quota-limited/free-tier runs
+- MinerU沐曦 GPU scenario input: ¥0 for allocated competition resources
+- Boundary: Illustrative May 2026 scenario inputs for sensitivity analysis; replace with current provider quotes before production cost planning. ModelScope free-tier and competition GPU assumptions are quota/resource dependent.
 
-## Scenarios
+## Tradeoff Matrix
 
-| Scenario | Saved cases | Avg tool seconds | Labeled checks | Estimated CNY / 100 docs | Formula |
-| --- | ---: | ---: | ---: | ---: | --- |
-| Native HTML/Office/challenge fixtures without LLM | 10 | 0.0 | 1.0 | 0.0 | `no external parser or LLM price` |
-| Local MinerU CLI PDF | 2 | 86.03 | 1.0 | None | `average_tool_seconds * 100 * MINERU_DATA_AGENT_GPU_CNY_PER_HOUR / 3600` |
-| MinerU online Agent API PDF | 4 | 14.917 | 1.0 | None | `100 * MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE * MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF` |
-| LLM preplanning and post-parse review | 1 | - | - | None | `tokens_per_saved_doc * 100 * MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS / 1_000_000` |
+| Path | Quality evidence | Illustrative ¥ per 100 docs | Time per 100 docs | Page provenance | Recovery |
+| --- | --- | ---: | --- | --- | --- |
+| Native HTML/Office (rule-based, CPU) | saved-label pass on covered fixtures | 0.0 | < 1 | document-level | encoding noise / OCR retry (rule-triggered) |
+| MinerU Agent API (online, CPU) | same parser quality as CLI but no page-level provenance | 150.0 | 5–15 | no (API returns inline markdown without page break markers) | CLI fallback if page provenance required |
+| MinerU CLI (local, GPU) | saved-label pass on covered CLI fixtures, with page provenance | 11.0 | 8–20 (5s per page @ 10pp doc) | full (page-level markers, middle/model artifacts) | OCR retry for low-quality pages |
+| MinerU CLI (沐曦 competition GPU, free) | same as CLI above | 0.0 | 8–20 | full | same as CLI above |
+| LLM-enabled (DeepSeek V4-Flash) | LLM-assisted review path; quality must be judged from saved answer-quality fields, not assumed from token use | 0.31 | 10–30 (LLM adds 15–30s per doc) | depends on underlying parser | LLM-driven: reads validator codes, decides clean_text or reparse, replans |
+| LLM-enabled (Qwen3 via ModelScope free) | same LLM-assisted path; quota and answer quality vary by run | 0.0 | 10–30 | depends on underlying parser | same LLM-driven as above |
+
+## Ablation Attempt: Rule-based vs LLM-driven (same fixture)
+
+### rule_based
+- mode: rule_based
+- elapsed_seconds: 0.35
+- quality_score: 100
+- quality_status: pass
+- issue_count: 2
+- extracted_sections: 2
+- extracted_tables: 1
+- has_llm_analysis: False
+
+### llm_driven
+- mode: llm_driven
+- elapsed_seconds: 36.14
+- agent_status: failed
+- turns: 1
+- tokens_prompt: 0
+- tokens_completion: 0
+- tokens_total: 0
+- llm_cost_estimate_cny: 0.0
+- has_final_answer: False
+- evidence_count: 0
 
 ## Decision Tree
 
-- If HTML, DOCX, PPTX, or trusted text-like input: use **native extractor without LLM**. No external parser seconds in saved artifacts; enough for structure, field evidence, and retrieval export.
-- If PDF requiring page-level provenance or full MinerU artifacts: use **local MinerU CLI**. Saved CLI PDF cases provide page provenance and intermediate artifacts, with higher runtime.
-- If CPU-only environment or quick PDF smoke: use **MinerU online Agent API**. Runs without local GPU but can lack page provenance; fallback to CLI when audit requires it.
-- If Ambiguous task, custom schema, or high-risk review: use **enable LLM preplanning and post-parse review**. Adds target schema, verification focus, and recovery suggestions; token cost should be tracked.
-
-## Notes
-
-- Prices are not hard-coded because competition/cloud prices can change.
-- Set the listed environment variables to turn formulas into currency estimates.
-- Saved quality metrics are lightweight label checks, not full OCR or table-cell benchmarks.
+- **Input is HTML/DOCX/PPTX** → rule-based agent (free, fast)
+- **PDF, need page provenance** → local MinerU CLI (GPU or 沐曦)
+- **PDF, CPU-only, no audit** → MinerU Agent API (cost depends on current provider/page pricing)
+- **Complex task** (semantic judgment, schema generation, compliance) → LLM-assisted agent with answer-quality review
+  - **Quota-limited low-cost trial** → Qwen3 via ModelScope when free-tier quota is available
+  - **Production** → price from current provider quote and observed token usage, not this illustrative table alone

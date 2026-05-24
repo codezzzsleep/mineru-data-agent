@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from .agent import MinerUDataAgent
+from .agent_live import DEFAULT_MAX_TOKENS, DEFAULT_MAX_TURNS, DEFAULT_TIMEOUT, live_trace_to_jsonable, run_live_agent
 from .batch import run_batch
 from .llm_client import DeepSeekLLMClient, ModelScopeLLMClient
 from .mineru_client import MinerUAgentAPIRunner, MinerURunner, resolve_mineru_executable
@@ -68,6 +69,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     batch.add_argument("--fallback-mineru-executable", default=None, help="Path to mineru executable for CLI fallback.")
     _add_llm_args(batch)
+
+    agent_run = subparsers.add_parser("agent-run", help="Run the live LLM tool-calling Agent path.")
+    agent_run.add_argument("--input", required=True, help="Input PDF/office/html file.")
+    agent_run.add_argument("--out", default="runs/agent_live", help="Output directory.")
+    agent_run.add_argument("--task", required=True, help="Natural-language task objective.")
+    agent_run.add_argument("--provider", choices=["deepseek", "modelscope"], default="modelscope", help="Live LLM provider; API key is read from environment only.")
+    agent_run.add_argument("--model", default=None, help="Model name. Defaults to provider environment/config.")
+    agent_run.add_argument("--max-turns", type=int, default=DEFAULT_MAX_TURNS, help="Maximum live-agent tool turns.")
+    agent_run.add_argument("--max-tokens", type=int, default=DEFAULT_MAX_TOKENS, help="Maximum completion tokens per LLM turn.")
+    agent_run.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT, help="LLM request timeout in seconds.")
+    agent_run.add_argument("--mineru-executable", default=None, help="Optional local MinerU executable for PDF parse tools.")
     return parser
 
 
@@ -106,6 +118,29 @@ def main() -> None:
             },
         )
         print(json.dumps(report, ensure_ascii=False, indent=2))
+    elif args.command == "agent-run":
+        _validate_live_agent_limits(args.max_turns, args.max_tokens, args.timeout)
+        trace = run_live_agent(
+            input_file=Path(args.input),
+            output_root=Path(args.out),
+            task=args.task,
+            provider=args.provider,
+            model=args.model,
+            max_turns=args.max_turns,
+            max_tokens=args.max_tokens,
+            timeout=args.timeout,
+            mineru_runner=MinerURunner(executable=args.mineru_executable) if args.mineru_executable else None,
+        )
+        print(json.dumps(live_trace_to_jsonable(trace, display_paths=True), ensure_ascii=False, indent=2))
+
+
+def _validate_live_agent_limits(max_turns: int, max_tokens: int, timeout: float) -> None:
+    if max_turns < 1 or max_turns > 30:
+        raise SystemExit("--max-turns must be in range 1..30")
+    if max_tokens < 1 or max_tokens > 4096:
+        raise SystemExit("--max-tokens must be in range 1..4096")
+    if timeout <= 0 or timeout > 600:
+        raise SystemExit("--timeout must be in range 0..600")
 
 
 def _build_runner(args: argparse.Namespace) -> MinerURunner | MinerUAgentAPIRunner:

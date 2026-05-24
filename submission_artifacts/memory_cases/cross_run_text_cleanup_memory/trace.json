@@ -8,7 +8,7 @@
       "ended_at": "2026-05-24T13:05:40.674504+00:00",
       "detail": {
         "task": "清理网页巡检日报并输出结构化结果",
-        "input_file": "F:\\data_agent\\mineru-data-agent\\submission_artifacts\\memory_cases\\cross_run_text_cleanup_memory\\input.html",
+        "input_file": "<PROJECT_ROOT>\\submission_artifacts\\memory_cases\\cross_run_text_cleanup_memory\\input.html",
         "profile_inference": {
           "selected_profile": "general_document",
           "source": "explicit_request",
@@ -77,7 +77,7 @@
       "started_at": "2026-05-24T13:05:40.674504+00:00",
       "ended_at": "2026-05-24T13:05:40.680709+00:00",
       "detail": {
-        "input_file": "F:\\data_agent\\mineru-data-agent\\submission_artifacts\\memory_cases\\cross_run_text_cleanup_memory\\input.html"
+        "input_file": "<PROJECT_ROOT>\\submission_artifacts\\memory_cases\\cross_run_text_cleanup_memory\\input.html"
       }
     },
     {
@@ -254,9 +254,9 @@
         "pages": [
           1
         ],
-        "chunks_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\memory_cases\\39df60777fe2\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\memory_cases\\39df60777fe2\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\memory_cases\\39df60777fe2\\retrieval\\retrieval_quality.json"
       }
     },
     {
@@ -281,6 +281,6 @@
   "task": "清理网页巡检日报并输出结构化结果",
   "profile": "general_document",
   "status": "completed",
-  "result_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\result.json",
-  "summary_path": "F:\\data_agent\\mineru-data-agent\\runs\\memory_cases\\39df60777fe2\\summary.md"
+  "result_path": "<PROJECT_ROOT>\\runs\\memory_cases\\39df60777fe2\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\memory_cases\\39df60777fe2\\summary.md"
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T15:03:44Z",
+  "generated_at": "2026-05-24T20:14:01Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -49,20 +49,30 @@
       "pairs_with_applied_controls": 0,
       "pairs_with_recovery_suggestions": 1
     },
+    "agent_live_cases": {
+      "provider": "modelscope",
+      "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "total_cases": 8,
+      "tool_call_completed_cases": 4,
+      "answer_quality_pass_cases": 2,
+      "answer_quality_questionable_cases": 2,
+      "answer_quality_unreviewed_cases": 0,
+      "live_evidence_cases": 4,
+      "completed_status": 4,
+      "failed_or_incomplete": 4,
+      "total_tokens": 61890
+    },
     "cost_model": {
-      "scenarios": 4,
+      "scenarios": 6,
       "pricing_inputs": {
-        "gpu_cny_per_hour": null,
-        "agent_api_cny_per_page": null,
-        "assumed_pages_per_pdf": 20,
-        "llm_cny_per_million_tokens": null,
-        "env_vars": [
-          "MINERU_DATA_AGENT_GPU_CNY_PER_HOUR",
-          "MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE",
-          "MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF",
-          "MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS"
-        ]
-      }
+        "gpu_cny_per_hour": 8.0,
+        "mineru_api_cny_per_page": 0.15,
+        "llm_input_cny_per_1m_tokens": 1.0,
+        "llm_output_cny_per_1m_tokens": 2.0,
+        "assumed_pages_per_pdf": 10,
+        "notes": "Illustrative May 2026 scenario inputs for sensitivity analysis; replace with current provider quotes before production cost planning. ModelScope free-tier and competition GPU assumptions are quota/resource dependent."
+      },
+      "live_evidence_available": true
     },
     "recovery_effectiveness": {
       "results_with_recovery": 39,
@@ -618,6 +628,41 @@
       ]
     },
     {
+      "id": "agent_live_cases",
+      "title": "Live LLM agent traces",
+      "description": "Real OpenAI-compatible tool-calling traces; finalize completion and answer-quality pass are reported separately.",
+      "path": "submission_artifacts/agent_live_cases",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/agent_live_cases/196d0a9ab359/live_agent_summary.md",
+        "submission_artifacts/agent_live_cases/37a26944b806/live_agent_summary.md",
+        "submission_artifacts/agent_live_cases/51095c378826/live_agent_summary.md",
+        "submission_artifacts/agent_live_cases/6e4c38424514/live_agent_summary.md",
+        "submission_artifacts/agent_live_cases/aacfcda3d359/live_agent_summary.md",
+        "submission_artifacts/agent_live_cases/agent_live_report.md",
+        "submission_artifacts/agent_live_cases/b09a230d6597/live_agent_summary.md",
+        "submission_artifacts/agent_live_cases/f8931594641b/live_agent_summary.md",
+        "submission_artifacts/agent_live_cases/f93eb9dcdc0d/live_agent_summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/agent_live_cases/196d0a9ab359/live_agent_trace.json",
+        "submission_artifacts/agent_live_cases/37a26944b806/live_agent_trace.json",
+        "submission_artifacts/agent_live_cases/51095c378826/extracted.json",
+        "submission_artifacts/agent_live_cases/51095c378826/live_agent_trace.json",
+        "submission_artifacts/agent_live_cases/51095c378826/quality.json",
+        "submission_artifacts/agent_live_cases/51095c378826/retrieval/retrieval_manifest.json",
+        "submission_artifacts/agent_live_cases/51095c378826/retrieval/retrieval_quality.json",
+        "submission_artifacts/agent_live_cases/6e4c38424514/extracted.json",
+        "submission_artifacts/agent_live_cases/6e4c38424514/live_agent_trace.json",
+        "submission_artifacts/agent_live_cases/6e4c38424514/quality.json",
+        "submission_artifacts/agent_live_cases/6e4c38424514/retrieval/retrieval_manifest.json",
+        "submission_artifacts/agent_live_cases/6e4c38424514/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
       "id": "evaluation",
       "title": "Evaluation metrics",
       "description": "Saved label checks and field precision/recall/F1.",
@@ -651,8 +696,8 @@
     },
     {
       "id": "api_smoke",
-      "title": "API smoke",
-      "description": "Health, sync parse, and PDF API smoke results.",
+      "title": "Optional API smoke",
+      "description": "Secondary HTTP wrapper health, sync parse, and PDF smoke results.",
       "path": "submission_artifacts/api_smoke",
       "exists": true,
       "result_files": 2,
@@ -681,8 +726,8 @@
     },
     {
       "id": "api_load_smoke",
-      "title": "API load smoke",
-      "description": "Local FastAPI TestClient concurrency results.",
+      "title": "Optional API load smoke",
+      "description": "Secondary local FastAPI TestClient concurrency results.",
       "path": "submission_artifacts/api_load_smoke",
       "exists": true,
       "result_files": 8,
@@ -697,8 +742,8 @@
     },
     {
       "id": "http_load_test",
-      "title": "HTTP load test",
-      "description": "Local TCP loopback sync/async API load test with request artifacts.",
+      "title": "Optional HTTP load test",
+      "description": "Secondary local TCP loopback sync/async API load test with request artifacts.",
       "path": "submission_artifacts/http_load_test",
       "exists": true,
       "result_files": 12,
@@ -713,8 +758,8 @@
     },
     {
       "id": "http_load_test_100",
-      "title": "HTTP load test 100",
-      "description": "100-request local TCP loopback sync/async API load test.",
+      "title": "Optional HTTP load test 100",
+      "description": "Secondary 100-request local TCP loopback sync/async API load test.",
       "path": "submission_artifacts/http_load_test_100",
       "exists": true,
       "result_files": 0,

@@ -20,7 +20,7 @@
 4. Retrieval Exporter：把解析结果整理为 `retrieval_chunks.jsonl`、`retrieval_manifest.json` 和 `retrieval_quality.json`，便于检索、向量库入库与评审复查。跨页文本不会再合并到第一页；chunk 保留 `page_no` 起始页和 `pages` 覆盖页列表。
 5. Quality Validator：检查空结果、编码噪声、页码覆盖、profile 预期、表格合计行等风险。
 6. Recovery Orchestrator：`src/mineru_data_agent/recovery.py` 集中处理严格页级来源门槛、质量择优、恢复计划、LLM 复核影响、attempt 摘要和文本清理，主 `agent.py` 只负责按计划调用解析/恢复步骤。
-7. API/CLI Layer：提供命令行、批处理、FastAPI 同步接口和异步 job/polling 接口，便于评审脚本调用和复现实验。
+7. CLI Layer：提供 `data-agent run`、`data-agent batch` 和 `data-agent agent-run` 三个评审入口；FastAPI 同步/异步接口保留为可选本地 wrapper，不是主要交付面。
 
 ## 3. Agent 执行机制
 
@@ -43,7 +43,7 @@
 
 对于生产化稳定性，系统提供批处理 manifest 入口。批处理中单个任务失败不会中断整批，最终生成 `batch_report.json`，记录每个任务的状态、run id、输出路径、质量评分和错误信息。在线 API 调用对 429、5xx 和网络异常等瞬时错误提供重试，并把重试事件写入工具调用日志。
 
-大模型层默认关闭。配置 DeepSeek 官方或 ModelScope 推理入口后，系统会先让 LLM 参与解析前调度，再进行解析后复核。解析前调度的结果保存在 `execution_control` 与 `llm_analysis.pre_execution_plan`，解析后复核保存在 `llm_analysis.post_parse_analysis`。本提交包已保存 1 个实际启用 ModelScope `deepseek-ai/DeepSeek-V4-Flash` 的案例，见 `submission_artifacts/llm_cases/`；另保存 1 个真实 PDF 的解析前调度 + API-to-CLI fallback recovery 演练，见 `submission_artifacts/recovery_cases/`。`submission_artifacts/agent_decision_cases/` 是离线决策回归材料，使用本地 scripted decision client 检查 pre/post decision hook schema；它不替代 live provider 证据，其中 token 数也不作为真实用量。
+大模型层默认关闭。配置 DeepSeek 官方或 ModelScope 推理入口后，稳定主路径可以先让 LLM 参与解析前调度，再进行解析后复核。解析前调度的结果保存在 `execution_control` 与 `llm_analysis.pre_execution_plan`，解析后复核保存在 `llm_analysis.post_parse_analysis`。真实 tool-calling Agent 作为 CLI 工具 `data-agent agent-run` 暴露，不新增 HTTP live-agent endpoint；它只从环境变量读取 provider key/base URL，并输出 `result.json`、`live_agent_trace.json` 和 `live_agent_summary.md`。本提交包已保存 1 个实际启用 ModelScope `deepseek-ai/DeepSeek-V4-Flash` 的预调度/复核案例，见 `submission_artifacts/llm_cases/`；另有 `submission_artifacts/agent_live_cases/` 记录 8 次 ModelScope Qwen3 tool-calling 尝试，其中 4 次到达 finalize/tool-call completion，人工复核后 2 次计为 answer-quality pass、2 次保留为质量存疑的 live tool-call trace；另保存 1 个真实 PDF 的解析前调度 + API-to-CLI fallback recovery 演练，见 `submission_artifacts/recovery_cases/`。`submission_artifacts/agent_decision_cases/` 是离线决策回归材料，使用本地 scripted decision client 检查 pre/post decision hook schema；它不替代 live provider 证据，其中 token 数也不作为真实用量。
 
 ## 4. MinerU 使用方式
 
@@ -120,7 +120,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 项目提供：
 
 - `pyproject.toml` 依赖声明
-- CLI 与 API 两种调用方式
+- CLI-first 调用方式：`data-agent run`、`data-agent batch`、`data-agent agent-run`
 - 批处理 manifest 与 `batch_report.json`
 - 可选 DeepSeek v4-flash / ModelScope 接入，不把 API key 写入日志或输出文件
 - LLM 预调度的 `execution_control`，记录 recommended/applied/ignored/resolved 参数
@@ -132,8 +132,8 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - 带标注评测脚本 `scripts/build_evaluation_report.py` 与标注文件 `examples/evaluation/labels.json`
 - 每次运行的 trace 文件
 - 失败运行也会保留 trace 文件
-- API 输出默认持久化到 `runs/api`，请求结束后仍可查看 `trace_path`、`summary_path` 和 artifact
-- API 提供 `/v1/jobs` 与 `/v1/jobs/{job_id}`，支持长任务异步提交和状态轮询
+- 可选 HTTP wrapper 输出默认持久化到 `runs/api`，请求结束后仍可查看 `trace_path`、`summary_path` 和 artifact
+- 可选 HTTP wrapper 提供 `/v1/jobs` 与 `/v1/jobs/{job_id}`，支持长任务异步提交和状态轮询
 - MinerU 原始输出 artifact 路径
 - 单元测试覆盖核心抽取和校验逻辑
 - `submission_artifacts/cases/` 中包含 5 个 HTML fixture 案例的输入、结果、trace、summary 和 retrieval 输出
@@ -149,9 +149,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - `submission_artifacts/llm_impact/` 中包含保存的规则运行与 LLM-enabled 运行对比
 - `submission_artifacts/evaluation/` 中包含 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、字段 precision/recall/F1 和 failed-check 分布的带标注评测指标
 - `submission_artifacts/stability/` 中包含 17 个保存案例的 trace、工具耗时、质量状态和恢复统计
-- `submission_artifacts/api_load_smoke/` 中包含 8 请求、并发 4 的本地 FastAPI smoke 报告和对应落盘 artifact
-- `submission_artifacts/http_load_test/` 中包含 12 请求、并发 6 的本地 HTTP loopback 压测，混合同步 `/v1/parse` 和异步 `/v1/jobs`
-- `submission_artifacts/http_load_test_100/` 中包含 100 请求、并发 20 的本地 HTTP loopback 压测，混合同步 `/v1/parse` 和异步 `/v1/jobs`
+- `submission_artifacts/api_load_smoke/`、`submission_artifacts/http_load_test/` 和 `submission_artifacts/http_load_test_100/` 保留为可选 HTTP wrapper 的二级工程证据；CI 现在以 CLI smoke 作为主门禁
 - `submission_artifacts/baseline_comparison/` 中包含保存 artifact 的成本/速度/质量分组对比
 - `submission_artifacts/agent_value/` 中包含 Agent 层增量字段和决策模式分布，明确区分 deterministic、offline scripted、controlled fault injection 和 saved live LLM trace
 - `submission_artifacts/llm_cost/` 中包含 LLM token/cost 审计报告
