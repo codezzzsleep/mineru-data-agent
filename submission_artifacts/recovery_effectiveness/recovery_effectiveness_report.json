@@ -1,0 +1,691 @@
+{
+  "schema_version": "2026-05-24",
+  "generated_at": "2026-05-24T07:09:52Z",
+  "scope": "Recovery effectiveness summary over saved submission artifacts.",
+  "aggregate": {
+    "results_with_recovery": 29,
+    "recovery_executed": 4,
+    "selected_non_initial": 3,
+    "executed_rate": 0.13793103448275862,
+    "selected_non_initial_rate": 0.10344827586206896,
+    "average_non_initial_tool_seconds_when_executed": 5.917,
+    "attempt_counts": {
+      "cli_fallback": 1,
+      "initial": 29,
+      "ocr_retry": 1,
+      "text_cleanup": 2
+    },
+    "selected_attempt_counts": {
+      "cli_fallback": 1,
+      "initial": 26,
+      "text_cleanup": 2
+    },
+    "initial_issue_counts": {
+      "document_level_provenance": 14,
+      "expected_anomaly_signal_missing": 1,
+      "no_page_provenance": 10,
+      "numeric_total_mismatch": 4,
+      "numeric_total_needs_review": 1,
+      "numeric_total_verified": 7,
+      "possible_mojibake": 2
+    },
+    "failed_attempt_counts": {}
+  },
+  "cases": [
+    {
+      "result_path": "submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/result.json",
+      "run_id": "e9423ebeff1a",
+      "profile": "financial_report",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/adaptive_cases/case_financial_growth_query/result.json",
+      "run_id": "17e56a82ebc2",
+      "profile": "financial_report",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/result.json",
+      "run_id": "0fbf0effad30",
+      "profile": "standard_or_contract",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "accept_with_review_notes",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 11.295,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/api_smoke/run_2478fc60f3b2/result.json",
+      "run_id": "2478fc60f3b2",
+      "profile": "general_document",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/result.json",
+      "run_id": "e1354b67a7d7",
+      "profile": "standard_or_contract",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "accept_with_review_notes",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 7.688,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/cases/case_1_financial_report/result.json",
+      "run_id": "693d37d36b41",
+      "profile": "financial_report",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/cases/case_2_low_quality_ocr/result.json",
+      "run_id": "31921e2b4f8f",
+      "profile": "low_quality_ocr",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "recovered_accept",
+      "executed": true,
+      "selected_attempt": "text_cleanup",
+      "attempt_names": [
+        "initial",
+        "text_cleanup"
+      ],
+      "initial_issue_codes": [
+        "possible_mojibake",
+        "document_level_provenance"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/cases/case_3_standard_contract/result.json",
+      "run_id": "6eebecbf0e8a",
+      "profile": "standard_or_contract",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/cases/case_4_workflow_diagram/result.json",
+      "run_id": "82f2fcd2a454",
+      "profile": "workflow_or_diagram",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/cases/case_5_web_inspection_report/result.json",
+      "run_id": "e0f566f95db8",
+      "profile": "general_document",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/challenge_cases/case_6_cross_page_financial_table/result.json",
+      "run_id": "58d40cd48116",
+      "profile": "financial_report",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "manual_numeric_review",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified",
+        "numeric_total_mismatch"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified",
+        "numeric_total_mismatch"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/challenge_cases/case_7_noisy_contract_scan/result.json",
+      "run_id": "ee0d71622431",
+      "profile": "low_quality_ocr",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "recovered_accept",
+      "executed": true,
+      "selected_attempt": "text_cleanup",
+      "attempt_names": [
+        "initial",
+        "text_cleanup"
+      ],
+      "initial_issue_codes": [
+        "possible_mojibake",
+        "document_level_provenance"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/challenge_cases/case_8_industry_standard_matrix/result.json",
+      "run_id": "c62b72d418ea",
+      "profile": "standard_or_contract",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/challenge_cases/case_9_incident_workflow_report/result.json",
+      "run_id": "591a12766ed6",
+      "profile": "workflow_or_diagram",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/llm_cases/case_llm_financial_review/result.json",
+      "run_id": "293dc94f8705",
+      "profile": "financial_report",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 22.188,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/result.json",
+      "run_id": "a9370f880cf5",
+      "profile": "standard_or_contract",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "accept_with_review_notes",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 14.287,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/result.json",
+      "run_id": "06efcc5941fa",
+      "profile": "standard_or_contract",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "accept_with_review_notes",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 20.139,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p041_048/result.json",
+      "run_id": "6ca973c318bb",
+      "profile": "standard_or_contract",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "accept_with_review_notes",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 7.777,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/result.json",
+      "run_id": "fbda43429d8a",
+      "profile": "standard_or_contract",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [],
+      "final_issue_codes": [],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 82.932,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/result.json",
+      "run_id": "42db2610f372",
+      "profile": "financial_report",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "numeric_total_verified"
+      ],
+      "final_issue_codes": [
+        "numeric_total_verified"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 89.128,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/mineru_cases/case_mineru_cli_low_quality_pdf/result.json",
+      "run_id": "4568109b3cc5",
+      "profile": "low_quality_ocr",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [],
+      "final_issue_codes": [],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 217.947,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/mineru_cases/case_mineru_cli_workflow_pdf/result.json",
+      "run_id": "ec0698e565de",
+      "profile": "workflow_or_diagram",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [],
+      "final_issue_codes": [],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 84.646,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/office_cases/case_docx_standard_review/result.json",
+      "run_id": "4a46b742ae8c",
+      "profile": "standard_or_contract",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/office_cases/case_pptx_workflow_review/result.json",
+      "run_id": "d8eea5507bd5",
+      "profile": "workflow_or_diagram",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "accept",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [],
+      "final_issue_codes": [],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/public_real_cases/public_cdc_vis_instructions/result.json",
+      "run_id": "d6f8646990e9",
+      "profile": "standard_or_contract",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 84,
+      "decision": "accept_with_review_notes",
+      "executed": true,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial",
+        "ocr_retry"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance",
+        "expected_anomaly_signal_missing"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance",
+        "expected_anomaly_signal_missing"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 15.286,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/public_real_cases/public_irs_w4_form/result.json",
+      "run_id": "ad440d103164",
+      "profile": "standard_or_contract",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 76,
+      "decision": "manual_numeric_review",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance",
+        "numeric_total_needs_review",
+        "numeric_total_mismatch"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance",
+        "numeric_total_needs_review",
+        "numeric_total_mismatch"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 16.277,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/public_real_cases/public_microsoft_annual_report/result.json",
+      "run_id": "18cd14d4f93a",
+      "profile": "financial_report",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 76,
+      "decision": "manual_numeric_review",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance",
+        "numeric_total_mismatch",
+        "numeric_total_verified",
+        "numeric_total_mismatch"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance",
+        "numeric_total_mismatch",
+        "numeric_total_verified",
+        "numeric_total_mismatch"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 16.17,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/public_real_cases/public_nist_ai_rmf/result.json",
+      "run_id": "c661beff50a8",
+      "profile": "standard_or_contract",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "accept_with_review_notes",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 11.934,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json",
+      "run_id": "52c948b82c48",
+      "profile": "standard_or_contract",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "recovered_accept",
+      "executed": true,
+      "selected_attempt": "cli_fallback",
+      "attempt_names": [
+        "initial",
+        "cli_fallback"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance"
+      ],
+      "final_issue_codes": [],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 8.38,
+      "llm_quality_decision_present": false
+    }
+  ],
+  "interpretation": [
+    "Executed recovery means the Agent attempted a second path such as text cleanup, OCR retry, or CLI fallback.",
+    "Selected non-initial means the recovered result replaced the first attempt.",
+    "Cached CLI fallback is counted separately in tool names and should not be presented as live CLI/GPU evidence."
+  ]
+}

@@ -31,6 +31,10 @@
 - 1 个自适应规划案例：同一财报输入在“增长最快项目”和“异常/证据复核”两个任务下生成不同 task intents、target schema、post-processors 和 task-specific answers
 - 1 个实际启用 DeepSeek-V4-Flash 的 LLM 证据案例，用于任务理解、schema 建议、复核重点和恢复建议；当前 live rerun 已记录 2 次 LLM 调用、4309 tokens
 - 1 份 LLM impact 报告，对比保存的规则运行与 LLM-enabled 运行，列出 LLM 决策点、token、应用/忽略项和 recovery suggestion
+- 1 份成本模型报告，把 native、CLI、在线 API、LLM 四类路径拆开，并用环境变量填入价格后自动估算 100 份文档成本
+- 1 份恢复有效性报告，按保存结果汇总 recovery 触发率、被选中的恢复路径、初始问题码和额外工具耗时
+- 1 份长文档风险报告，单独列出 NIST 48 页分片运行的页级来源、跨分片上下文和 GPU/CLI 长文档缺口
+- 1 份代码质量报告，统计 Python 文件、代码行、测试函数和 CI workflow，方便评审快速检查工程规模
 - 1 份带标注评测报告，新增字段级 precision/recall/F1 与 failed-check 分布，用于区分规则质量分和人工标签指标
 - 2 份真实 HTTP loopback 压测报告，覆盖同步解析和异步 job 轮询；其中加强版为 100 请求、并发 20、100/100 成功；另有 1 份成本/速度/质量对比报告，按 runner/场景组展示 tradeoff
 
@@ -322,6 +326,18 @@ python scripts/build_llm_impact_report.py
 
 当前报告位于 `submission_artifacts/llm_impact/`，对比保存的财报 HTML 规则运行与 LLM-enabled 运行。它用于说明 LLM 决策点和成本，不替代更大规模的 live LLM benchmark。
 
+成本模型、恢复汇总、长文档风险和代码质量报告可通过以下命令生成：
+
+```bash
+python scripts/build_cost_model.py
+python scripts/build_recovery_effectiveness_report.py
+python scripts/build_long_document_risk_report.py
+python scripts/build_code_quality_report.py
+python scripts/build_artifacts_index.py
+```
+
+当前报告分别位于 `submission_artifacts/cost_model/`、`submission_artifacts/recovery_effectiveness/`、`submission_artifacts/long_document_risk/` 和 `submission_artifacts/code_quality/`。成本报告默认只给公式；设置 `MINERU_DATA_AGENT_GPU_CNY_PER_HOUR`、`MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE`、`MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF`、`MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS` 后会给出人民币估算。
+
 ## Recommended HeyWhale Setup
 
 - 项目类型：IDE
@@ -366,7 +382,8 @@ python scripts/build_llm_impact_report.py
 - 稳定性：`submission_artifacts/stability/` 汇总 trace、工具调用、耗时、质量状态和恢复执行。
 - API：`submission_artifacts/api_load_smoke/`、`submission_artifacts/http_load_test/`、`submission_artifacts/http_load_test_100/` 保存本地接口验证和 100 请求并发结果。
 - 成本/速度/质量：`submission_artifacts/baseline_comparison/` 按 runner 和场景组展示耗时、质量、页级 provenance 和 recovery；`submission_artifacts/llm_cost/` 记录 live LLM token usage；`submission_artifacts/llm_impact/` 对比规则运行与 LLM-enabled 运行。
+- 运行边界：`submission_artifacts/cost_model/` 给出成本公式，`submission_artifacts/recovery_effectiveness/` 汇总恢复触发和选择情况，`submission_artifacts/long_document_risk/` 列出长文档分片风险，`submission_artifacts/code_quality/` 汇总代码和测试规模。
 
 新运行还会输出 `extracted.field_evidence` 和 `extracted.task_result`，为键值字段、任务级答案和 schema 决策提供可复查字段。公开真实文档样本使用轻量人工标注；如果需要 OCR 字符级或表格逐格 benchmark，应按 `docs/BENCHMARK_AND_ROADMAP.md` 扩展。
 
-针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；对标与后续真实 benchmark 路线见 `docs/BENCHMARK_AND_ROADMAP.md`；artifact 总索引见 `submission_artifacts/ARTIFACTS_INDEX.md`；稳定性摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`，真实 HTTP 压测见 `submission_artifacts/http_load_test/http_load_test_report.md` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`，长文档分片证据见 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`，成本/速度/质量对比见 `submission_artifacts/baseline_comparison/baseline_comparison.md`，LLM token/cost 审计见 `submission_artifacts/llm_cost/llm_cost_report.md`，LLM impact 对比见 `submission_artifacts/llm_impact/llm_impact_report.md`。
+针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；对标与后续真实 benchmark 路线见 `docs/BENCHMARK_AND_ROADMAP.md`；artifact 总索引见 `submission_artifacts/ARTIFACTS_INDEX.md`；稳定性摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`，真实 HTTP 压测见 `submission_artifacts/http_load_test/http_load_test_report.md` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`，长文档分片证据见 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`，长文档风险拆解见 `submission_artifacts/long_document_risk/long_document_risk_report.md`，成本/速度/质量对比见 `submission_artifacts/baseline_comparison/baseline_comparison.md`，成本模型见 `submission_artifacts/cost_model/cost_model.md`，LLM token/cost 审计见 `submission_artifacts/llm_cost/llm_cost_report.md`，LLM impact 对比见 `submission_artifacts/llm_impact/llm_impact_report.md`，恢复有效性见 `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md`，代码质量摘要见 `submission_artifacts/code_quality/code_quality_report.md`。

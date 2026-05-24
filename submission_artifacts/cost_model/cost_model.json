@@ -1,0 +1,97 @@
+{
+  "schema_version": "2026-05-24",
+  "generated_at": "2026-05-24T07:15:24Z",
+  "scope": "Cost and latency projection from saved artifacts and optional price environment variables.",
+  "pricing_inputs": {
+    "gpu_cny_per_hour": null,
+    "agent_api_cny_per_page": null,
+    "assumed_pages_per_pdf": 20,
+    "llm_cny_per_million_tokens": null,
+    "env_vars": [
+      "MINERU_DATA_AGENT_GPU_CNY_PER_HOUR",
+      "MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE",
+      "MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF",
+      "MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "native_html_office_rules",
+      "mode": "Native HTML/Office/challenge fixtures without LLM",
+      "saved_cases": 10,
+      "average_tool_seconds": 0.0,
+      "labeled_check_accuracy": 1.0,
+      "estimated_cost_per_100_docs": {
+        "currency": "CNY",
+        "value": 0.0,
+        "formula": "no external parser or LLM price"
+      },
+      "use_when": "Input is already text-like or Office-native and page-level PDF layout is not required."
+    },
+    {
+      "id": "mineru_cli_pdf",
+      "mode": "Local MinerU CLI PDF",
+      "saved_cases": 2,
+      "average_tool_seconds": 86.03,
+      "labeled_check_accuracy": 1.0,
+      "estimated_cost_per_100_docs": {
+        "currency": "CNY",
+        "value": null,
+        "formula": "average_tool_seconds * 100 * MINERU_DATA_AGENT_GPU_CNY_PER_HOUR / 3600"
+      },
+      "use_when": "PDF output needs page-level provenance, layout artifacts, or local audit trail."
+    },
+    {
+      "id": "online_agent_api_pdf",
+      "mode": "MinerU online Agent API PDF",
+      "saved_cases": 4,
+      "average_tool_seconds": 14.917,
+      "labeled_check_accuracy": 1.0,
+      "estimated_cost_per_100_docs": {
+        "currency": "CNY",
+        "value": null,
+        "formula": "100 * MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE * MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF"
+      },
+      "use_when": "Need CPU-friendly PDF parsing and can accept online API page/provenance limitations."
+    },
+    {
+      "id": "llm_preplan_review",
+      "mode": "LLM preplanning and post-parse review",
+      "saved_llm_results_with_tokens": 1,
+      "tokens_per_saved_doc": 4309.0,
+      "estimated_cost_per_100_docs": {
+        "currency": "CNY",
+        "value": null,
+        "formula": "tokens_per_saved_doc * 100 * MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS / 1_000_000"
+      },
+      "use_when": "Task is ambiguous, schema is custom, or the result needs post-parse risk review."
+    }
+  ],
+  "decision_tree": [
+    {
+      "condition": "HTML, DOCX, PPTX, or trusted text-like input",
+      "suggested_mode": "native extractor without LLM",
+      "reason": "No external parser seconds in saved artifacts; enough for structure, field evidence, and retrieval export."
+    },
+    {
+      "condition": "PDF requiring page-level provenance or full MinerU artifacts",
+      "suggested_mode": "local MinerU CLI",
+      "reason": "Saved CLI PDF cases provide page provenance and intermediate artifacts, with higher runtime."
+    },
+    {
+      "condition": "CPU-only environment or quick PDF smoke",
+      "suggested_mode": "MinerU online Agent API",
+      "reason": "Runs without local GPU but can lack page provenance; fallback to CLI when audit requires it."
+    },
+    {
+      "condition": "Ambiguous task, custom schema, or high-risk review",
+      "suggested_mode": "enable LLM preplanning and post-parse review",
+      "reason": "Adds target schema, verification focus, and recovery suggestions; token cost should be tracked."
+    }
+  ],
+  "notes": [
+    "Prices are not hard-coded because competition/cloud prices can change.",
+    "Set the listed environment variables to turn formulas into currency estimates.",
+    "Saved quality metrics are lightweight label checks, not full OCR or table-cell benchmarks."
+  ]
+}

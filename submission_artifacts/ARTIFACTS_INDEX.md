@@ -9,6 +9,10 @@ This file is a single navigation page for saved submission artifacts.
 - `http_load_test_100`: `{"requests": 100, "success": 100, "failed": 0, "p95_seconds": 4.205352}`
 - `llm_cost`: `{"llm_enabled_results": 2, "llm_trace_tool_calls": 4, "total_tokens": 4309, "estimated_cost_usd": null}`
 - `llm_impact`: `{"compared_pairs": 1, "llm_enabled_pairs": 1, "pairs_with_applied_controls": 0, "pairs_with_recovery_suggestions": 1}`
+- `cost_model`: `{"scenarios": 4, "pricing_inputs": {"gpu_cny_per_hour": null, "agent_api_cny_per_page": null, "assumed_pages_per_pdf": 20, "llm_cny_per_million_tokens": null, "env_vars": ["MINERU_DATA_AGENT_GPU_CNY_PER_HOUR", "MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE", "MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF", "MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS"]}}`
+- `recovery_effectiveness`: `{"results_with_recovery": 29, "recovery_executed": 4, "selected_non_initial": 3, "executed_rate": 0.13793103448275862, "selected_non_initial_rate": 0.10344827586206896, "average_non_initial_tool_seconds_when_executed": 5.917, "attempt_counts": {"cli_fallback": 1, "initial": 29, "ocr_retry": 1, "text_cleanup": 2}, "selected_attempt_counts": {"cli_fallback": 1, "initial": 26, "text_cleanup": 2}, "initial_issue_counts": {"document_level_provenance": 14, "expected_anomaly_signal_missing": 1, "no_page_provenance": 10, "numeric_total_mismatch": 4, "numeric_total_needs_review": 1, "numeric_total_verified": 7, "possible_mojibake": 2}, "failed_attempt_counts": {}}`
+- `long_document_risk`: `{"page_count": 48, "chunk_size": 20, "total_chunks": 3, "completed_chunks": 3, "failed_chunks": 0, "success_rate": 1.0, "elapsed_seconds": 42.418, "total_retrieval_chunks": 58, "quality_status_counts": {"pass_with_warnings": 3}, "issue_counts": {"no_page_provenance": 3}, "provenance_level_counts": {"document": 3}}`
+- `code_quality`: `{"python_files": 46, "physical_lines": 11089, "code_lines": 9798, "classes": 29, "functions": 468, "test_functions": 69, "test_files": 12, "workflow_files": [".github/workflows/tests.yml"], "coverage_measured": false}`
 
 ## Directories
 
@@ -31,8 +35,12 @@ This file is a single navigation page for saved submission artifacts.
 | HTTP load test | `submission_artifacts/http_load_test` | 12 | 12 | `submission_artifacts/http_load_test/http_load_test_report.md` |
 | HTTP load test 100 | `submission_artifacts/http_load_test_100` | 0 | 0 | `submission_artifacts/http_load_test_100/http_load_test_report.md` |
 | Tradeoff comparison | `submission_artifacts/baseline_comparison` | 0 | 0 | `submission_artifacts/baseline_comparison/baseline_comparison.md` |
+| Cost model | `submission_artifacts/cost_model` | 0 | 0 | `submission_artifacts/cost_model/cost_model.md` |
 | LLM cost | `submission_artifacts/llm_cost` | 0 | 0 | `submission_artifacts/llm_cost/llm_cost_report.md` |
 | LLM impact | `submission_artifacts/llm_impact` | 0 | 0 | `submission_artifacts/llm_impact/llm_impact_report.md` |
+| Recovery effectiveness | `submission_artifacts/recovery_effectiveness` | 0 | 0 | `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md` |
+| Long-document risk | `submission_artifacts/long_document_risk` | 0 | 0 | `submission_artifacts/long_document_risk/long_document_risk_report.md` |
+| Code quality | `submission_artifacts/code_quality` | 0 | 0 | `submission_artifacts/code_quality/code_quality_report.md` |
 
 ## Notes
 

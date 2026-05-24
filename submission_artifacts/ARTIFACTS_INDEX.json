@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T06:16:08Z",
+  "generated_at": "2026-05-24T07:17:51Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -33,6 +33,82 @@
       "llm_enabled_pairs": 1,
       "pairs_with_applied_controls": 0,
       "pairs_with_recovery_suggestions": 1
+    },
+    "cost_model": {
+      "scenarios": 4,
+      "pricing_inputs": {
+        "gpu_cny_per_hour": null,
+        "agent_api_cny_per_page": null,
+        "assumed_pages_per_pdf": 20,
+        "llm_cny_per_million_tokens": null,
+        "env_vars": [
+          "MINERU_DATA_AGENT_GPU_CNY_PER_HOUR",
+          "MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE",
+          "MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF",
+          "MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS"
+        ]
+      }
+    },
+    "recovery_effectiveness": {
+      "results_with_recovery": 29,
+      "recovery_executed": 4,
+      "selected_non_initial": 3,
+      "executed_rate": 0.13793103448275862,
+      "selected_non_initial_rate": 0.10344827586206896,
+      "average_non_initial_tool_seconds_when_executed": 5.917,
+      "attempt_counts": {
+        "cli_fallback": 1,
+        "initial": 29,
+        "ocr_retry": 1,
+        "text_cleanup": 2
+      },
+      "selected_attempt_counts": {
+        "cli_fallback": 1,
+        "initial": 26,
+        "text_cleanup": 2
+      },
+      "initial_issue_counts": {
+        "document_level_provenance": 14,
+        "expected_anomaly_signal_missing": 1,
+        "no_page_provenance": 10,
+        "numeric_total_mismatch": 4,
+        "numeric_total_needs_review": 1,
+        "numeric_total_verified": 7,
+        "possible_mojibake": 2
+      },
+      "failed_attempt_counts": {}
+    },
+    "long_document_risk": {
+      "page_count": 48,
+      "chunk_size": 20,
+      "total_chunks": 3,
+      "completed_chunks": 3,
+      "failed_chunks": 0,
+      "success_rate": 1.0,
+      "elapsed_seconds": 42.418,
+      "total_retrieval_chunks": 58,
+      "quality_status_counts": {
+        "pass_with_warnings": 3
+      },
+      "issue_counts": {
+        "no_page_provenance": 3
+      },
+      "provenance_level_counts": {
+        "document": 3
+      }
+    },
+    "code_quality": {
+      "python_files": 46,
+      "physical_lines": 11089,
+      "code_lines": 9798,
+      "classes": 29,
+      "functions": 468,
+      "test_functions": 69,
+      "test_files": 12,
+      "workflow_files": [
+        ".github/workflows/tests.yml"
+      ],
+      "coverage_measured": false
     }
   },
   "categories": [
@@ -490,6 +566,22 @@
       ]
     },
     {
+      "id": "cost_model",
+      "title": "Cost model",
+      "description": "Price-parameterized cost estimates for native, CLI, online API, and LLM modes.",
+      "path": "submission_artifacts/cost_model",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/cost_model/cost_model.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/cost_model/cost_model.json"
+      ]
+    },
+    {
       "id": "llm_cost",
       "title": "LLM cost",
       "description": "Provider token usage and optional price-based cost estimate.",
@@ -519,6 +611,54 @@
       ],
       "json_reports": [
         "submission_artifacts/llm_impact/llm_impact_report.json"
+      ]
+    },
+    {
+      "id": "recovery_effectiveness",
+      "title": "Recovery effectiveness",
+      "description": "Saved recovery attempts, selected attempts, issue codes, and extra tool time.",
+      "path": "submission_artifacts/recovery_effectiveness",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.json"
+      ]
+    },
+    {
+      "id": "long_document_risk",
+      "title": "Long-document risk",
+      "description": "Known risks and mitigations for the saved long-document chunked API run.",
+      "path": "submission_artifacts/long_document_risk",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/long_document_risk/long_document_risk_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/long_document_risk/long_document_risk_report.json"
+      ]
+    },
+    {
+      "id": "code_quality",
+      "title": "Code quality",
+      "description": "Static repository size, tests, modules, and CI workflow summary.",
+      "path": "submission_artifacts/code_quality",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/code_quality/code_quality_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/code_quality/code_quality_report.json"
       ]
     }
   ]

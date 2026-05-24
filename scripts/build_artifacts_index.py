@@ -30,8 +30,12 @@ CATEGORIES = [
     ("http_load_test", "HTTP load test", "Local TCP loopback sync/async API load test with request artifacts."),
     ("http_load_test_100", "HTTP load test 100", "100-request local TCP loopback sync/async API load test."),
     ("baseline_comparison", "Tradeoff comparison", "Saved-artifact cost/speed/quality comparison by runner/scenario group."),
+    ("cost_model", "Cost model", "Price-parameterized cost estimates for native, CLI, online API, and LLM modes."),
     ("llm_cost", "LLM cost", "Provider token usage and optional price-based cost estimate."),
     ("llm_impact", "LLM impact", "With/without LLM artifact comparison."),
+    ("recovery_effectiveness", "Recovery effectiveness", "Saved recovery attempts, selected attempts, issue codes, and extra tool time."),
+    ("long_document_risk", "Long-document risk", "Known risks and mitigations for the saved long-document chunked API run."),
+    ("code_quality", "Code quality", "Static repository size, tests, modules, and CI workflow summary."),
 ]
 
 
@@ -128,6 +132,21 @@ def quick_metrics() -> dict[str, Any]:
     llm_impact = load_json(ARTIFACT_ROOT / "llm_impact" / "llm_impact_report.json")
     if isinstance(llm_impact, dict):
         metrics["llm_impact"] = llm_impact.get("aggregate", {})
+    cost_model = load_json(ARTIFACT_ROOT / "cost_model" / "cost_model.json")
+    if isinstance(cost_model, dict):
+        metrics["cost_model"] = {
+            "scenarios": len(cost_model.get("scenarios", [])),
+            "pricing_inputs": cost_model.get("pricing_inputs", {}),
+        }
+    recovery = load_json(ARTIFACT_ROOT / "recovery_effectiveness" / "recovery_effectiveness_report.json")
+    if isinstance(recovery, dict):
+        metrics["recovery_effectiveness"] = recovery.get("aggregate", {})
+    long_doc = load_json(ARTIFACT_ROOT / "long_document_risk" / "long_document_risk_report.json")
+    if isinstance(long_doc, dict):
+        metrics["long_document_risk"] = long_doc.get("aggregate", {})
+    code_quality = load_json(ARTIFACT_ROOT / "code_quality" / "code_quality_report.json")
+    if isinstance(code_quality, dict):
+        metrics["code_quality"] = code_quality.get("aggregate", {})
     return metrics
 
 

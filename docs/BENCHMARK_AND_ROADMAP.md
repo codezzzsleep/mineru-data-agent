@@ -30,7 +30,7 @@ The next formal benchmark should compare the same documents and labels across th
 | Marker or similar parser | External parser baseline for PDF-to-Markdown | Good open-source comparison point | Different artifact contract; may not preserve same provenance |
 | PyMuPDF/PyPDF2 text extraction | Minimal low-cost baseline | Very cheap and fast | Weak tables, layout, scans, and OCR |
 
-The repository now includes `submission_artifacts/baseline_comparison/`, but that report is a saved-artifact tradeoff view, not the full external baseline matrix above.
+The repository now includes `submission_artifacts/baseline_comparison/` and `submission_artifacts/cost_model/`. The first report is a saved-artifact tradeoff view; the second turns saved runtime and token data into formulas that can use environment-provided prices. They are not the full external baseline matrix above.
 
 ## 3. Real-Document Benchmark Target
 
@@ -53,6 +53,8 @@ Minimum metric set:
 - recovery execution rate and recovery lift
 - average runtime per document and per page
 - LLM calls, tokens, and cost per document when LLM is enabled
+
+The current saved long-document risk review is in `submission_artifacts/long_document_risk/`. It records the NIST 48-page split run and the gaps that should be closed before making broader long-document claims.
 
 ## 4. LLM Cost Roadmap
 
@@ -81,6 +83,16 @@ Compare:
 
 Current saved artifacts include older LLM runs that predate token instrumentation. Regenerating those cases with live provider responses fills the token and cost fields.
 
+The current cost model script can be rerun after setting price variables:
+
+```bash
+export MINERU_DATA_AGENT_GPU_CNY_PER_HOUR="<gpu-price>"
+export MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE="<api-page-price>"
+export MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF="20"
+export MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS="<llm-price>"
+python scripts/build_cost_model.py
+```
+
 ## 5. Engineering Roadmap
 
 Near-term items with high competition value:
@@ -90,6 +102,7 @@ Near-term items with high competition value:
 3. Add at least one field-level financial table benchmark with totals/subtotals.
 4. Run one long PDF with local MinerU CLI in a GPU environment and report pages/second.
 5. Run a real HTTP API test with at least 100 requests and concurrency 20 on HeyWhale or another reachable service.
+6. Add line coverage measurement to the code quality report after installing a coverage tool.
 
 Medium-term maintainability items:
 

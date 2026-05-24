@@ -13,6 +13,10 @@ MinerU Data Agent 面向赛道二提交：在 MinerU、Office 和 HTML 解析结
 | LLM 用量 | ModelScope DeepSeek-V4-Flash 实跑 2 次调用，记录 4309 tokens | `submission_artifacts/llm_cost/llm_cost_report.md` |
 | LLM 影响对比 | 保存的规则运行 vs LLM-enabled 运行，记录 LLM 决策点、token 和 recovery suggestion | `submission_artifacts/llm_impact/llm_impact_report.md` |
 | API 并发 | 本地 HTTP loopback 100 请求、并发 20、100/100 成功，P95 约 4.21 秒 | `submission_artifacts/http_load_test_100/http_load_test_report.md` |
+| 成本估算 | 4 类运行路径的公式化成本模型；未填价格时不输出假成本 | `submission_artifacts/cost_model/cost_model.md` |
+| 恢复统计 | 29 个保存结果带 recovery 记录，4 个执行了自动恢复，3 个选择了非初始结果 | `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md` |
+| 长文档风险 | 单独列出在线 API 分片的页级来源、跨分片上下文和 GPU/CLI 长文档缺口 | `submission_artifacts/long_document_risk/long_document_risk_report.md` |
+| 代码与测试 | 46 个 Python 文件、69 个测试函数、GitHub Actions workflow | `submission_artifacts/code_quality/code_quality_report.md` |
 | Artifact 总索引 | 按目录列出 result/trace 数量和主报告 | `submission_artifacts/ARTIFACTS_INDEX.md` |
 
 ## 本轮重点
@@ -21,4 +25,4 @@ MinerU Data Agent 面向赛道二提交：在 MinerU、Office 和 HTML 解析结
 - `execution_control` 记录任务意图、目标 schema、后处理器、LLM 建议的应用/忽略原因和恢复策略。
 - LLM 解析后复核现在会写入 `recovery_decision.llm_quality_decision`，可把 warning/error 级风险同步到最终 recovery 决策。
 - `trace.json`、`result.json`、`summary.md`、`retrieval_chunks.jsonl` 每次运行落盘，便于按文件复查。
-- 当前未包含：公网生产压测、完整 OCR 字符级 benchmark、本机 GPU 长文档 benchmark。
+- 当前未包含：公网生产压测、完整 OCR 字符级 benchmark、本机 GPU 长文档 benchmark；成本模型没有价格环境变量时只保留公式。

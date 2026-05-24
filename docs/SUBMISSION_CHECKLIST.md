@@ -25,8 +25,12 @@
 - [x] 评测指标已覆盖 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据和 2 个 recovery gate
 - [x] 稳定性与工具耗时摘要已生成，见 `submission_artifacts/stability/`
 - [x] 成本、速度与质量分组对比已生成，见 `submission_artifacts/baseline_comparison/`
+- [x] 成本模型已生成，见 `submission_artifacts/cost_model/`
 - [x] LLM token 与成本审计报告已生成，见 `submission_artifacts/llm_cost/`
 - [x] LLM impact 对比报告已生成，见 `submission_artifacts/llm_impact/`
+- [x] 恢复有效性汇总已生成，见 `submission_artifacts/recovery_effectiveness/`
+- [x] 长文档分片风险汇总已生成，见 `submission_artifacts/long_document_risk/`
+- [x] 代码质量摘要已生成，见 `submission_artifacts/code_quality/`
 - [x] Artifact 总索引已生成，见 `submission_artifacts/ARTIFACTS_INDEX.md`
 - [x] Live ModelScope DeepSeek-V4-Flash 复跑已记录 provider token usage：4309 tokens
 - [x] 对标矩阵与后续 benchmark/roadmap 已写入 `docs/BENCHMARK_AND_ROADMAP.md`

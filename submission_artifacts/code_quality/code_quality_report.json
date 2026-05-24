@@ -1,0 +1,269 @@
+{
+  "schema_version": "2026-05-24",
+  "generated_at": "2026-05-24T07:16:39Z",
+  "scope": "Static repository quality summary generated from local files.",
+  "aggregate": {
+    "python_files": 46,
+    "physical_lines": 11089,
+    "code_lines": 9798,
+    "classes": 29,
+    "functions": 468,
+    "test_functions": 69,
+    "test_files": 12,
+    "workflow_files": [
+      ".github/workflows/tests.yml"
+    ],
+    "coverage_measured": false
+  },
+  "by_area": {
+    "src": {
+      "python_files": 14,
+      "physical_lines": 5507,
+      "code_lines": 4909,
+      "classes": 18,
+      "functions": 232,
+      "test_functions": 0
+    },
+    "scripts": {
+      "python_files": 20,
+      "physical_lines": 4142,
+      "code_lines": 3680,
+      "classes": 5,
+      "functions": 155,
+      "test_functions": 0
+    },
+    "tests": {
+      "python_files": 12,
+      "physical_lines": 1440,
+      "code_lines": 1209,
+      "classes": 6,
+      "functions": 81,
+      "test_functions": 69
+    }
+  },
+  "largest_files": [
+    {
+      "path": "src/mineru_data_agent/agent.py",
+      "area": "src",
+      "physical_lines": 1268,
+      "code_lines": 1168,
+      "classes": 2,
+      "functions": 34,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/extractors.py",
+      "area": "src",
+      "physical_lines": 709,
+      "code_lines": 615,
+      "classes": 1,
+      "functions": 42,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/llm_client.py",
+      "area": "src",
+      "physical_lines": 556,
+      "code_lines": 509,
+      "classes": 3,
+      "functions": 19,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/mineru_client.py",
+      "area": "src",
+      "physical_lines": 512,
+      "code_lines": 451,
+      "classes": 3,
+      "functions": 23,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/evaluation.py",
+      "area": "src",
+      "physical_lines": 476,
+      "code_lines": 431,
+      "classes": 0,
+      "functions": 21,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/retrieval_exporter.py",
+      "area": "src",
+      "physical_lines": 460,
+      "code_lines": 394,
+      "classes": 1,
+      "functions": 24,
+      "test_functions": 0
+    },
+    {
+      "path": "scripts/run_http_load_test.py",
+      "area": "scripts",
+      "physical_lines": 427,
+      "code_lines": 385,
+      "classes": 0,
+      "functions": 17,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/api.py",
+      "area": "src",
+      "physical_lines": 409,
+      "code_lines": 354,
+      "classes": 1,
+      "functions": 23,
+      "test_functions": 0
+    },
+    {
+      "path": "tests/test_agent_recovery.py",
+      "area": "tests",
+      "physical_lines": 393,
+      "code_lines": 350,
+      "classes": 6,
+      "functions": 17,
+      "test_functions": 6
+    },
+    {
+      "path": "src/mineru_data_agent/planner.py",
+      "area": "src",
+      "physical_lines": 389,
+      "code_lines": 347,
+      "classes": 1,
+      "functions": 16,
+      "test_functions": 0
+    },
+    {
+      "path": "src/mineru_data_agent/validators.py",
+      "area": "src",
+      "physical_lines": 327,
+      "code_lines": 294,
+      "classes": 0,
+      "functions": 13,
+      "test_functions": 0
+    },
+    {
+      "path": "scripts/run_long_document_chunks.py",
+      "area": "scripts",
+      "physical_lines": 310,
+      "code_lines": 274,
+      "classes": 1,
+      "functions": 13,
+      "test_functions": 0
+    }
+  ],
+  "test_modules": [
+    {
+      "path": "tests/test_agent_recovery.py",
+      "area": "tests",
+      "physical_lines": 393,
+      "code_lines": 350,
+      "classes": 6,
+      "functions": 17,
+      "test_functions": 6
+    },
+    {
+      "path": "tests/test_api.py",
+      "area": "tests",
+      "physical_lines": 177,
+      "code_lines": 142,
+      "classes": 0,
+      "functions": 10,
+      "test_functions": 10
+    },
+    {
+      "path": "tests/test_artifact_reports.py",
+      "area": "tests",
+      "physical_lines": 53,
+      "code_lines": 36,
+      "classes": 0,
+      "functions": 5,
+      "test_functions": 4
+    },
+    {
+      "path": "tests/test_batch.py",
+      "area": "tests",
+      "physical_lines": 61,
+      "code_lines": 52,
+      "classes": 0,
+      "functions": 2,
+      "test_functions": 2
+    },
+    {
+      "path": "tests/test_cli.py",
+      "area": "tests",
+      "physical_lines": 30,
+      "code_lines": 22,
+      "classes": 0,
+      "functions": 2,
+      "test_functions": 2
+    },
+    {
+      "path": "tests/test_evaluation.py",
+      "area": "tests",
+      "physical_lines": 96,
+      "code_lines": 91,
+      "classes": 0,
+      "functions": 1,
+      "test_functions": 1
+    },
+    {
+      "path": "tests/test_extractors.py",
+      "area": "tests",
+      "physical_lines": 174,
+      "code_lines": 143,
+      "classes": 0,
+      "functions": 10,
+      "test_functions": 10
+    },
+    {
+      "path": "tests/test_llm_client.py",
+      "area": "tests",
+      "physical_lines": 117,
+      "code_lines": 97,
+      "classes": 0,
+      "functions": 10,
+      "test_functions": 10
+    },
+    {
+      "path": "tests/test_mineru_client.py",
+      "area": "tests",
+      "physical_lines": 64,
+      "code_lines": 50,
+      "classes": 0,
+      "functions": 6,
+      "test_functions": 6
+    },
+    {
+      "path": "tests/test_planner.py",
+      "area": "tests",
+      "physical_lines": 39,
+      "code_lines": 32,
+      "classes": 0,
+      "functions": 2,
+      "test_functions": 2
+    },
+    {
+      "path": "tests/test_retrieval_exporter.py",
+      "area": "tests",
+      "physical_lines": 82,
+      "code_lines": 62,
+      "classes": 0,
+      "functions": 5,
+      "test_functions": 5
+    },
+    {
+      "path": "tests/test_validators.py",
+      "area": "tests",
+      "physical_lines": 154,
+      "code_lines": 132,
+      "classes": 0,
+      "functions": 11,
+      "test_functions": 11
+    }
+  ],
+  "notes": [
+    "This report counts files, lines, functions, tests, and CI workflow files. It does not run a coverage tool.",
+    "Run `python -m pytest -q` for functional validation and add pytest-cov if line coverage is required.",
+    "The GitHub Actions workflow is in `.github/workflows/tests.yml`; the current CI status should be checked on GitHub for the submitted commit."
+  ]
+}
