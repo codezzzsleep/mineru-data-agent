@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T10:06:04.021065+00:00",
+  "created_at": "2026-05-24T11:21:11.922780+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:03.900732+00:00",
-      "ended_at": "2026-05-24T10:06:03.900732+00:00",
+      "started_at": "2026-05-24T11:21:11.907456+00:00",
+      "ended_at": "2026-05-24T11:21:11.907456+00:00",
       "detail": {
         "task": "识别合同条款中的甲方、乙方、义务、例外条件和来源证据。",
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_3_standard_contract.html",
@@ -57,8 +57,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:03.900732+00:00",
-      "ended_at": "2026-05-24T10:06:03.900732+00:00",
+      "started_at": "2026-05-24T11:21:11.907456+00:00",
+      "ended_at": "2026-05-24T11:21:11.907961+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "standard_or_contract",
@@ -651,6 +651,19 @@
               "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
             }
           },
+          "runtime_recovery_plan": {
+            "source": "agent_action_plan.state_machine",
+            "initial_issue_codes": [
+              "document_level_provenance"
+            ],
+            "actions": [],
+            "loop_policy": {
+              "max_attempts_per_recovery_action": 1,
+              "selection_rule": "choose highest quality score while preserving audit trail",
+              "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+            },
+            "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+          },
           "replan_after_quality": {
             "quality_status": "pass",
             "quality_score": 100,
@@ -701,8 +714,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:03.900732+00:00",
-      "ended_at": "2026-05-24T10:06:03.900732+00:00",
+      "started_at": "2026-05-24T11:21:11.907961+00:00",
+      "ended_at": "2026-05-24T11:21:11.907961+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -720,8 +733,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:03.901732+00:00",
-      "ended_at": "2026-05-24T10:06:04.011418+00:00",
+      "started_at": "2026-05-24T11:21:11.907961+00:00",
+      "ended_at": "2026-05-24T11:21:11.913275+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_3_standard_contract.html"
       }
@@ -729,8 +742,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:04.011418+00:00",
-      "ended_at": "2026-05-24T10:06:04.012418+00:00",
+      "started_at": "2026-05-24T11:21:11.913275+00:00",
+      "ended_at": "2026-05-24T11:21:11.913275+00:00",
       "detail": {
         "item_count": 12,
         "page_count": 0,
@@ -774,17 +787,36 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:04.012418+00:00",
-      "ended_at": "2026-05-24T10:06:04.012418+00:00",
+      "started_at": "2026-05-24T11:21:11.913275+00:00",
+      "ended_at": "2026-05-24T11:21:11.913275+00:00",
       "detail": {
         "profile": "standard_or_contract"
       }
     },
     {
+      "name": "agent_runtime_recovery_plan",
+      "status": "completed",
+      "started_at": "2026-05-24T11:21:11.913275+00:00",
+      "ended_at": "2026-05-24T11:21:11.913275+00:00",
+      "detail": {
+        "source": "agent_action_plan.state_machine",
+        "initial_issue_codes": [
+          "document_level_provenance"
+        ],
+        "actions": [],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        },
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      }
+    },
+    {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:04.012418+00:00",
-      "ended_at": "2026-05-24T10:06:04.012418+00:00",
+      "started_at": "2026-05-24T11:21:11.914276+00:00",
+      "ended_at": "2026-05-24T11:21:11.914276+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "initial"
@@ -793,8 +825,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:04.012418+00:00",
-      "ended_at": "2026-05-24T10:06:04.012418+00:00",
+      "started_at": "2026-05-24T11:21:11.914276+00:00",
+      "ended_at": "2026-05-24T11:21:11.914276+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass",
@@ -843,8 +875,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:04.012418+00:00",
-      "ended_at": "2026-05-24T10:06:04.015310+00:00",
+      "started_at": "2026-05-24T11:21:11.914276+00:00",
+      "ended_at": "2026-05-24T11:21:11.917146+00:00",
       "detail": {
         "chunks_count": 5,
         "by_type": {
@@ -853,23 +885,23 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_quality.json"
       }
     },
     {
       "name": "llm_agent_analysis",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:04.015310+00:00",
-      "ended_at": "2026-05-24T10:06:04.015310+00:00",
+      "started_at": "2026-05-24T11:21:11.917146+00:00",
+      "ended_at": "2026-05-24T11:21:11.917146+00:00",
       "detail": {}
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T10:06:04.015310+00:00",
-      "ended_at": "2026-05-24T10:06:04.015310+00:00",
+      "started_at": "2026-05-24T11:21:11.917146+00:00",
+      "ended_at": "2026-05-24T11:21:11.917146+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "accept",
@@ -953,12 +985,12 @@
       }
     }
   ],
-  "run_id": "c6ba81595081",
+  "run_id": "7197be0be812",
   "task": "识别合同条款中的甲方、乙方、义务、例外条件和来源证据。",
   "profile": "standard_or_contract",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\summary.md",
   "offline_regression_boundary": {
     "enabled": true,
     "not_live_llm": true,

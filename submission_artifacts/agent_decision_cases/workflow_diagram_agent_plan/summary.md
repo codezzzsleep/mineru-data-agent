@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run df92e5e1d62c
+# MinerU Data Agent Run c7cb56bc440c
 
 - Task: 把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。
 - Profile: workflow_or_diagram
@@ -71,6 +71,9 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - llm_review: Review parse output against task-specific risks and propose follow-up actions.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
+
+## Runtime Recovery Plan
+- Initial issue codes: document_level_provenance
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance

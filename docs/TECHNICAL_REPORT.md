@@ -124,6 +124,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - LLM 预调度的 `execution_control`，记录 recommended/applied/ignored/resolved 参数
 - Agent action plan 的 `execution_control.agent_action_plan`，记录子任务、工具选择和 replan triggers
 - Agent action plan 的 `state_machine`，记录条件 DAG、质量触发边、runner/method 变化和恢复 loop policy
+- Runtime recovery plan 的 `execution_control.runtime_recovery_plan`，记录由 action plan 与质量问题共同筛出的恢复动作；自动恢复按这个计划执行或跳过
 - 质量后再规划的 `execution_control.replan_after_quality`，记录 issue code 到恢复动作的映射和选择原因
 - 严格来源门槛的 `execution_control.strict_page_provenance`，记录是否要求页级来源、是否适用于当前文件类型、最终是否满足
 - 带标注评测脚本 `scripts/build_evaluation_report.py` 与标注文件 `examples/evaluation/labels.json`

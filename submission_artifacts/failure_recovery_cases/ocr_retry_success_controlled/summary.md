@@ -1,6 +1,6 @@
 > Boundary: controlled fake MinerU runner; validates retry selection logic, not live OCR quality.
 
-# MinerU Data Agent Run 5c45a2dd3913
+# MinerU Data Agent Run ffa1c91d0e93
 
 - Task: 解析稀疏 PDF；初始文本过短时切到 OCR。
 - Profile: general_document
@@ -68,6 +68,10 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
 - export_artifacts: Write result, trace, summary, and retrieval artifacts.
+
+## Runtime Recovery Plan
+- Initial issue codes: short_text
+- ocr_retry: executed for short_text (agent_action_plan.replan_triggers)
 
 ## Agent Replan After Quality
 - Issue codes: none

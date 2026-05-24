@@ -1,9 +1,9 @@
 {
-  "run_id": "76a5382e895b",
+  "run_id": "daa6aa34148c",
   "task": "检查财报表格总计是否一致，并标记人工复核项。",
   "profile": "financial_report",
   "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\numeric_total_mismatch_html.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b",
+  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -519,6 +519,31 @@
         "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
       }
     },
+    "runtime_recovery_plan": {
+      "source": "agent_action_plan.state_machine",
+      "initial_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_mismatch"
+      ],
+      "actions": [
+        {
+          "action": "manual_numeric_review",
+          "issue_code": "numeric_total_mismatch",
+          "source": "agent_action_plan.replan_triggers",
+          "reason": "numeric mismatch should not be silently repaired",
+          "runner_change": null,
+          "method_change": null,
+          "skip_reason": "manual_or_advisory_action_only",
+          "runtime_status": "skipped"
+        }
+      ],
+      "loop_policy": {
+        "max_attempts_per_recovery_action": 1,
+        "selection_rule": "choose highest quality score while preserving audit trail",
+        "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+      },
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+    },
     "replan_after_quality": {
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -776,8 +801,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\html\\numeric_total_mismatch_html.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\html\\numeric_total_mismatch_html_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\html\\numeric_total_mismatch_html.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\html\\numeric_total_mismatch_html_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -789,9 +814,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 2,
       "by_type": {
@@ -807,8 +832,8 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\html\\numeric_total_mismatch_html.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\html\\numeric_total_mismatch_html_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\html\\numeric_total_mismatch_html.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\html\\numeric_total_mismatch_html_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -816,8 +841,8 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\summary.md",
+  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

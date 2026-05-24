@@ -1,6 +1,6 @@
 > Boundary: controlled fake online-API runner; validates strict provenance gate without claiming live API behavior.
 
-# MinerU Data Agent Run 5d9be5a86a3b
+# MinerU Data Agent Run 988d50383a06
 
 - Task: 解析 PDF，并要求字段能追溯到页级来源。
 - Profile: standard_or_contract
@@ -70,6 +70,10 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
 - export_artifacts: Write result, trace, summary, and retrieval artifacts.
+
+## Runtime Recovery Plan
+- Initial issue codes: no_page_provenance, weak_clause_structure
+- cli_fallback: skipped for no_page_provenance (agent_action_plan.replan_triggers)
 
 ## Agent Replan After Quality
 - Issue codes: no_page_provenance, weak_clause_structure, strict_page_provenance_failed

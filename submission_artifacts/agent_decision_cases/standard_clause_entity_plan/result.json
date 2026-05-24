@@ -1,9 +1,9 @@
 {
-  "run_id": "c6ba81595081",
+  "run_id": "7197be0be812",
   "task": "识别合同条款中的甲方、乙方、义务、例外条件和来源证据。",
   "profile": "standard_or_contract",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_3_standard_contract.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -606,6 +606,19 @@
         "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
       }
     },
+    "runtime_recovery_plan": {
+      "source": "agent_action_plan.state_machine",
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "actions": [],
+      "loop_policy": {
+        "max_attempts_per_recovery_action": 1,
+        "selection_rule": "choose highest quality score while preserving audit trail",
+        "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+      },
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+    },
     "replan_after_quality": {
       "quality_status": "pass",
       "quality_score": 100,
@@ -1024,8 +1037,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\html\\case_3_standard_contract.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\html\\case_3_standard_contract_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\html\\case_3_standard_contract.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\html\\case_3_standard_contract_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1060,9 +1073,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 5,
       "by_type": {
@@ -1703,6 +1716,19 @@
           "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
         }
       },
+      "runtime_recovery_plan": {
+        "source": "agent_action_plan.state_machine",
+        "initial_issue_codes": [
+          "document_level_provenance"
+        ],
+        "actions": [],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        },
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      },
       "replan_after_quality": {
         "quality_status": "pass",
         "quality_score": 100,
@@ -1881,8 +1907,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\html\\case_3_standard_contract.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\html\\case_3_standard_contract_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\html\\case_3_standard_contract.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\html\\case_3_standard_contract_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1890,6 +1916,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c6ba81595081\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7197be0be812\\summary.md"
 }

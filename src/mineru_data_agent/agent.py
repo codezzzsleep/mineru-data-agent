@@ -231,159 +231,203 @@ class MinerUDataAgent:
             ]
             selected_attempt = "initial"
 
-            if _should_run_text_cleanup(quality):
-                with trace.step("auto_recovery_text_cleanup", from_status=quality.get("status")):
-                    recovered_markdown, recovered_content = _clean_text_artifacts(markdown, content_list)
-                    recovered_extracted = _attach_task_result(
-                        build_extracted_view(recovered_markdown, recovered_content),
-                        adaptive_decision,
-                    )
-                    recovered_quality = build_quality_report(
-                        recovered_markdown,
-                        recovered_extracted,
-                        resolved_profile,
-                        task=task,
-                    )
-                    recovered_artifacts = _write_recovery_parse_artifacts(
-                        output_dir,
-                        input_path,
-                        "text_cleanup",
-                        recovered_markdown,
-                        recovered_content,
-                    )
-                    recovery_attempts.append(
-                        _attempt_summary(
-                            name="text_cleanup",
-                            quality=recovered_quality,
-                            artifacts=recovered_artifacts,
-                            backend=backend,
-                            method=method,
-                            selected=False,
-                        )
-                    )
-                    if _is_better_quality(recovered_quality, quality):
-                        markdown = recovered_markdown
-                        content_list = recovered_content
-                        extracted = recovered_extracted
-                        quality = recovered_quality
-                        artifacts = recovered_artifacts
-                        selected_attempt = "text_cleanup"
+            runtime_recovery_plan = _build_runtime_recovery_plan(
+                action_plan=execution_control.get("agent_action_plan", {}),
+                quality=quality,
+                suffix=suffix,
+                method=method,
+                runner=self.mineru_runner,
+                fallback_runner=self.fallback_mineru_runner,
+            )
+            execution_control["runtime_recovery_plan"] = runtime_recovery_plan
+            with trace.step("agent_runtime_recovery_plan") as runtime_plan_step:
+                runtime_plan_step.detail.update(runtime_recovery_plan)
 
-            if _should_retry_with_ocr(quality, suffix, method):
-                with trace.step("auto_recovery_ocr_retry", backend=backend, from_method=method, retry_method="ocr") as retry_step:
-                    try:
-                        retry_artifacts, retry_call = self.mineru_runner.parse(
-                            input_path,
-                            output_dir / "mineru_retry_ocr",
-                            backend=backend,
-                            method="ocr",
-                            lang=lang,
-                        )
-                    except Exception as exc:
-                        _record_tool_call_from_exception(trace, exc)
-                        retry_step.detail["recovery_error"] = repr(exc)
-                        retry_step.detail["fallback_to_attempt"] = selected_attempt
-                        recovery_attempts.append(
-                            _failed_attempt_summary(
-                                name="ocr_retry",
-                                backend=backend,
-                                method="ocr",
-                                error=repr(exc),
-                            )
-                        )
-                    else:
-                        trace.add_tool_call(retry_call.__dict__)
-                        retry_markdown = read_markdown(retry_artifacts.markdown_path)
-                        retry_content = read_content_list(retry_artifacts.content_list_path)
-                        retry_extracted = _attach_task_result(
-                            build_extracted_view(retry_markdown, retry_content),
+            for recovery_action in runtime_recovery_plan["actions"]:
+                action_name = str(recovery_action.get("action"))
+                skip_reason = _runtime_recovery_skip_reason(
+                    action_name,
+                    quality=quality,
+                    suffix=suffix,
+                    method=method,
+                    runner=self.mineru_runner,
+                    fallback_runner=self.fallback_mineru_runner,
+                )
+                if skip_reason:
+                    recovery_action["runtime_status"] = "skipped"
+                    recovery_action["skip_reason"] = skip_reason
+                    continue
+                recovery_action["runtime_status"] = "executed"
+
+                if action_name == "text_cleanup":
+                    with trace.step(
+                        "auto_recovery_text_cleanup",
+                        from_status=quality.get("status"),
+                        plan_issue_code=recovery_action.get("issue_code"),
+                        plan_source=recovery_action.get("source"),
+                    ):
+                        recovered_markdown, recovered_content = _clean_text_artifacts(markdown, content_list)
+                        recovered_extracted = _attach_task_result(
+                            build_extracted_view(recovered_markdown, recovered_content),
                             adaptive_decision,
                         )
-                        retry_quality = build_quality_report(retry_markdown, retry_extracted, resolved_profile, task=task)
-                        recovery_attempts.append(
-                            _attempt_summary(
-                                name="ocr_retry",
-                                quality=retry_quality,
-                                artifacts=retry_artifacts,
-                                backend=backend,
-                                method="ocr",
-                                selected=False,
-                            )
-                        )
-                        if _is_better_quality(retry_quality, quality):
-                            markdown = retry_markdown
-                            content_list = retry_content
-                            extracted = retry_extracted
-                            quality = retry_quality
-                            artifacts = retry_artifacts
-                            selected_attempt = "ocr_retry"
-
-            if _should_fallback_to_cli(quality, suffix, self.mineru_runner, self.fallback_mineru_runner):
-                with trace.step(
-                    "auto_recovery_cli_fallback",
-                    from_runner=_runner_kind(self.mineru_runner),
-                    fallback_runner=_runner_kind(self.fallback_mineru_runner),
-                    from_status=quality.get("status"),
-                    issue_codes=_issue_codes(quality),
-                ) as fallback_step:
-                    try:
-                        fallback_artifacts, fallback_call = self.fallback_mineru_runner.parse(
-                            input_path,
-                            output_dir / "mineru_fallback_cli",
-                            backend=backend,
-                            method=method,
-                            lang=lang,
-                        )
-                    except Exception as exc:
-                        _record_tool_call_from_exception(trace, exc)
-                        fallback_step.detail["recovery_error"] = repr(exc)
-                        fallback_step.detail["fallback_to_attempt"] = selected_attempt
-                        recovery_attempts.append(
-                            _failed_attempt_summary(
-                                name="cli_fallback",
-                                backend=backend,
-                                method=method,
-                                error=repr(exc),
-                            )
-                        )
-                    else:
-                        trace.add_tool_call(fallback_call.__dict__)
-                        fallback_markdown = read_markdown(fallback_artifacts.markdown_path)
-                        fallback_content = read_content_list(fallback_artifacts.content_list_path)
-                        fallback_extracted = _attach_task_result(
-                            build_extracted_view(fallback_markdown, fallback_content),
-                            adaptive_decision,
-                        )
-                        fallback_quality = build_quality_report(
-                            fallback_markdown,
-                            fallback_extracted,
+                        recovered_quality = build_quality_report(
+                            recovered_markdown,
+                            recovered_extracted,
                             resolved_profile,
                             task=task,
                         )
+                        recovered_artifacts = _write_recovery_parse_artifacts(
+                            output_dir,
+                            input_path,
+                            "text_cleanup",
+                            recovered_markdown,
+                            recovered_content,
+                        )
                         recovery_attempts.append(
                             _attempt_summary(
-                                name="cli_fallback",
-                                quality=fallback_quality,
-                                artifacts=fallback_artifacts,
+                                name="text_cleanup",
+                                quality=recovered_quality,
+                                artifacts=recovered_artifacts,
                                 backend=backend,
                                 method=method,
                                 selected=False,
                             )
                         )
-                        fallback_step.detail["fallback_quality"] = {
-                            "status": fallback_quality.get("status"),
-                            "score": fallback_quality.get("score"),
-                            "issue_codes": _issue_codes(fallback_quality),
-                            "page_count": fallback_extracted.get("content_summary", {}).get("page_count"),
-                            "provenance_level": fallback_extracted.get("content_summary", {}).get("provenance_level"),
-                        }
-                        if _is_better_quality(fallback_quality, quality):
-                            markdown = fallback_markdown
-                            content_list = fallback_content
-                            extracted = fallback_extracted
-                            quality = fallback_quality
-                            artifacts = fallback_artifacts
-                            selected_attempt = "cli_fallback"
+                        if _is_better_quality(recovered_quality, quality):
+                            markdown = recovered_markdown
+                            content_list = recovered_content
+                            extracted = recovered_extracted
+                            quality = recovered_quality
+                            artifacts = recovered_artifacts
+                            selected_attempt = "text_cleanup"
+
+                elif action_name == "ocr_retry":
+                    with trace.step(
+                        "auto_recovery_ocr_retry",
+                        backend=backend,
+                        from_method=method,
+                        retry_method="ocr",
+                        plan_issue_code=recovery_action.get("issue_code"),
+                        plan_source=recovery_action.get("source"),
+                    ) as retry_step:
+                        try:
+                            retry_artifacts, retry_call = self.mineru_runner.parse(
+                                input_path,
+                                output_dir / "mineru_retry_ocr",
+                                backend=backend,
+                                method="ocr",
+                                lang=lang,
+                            )
+                        except Exception as exc:
+                            _record_tool_call_from_exception(trace, exc)
+                            retry_step.detail["recovery_error"] = repr(exc)
+                            retry_step.detail["fallback_to_attempt"] = selected_attempt
+                            recovery_attempts.append(
+                                _failed_attempt_summary(
+                                    name="ocr_retry",
+                                    backend=backend,
+                                    method="ocr",
+                                    error=repr(exc),
+                                )
+                            )
+                        else:
+                            trace.add_tool_call(retry_call.__dict__)
+                            retry_markdown = read_markdown(retry_artifacts.markdown_path)
+                            retry_content = read_content_list(retry_artifacts.content_list_path)
+                            retry_extracted = _attach_task_result(
+                                build_extracted_view(retry_markdown, retry_content),
+                                adaptive_decision,
+                            )
+                            retry_quality = build_quality_report(retry_markdown, retry_extracted, resolved_profile, task=task)
+                            recovery_attempts.append(
+                                _attempt_summary(
+                                    name="ocr_retry",
+                                    quality=retry_quality,
+                                    artifacts=retry_artifacts,
+                                    backend=backend,
+                                    method="ocr",
+                                    selected=False,
+                                )
+                            )
+                            if _is_better_quality(retry_quality, quality):
+                                markdown = retry_markdown
+                                content_list = retry_content
+                                extracted = retry_extracted
+                                quality = retry_quality
+                                artifacts = retry_artifacts
+                                selected_attempt = "ocr_retry"
+
+                elif action_name == "cli_fallback":
+                    with trace.step(
+                        "auto_recovery_cli_fallback",
+                        from_runner=_runner_kind(self.mineru_runner),
+                        fallback_runner=_runner_kind(self.fallback_mineru_runner),
+                        from_status=quality.get("status"),
+                        issue_codes=_issue_codes(quality),
+                        plan_issue_code=recovery_action.get("issue_code"),
+                        plan_source=recovery_action.get("source"),
+                    ) as fallback_step:
+                        try:
+                            fallback_artifacts, fallback_call = self.fallback_mineru_runner.parse(
+                                input_path,
+                                output_dir / "mineru_fallback_cli",
+                                backend=backend,
+                                method=method,
+                                lang=lang,
+                            )
+                        except Exception as exc:
+                            _record_tool_call_from_exception(trace, exc)
+                            fallback_step.detail["recovery_error"] = repr(exc)
+                            fallback_step.detail["fallback_to_attempt"] = selected_attempt
+                            recovery_attempts.append(
+                                _failed_attempt_summary(
+                                    name="cli_fallback",
+                                    backend=backend,
+                                    method=method,
+                                    error=repr(exc),
+                                )
+                            )
+                        else:
+                            trace.add_tool_call(fallback_call.__dict__)
+                            fallback_markdown = read_markdown(fallback_artifacts.markdown_path)
+                            fallback_content = read_content_list(fallback_artifacts.content_list_path)
+                            fallback_extracted = _attach_task_result(
+                                build_extracted_view(fallback_markdown, fallback_content),
+                                adaptive_decision,
+                            )
+                            fallback_quality = build_quality_report(
+                                fallback_markdown,
+                                fallback_extracted,
+                                resolved_profile,
+                                task=task,
+                            )
+                            recovery_attempts.append(
+                                _attempt_summary(
+                                    name="cli_fallback",
+                                    quality=fallback_quality,
+                                    artifacts=fallback_artifacts,
+                                    backend=backend,
+                                    method=method,
+                                    selected=False,
+                                )
+                            )
+                            fallback_step.detail["fallback_quality"] = {
+                                "status": fallback_quality.get("status"),
+                                "score": fallback_quality.get("score"),
+                                "issue_codes": _issue_codes(fallback_quality),
+                                "page_count": fallback_extracted.get("content_summary", {}).get("page_count"),
+                                "provenance_level": fallback_extracted.get("content_summary", {}).get("provenance_level"),
+                            }
+                            if _is_better_quality(fallback_quality, quality):
+                                markdown = fallback_markdown
+                                content_list = fallback_content
+                                extracted = fallback_extracted
+                                quality = fallback_quality
+                                artifacts = fallback_artifacts
+                                selected_attempt = "cli_fallback"
+
+            execution_control["runtime_recovery_plan"] = runtime_recovery_plan
 
             _mark_selected_attempt(recovery_attempts, selected_attempt)
 
@@ -921,6 +965,17 @@ def _build_summary(result: AgentResult) -> str:
         for subtask in subtasks[:6]:
             if isinstance(subtask, dict):
                 lines.append(f"- {subtask.get('id')}: {subtask.get('goal')}")
+    runtime_recovery = result.execution_control.get("runtime_recovery_plan", {})
+    if isinstance(runtime_recovery, dict) and runtime_recovery:
+        actions = runtime_recovery.get("actions", []) if isinstance(runtime_recovery.get("actions"), list) else []
+        lines.extend(["", "## Runtime Recovery Plan"])
+        lines.append(f"- Initial issue codes: {', '.join(runtime_recovery.get('initial_issue_codes', [])) or 'none'}")
+        for item in actions[:8]:
+            if isinstance(item, dict):
+                lines.append(
+                    f"- {item.get('action')}: {item.get('runtime_status')} "
+                    f"for {item.get('issue_code')} ({item.get('source')})"
+                )
     quality_replan = result.execution_control.get("replan_after_quality", {})
     if isinstance(quality_replan, dict) and quality_replan:
         lines.extend(["", "## Agent Replan After Quality"])
@@ -1342,15 +1397,193 @@ def _issue_codes(quality: dict[str, Any]) -> list[str]:
     return [str(issue.get("code")) for issue in issues if isinstance(issue, dict)]
 
 
+def _build_runtime_recovery_plan(
+    *,
+    action_plan: dict[str, Any],
+    quality: dict[str, Any],
+    suffix: str,
+    method: str,
+    runner: Any,
+    fallback_runner: Any | None,
+) -> dict[str, Any]:
+    issue_codes = _issue_codes(quality)
+    triggers = action_plan.get("replan_triggers", []) if isinstance(action_plan, dict) else []
+    state_machine = action_plan.get("state_machine", {}) if isinstance(action_plan, dict) else {}
+    conditional_edges = state_machine.get("conditional_edges", []) if isinstance(state_machine, dict) else []
+    edge_by_issue = {
+        str(edge.get("condition", "")).removeprefix("quality_issue:"): edge
+        for edge in conditional_edges
+        if isinstance(edge, dict) and str(edge.get("condition", "")).startswith("quality_issue:")
+    }
+
+    actions: list[dict[str, Any]] = []
+    for trigger in triggers if isinstance(triggers, list) else []:
+        if not isinstance(trigger, dict):
+            continue
+        issue_code = str(trigger.get("issue_code") or "")
+        if issue_code not in issue_codes:
+            continue
+        actions.append(
+            _runtime_recovery_action(
+                action=str(trigger.get("action") or ""),
+                issue_code=issue_code,
+                source="agent_action_plan.replan_triggers",
+                reason=str(trigger.get("reason") or ""),
+                state_edge=edge_by_issue.get(issue_code),
+            )
+        )
+
+    if _should_run_text_cleanup(quality):
+        actions.append(
+            _runtime_recovery_action(
+                action="text_cleanup",
+                issue_code="possible_mojibake",
+                source="validator_policy",
+                reason="text cleanup remains available for mojibake even if no trigger matched",
+                state_edge=edge_by_issue.get("possible_mojibake"),
+            )
+        )
+    if _should_retry_with_ocr(quality, suffix, method):
+        actions.append(
+            _runtime_recovery_action(
+                action="ocr_retry",
+                issue_code=_first_matching_issue(
+                    issue_codes,
+                    {
+                        "empty_markdown",
+                        "no_content_blocks",
+                        "short_text",
+                        "weak_page_provenance",
+                        "financial_signal_missing",
+                        "expected_date_missing",
+                        "expected_recommendation_missing",
+                        "expected_anomaly_signal_missing",
+                    },
+                )
+                or "ocr_retry_candidate",
+                source="validator_policy",
+                reason="quality report indicates sparse or OCR-sensitive result",
+                state_edge=edge_by_issue.get("short_text"),
+            )
+        )
+    if _should_fallback_to_cli(quality, suffix, runner, fallback_runner):
+        actions.append(
+            _runtime_recovery_action(
+                action="cli_fallback",
+                issue_code="no_page_provenance",
+                source="validator_policy",
+                reason="page provenance is missing and a fallback runner is configured",
+                state_edge=edge_by_issue.get("no_page_provenance"),
+            )
+        )
+
+    deduped = _dedupe_runtime_actions(actions)
+    for item in deduped:
+        item["skip_reason"] = _runtime_recovery_skip_reason(
+            str(item.get("action")),
+            quality=quality,
+            suffix=suffix,
+            method=method,
+            runner=runner,
+            fallback_runner=fallback_runner,
+        )
+        item["runtime_status"] = "planned" if not item["skip_reason"] else "skipped"
+    return {
+        "source": "agent_action_plan.state_machine",
+        "initial_issue_codes": issue_codes,
+        "actions": deduped,
+        "loop_policy": state_machine.get("loop_policy", {}) if isinstance(state_machine, dict) else {},
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner.",
+    }
+
+
+def _runtime_recovery_action(
+    *,
+    action: str,
+    issue_code: str,
+    source: str,
+    reason: str,
+    state_edge: Any,
+) -> dict[str, Any]:
+    edge = state_edge if isinstance(state_edge, dict) else {}
+    return {
+        "action": action,
+        "issue_code": issue_code,
+        "source": source,
+        "reason": reason,
+        "runner_change": edge.get("runner_change"),
+        "method_change": edge.get("method_change"),
+    }
+
+
+def _dedupe_runtime_actions(actions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    priority = {"text_cleanup": 0, "ocr_retry": 1, "cli_fallback": 2, "manual_numeric_review": 3}
+    deduped: dict[str, dict[str, Any]] = {}
+    for action in actions:
+        name = str(action.get("action") or "")
+        if not name or name in deduped:
+            continue
+        deduped[name] = action
+    return sorted(deduped.values(), key=lambda item: priority.get(str(item.get("action")), 99))
+
+
+def _first_matching_issue(issue_codes: list[str], candidates: set[str]) -> str | None:
+    for code in issue_codes:
+        if code in candidates:
+            return code
+    return None
+
+
+def _runtime_recovery_skip_reason(
+    action: str,
+    *,
+    quality: dict[str, Any],
+    suffix: str,
+    method: str,
+    runner: Any,
+    fallback_runner: Any | None,
+) -> str:
+    if action == "text_cleanup":
+        return "" if _should_run_text_cleanup(quality) else "possible_mojibake no longer present"
+    if action == "ocr_retry":
+        return "" if _should_retry_with_ocr(quality, suffix, method) else "OCR retry is not eligible for current file/method/quality"
+    if action == "cli_fallback":
+        return "" if _should_fallback_to_cli(quality, suffix, runner, fallback_runner) else "CLI fallback is not eligible or no fallback runner is configured"
+    if action in {"manual_numeric_review", "visual_review", "chunk_stitch_review", "llm_suggested_review"}:
+        return "manual_or_advisory_action_only"
+    return "unsupported_recovery_action"
+
+
 def _is_better_quality(candidate: dict[str, Any], current: dict[str, Any]) -> bool:
     return _quality_key(candidate) > _quality_key(current)
 
 
-def _quality_key(quality: dict[str, Any]) -> tuple[int, int, int]:
+def _quality_key(quality: dict[str, Any]) -> tuple[int, int, int, int]:
     rank = {"needs_review": 0, "pass_with_warnings": 1, "pass": 2}
     issue_counts = quality.get("issue_counts", {})
     warning_count = int(issue_counts.get("warning", 0)) if isinstance(issue_counts, dict) else 0
-    return (rank.get(str(quality.get("status")), -1), int(quality.get("score") or 0), -warning_count)
+    issue_penalty = sum(_issue_penalty(code) for code in _issue_codes(quality))
+    return (rank.get(str(quality.get("status")), -1), -issue_penalty, int(quality.get("score") or 0), -warning_count)
+
+
+def _issue_penalty(code: str) -> int:
+    penalties = {
+        "strict_page_provenance_failed": 100,
+        "empty_markdown": 90,
+        "no_content_blocks": 80,
+        "numeric_total_mismatch": 70,
+        "no_page_provenance": 45,
+        "short_text": 35,
+        "possible_mojibake": 25,
+        "weak_clause_structure": 20,
+        "expected_anomaly_signal_missing": 15,
+        "expected_recommendation_missing": 15,
+        "expected_date_missing": 15,
+        "document_level_provenance": 5,
+        "numeric_total_needs_review": 5,
+        "numeric_total_verified": 0,
+    }
+    return penalties.get(code, 10)
 
 
 def _should_run_text_cleanup(quality: dict[str, Any]) -> bool:

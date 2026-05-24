@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run 4632106fecdf
+# MinerU Data Agent Run e07edfdc8fff
 
 - Task: 解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。
 - Profile: low_quality_ocr
@@ -71,6 +71,10 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - llm_review: Review parse output against task-specific risks and propose follow-up actions.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
+
+## Runtime Recovery Plan
+- Initial issue codes: possible_mojibake, document_level_provenance
+- text_cleanup: executed for possible_mojibake (agent_action_plan.replan_triggers)
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance

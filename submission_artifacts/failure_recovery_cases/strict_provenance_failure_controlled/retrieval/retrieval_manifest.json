@@ -1,11 +1,11 @@
 {
   "doc_id": "strict_provenance_failure_controlled",
   "source_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\strict_provenance_failure_controlled.pdf",
-  "created_at": "2026-05-24T10:16:56.540488+00:00",
+  "created_at": "2026-05-24T11:21:12.022850+00:00",
   "output_files": {
-    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\retrieval\\retrieval_manifest.json",
-    "quality_report": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\988d50383a06\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

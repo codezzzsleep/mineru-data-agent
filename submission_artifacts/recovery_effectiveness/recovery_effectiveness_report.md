@@ -9,7 +9,7 @@ Recovery effectiveness summary over saved submission artifacts.
 - Selected non-initial result: 6
 - Executed rate: 20.51%
 - Selected non-initial rate: 15.38%
-- Avg non-initial tool seconds when executed: 2.963
+- Avg non-initial tool seconds when executed: 2.959
 - Attempt counts: `{"cli_fallback": 1, "initial": 39, "ocr_retry": 3, "text_cleanup": 4}`
 - Selected attempt counts: `{"cli_fallback": 1, "initial": 33, "ocr_retry": 1, "text_cleanup": 4}`
 - Initial issue counts: `{"document_level_provenance": 21, "expected_anomaly_signal_missing": 2, "no_page_provenance": 11, "numeric_total_mismatch": 6, "numeric_total_needs_review": 1, "numeric_total_verified": 9, "possible_mojibake": 4, "short_text": 2, "weak_clause_structure": 1}`
@@ -57,7 +57,7 @@ Recovery effectiveness summary over saved submission artifacts.
 | submission_artifacts/public_real_cases/public_irs_w4_form/result.json | manual_numeric_review | false | initial | no_page_provenance, numeric_total_needs_review, numeric_total_mismatch | pass_with_warnings (76) | false |
 | submission_artifacts/public_real_cases/public_microsoft_annual_report/result.json | manual_numeric_review | false | initial | no_page_provenance, numeric_total_mismatch, numeric_total_verified, numeric_total_mismatch | pass_with_warnings (76) | false |
 | submission_artifacts/public_real_cases/public_nist_ai_rmf/result.json | accept_with_review_notes | false | initial | no_page_provenance | pass_with_warnings (92) | false |
-| submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json | recovered_accept | true | cli_fallback | no_page_provenance | pass (100) | false |
+| submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/result.json | recovered_accept | true | cli_fallback | no_page_provenance | pass (100) | true |
 
 ## Interpretation
 

@@ -1,9 +1,9 @@
 {
-  "run_id": "2fd1c4d39e6e",
+  "run_id": "f66df29ec3f0",
   "task": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
   "profile": "financial_report",
   "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -636,6 +636,32 @@
         "cross_run_learning": false,
         "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
       }
+    },
+    "runtime_recovery_plan": {
+      "source": "agent_action_plan.state_machine",
+      "initial_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified",
+        "numeric_total_mismatch"
+      ],
+      "actions": [
+        {
+          "action": "manual_numeric_review",
+          "issue_code": "numeric_total_mismatch",
+          "source": "agent_action_plan.replan_triggers",
+          "reason": "numeric mismatch should not be silently repaired",
+          "runner_change": null,
+          "method_change": null,
+          "skip_reason": "manual_or_advisory_action_only",
+          "runtime_status": "skipped"
+        }
+      ],
+      "loop_policy": {
+        "max_attempts_per_recovery_action": 1,
+        "selection_rule": "choose highest quality score while preserving audit trail",
+        "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+      },
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "pass_with_warnings",
@@ -1350,8 +1376,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e\\html\\case_6_cross_page_financial_table.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e\\html\\case_6_cross_page_financial_table_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\html\\case_6_cross_page_financial_table.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\html\\case_6_cross_page_financial_table_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1388,9 +1414,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 5,
       "by_type": {
@@ -2063,6 +2089,32 @@
           "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
         }
       },
+      "runtime_recovery_plan": {
+        "source": "agent_action_plan.state_machine",
+        "initial_issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified",
+          "numeric_total_mismatch"
+        ],
+        "actions": [
+          {
+            "action": "manual_numeric_review",
+            "issue_code": "numeric_total_mismatch",
+            "source": "agent_action_plan.replan_triggers",
+            "reason": "numeric mismatch should not be silently repaired",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "manual_or_advisory_action_only",
+            "runtime_status": "skipped"
+          }
+        ],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        },
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      },
       "replan_after_quality": {
         "quality_status": "pass_with_warnings",
         "quality_score": 92,
@@ -2275,8 +2327,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e\\html\\case_6_cross_page_financial_table.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e\\html\\case_6_cross_page_financial_table_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\html\\case_6_cross_page_financial_table.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\html\\case_6_cross_page_financial_table_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -2284,6 +2336,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\2fd1c4d39e6e\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f66df29ec3f0\\summary.md"
 }

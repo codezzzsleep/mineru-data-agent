@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run c16db47afc6a
+# MinerU Data Agent Run afdf561ed0ad
 
 - Task: 找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。
 - Profile: financial_report
@@ -76,6 +76,9 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - llm_review: Review parse output against task-specific risks and propose follow-up actions.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
+
+## Runtime Recovery Plan
+- Initial issue codes: document_level_provenance, numeric_total_verified
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance, numeric_total_verified

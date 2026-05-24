@@ -1,43 +1,43 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T10:43:28Z",
+  "generated_at": "2026-05-24T11:23:03Z",
   "scope": "Static repository quality summary generated from local files.",
   "aggregate": {
     "python_files": 51,
-    "physical_lines": 13353,
-    "code_lines": 11848,
+    "physical_lines": 13600,
+    "code_lines": 12077,
     "classes": 34,
-    "functions": 547,
+    "functions": 553,
     "test_functions": 76,
     "test_files": 12,
     "workflow_files": [
       ".github/workflows/tests.yml"
     ],
     "coverage_measured": true,
-    "line_coverage_percent": 81.31,
+    "line_coverage_percent": 81.62,
     "coverage_report": "submission_artifacts/coverage/coverage_report.md"
   },
   "by_area": {
     "src": {
       "python_files": 14,
-      "physical_lines": 6141,
-      "code_lines": 5505,
+      "physical_lines": 6374,
+      "code_lines": 5720,
       "classes": 19,
-      "functions": 248,
+      "functions": 254,
       "test_functions": 0
     },
     "scripts": {
       "python_files": 25,
-      "physical_lines": 5597,
-      "code_lines": 4982,
+      "physical_lines": 5601,
+      "code_lines": 4986,
       "classes": 9,
       "functions": 211,
       "test_functions": 0
     },
     "tests": {
       "python_files": 12,
-      "physical_lines": 1615,
-      "code_lines": 1361,
+      "physical_lines": 1625,
+      "code_lines": 1371,
       "classes": 6,
       "functions": 88,
       "test_functions": 76
@@ -47,10 +47,10 @@
     {
       "path": "src/mineru_data_agent/agent.py",
       "area": "src",
-      "physical_lines": 1418,
-      "code_lines": 1310,
+      "physical_lines": 1651,
+      "code_lines": 1525,
       "classes": 2,
-      "functions": 36,
+      "functions": 42,
       "test_functions": 0
     },
     {
@@ -108,6 +108,15 @@
       "test_functions": 0
     },
     {
+      "path": "tests/test_agent_recovery.py",
+      "area": "tests",
+      "physical_lines": 439,
+      "code_lines": 392,
+      "classes": 6,
+      "functions": 18,
+      "test_functions": 7
+    },
+    {
       "path": "scripts/run_http_load_test.py",
       "area": "scripts",
       "physical_lines": 427,
@@ -115,15 +124,6 @@
       "classes": 0,
       "functions": 17,
       "test_functions": 0
-    },
-    {
-      "path": "tests/test_agent_recovery.py",
-      "area": "tests",
-      "physical_lines": 430,
-      "code_lines": 383,
-      "classes": 6,
-      "functions": 18,
-      "test_functions": 7
     },
     {
       "path": "src/mineru_data_agent/api.py",
@@ -157,8 +157,8 @@
     {
       "path": "tests/test_agent_recovery.py",
       "area": "tests",
-      "physical_lines": 430,
-      "code_lines": 383,
+      "physical_lines": 439,
+      "code_lines": 392,
       "classes": 6,
       "functions": 18,
       "test_functions": 7
@@ -175,8 +175,8 @@
     {
       "path": "tests/test_artifact_reports.py",
       "area": "tests",
-      "physical_lines": 73,
-      "code_lines": 50,
+      "physical_lines": 74,
+      "code_lines": 51,
       "classes": 0,
       "functions": 7,
       "test_functions": 6

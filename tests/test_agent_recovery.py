@@ -27,6 +27,9 @@ def test_text_cleanup_recovery_selects_cleaned_attempt(tmp_path: Path) -> None:
     assert result.recovery_decision["decision"] == "recovered_accept"
     assert result.recovery_decision["selected_attempt"] == "text_cleanup"
     assert result.recovery_decision["executed"] is True
+    runtime_plan = result.execution_control["runtime_recovery_plan"]
+    assert runtime_plan["actions"][0]["action"] == "text_cleanup"
+    assert runtime_plan["actions"][0]["runtime_status"] == "executed"
     assert "possible_mojibake" in result.recovery_decision["initial_issue_codes"]
     assert Path(result.artifacts["markdown_path"]).parts[-3:-1] == ("recovery", "text_cleanup")
 
@@ -47,6 +50,8 @@ def test_pdf_quality_warning_retries_with_ocr_and_selects_better_attempt(tmp_pat
     assert runner.methods == ["auto", "ocr"]
     assert result.quality["status"] == "pass"
     assert result.recovery_decision["selected_attempt"] == "ocr_retry"
+    assert result.execution_control["runtime_recovery_plan"]["actions"][0]["action"] == "ocr_retry"
+    assert result.execution_control["runtime_recovery_plan"]["actions"][0]["method_change"] == "auto->ocr"
     assert result.recovery_decision["attempts"][0]["quality_status"] == "pass_with_warnings"
     assert result.recovery_decision["attempts"][1]["quality_status"] == "pass"
 
@@ -138,6 +143,7 @@ def test_llm_preplan_controls_profile_method_and_trace(tmp_path: Path) -> None:
     step_names = [step["name"] for step in trace["steps"]]
     assert step_names.index("llm_pre_execution_planning") < step_names.index("mineru_parse")
     assert "agent_task_decomposition" in step_names
+    assert "agent_runtime_recovery_plan" in step_names
     assert "agent_replan_after_quality" in step_names
     assert "llm_quality_decision" in step_names
     assert trace["tool_calls"][0]["tool"] == "fake-llm-preplan"
@@ -168,6 +174,9 @@ def test_agent_api_no_page_provenance_falls_back_to_cli_attempt(tmp_path: Path) 
     assert result.quality["status"] == "pass"
     assert result.recovery_decision["executed"] is True
     assert result.recovery_decision["selected_attempt"] == "cli_fallback"
+    runtime_actions = result.execution_control["runtime_recovery_plan"]["actions"]
+    assert runtime_actions[0]["action"] == "cli_fallback"
+    assert runtime_actions[0]["runner_change"] == "agent-api->cli"
     assert result.recovery_decision["attempts"][0]["issue_codes"] == ["no_page_provenance"]
     assert result.recovery_decision["attempts"][1]["quality_status"] == "pass"
     trace = json.loads(Path(result.trace_path).read_text(encoding="utf-8"))

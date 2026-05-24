@@ -1,6 +1,6 @@
 > Boundary: native HTML controlled fixture; validates text cleanup recovery path.
 
-# MinerU Data Agent Run cd1870a37d85
+# MinerU Data Agent Run 82531717e1d5
 
 - Task: 清理 OCR 噪声合同并保留质量问题。
 - Profile: low_quality_ocr
@@ -68,6 +68,10 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
 - export_artifacts: Write result, trace, summary, and retrieval artifacts.
+
+## Runtime Recovery Plan
+- Initial issue codes: possible_mojibake, document_level_provenance, expected_anomaly_signal_missing
+- text_cleanup: executed for possible_mojibake (agent_action_plan.replan_triggers)
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance, expected_anomaly_signal_missing

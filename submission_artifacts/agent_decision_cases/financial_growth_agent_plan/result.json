@@ -1,9 +1,9 @@
 {
-  "run_id": "c16db47afc6a",
+  "run_id": "afdf561ed0ad",
   "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。",
   "profile": "financial_report",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -632,6 +632,20 @@
         "cross_run_learning": false,
         "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
       }
+    },
+    "runtime_recovery_plan": {
+      "source": "agent_action_plan.state_machine",
+      "initial_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_verified"
+      ],
+      "actions": [],
+      "loop_policy": {
+        "max_attempts_per_recovery_action": 1,
+        "selection_rule": "choose highest quality score while preserving audit trail",
+        "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+      },
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
     },
     "replan_after_quality": {
       "quality_status": "pass",
@@ -1343,8 +1357,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\html\\case_1_financial_report.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\html\\case_1_financial_report_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\html\\case_1_financial_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\html\\case_1_financial_report_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1379,9 +1393,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 3,
       "by_type": {
@@ -2045,6 +2059,20 @@
           "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
         }
       },
+      "runtime_recovery_plan": {
+        "source": "agent_action_plan.state_machine",
+        "initial_issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified"
+        ],
+        "actions": [],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        },
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      },
       "replan_after_quality": {
         "quality_status": "pass",
         "quality_score": 100,
@@ -2234,8 +2262,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\html\\case_1_financial_report.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\html\\case_1_financial_report_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\html\\case_1_financial_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\html\\case_1_financial_report_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -2243,6 +2271,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\afdf561ed0ad\\summary.md"
 }

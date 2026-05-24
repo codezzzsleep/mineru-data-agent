@@ -5,10 +5,10 @@ Line coverage measured by coverage.py while running the local pytest suite.
 ## Aggregate
 
 - Measured: true
-- Line coverage: 81.31%
-- Covered lines: 2463
-- Statements: 3029
-- Missing lines: 566
+- Line coverage: 81.62%
+- Covered lines: 2535
+- Statements: 3106
+- Missing lines: 571
 - Pytest command: `python.exe -m coverage run --source src/mineru_data_agent -m pytest -q`
 
 ## Lowest Coverage Files
@@ -24,7 +24,7 @@ Line coverage measured by coverage.py while running the local pytest suite.
 | `src/mineru_data_agent/batch.py` | 86.89% | 61 | 8 |
 | `src/mineru_data_agent/logging_utils.py` | 87.5% | 40 | 5 |
 | `src/mineru_data_agent/planner.py` | 89.36% | 329 | 35 |
-| `src/mineru_data_agent/agent.py` | 91.6% | 619 | 52 |
+| `src/mineru_data_agent/agent.py` | 91.81% | 696 | 57 |
 | `src/mineru_data_agent/api.py` | 92.78% | 194 | 14 |
 | `src/mineru_data_agent/validators.py` | 93.53% | 170 | 11 |
 
@@ -32,9 +32,9 @@ Line coverage measured by coverage.py while running the local pytest suite.
 
 | Command | Exit | Seconds |
 | --- | ---: | ---: |
-| `-m coverage erase` | 0 | 1.158 |
-| `-m coverage run --source src/mineru_data_agent -m pytest -q` | 0 | 11.845 |
-| `-m coverage json -o submission_artifacts/coverage/coverage_raw.json` | 0 | 0.628 |
+| `-m coverage erase` | 0 | 0.318 |
+| `-m coverage run --source src/mineru_data_agent -m pytest -q` | 0 | 7.718 |
+| `-m coverage json -o submission_artifacts/coverage/coverage_raw.json` | 0 | 0.618 |
 
 ## Notes
 

@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T10:16:56.581523+00:00",
+  "created_at": "2026-05-24T11:21:12.087906+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T10:16:56.570981+00:00",
-      "ended_at": "2026-05-24T10:16:56.571981+00:00",
+      "started_at": "2026-05-24T11:21:12.076788+00:00",
+      "ended_at": "2026-05-24T11:21:12.076788+00:00",
       "detail": {
         "task": "检查财报表格总计是否一致，并标记人工复核项。",
         "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\numeric_total_mismatch_html.html",
@@ -64,8 +64,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T10:16:56.571981+00:00",
-      "ended_at": "2026-05-24T10:16:56.571981+00:00",
+      "started_at": "2026-05-24T11:21:12.076788+00:00",
+      "ended_at": "2026-05-24T11:21:12.076788+00:00",
       "detail": {
         "subtask_count": 6,
         "selected_tools": [
@@ -81,8 +81,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T10:16:56.571981+00:00",
-      "ended_at": "2026-05-24T10:16:56.575521+00:00",
+      "started_at": "2026-05-24T11:21:12.076788+00:00",
+      "ended_at": "2026-05-24T11:21:12.080795+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\numeric_total_mismatch_html.html"
       }
@@ -90,8 +90,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T10:16:56.575521+00:00",
-      "ended_at": "2026-05-24T10:16:56.575521+00:00",
+      "started_at": "2026-05-24T11:21:12.081800+00:00",
+      "ended_at": "2026-05-24T11:21:12.081800+00:00",
       "detail": {
         "item_count": 3,
         "page_count": 0,
@@ -130,17 +130,48 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T10:16:56.575521+00:00",
-      "ended_at": "2026-05-24T10:16:56.575521+00:00",
+      "started_at": "2026-05-24T11:21:12.081800+00:00",
+      "ended_at": "2026-05-24T11:21:12.082305+00:00",
       "detail": {
         "profile": "financial_report"
       }
     },
     {
+      "name": "agent_runtime_recovery_plan",
+      "status": "completed",
+      "started_at": "2026-05-24T11:21:12.082305+00:00",
+      "ended_at": "2026-05-24T11:21:12.082305+00:00",
+      "detail": {
+        "source": "agent_action_plan.state_machine",
+        "initial_issue_codes": [
+          "document_level_provenance",
+          "numeric_total_mismatch"
+        ],
+        "actions": [
+          {
+            "action": "manual_numeric_review",
+            "issue_code": "numeric_total_mismatch",
+            "source": "agent_action_plan.replan_triggers",
+            "reason": "numeric mismatch should not be silently repaired",
+            "runner_change": null,
+            "method_change": null,
+            "skip_reason": "manual_or_advisory_action_only",
+            "runtime_status": "skipped"
+          }
+        ],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        },
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      }
+    },
+    {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T10:16:56.576552+00:00",
-      "ended_at": "2026-05-24T10:16:56.576552+00:00",
+      "started_at": "2026-05-24T11:21:12.082305+00:00",
+      "ended_at": "2026-05-24T11:21:12.082305+00:00",
       "detail": {
         "quality_status": "pass_with_warnings",
         "selected_attempt": "initial"
@@ -149,8 +180,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T10:16:56.576552+00:00",
-      "ended_at": "2026-05-24T10:16:56.576552+00:00",
+      "started_at": "2026-05-24T11:21:12.082305+00:00",
+      "ended_at": "2026-05-24T11:21:12.082305+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass_with_warnings",
@@ -214,8 +245,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T10:16:56.576552+00:00",
-      "ended_at": "2026-05-24T10:16:56.578550+00:00",
+      "started_at": "2026-05-24T11:21:12.082305+00:00",
+      "ended_at": "2026-05-24T11:21:12.085316+00:00",
       "detail": {
         "chunks_count": 2,
         "by_type": {
@@ -225,19 +256,19 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_quality.json"
       }
     }
   ],
   "tool_calls": [],
-  "run_id": "76a5382e895b",
+  "run_id": "daa6aa34148c",
   "task": "检查财报表格总计是否一致，并标记人工复核项。",
   "profile": "financial_report",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

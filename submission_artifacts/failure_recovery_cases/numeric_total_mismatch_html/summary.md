@@ -1,6 +1,6 @@
 > Boundary: native HTML controlled fixture; validates numeric mismatch detection.
 
-# MinerU Data Agent Run 76a5382e895b
+# MinerU Data Agent Run daa6aa34148c
 
 - Task: 检查财报表格总计是否一致，并标记人工复核项。
 - Profile: financial_report
@@ -70,6 +70,10 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
 - export_artifacts: Write result, trace, summary, and retrieval artifacts.
+
+## Runtime Recovery Plan
+- Initial issue codes: document_level_provenance, numeric_total_mismatch
+- manual_numeric_review: skipped for numeric_total_mismatch (agent_action_plan.replan_triggers)
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance, numeric_total_mismatch

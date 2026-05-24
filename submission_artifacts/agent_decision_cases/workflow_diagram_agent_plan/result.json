@@ -1,9 +1,9 @@
 {
-  "run_id": "df92e5e1d62c",
+  "run_id": "c7cb56bc440c",
   "task": "把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。",
   "profile": "workflow_or_diagram",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -613,6 +613,19 @@
         "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
       }
     },
+    "runtime_recovery_plan": {
+      "source": "agent_action_plan.state_machine",
+      "initial_issue_codes": [
+        "document_level_provenance"
+      ],
+      "actions": [],
+      "loop_policy": {
+        "max_attempts_per_recovery_action": 1,
+        "selection_rule": "choose highest quality score while preserving audit trail",
+        "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+      },
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+    },
     "replan_after_quality": {
       "quality_status": "pass",
       "quality_score": 100,
@@ -1017,8 +1030,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c\\html\\case_4_workflow_diagram.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c\\html\\case_4_workflow_diagram_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\html\\case_4_workflow_diagram.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\html\\case_4_workflow_diagram_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1053,9 +1066,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 2,
       "by_type": {
@@ -1703,6 +1716,19 @@
           "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
         }
       },
+      "runtime_recovery_plan": {
+        "source": "agent_action_plan.state_machine",
+        "initial_issue_codes": [
+          "document_level_provenance"
+        ],
+        "actions": [],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        },
+        "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+      },
       "replan_after_quality": {
         "quality_status": "pass",
         "quality_score": 100,
@@ -1879,8 +1905,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c\\html\\case_4_workflow_diagram.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c\\html\\case_4_workflow_diagram_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\html\\case_4_workflow_diagram.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\html\\case_4_workflow_diagram_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1888,6 +1914,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\df92e5e1d62c\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c7cb56bc440c\\summary.md"
 }

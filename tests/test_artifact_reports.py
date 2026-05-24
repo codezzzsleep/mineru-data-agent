@@ -62,6 +62,7 @@ def test_agent_value_report_separates_live_and_offline_decisions() -> None:
     assert modes["controlled_fault_injection"] >= 5
     assert report["aggregate"]["with_live_llm_trace"] >= 1
     assert "execution_control.agent_action_plan.state_machine" in report["agent_layer_fields"]
+    assert "execution_control.runtime_recovery_plan" in report["agent_layer_fields"]
 
 
 def _load_script(name: str) -> ModuleType:

@@ -1,9 +1,9 @@
 {
-  "run_id": "ee040526a32d",
+  "run_id": "94cf0e17c55b",
   "task": "解析稀疏 PDF；记录 OCR 重试失败后的保底结果。",
   "profile": "general_document",
   "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\ocr_retry_failure_controlled.pdf",
-  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d",
+  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -507,6 +507,30 @@
         "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
       }
     },
+    "runtime_recovery_plan": {
+      "source": "agent_action_plan.state_machine",
+      "initial_issue_codes": [
+        "short_text"
+      ],
+      "actions": [
+        {
+          "action": "ocr_retry",
+          "issue_code": "short_text",
+          "source": "agent_action_plan.replan_triggers",
+          "reason": "sparse PDF text often needs OCR mode",
+          "runner_change": null,
+          "method_change": "auto->ocr",
+          "skip_reason": "",
+          "runtime_status": "executed"
+        }
+      ],
+      "loop_policy": {
+        "max_attempts_per_recovery_action": 1,
+        "selection_rule": "choose highest quality score while preserving audit trail",
+        "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+      },
+      "boundary": "Runtime recovery consumes agent_action_plan replan triggers and validator fallback policies; it is deterministic, not a general multi-turn planner."
+    },
     "replan_after_quality": {
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -662,8 +686,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -688,9 +712,9 @@
     ]
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 1,
       "by_type": {
@@ -705,8 +729,8 @@
     "enabled": false
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -714,8 +738,8 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\summary.md",
+  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\94cf0e17c55b\\summary.md",
   "fault_injection_boundary": {
     "controlled_fault_injection": true,
     "not_live_benchmark": true,

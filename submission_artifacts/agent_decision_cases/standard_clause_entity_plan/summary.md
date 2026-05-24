@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run c6ba81595081
+# MinerU Data Agent Run 7197be0be812
 
 - Task: 识别合同条款中的甲方、乙方、义务、例外条件和来源证据。
 - Profile: standard_or_contract
@@ -72,6 +72,9 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - llm_review: Review parse output against task-specific risks and propose follow-up actions.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
+
+## Runtime Recovery Plan
+- Initial issue codes: document_level_provenance
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance

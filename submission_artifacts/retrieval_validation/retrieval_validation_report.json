@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T10:16:56Z",
+  "generated_at": "2026-05-24T11:21:38Z",
   "scope": "Retrieval chunk format and lightweight lexical query validation over saved artifacts.",
   "aggregate": {
     "chunk_files": 39,

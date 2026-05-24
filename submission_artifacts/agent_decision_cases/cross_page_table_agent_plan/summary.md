@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run 2fd1c4d39e6e
+# MinerU Data Agent Run f66df29ec3f0
 
 - Task: 处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。
 - Profile: financial_report
@@ -75,6 +75,10 @@
 - validate_quality: Run profile and task-specific gates before accepting the result.
 - llm_review: Review parse output against task-specific risks and propose follow-up actions.
 - replan_if_needed: Map quality issues to recovery actions and select the best attempt.
+
+## Runtime Recovery Plan
+- Initial issue codes: document_level_provenance, numeric_total_verified, numeric_total_mismatch
+- manual_numeric_review: skipped for numeric_total_mismatch (agent_action_plan.replan_triggers)
 
 ## Agent Replan After Quality
 - Issue codes: document_level_provenance, numeric_total_verified, numeric_total_mismatch

@@ -20,6 +20,7 @@
 - [x] 同一文档不同自然语言任务的自适应规划证据已生成，见 `submission_artifacts/adaptive_cases/`
 - [x] Agent action plan 已写入新运行的 `execution_control.agent_action_plan`
 - [x] Agent action plan 已包含 `state_machine`，记录条件 DAG、质量触发边和 loop policy
+- [x] Runtime recovery plan 已写入新运行的 `execution_control.runtime_recovery_plan`，恢复动作按该计划执行或跳过
 - [x] 质量后再规划已写入新运行的 `execution_control.replan_after_quality`
 - [x] 5 个 Agent decision 离线回归案例已生成，见 `submission_artifacts/agent_decision_cases/`；不把它们作为 live LLM 证据
 - [x] 真实 PDF 已保存解析前调度 + API-to-CLI fallback 恢复证据，见 `submission_artifacts/recovery_cases/`

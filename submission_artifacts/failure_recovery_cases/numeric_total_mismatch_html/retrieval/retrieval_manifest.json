@@ -1,11 +1,11 @@
 {
   "doc_id": "numeric_total_mismatch_html",
   "source_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\numeric_total_mismatch_html.html",
-  "created_at": "2026-05-24T10:16:56.577550+00:00",
+  "created_at": "2026-05-24T11:21:12.083314+00:00",
   "output_files": {
-    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_chunks.jsonl",
-    "manifest": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_manifest.json",
-    "quality_report": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_quality.json"
+    "chunks_jsonl": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_chunks.jsonl",
+    "manifest": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_manifest.json",
+    "quality_report": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\daa6aa34148c\\retrieval\\retrieval_quality.json"
   },
   "schema": [
     "chunk_id",

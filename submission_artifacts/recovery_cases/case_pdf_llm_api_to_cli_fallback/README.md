@@ -7,7 +7,7 @@ This case uses a real PDF fixture as input and runs the production Agent recover
 - Recovery trigger: `no_page_provenance`
 - Fallback parser: cached local MinerU CLI artifact from `case_mineru_cli_contract_pdf`
 - LLM preplanning: offline deterministic scheduler because no external LLM key is present in this environment
-- Run id: `52c948b82c48`
+- Run id: `05435dfdf5de`
 - Quality: `pass` (100/100)
 - Recovery executed: `true`
 - Selected attempt: `cli_fallback`
