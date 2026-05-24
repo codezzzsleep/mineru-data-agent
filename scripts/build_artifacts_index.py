@@ -13,36 +13,36 @@ OUT_MD = ARTIFACT_ROOT / "ARTIFACTS_INDEX.md"
 
 
 CATEGORIES = [
-    ("cases", "HTML/Web fixtures", "Native HTML path for planning, extraction, trace, recovery, and retrieval checks."),
-    ("mineru_cases", "MinerU CLI PDFs", "Local MinerU CLI PDF runs with page provenance and middle/layout/model artifacts."),
-    ("agent_api_cases", "MinerU Agent API PDF", "CPU-friendly online API PDF run with lightweight Markdown output."),
-    ("recovery_cases", "Recovery", "API-to-CLI fallback and recovery attempt evidence."),
-    ("failure_recovery_cases", "Failure/recovery fault injection", "Controlled negative and recovery cases for retry, strict provenance, and numeric mismatch paths."),
-    ("office_cases", "Office files", "DOCX/PPTX native extraction runs."),
-    ("challenge_cases", "Challenge fixtures", "Cross-page table, OCR noise, standard matrix, and incident workflow fixtures."),
-    ("adaptive_cases", "Adaptive planning", "Same input with different natural-language tasks and task-specific results."),
-    ("agent_decision_cases", "Agent decision regression", "Offline task decomposition, tool selection, quality replanning, and scripted decision-hook schema checks."),
-    ("memory_cases", "Cross-run memory", "Controlled local SQLite recovery-memory case showing a later run can read prior recovery outcomes."),
-    ("public_real_cases", "Public real PDFs", "IRS, NIST, SEC, and CDC public PDF cases with lightweight labels."),
-    ("long_document_chunks", "Long document chunks", "NIST AI RMF page-range chunking across the online API page limit."),
-    ("llm_cases", "LLM cases", "OpenAI-compatible LLM preplanning and post-parse review results."),
-    ("agent_live_cases", "Live LLM agent traces", "Real OpenAI-compatible tool-calling traces; finalize completion and answer-quality pass are reported separately."),
-    ("evaluation", "Evaluation metrics", "Saved label checks and field precision/recall/F1."),
-    ("stability", "Stability report", "Trace, tool timing, quality, provenance, and recovery aggregation."),
-    ("api_smoke", "Optional API smoke", "Secondary HTTP wrapper health, sync parse, and PDF smoke results."),
-    ("api_load_smoke", "Optional API load smoke", "Secondary local FastAPI TestClient concurrency results."),
-    ("http_load_test", "Optional HTTP load test", "Secondary local TCP loopback sync/async API load test with request artifacts."),
-    ("http_load_test_100", "Optional HTTP load test 100", "Secondary 100-request local TCP loopback sync/async API load test."),
-    ("baseline_comparison", "Tradeoff comparison", "Saved-artifact cost/speed/quality comparison by runner/scenario group."),
-    ("agent_value", "Agent value report", "Saved-artifact report of Agent-layer schema, audit, recovery, retrieval, and decision-mode additions over parser artifacts."),
-    ("cost_model", "Cost model", "Price-parameterized cost estimates for native, CLI, online API, and LLM modes."),
-    ("llm_cost", "LLM cost", "Provider token usage and optional price-based cost estimate."),
-    ("llm_impact", "LLM impact", "With/without LLM artifact comparison."),
-    ("recovery_effectiveness", "Recovery effectiveness", "Saved recovery attempts, selected attempts, issue codes, and extra tool time."),
-    ("long_document_risk", "Long-document risk", "Known risks and mitigations for the saved long-document chunked API run."),
-    ("retrieval_validation", "Retrieval validation", "Chunk schema, de-duplication, density, and lexical label-query smoke checks."),
-    ("code_quality", "Code quality", "Static repository size, tests, modules, and CI workflow summary."),
-    ("coverage", "Coverage", "coverage.py line coverage for the local pytest suite."),
+    ("cases", "HTML/网页 fixture", "HTML 原生路径，用于检查规划、抽取、trace、恢复和 retrieval 导出。"),
+    ("mineru_cases", "MinerU CLI PDF", "本地 MinerU CLI PDF 运行证据，包含页级 provenance 和 middle/layout/model artifact。"),
+    ("agent_api_cases", "MinerU 在线 Agent API PDF", "CPU 环境友好的在线 API PDF 运行证据，输出轻量 Markdown。"),
+    ("recovery_cases", "恢复案例", "API-to-CLI fallback 和恢复尝试证据。"),
+    ("failure_recovery_cases", "失败/恢复注入案例", "controlled 负样本和恢复样本，覆盖 retry、严格 provenance 和数字不一致路径。"),
+    ("office_cases", "Office 文件案例", "DOCX/PPTX 原生解析运行证据。"),
+    ("challenge_cases", "挑战样本", "跨页表格、OCR 噪声、标准矩阵和故障工作流 fixture。"),
+    ("adaptive_cases", "自适应规划案例", "同一输入在不同自然语言任务下的任务特定结果。"),
+    ("agent_decision_cases", "Agent 决策回归", "离线任务拆解、工具选择、质量后重规划和 scripted decision-hook schema 检查。"),
+    ("memory_cases", "跨运行记忆", "controlled 本地 SQLite 恢复记忆案例，展示后续运行可读取历史恢复结果。"),
+    ("public_real_cases", "官方公开真实 PDF", "IRS、NIST、SEC、CDC 公开 PDF 案例，附轻量标签。"),
+    ("long_document_chunks", "长文档分片", "NIST AI RMF 跨在线 API 页数上限的 page-range 分片证据。"),
+    ("llm_cases", "LLM 案例", "OpenAI-compatible LLM 预调度和解析后复核结果。"),
+    ("agent_live_cases", "Live LLM Agent trace", "真实 OpenAI-compatible tool-calling trace；finalize completion 和 answer-quality pass 分开统计。"),
+    ("evaluation", "评测指标", "保存的标签检查和字段 precision/recall/F1。"),
+    ("stability", "稳定性报告", "trace、工具耗时、质量、provenance 和 recovery 聚合。"),
+    ("api_smoke", "可选 API 冒烟", "二级 HTTP wrapper 的 health、同步 parse 和 PDF smoke 结果。"),
+    ("api_load_smoke", "可选 API 并发 smoke", "二级本地 FastAPI TestClient 并发结果。"),
+    ("http_load_test", "可选 HTTP 压测", "二级本地 TCP loopback 同步/异步 API 压测，保留 request artifact。"),
+    ("http_load_test_100", "可选 HTTP 100 请求压测", "二级 100 请求本地 TCP loopback 同步/异步 API 压测。"),
+    ("baseline_comparison", "成本/速度/质量对比", "按 runner/scenario group 汇总保存 artifact 的成本、速度和质量。"),
+    ("agent_value", "Agent 增值报告", "统计 Agent 层相对 parser artifact 增加的 schema、审计、恢复、retrieval 和决策模式字段。"),
+    ("cost_model", "成本模型", "native、CLI、在线 API 和 LLM 模式的价格参数化成本估算。"),
+    ("llm_cost", "LLM 成本", "Provider token 用量和可选价格估算。"),
+    ("llm_impact", "LLM 影响对比", "开启/关闭 LLM 的保存 artifact 对比。"),
+    ("recovery_effectiveness", "恢复有效性", "保存的 recovery attempts、selected attempts、issue codes 和额外工具耗时。"),
+    ("long_document_risk", "长文档风险", "已保存长文档分片在线 API 运行的已知风险和缓解措施。"),
+    ("retrieval_validation", "Retrieval 校验", "chunk schema、去重、密度和 lexical label-query smoke。"),
+    ("code_quality", "代码质量", "仓库规模、测试、模块和 CI workflow 摘要。"),
+    ("coverage", "覆盖率", "本地 pytest 的 coverage.py 行覆盖率。"),
 ]
 
 
@@ -247,11 +247,11 @@ def quick_metrics() -> dict[str, Any]:
 
 def render_markdown(report: dict[str, Any]) -> str:
     lines = [
-        "# Artifact Index",
+        "# 提交证据总索引",
         "",
-        "This file is a single navigation page for saved submission artifacts.",
+        "本文件是保存提交证据的统一导航页，便于评委快速定位每类 artifact、result/trace 数量和主报告。",
         "",
-        "## Quick Metrics",
+        "## 快速指标",
         "",
     ]
     for key, value in report["quick_metrics"].items():
@@ -259,9 +259,9 @@ def render_markdown(report: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
-            "## Directories",
+            "## 证据目录",
             "",
-            "| Area | Path | Result JSON | Trace JSON | Main reports |",
+            "| 类别 | 路径 | Result JSON | Trace JSON | 主要报告 |",
             "| --- | --- | ---: | ---: | --- |",
         ]
     )
@@ -274,10 +274,10 @@ def render_markdown(report: dict[str, Any]) -> str:
         lines.append(
             f"| {item['title']} | `{item['path']}` | {item['result_files']} | {item['trace_files']} | {report_links} |"
         )
-    lines.extend(["", "## Notes", ""])
-    lines.append("- `result.json` is the machine-readable output.")
-    lines.append("- `trace.json` is the execution log with steps, tools, elapsed time, and errors.")
-    lines.append("- Report files summarize saved artifacts; they do not replace rerunning the scripts in a target environment.")
+    lines.extend(["", "## 说明", ""])
+    lines.append("- `result.json` 是机器可读的结构化输出。")
+    lines.append("- `trace.json` 是包含步骤、工具、耗时和错误信息的执行日志。")
+    lines.append("- 报告文件用于总结已保存 artifact，不替代在目标环境中重新运行脚本。")
     lines.append("")
     return "\n".join(lines)
 

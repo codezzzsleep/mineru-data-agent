@@ -1,14 +1,12 @@
-# CLI Contract
+# CLI 契约
 
-This project is submitted as a CLI-first MinerU Data Agent. Reviewers should
-use the `data-agent` command as the stable interface. The HTTP API is an
-optional wrapper and is not the primary competition surface.
+本项目以 CLI-first 的 MinerU Data Agent 形式提交。评委应把 `data-agent` 命令作为稳定接口；HTTP API 是可选 wrapper，不是主竞赛接口。
 
-## Commands
+## 命令
 
 ### `data-agent run`
 
-Parse one document and write a run directory containing:
+解析单个文档，并写出一个运行目录：
 
 - `result.json`
 - `trace.json`
@@ -16,7 +14,7 @@ Parse one document and write a run directory containing:
 - `retrieval/retrieval_chunks.jsonl`
 - `retrieval/retrieval_manifest.json`
 
-Example:
+示例：
 
 ```bash
 data-agent run \
@@ -26,8 +24,7 @@ data-agent run \
   --profile auto
 ```
 
-For PDF inputs in a CPU-only review environment, use the MinerU online Agent API
-through the CLI:
+CPU 环境解析 PDF，可通过 CLI 调用 MinerU 在线 Agent API：
 
 ```bash
 data-agent run \
@@ -37,8 +34,7 @@ data-agent run \
   --task "解析 PDF 并输出结构化结果和质量日志"
 ```
 
-For audit-grade PDF artifacts and page-level provenance, use a local MinerU CLI
-environment:
+需要审计级 PDF artifact 和页级 provenance 时，使用本地 MinerU CLI：
 
 ```bash
 data-agent run \
@@ -52,7 +48,7 @@ data-agent run \
 
 ### `data-agent batch`
 
-Run a JSON manifest. One failed task does not stop the whole batch.
+执行 JSON manifest。单个任务失败不会中断整批。
 
 ```bash
 data-agent batch \
@@ -60,12 +56,11 @@ data-agent batch \
   --out runs/batch_demo
 ```
 
-The batch directory writes `batch_report.json` plus per-task run directories.
+批处理目录会写出 `batch_report.json` 和每个任务的 run directory。
 
 ### `data-agent agent-run`
 
-Run the live OpenAI-compatible tool-calling Agent path. Provider keys are read
-only from environment variables and are not written to artifacts.
+运行 live OpenAI-compatible tool-calling Agent 路径。Provider key 只从环境变量读取，不写入 artifact。
 
 ```bash
 data-agent agent-run \
@@ -75,61 +70,44 @@ data-agent agent-run \
   --task "发现乱码后先清理，再抽取设备 B-17 的异常温度"
 ```
 
-The command writes:
+该命令写出：
 
 - `result.json`
 - `live_agent_trace.json`
 - `live_agent_summary.md`
 
-Evidence semantics:
+证据口径：
 
-- The live Agent is **skill-guided**: the LLM must call `select_skill` to choose
-  a high-level strategy before executing tools, and it may switch skills if the
-  evidence contradicts the initial plan.
-- Current skills include `financial_total_audit`, `not_found_guard`,
-  `text_recovery_then_extract`, `contract_clause_review`,
-  `workflow_risk_review`, and `structured_extraction`.
-- The LLM must call `validate_answer` before `finalize`. This tool checks
-  unsupported numbers, simple arithmetic contradictions, missing evidence, and
-  selected-skill not_found conflicts.
-- The tool layer enforces the minimum loop: tools other than `select_skill` are
-  rejected until a skill is selected, `validate_answer` is rejected until a
-  document has been parsed, and `finalize` is rejected unless the exact answer
-  and exact evidence list were already validated.
-- `tool_call_completed=true`: a real provider call reached `finalize`, consumed
-  provider tokens, and produced a completed trace.
-- `answer_validation.ok=true`: built-in validation passed. This improves the
-  evidence trail but still does not replace manual or benchmark review.
-- `answer_quality_pass=true`: separate manual or benchmark review says the final
-  answer is semantically correct.
-- Tool-call completion must not be cited as semantic success unless
-  `answer_quality_pass=true`.
+- Live Agent 是 **skill-guided**：LLM 必须先调用 `select_skill` 选择高层策略；如果证据与初始计划冲突，可以切换 skill。
+- 当前 skill 包括 `financial_total_audit`、`not_found_guard`、`text_recovery_then_extract`、`contract_clause_review`、`workflow_risk_review` 和 `structured_extraction`。
+- LLM 必须在 `finalize` 前调用 `validate_answer`。该工具检查未被证据支持的数字、简单算术矛盾、缺失证据和 selected-skill not_found 冲突。
+- 工具层强制最小闭环：未选择 skill 前拒绝除 `select_skill` 外的工具；未解析文档前拒绝 `validate_answer`；`finalize` 只有在同一答案和同一证据列表已通过校验后才允许执行。
+- `tool_call_completed=true`：真实 provider 调用到达 `finalize`，消耗 provider token，并生成完成态 trace。
+- `answer_validation.ok=true`：内置校验通过。它增强证据链，但仍不替代人工或 benchmark 复核。
+- `answer_quality_pass=true`：单独的人工或 benchmark 语义复核认为最终答案正确。
+- 不能把 tool-call completion 直接当作语义成功；语义成功必须看 `answer_quality_pass=true`。
 
-## Stable Output Fields
+## 稳定输出字段
 
-Review scripts should inspect these top-level `result.json` fields:
+评审脚本可优先检查以下 `result.json` 顶层字段：
 
-| Field | Meaning |
+| 字段 | 含义 |
 | --- | --- |
-| `schema_version` | Output schema version for compatibility checks. |
-| `run_id` | Stable run identifier. |
-| `task` | User task. |
-| `profile` | Final profile selected by deterministic profile inference and optional LLM review. |
-| `execution_control` | Planning rationale, action plan, memory, recovery plan, and applied/ignored controls. |
-| `extracted` | Structured sections, tables, key-values, numeric facts, semantic signals, and task result. |
-| `quality` | Quality status, score, issue codes, and warnings. |
-| `recovery_decision` | Recovery attempts, selected attempt, and reason trail. |
-| `retrieval_export` | Retrieval chunk paths and stats. |
-| `trace_path` | Full execution trace. |
-| `summary_path` | Human-readable run summary. |
+| `schema_version` | 输出 schema 版本，用于兼容性检查。 |
+| `run_id` | 稳定运行标识。 |
+| `task` | 用户任务。 |
+| `profile` | 确定性 profile 推断和可选 LLM 复核后的最终 profile。 |
+| `execution_control` | 规划依据、action plan、记忆、恢复计划和应用/忽略控制项。 |
+| `extracted` | 结构化章节、表格、键值、数字事实、语义信号和任务结果。 |
+| `quality` | 质量状态、分数、issue code 和 warning。 |
+| `recovery_decision` | 恢复尝试、选中尝试和原因链。 |
+| `retrieval_export` | Retrieval chunk 路径和统计。 |
+| `trace_path` | 完整执行 trace。 |
+| `summary_path` | 人类可读摘要。 |
 
-## Non-Goals
+## 非目标
 
-- No public hosted API is required for the CLI submission.
-- Saved API smoke/load artifacts are secondary engineering evidence only.
-- Offline scripted decision cases are regression fixtures, not live LLM evidence.
-- The saved live-agent pack currently contains 8 attempted provider runs, 4
-  tool-call completions, and 2 manually reviewed answer-quality pass examples.
-  It was generated before the stricter 2026-05-25 skill/validation gate, so it
-  is legacy live-provider evidence, not proof that the new gate has completed a
-  provider rerun.
+- CLI 提交不要求提供长期公网 API。
+- 已保存 API smoke/load artifact 只是二级工程证据。
+- 离线 scripted decision cases 是回归 fixture，不是 live LLM 证据。
+- 当前保存的 live-agent 包包含 8 次 provider 尝试、4 次 tool-call completion 和 2 次人工复核 answer-quality pass。该包生成于更严格的 2026-05-25 skill/validation gate 之前，因此是旧版 live-provider 证据，不代表新版 gate 已完成 provider rerun。

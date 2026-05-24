@@ -19,6 +19,8 @@ REQUIRED_ZIP_ENTRIES = {
     "src/mineru_data_agent/agent_live.py",
     "tests/test_cli.py",
     "tests/test_agent_live.py",
+    "docs/技术报告.md",
+    "docs/TECHNICAL_REPORT.md",
     "docs/CLI_CONTRACT.md",
     "docs/LIVE_LLM_RUNBOOK.md",
     "scripts/run_agent_live_cases.py",

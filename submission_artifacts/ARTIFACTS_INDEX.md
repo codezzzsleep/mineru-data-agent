@@ -1,8 +1,8 @@
-# Artifact Index
+# 提交证据总索引
 
-This file is a single navigation page for saved submission artifacts.
+本文件是保存提交证据的统一导航页，便于评委快速定位每类 artifact、result/trace 数量和主报告。
 
-## Quick Metrics
+## 快速指标
 
 - `evaluation`: `{"cases": 17, "expected_fields": 45, "field_precision": 1.0, "field_recall": 1.0, "field_f1": 1.0}`
 - `stability`: `{"cases": 17, "tool_calls": 11, "tool_elapsed_seconds": 240.107, "recovery_executed_cases": 4}`
@@ -19,43 +19,43 @@ This file is a single navigation page for saved submission artifacts.
 - `code_quality`: `{"python_files": 57, "physical_lines": 15411, "code_lines": 13671, "classes": 38, "functions": 635, "test_functions": 88, "test_files": 13, "workflow_files": [".github/workflows/tests.yml"], "coverage_measured": true, "line_coverage_percent": 82.24, "coverage_report": "submission_artifacts/coverage/coverage_report.md"}`
 - `coverage`: `{"measured": true, "line_coverage_percent": 82.24, "num_statements": 3548, "missing_lines": 630}`
 
-## Directories
+## 证据目录
 
-| Area | Path | Result JSON | Trace JSON | Main reports |
+| 类别 | 路径 | Result JSON | Trace JSON | 主要报告 |
 | --- | --- | ---: | ---: | --- |
-| HTML/Web fixtures | `submission_artifacts/cases` | 5 | 5 | `submission_artifacts/cases/case_1_financial_report/summary.md`, `submission_artifacts/cases/case_2_low_quality_ocr/summary.md`, `submission_artifacts/cases/case_3_standard_contract/summary.md` |
-| MinerU CLI PDFs | `submission_artifacts/mineru_cases` | 4 | 4 | `submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/mineru/standard_contract_cross_page/auto/standard_contract_cross_page.md`, `submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/summary.md`, `submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/human_spot_check.md` |
-| MinerU Agent API PDF | `submission_artifacts/agent_api_cases` | 1 | 1 | `submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page.md`, `submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/summary.md` |
-| Recovery | `submission_artifacts/recovery_cases` | 1 | 1 | `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page.md`, `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru_fallback_cli/standard_contract_cross_page/auto/standard_contract_cross_page.md`, `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/summary.md` |
-| Failure/recovery fault injection | `submission_artifacts/failure_recovery_cases` | 5 | 5 | `submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/html/numeric_total_mismatch_html.md`, `submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/summary.md`, `submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/mineru/ocr_retry_failure_controlled/auto/ocr_retry_failure_controlled.md` |
-| Office files | `submission_artifacts/office_cases` | 2 | 2 | `submission_artifacts/office_cases/case_docx_standard_review/office/industry_standard_review.md`, `submission_artifacts/office_cases/case_docx_standard_review/summary.md`, `submission_artifacts/office_cases/case_pptx_workflow_review/office/workflow_agent_review.md` |
-| Challenge fixtures | `submission_artifacts/challenge_cases` | 4 | 4 | `submission_artifacts/challenge_cases/case_6_cross_page_financial_table/html/case_6_cross_page_financial_table.md`, `submission_artifacts/challenge_cases/case_6_cross_page_financial_table/summary.md`, `submission_artifacts/challenge_cases/case_7_noisy_contract_scan/html/case_7_noisy_contract_scan.md` |
-| Adaptive planning | `submission_artifacts/adaptive_cases` | 2 | 2 | `submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/html/case_1_financial_report.md`, `submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/summary.md`, `submission_artifacts/adaptive_cases/case_financial_growth_query/html/case_1_financial_report.md` |
-| Agent decision regression | `submission_artifacts/agent_decision_cases` | 5 | 5 | `submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/html/case_6_cross_page_financial_table.md`, `submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/summary.md`, `submission_artifacts/agent_decision_cases/financial_growth_agent_plan/html/case_1_financial_report.md` |
-| Cross-run memory | `submission_artifacts/memory_cases` | 3 | 3 | `submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/html/input.md`, `submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/recovery/text_cleanup/input.md`, `submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/summary.md` |
-| Public real PDFs | `submission_artifacts/public_real_cases` | 4 | 4 | `submission_artifacts/public_real_cases/human_annotation_table.md`, `submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru/cdc_vis_instructions/agent_api/cdc_vis_instructions.md`, `submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru_retry_ocr/cdc_vis_instructions/agent_api/cdc_vis_instructions.md` |
-| Long document chunks | `submission_artifacts/long_document_chunks` | 3 | 3 | `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0.md`, `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/summary.md`, `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0.md` |
-| LLM cases | `submission_artifacts/llm_cases` | 1 | 1 | `submission_artifacts/llm_cases/case_llm_financial_review/html/case_1_financial_report.md`, `submission_artifacts/llm_cases/case_llm_financial_review/summary.md` |
-| Live LLM agent traces | `submission_artifacts/agent_live_cases` | 0 | 0 | `submission_artifacts/agent_live_cases/196d0a9ab359/live_agent_summary.md`, `submission_artifacts/agent_live_cases/37a26944b806/live_agent_summary.md`, `submission_artifacts/agent_live_cases/51095c378826/live_agent_summary.md` |
-| Evaluation metrics | `submission_artifacts/evaluation` | 0 | 0 | `submission_artifacts/evaluation/evaluation_metrics.md` |
-| Stability report | `submission_artifacts/stability` | 0 | 0 | `submission_artifacts/stability/stability_report.md` |
-| Optional API smoke | `submission_artifacts/api_smoke` | 2 | 2 | `submission_artifacts/api_smoke/run_2478fc60f3b2/html/0436b28901264e3c8a5b26273ac3e49f.md`, `submission_artifacts/api_smoke/run_2478fc60f3b2/summary.md`, `submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/mineru/8828ab01efa846f98d524719bb9d8b69/agent_api/8828ab01efa846f98d524719bb9d8b69.md` |
-| Optional API load smoke | `submission_artifacts/api_load_smoke` | 8 | 8 | `submission_artifacts/api_load_smoke/api_load_smoke_report.md` |
-| Optional HTTP load test | `submission_artifacts/http_load_test` | 12 | 12 | `submission_artifacts/http_load_test/http_load_test_report.md` |
-| Optional HTTP load test 100 | `submission_artifacts/http_load_test_100` | 0 | 0 | `submission_artifacts/http_load_test_100/http_load_test_report.md` |
-| Tradeoff comparison | `submission_artifacts/baseline_comparison` | 0 | 0 | `submission_artifacts/baseline_comparison/baseline_comparison.md` |
-| Agent value report | `submission_artifacts/agent_value` | 0 | 0 | `submission_artifacts/agent_value/agent_value_report.md` |
-| Cost model | `submission_artifacts/cost_model` | 0 | 0 | `submission_artifacts/cost_model/cost_model.md` |
-| LLM cost | `submission_artifacts/llm_cost` | 0 | 0 | `submission_artifacts/llm_cost/llm_cost_report.md` |
-| LLM impact | `submission_artifacts/llm_impact` | 0 | 0 | `submission_artifacts/llm_impact/llm_impact_report.md` |
-| Recovery effectiveness | `submission_artifacts/recovery_effectiveness` | 0 | 0 | `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md` |
-| Long-document risk | `submission_artifacts/long_document_risk` | 0 | 0 | `submission_artifacts/long_document_risk/long_document_risk_report.md` |
-| Retrieval validation | `submission_artifacts/retrieval_validation` | 0 | 0 | `submission_artifacts/retrieval_validation/retrieval_validation_report.md` |
-| Code quality | `submission_artifacts/code_quality` | 0 | 0 | `submission_artifacts/code_quality/code_quality_report.md` |
-| Coverage | `submission_artifacts/coverage` | 0 | 0 | `submission_artifacts/coverage/coverage_report.md` |
+| HTML/网页 fixture | `submission_artifacts/cases` | 5 | 5 | `submission_artifacts/cases/case_1_financial_report/summary.md`, `submission_artifacts/cases/case_2_low_quality_ocr/summary.md`, `submission_artifacts/cases/case_3_standard_contract/summary.md` |
+| MinerU CLI PDF | `submission_artifacts/mineru_cases` | 4 | 4 | `submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/mineru/standard_contract_cross_page/auto/standard_contract_cross_page.md`, `submission_artifacts/mineru_cases/case_mineru_cli_contract_pdf/summary.md`, `submission_artifacts/mineru_cases/case_mineru_cli_financial_pdf/human_spot_check.md` |
+| MinerU 在线 Agent API PDF | `submission_artifacts/agent_api_cases` | 1 | 1 | `submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page.md`, `submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/summary.md` |
+| 恢复案例 | `submission_artifacts/recovery_cases` | 1 | 1 | `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru/standard_contract_cross_page/agent_api/standard_contract_cross_page.md`, `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru_fallback_cli/standard_contract_cross_page/auto/standard_contract_cross_page.md`, `submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/summary.md` |
+| 失败/恢复注入案例 | `submission_artifacts/failure_recovery_cases` | 5 | 5 | `submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/html/numeric_total_mismatch_html.md`, `submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/summary.md`, `submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/mineru/ocr_retry_failure_controlled/auto/ocr_retry_failure_controlled.md` |
+| Office 文件案例 | `submission_artifacts/office_cases` | 2 | 2 | `submission_artifacts/office_cases/case_docx_standard_review/office/industry_standard_review.md`, `submission_artifacts/office_cases/case_docx_standard_review/summary.md`, `submission_artifacts/office_cases/case_pptx_workflow_review/office/workflow_agent_review.md` |
+| 挑战样本 | `submission_artifacts/challenge_cases` | 4 | 4 | `submission_artifacts/challenge_cases/case_6_cross_page_financial_table/html/case_6_cross_page_financial_table.md`, `submission_artifacts/challenge_cases/case_6_cross_page_financial_table/summary.md`, `submission_artifacts/challenge_cases/case_7_noisy_contract_scan/html/case_7_noisy_contract_scan.md` |
+| 自适应规划案例 | `submission_artifacts/adaptive_cases` | 2 | 2 | `submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/html/case_1_financial_report.md`, `submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/summary.md`, `submission_artifacts/adaptive_cases/case_financial_growth_query/html/case_1_financial_report.md` |
+| Agent 决策回归 | `submission_artifacts/agent_decision_cases` | 5 | 5 | `submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/html/case_6_cross_page_financial_table.md`, `submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/summary.md`, `submission_artifacts/agent_decision_cases/financial_growth_agent_plan/html/case_1_financial_report.md` |
+| 跨运行记忆 | `submission_artifacts/memory_cases` | 3 | 3 | `submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/html/input.md`, `submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/recovery/text_cleanup/input.md`, `submission_artifacts/memory_cases/cross_run_text_cleanup_memory/first_run/summary.md` |
+| 官方公开真实 PDF | `submission_artifacts/public_real_cases` | 4 | 4 | `submission_artifacts/public_real_cases/human_annotation_table.md`, `submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru/cdc_vis_instructions/agent_api/cdc_vis_instructions.md`, `submission_artifacts/public_real_cases/public_cdc_vis_instructions/mineru_retry_ocr/cdc_vis_instructions/agent_api/cdc_vis_instructions.md` |
+| 长文档分片 | `submission_artifacts/long_document_chunks` | 3 | 3 | `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0.md`, `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/summary.md`, `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/mineru/nist_ai_rmf_1_0/agent_api/nist_ai_rmf_1_0.md` |
+| LLM 案例 | `submission_artifacts/llm_cases` | 1 | 1 | `submission_artifacts/llm_cases/case_llm_financial_review/html/case_1_financial_report.md`, `submission_artifacts/llm_cases/case_llm_financial_review/summary.md` |
+| Live LLM Agent trace | `submission_artifacts/agent_live_cases` | 0 | 0 | `submission_artifacts/agent_live_cases/196d0a9ab359/live_agent_summary.md`, `submission_artifacts/agent_live_cases/37a26944b806/live_agent_summary.md`, `submission_artifacts/agent_live_cases/51095c378826/live_agent_summary.md` |
+| 评测指标 | `submission_artifacts/evaluation` | 0 | 0 | `submission_artifacts/evaluation/evaluation_metrics.md` |
+| 稳定性报告 | `submission_artifacts/stability` | 0 | 0 | `submission_artifacts/stability/stability_report.md` |
+| 可选 API 冒烟 | `submission_artifacts/api_smoke` | 2 | 2 | `submission_artifacts/api_smoke/run_2478fc60f3b2/html/0436b28901264e3c8a5b26273ac3e49f.md`, `submission_artifacts/api_smoke/run_2478fc60f3b2/summary.md`, `submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/mineru/8828ab01efa846f98d524719bb9d8b69/agent_api/8828ab01efa846f98d524719bb9d8b69.md` |
+| 可选 API 并发 smoke | `submission_artifacts/api_load_smoke` | 8 | 8 | `submission_artifacts/api_load_smoke/api_load_smoke_report.md` |
+| 可选 HTTP 压测 | `submission_artifacts/http_load_test` | 12 | 12 | `submission_artifacts/http_load_test/http_load_test_report.md` |
+| 可选 HTTP 100 请求压测 | `submission_artifacts/http_load_test_100` | 0 | 0 | `submission_artifacts/http_load_test_100/http_load_test_report.md` |
+| 成本/速度/质量对比 | `submission_artifacts/baseline_comparison` | 0 | 0 | `submission_artifacts/baseline_comparison/baseline_comparison.md` |
+| Agent 增值报告 | `submission_artifacts/agent_value` | 0 | 0 | `submission_artifacts/agent_value/agent_value_report.md` |
+| 成本模型 | `submission_artifacts/cost_model` | 0 | 0 | `submission_artifacts/cost_model/cost_model.md` |
+| LLM 成本 | `submission_artifacts/llm_cost` | 0 | 0 | `submission_artifacts/llm_cost/llm_cost_report.md` |
+| LLM 影响对比 | `submission_artifacts/llm_impact` | 0 | 0 | `submission_artifacts/llm_impact/llm_impact_report.md` |
+| 恢复有效性 | `submission_artifacts/recovery_effectiveness` | 0 | 0 | `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md` |
+| 长文档风险 | `submission_artifacts/long_document_risk` | 0 | 0 | `submission_artifacts/long_document_risk/long_document_risk_report.md` |
+| Retrieval 校验 | `submission_artifacts/retrieval_validation` | 0 | 0 | `submission_artifacts/retrieval_validation/retrieval_validation_report.md` |
+| 代码质量 | `submission_artifacts/code_quality` | 0 | 0 | `submission_artifacts/code_quality/code_quality_report.md` |
+| 覆盖率 | `submission_artifacts/coverage` | 0 | 0 | `submission_artifacts/coverage/coverage_report.md` |
 
-## Notes
+## 说明
 
-- `result.json` is the machine-readable output.
-- `trace.json` is the execution log with steps, tools, elapsed time, and errors.
-- Report files summarize saved artifacts; they do not replace rerunning the scripts in a target environment.
+- `result.json` 是机器可读的结构化输出。
+- `trace.json` 是包含步骤、工具、耗时和错误信息的执行日志。
+- 报告文件用于总结已保存 artifact，不替代在目标环境中重新运行脚本。
