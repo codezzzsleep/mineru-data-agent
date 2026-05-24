@@ -24,7 +24,7 @@
 | 生成结构化结果 | 每次运行生成 `result.json` 与 `retrieval_chunks.jsonl`，供程序、评审脚本或检索入库流程直接消费；HTML/DOCX/PPTX 输入保留标题、段落、列表、表格和 slide-level provenance；新运行额外输出 `field_evidence`，记录字段 confidence proxy、证据文本和行/页/块级 provenance |
 | 输出可验证日志 | 每次运行生成 `trace.json`，记录执行步骤、工具调用、耗时、状态、重试事件、LLM 预调度、自动恢复尝试和错误摘要；失败运行也会落 trace；提交包内包含 5 个 HTML fixture artifact、4 个 PDF 文件级 CLI artifact、1 个 Agent API PDF artifact、1 个 API-to-CLI recovery artifact、2 个 Office 文件级 artifact、4 个挑战 fixture、4 个官方公开真实 PDF artifact、1 个 LLM-enabled artifact、1 份带标注评测报告和 1 份 artifact 级稳定性报告 |
 | 面向复杂文档 | 内置财报、合同/规范、低质量 OCR、流程/工程资料、HTML 语料等 profile |
-| 可部署可复现 | 提供 CLI、批处理、FastAPI 同步/异步接口、Docker/Compose、单元测试、提交压缩包、HeyWhale 部署建议、`docs/API_CONTRACT.md` API 合约、`docs/ENGINEERING_EVIDENCE.md` 扣分点证据矩阵、`scripts/run_adaptive_planning_cases.py` 自适应规划证据脚本、`scripts/build_evaluation_report.py` 评测脚本、`scripts/build_stability_report.py` 稳定性摘要脚本、`scripts/run_api_load_smoke.py` 本地并发 smoke 脚本、`scripts/run_http_load_test.py` 真实 HTTP loopback 压测脚本和 `scripts/build_baseline_comparison.py` 成本/速度/质量对比脚本 |
+| 可部署可复现 | 提供 CLI、批处理、FastAPI 同步/异步接口、Docker/Compose、单元测试、提交压缩包、HeyWhale 部署建议、`docs/API_CONTRACT.md` API 合约、`docs/ENGINEERING_EVIDENCE.md` 扣分点证据矩阵、`scripts/run_adaptive_planning_cases.py` 自适应规划证据脚本、`scripts/build_evaluation_report.py` 评测脚本、`scripts/build_stability_report.py` 稳定性摘要脚本、`scripts/run_api_load_smoke.py` 本地并发 smoke 脚本、`scripts/run_http_load_test.py` 本地 HTTP loopback 压测脚本和 `scripts/build_baseline_comparison.py` 成本/速度/质量对比脚本 |
 
 ## 3. 为什么先用在线 API
 

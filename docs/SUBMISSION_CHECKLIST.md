@@ -19,6 +19,7 @@
 - [x] 至少 1 个提交级结果实际启用 LLM，见 `submission_artifacts/llm_cases/`
 - [x] 同一文档不同自然语言任务的自适应规划证据已生成，见 `submission_artifacts/adaptive_cases/`
 - [x] Agent action plan 已写入新运行的 `execution_control.agent_action_plan`
+- [x] Agent action plan 已包含 `state_machine`，记录条件 DAG、质量触发边和 loop policy
 - [x] 质量后再规划已写入新运行的 `execution_control.replan_after_quality`
 - [x] 5 个 Agent decision 离线回归案例已生成，见 `submission_artifacts/agent_decision_cases/`；不把它们作为 live LLM 证据
 - [x] 真实 PDF 已保存解析前调度 + API-to-CLI fallback 恢复证据，见 `submission_artifacts/recovery_cases/`
@@ -32,7 +33,9 @@
 - [x] LLM token 与成本审计报告已生成，见 `submission_artifacts/llm_cost/`
 - [x] LLM impact 对比报告已生成，见 `submission_artifacts/llm_impact/`
 - [x] 恢复有效性汇总已生成，见 `submission_artifacts/recovery_effectiveness/`
+- [x] controlled failure/recovery 负样本已生成，见 `submission_artifacts/failure_recovery_cases/`
 - [x] 长文档分片风险汇总已生成，见 `submission_artifacts/long_document_risk/`
+- [x] retrieval chunk 格式/重复率/lexical top-k 冒烟报告已生成，见 `submission_artifacts/retrieval_validation/`
 - [x] coverage.py 本地行覆盖率报告已生成，见 `submission_artifacts/coverage/`
 - [x] 代码质量摘要已生成，见 `submission_artifacts/code_quality/`
 - [x] Artifact 总索引已生成，见 `submission_artifacts/ARTIFACTS_INDEX.md`
@@ -67,6 +70,6 @@
 - [x] 无本地 CLI 环境下不会盲目创建 fallback runner，避免 CPU 评审环境产生无意义失败记录
 - [x] 最终提交压缩包或项目链接前完成一次全流程复跑
 - [x] 本地 API 并发 smoke 已生成，见 `submission_artifacts/api_load_smoke/`
-- [x] 真实 HTTP loopback 压测已生成，见 `submission_artifacts/http_load_test/`
+- [x] 本地 HTTP loopback 压测已生成，见 `submission_artifacts/http_load_test/`
 - [x] 增强版 100 请求/并发 20 HTTP loopback 压测已生成，见 `submission_artifacts/http_load_test_100/`
 - [x] Dockerfile 与 docker-compose 已加入，支持一条命令启动 API

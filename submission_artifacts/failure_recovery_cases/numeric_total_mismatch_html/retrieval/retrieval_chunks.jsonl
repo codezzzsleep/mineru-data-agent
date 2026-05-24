@@ -1,0 +1,2 @@
+{"chunk_id": "numeric_total_mismatch_html:p1:table:1", "page_no": 1, "content_type": "table", "section_title": "财报总计校验负样本", "chunk_text": "| 项目 | 金额 |\n| --- | --- |\n| 硬件收入 | 100 |\n| 软件收入 | 200 |\n| 合计 | 400 |", "image_path": "", "pages": [1]}
+{"chunk_id": "numeric_total_mismatch_html:p1:text:2", "page_no": 1, "content_type": "text", "section_title": "财报总计校验负样本", "chunk_text": "本样本故意让合计行不等于明细行之和，用于验证 numeric_total_mismatch。", "image_path": "", "pages": [1]}

@@ -1,46 +1,46 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T08:50:20Z",
+  "generated_at": "2026-05-24T10:17:15Z",
   "scope": "Static repository quality summary generated from local files.",
   "aggregate": {
-    "python_files": 48,
-    "physical_lines": 12280,
-    "code_lines": 10890,
-    "classes": 31,
-    "functions": 502,
-    "test_functions": 74,
+    "python_files": 50,
+    "physical_lines": 13035,
+    "code_lines": 11569,
+    "classes": 34,
+    "functions": 531,
+    "test_functions": 75,
     "test_files": 12,
     "workflow_files": [
       ".github/workflows/tests.yml"
     ],
     "coverage_measured": true,
-    "line_coverage_percent": 81.2,
+    "line_coverage_percent": 81.31,
     "coverage_report": "submission_artifacts/coverage/coverage_report.md"
   },
   "by_area": {
     "src": {
       "python_files": 14,
-      "physical_lines": 6029,
-      "code_lines": 5398,
+      "physical_lines": 6141,
+      "code_lines": 5505,
       "classes": 19,
-      "functions": 246,
+      "functions": 248,
       "test_functions": 0
     },
     "scripts": {
-      "python_files": 22,
-      "physical_lines": 4665,
-      "code_lines": 4154,
-      "classes": 6,
-      "functions": 170,
+      "python_files": 24,
+      "physical_lines": 5290,
+      "code_lines": 4711,
+      "classes": 9,
+      "functions": 196,
       "test_functions": 0
     },
     "tests": {
       "python_files": 12,
-      "physical_lines": 1586,
-      "code_lines": 1338,
+      "physical_lines": 1604,
+      "code_lines": 1353,
       "classes": 6,
-      "functions": 86,
-      "test_functions": 74
+      "functions": 87,
+      "test_functions": 75
     }
   },
   "largest_files": [
@@ -56,10 +56,10 @@
     {
       "path": "src/mineru_data_agent/planner.py",
       "area": "src",
-      "physical_lines": 732,
-      "code_lines": 667,
+      "physical_lines": 844,
+      "code_lines": 774,
       "classes": 2,
-      "functions": 27,
+      "functions": 29,
       "test_functions": 0
     },
     {
@@ -144,12 +144,12 @@
       "test_functions": 0
     },
     {
-      "path": "scripts/run_long_document_chunks.py",
+      "path": "scripts/run_failure_recovery_cases.py",
       "area": "scripts",
-      "physical_lines": 310,
-      "code_lines": 274,
-      "classes": 1,
-      "functions": 13,
+      "physical_lines": 318,
+      "code_lines": 283,
+      "classes": 3,
+      "functions": 12,
       "test_functions": 0
     }
   ],
@@ -175,11 +175,11 @@
     {
       "path": "tests/test_artifact_reports.py",
       "area": "tests",
-      "physical_lines": 53,
-      "code_lines": 36,
+      "physical_lines": 62,
+      "code_lines": 42,
       "classes": 0,
-      "functions": 5,
-      "test_functions": 4
+      "functions": 6,
+      "test_functions": 5
     },
     {
       "path": "tests/test_batch.py",
@@ -238,8 +238,8 @@
     {
       "path": "tests/test_planner.py",
       "area": "tests",
-      "physical_lines": 103,
-      "code_lines": 89,
+      "physical_lines": 112,
+      "code_lines": 98,
       "classes": 0,
       "functions": 4,
       "test_functions": 4

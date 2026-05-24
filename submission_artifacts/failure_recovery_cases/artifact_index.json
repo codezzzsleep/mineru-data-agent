@@ -1,0 +1,247 @@
+{
+  "boundary": "controlled fault injection; not a live OCR/network/GPU benchmark",
+  "cases": [
+    {
+      "id": "text_cleanup_mojibake",
+      "trigger_issue_codes": [
+        "possible_mojibake",
+        "document_level_provenance",
+        "expected_anomaly_signal_missing"
+      ],
+      "decision": "recovered_with_review_notes",
+      "selected_attempt": "text_cleanup",
+      "attempts": [
+        {
+          "name": "initial",
+          "backend": "pipeline",
+          "method": "auto",
+          "quality_status": "pass_with_warnings",
+          "score": 84,
+          "issue_codes": [
+            "possible_mojibake",
+            "document_level_provenance",
+            "expected_anomaly_signal_missing"
+          ],
+          "selected": false,
+          "artifacts": {
+            "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\cd1870a37d85\\html\\text_cleanup_mojibake.md",
+            "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\cd1870a37d85\\html\\text_cleanup_mojibake_content_list.json",
+            "middle_json_path": null,
+            "model_json_path": null,
+            "layout_pdf_path": null,
+            "span_pdf_path": null,
+            "origin_pdf_path": null,
+            "image_dir": null
+          }
+        },
+        {
+          "name": "text_cleanup",
+          "backend": "pipeline",
+          "method": "auto",
+          "quality_status": "pass_with_warnings",
+          "score": 92,
+          "issue_codes": [
+            "document_level_provenance",
+            "expected_anomaly_signal_missing"
+          ],
+          "selected": true,
+          "artifacts": {
+            "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\cd1870a37d85\\recovery\\text_cleanup\\text_cleanup_mojibake.md",
+            "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\cd1870a37d85\\recovery\\text_cleanup\\text_cleanup_mojibake_content_list.json",
+            "middle_json_path": null,
+            "model_json_path": null,
+            "layout_pdf_path": null,
+            "span_pdf_path": null,
+            "origin_pdf_path": null,
+            "image_dir": null
+          }
+        }
+      ],
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "result_path": "submission_artifacts/failure_recovery_cases/text_cleanup_mojibake/result.json",
+      "trace_path": "submission_artifacts/failure_recovery_cases/text_cleanup_mojibake/trace.json",
+      "boundary": "native HTML controlled fixture; validates text cleanup recovery path"
+    },
+    {
+      "id": "ocr_retry_success_controlled",
+      "trigger_issue_codes": [
+        "short_text"
+      ],
+      "decision": "recovered_accept",
+      "selected_attempt": "ocr_retry",
+      "attempts": [
+        {
+          "name": "initial",
+          "backend": "pipeline",
+          "method": "auto",
+          "quality_status": "pass_with_warnings",
+          "score": 92,
+          "issue_codes": [
+            "short_text"
+          ],
+          "selected": false,
+          "artifacts": {
+            "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5c45a2dd3913\\mineru\\ocr_retry_success_controlled\\auto\\ocr_retry_success_controlled.md",
+            "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5c45a2dd3913\\mineru\\ocr_retry_success_controlled\\auto\\ocr_retry_success_controlled_content_list.json",
+            "middle_json_path": null,
+            "model_json_path": null,
+            "layout_pdf_path": null,
+            "span_pdf_path": null,
+            "origin_pdf_path": null,
+            "image_dir": null
+          }
+        },
+        {
+          "name": "ocr_retry",
+          "backend": "pipeline",
+          "method": "ocr",
+          "quality_status": "pass",
+          "score": 100,
+          "issue_codes": [],
+          "selected": true,
+          "artifacts": {
+            "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5c45a2dd3913\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled.md",
+            "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5c45a2dd3913\\mineru_retry_ocr\\ocr_retry_success_controlled\\ocr\\ocr_retry_success_controlled_content_list.json",
+            "middle_json_path": null,
+            "model_json_path": null,
+            "layout_pdf_path": null,
+            "span_pdf_path": null,
+            "origin_pdf_path": null,
+            "image_dir": null
+          }
+        }
+      ],
+      "quality_status": "pass",
+      "quality_score": 100,
+      "result_path": "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/result.json",
+      "trace_path": "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/trace.json",
+      "boundary": "controlled fake MinerU runner; validates retry selection logic, not live OCR quality"
+    },
+    {
+      "id": "ocr_retry_failure_controlled",
+      "trigger_issue_codes": [
+        "short_text"
+      ],
+      "decision": "retry_or_manual_review",
+      "selected_attempt": "initial",
+      "attempts": [
+        {
+          "name": "initial",
+          "backend": "pipeline",
+          "method": "auto",
+          "quality_status": "pass_with_warnings",
+          "score": 92,
+          "issue_codes": [
+            "short_text"
+          ],
+          "selected": true,
+          "artifacts": {
+            "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled.md",
+            "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\ee040526a32d\\mineru\\ocr_retry_failure_controlled\\auto\\ocr_retry_failure_controlled_content_list.json",
+            "middle_json_path": null,
+            "model_json_path": null,
+            "layout_pdf_path": null,
+            "span_pdf_path": null,
+            "origin_pdf_path": null,
+            "image_dir": null
+          }
+        },
+        {
+          "name": "ocr_retry",
+          "backend": "pipeline",
+          "method": "ocr",
+          "quality_status": "failed",
+          "score": 0,
+          "issue_codes": [
+            "recovery_attempt_failed"
+          ],
+          "selected": false,
+          "error": "MinerUParseError('controlled OCR failure')",
+          "artifacts": {}
+        }
+      ],
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "result_path": "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/result.json",
+      "trace_path": "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/trace.json",
+      "boundary": "controlled fake MinerU runner; validates failed-attempt audit trail"
+    },
+    {
+      "id": "strict_provenance_failure_controlled",
+      "trigger_issue_codes": [
+        "no_page_provenance",
+        "weak_clause_structure"
+      ],
+      "decision": "strict_page_provenance_failed",
+      "selected_attempt": "initial",
+      "attempts": [
+        {
+          "name": "initial",
+          "backend": "pipeline",
+          "method": "auto",
+          "quality_status": "pass_with_warnings",
+          "score": 84,
+          "issue_codes": [
+            "no_page_provenance",
+            "weak_clause_structure"
+          ],
+          "selected": true,
+          "artifacts": {
+            "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled.md",
+            "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled_content_list.json",
+            "middle_json_path": null,
+            "model_json_path": null,
+            "layout_pdf_path": null,
+            "span_pdf_path": null,
+            "origin_pdf_path": null,
+            "image_dir": null
+          }
+        }
+      ],
+      "quality_status": "needs_review",
+      "quality_score": 54,
+      "result_path": "submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/result.json",
+      "trace_path": "submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/trace.json",
+      "boundary": "controlled fake online-API runner; validates strict provenance gate without claiming live API behavior"
+    },
+    {
+      "id": "numeric_total_mismatch_html",
+      "trigger_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_mismatch"
+      ],
+      "decision": "manual_numeric_review",
+      "selected_attempt": "initial",
+      "attempts": [
+        {
+          "name": "initial",
+          "backend": "pipeline",
+          "method": "auto",
+          "quality_status": "pass_with_warnings",
+          "score": 92,
+          "issue_codes": [
+            "document_level_provenance",
+            "numeric_total_mismatch"
+          ],
+          "selected": true,
+          "artifacts": {
+            "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\html\\numeric_total_mismatch_html.md",
+            "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\html\\numeric_total_mismatch_html_content_list.json",
+            "middle_json_path": null,
+            "model_json_path": null,
+            "layout_pdf_path": null,
+            "span_pdf_path": null,
+            "origin_pdf_path": null,
+            "image_dir": null
+          }
+        }
+      ],
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "result_path": "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/result.json",
+      "trace_path": "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/trace.json",
+      "boundary": "native HTML controlled fixture; validates numeric mismatch detection"
+    }
+  ]
+}

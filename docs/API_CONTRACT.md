@@ -74,6 +74,7 @@ Evidence fields reviewers should inspect:
 - `execution_control.planning_rationale`: why profile, runner, backend, method, language, and recovery policy were selected.
 - `execution_control.adaptive_decision`: task intents, target schema, post-processors, quality thresholds, and recovery strategy chosen for this request.
 - `execution_control.agent_action_plan`: subtask graph, selected tool registry, dynamic choices, replan triggers, and single-run memory policy.
+- `execution_control.agent_action_plan.state_machine`: conditional DAG with dependency edges, quality-triggered recovery edges, runner/method changes, and loop policy.
 - `execution_control.replan_after_quality`: quality issue codes, considered actions, attempted actions, selected attempt, and next action if risk remains.
 - `execution_control.strict_page_provenance`: whether strict page provenance was requested, whether it applied to this file type, and whether the final result satisfied it.
 - `extracted.content_summary.provenance_level`: `page`, `document`, or `none`.

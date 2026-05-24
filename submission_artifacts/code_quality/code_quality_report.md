@@ -4,32 +4,32 @@ Static repository quality summary generated from local files.
 
 ## Aggregate
 
-- Python files: 48
-- Physical lines: 12280
-- Code lines: 10890
-- Classes: 31
-- Functions: 502
+- Python files: 50
+- Physical lines: 13035
+- Code lines: 11569
+- Classes: 34
+- Functions: 531
 - Test files: 12
-- Test functions: 74
+- Test functions: 75
 - CI workflows: `[".github/workflows/tests.yml"]`
 - Coverage measured: true
-- Line coverage: 81.2
+- Line coverage: 81.31
 - Coverage report: `submission_artifacts/coverage/coverage_report.md`
 
 ## By Area
 
 | Area | Files | Physical Lines | Code Lines | Classes | Functions | Test Functions |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| src | 14 | 6029 | 5398 | 19 | 246 | 0 |
-| scripts | 22 | 4665 | 4154 | 6 | 170 | 0 |
-| tests | 12 | 1586 | 1338 | 6 | 86 | 74 |
+| src | 14 | 6141 | 5505 | 19 | 248 | 0 |
+| scripts | 24 | 5290 | 4711 | 9 | 196 | 0 |
+| tests | 12 | 1604 | 1353 | 6 | 87 | 75 |
 
 ## Largest Python Files
 
 | File | Area | Code Lines | Functions | Classes |
 | --- | --- | ---: | ---: | ---: |
 | `src/mineru_data_agent/agent.py` | src | 1310 | 36 | 2 |
-| `src/mineru_data_agent/planner.py` | src | 667 | 27 | 2 |
+| `src/mineru_data_agent/planner.py` | src | 774 | 29 | 2 |
 | `src/mineru_data_agent/extractors.py` | src | 615 | 42 | 1 |
 | `src/mineru_data_agent/llm_client.py` | src | 509 | 19 | 3 |
 | `src/mineru_data_agent/mineru_client.py` | src | 451 | 23 | 3 |
@@ -39,7 +39,7 @@ Static repository quality summary generated from local files.
 | `tests/test_agent_recovery.py` | tests | 383 | 18 | 6 |
 | `src/mineru_data_agent/api.py` | src | 362 | 23 | 1 |
 | `src/mineru_data_agent/validators.py` | src | 294 | 13 | 0 |
-| `scripts/run_long_document_chunks.py` | scripts | 274 | 13 | 1 |
+| `scripts/run_failure_recovery_cases.py` | scripts | 283 | 12 | 3 |
 
 ## Test Modules
 
@@ -47,7 +47,7 @@ Static repository quality summary generated from local files.
 | --- | ---: |
 | `tests/test_agent_recovery.py` | 7 |
 | `tests/test_api.py` | 11 |
-| `tests/test_artifact_reports.py` | 4 |
+| `tests/test_artifact_reports.py` | 5 |
 | `tests/test_batch.py` | 2 |
 | `tests/test_cli.py` | 3 |
 | `tests/test_evaluation.py` | 1 |

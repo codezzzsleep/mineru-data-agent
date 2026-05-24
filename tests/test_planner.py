@@ -65,6 +65,13 @@ def test_agent_action_plan_selects_dynamic_tools() -> None:
     assert "cli_fallback" in selected
     assert action_plan["subtasks"][0]["id"] == "understand_task"
     assert any(item["issue_code"] == "no_page_provenance" for item in action_plan["replan_triggers"])
+    assert action_plan["state_machine"]["model"] == "single-run conditional DAG"
+    cli_edge = next(
+        item
+        for item in action_plan["state_machine"]["conditional_edges"]
+        if item["condition"] == "quality_issue:no_page_provenance"
+    )
+    assert cli_edge["runner_change"] == "agent-api->cli"
 
 
 def test_quality_replan_maps_issues_to_actions() -> None:
@@ -101,3 +108,5 @@ def test_quality_replan_maps_issues_to_actions() -> None:
         "considered_actions"
     ]
     assert "manual_numeric_review" in replan["next_action_if_still_risky"]
+    triggered = replan["quality_triggered_replan"]["triggered"]
+    assert any(item["issue_code"] == "no_page_provenance" and item["runner_change"] == "agent-api->cli" for item in triggered)

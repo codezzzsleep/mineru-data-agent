@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T08:51:58Z",
+  "generated_at": "2026-05-24T10:17:15Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -65,33 +65,38 @@
       }
     },
     "recovery_effectiveness": {
-      "results_with_recovery": 34,
-      "recovery_executed": 5,
-      "selected_non_initial": 4,
-      "executed_rate": 0.14705882352941177,
-      "selected_non_initial_rate": 0.11764705882352941,
-      "average_non_initial_tool_seconds_when_executed": 4.733,
+      "results_with_recovery": 39,
+      "recovery_executed": 8,
+      "selected_non_initial": 6,
+      "executed_rate": 0.20512820512820512,
+      "selected_non_initial_rate": 0.15384615384615385,
+      "average_non_initial_tool_seconds_when_executed": 2.963,
       "attempt_counts": {
         "cli_fallback": 1,
-        "initial": 34,
-        "ocr_retry": 1,
-        "text_cleanup": 3
+        "initial": 39,
+        "ocr_retry": 3,
+        "text_cleanup": 4
       },
       "selected_attempt_counts": {
         "cli_fallback": 1,
-        "initial": 30,
-        "text_cleanup": 3
+        "initial": 33,
+        "ocr_retry": 1,
+        "text_cleanup": 4
       },
       "initial_issue_counts": {
-        "document_level_provenance": 19,
-        "expected_anomaly_signal_missing": 1,
-        "no_page_provenance": 10,
-        "numeric_total_mismatch": 5,
+        "document_level_provenance": 21,
+        "expected_anomaly_signal_missing": 2,
+        "no_page_provenance": 11,
+        "numeric_total_mismatch": 6,
         "numeric_total_needs_review": 1,
         "numeric_total_verified": 9,
-        "possible_mojibake": 3
+        "possible_mojibake": 4,
+        "short_text": 2,
+        "weak_clause_structure": 1
       },
-      "failed_attempt_counts": {}
+      "failed_attempt_counts": {
+        "ocr_retry": 1
+      }
     },
     "long_document_risk": {
       "page_count": 48,
@@ -112,26 +117,37 @@
         "document": 3
       }
     },
+    "retrieval_validation": {
+      "chunk_files": 39,
+      "total_chunks": 255,
+      "schema_error_count": 0,
+      "duplicate_text_rate": 0.00392156862745098,
+      "label_query_checks": {
+        "queries": 76,
+        "hits_top3": 70,
+        "hit_rate_top3": 0.9210526315789473
+      }
+    },
     "code_quality": {
-      "python_files": 48,
-      "physical_lines": 12280,
-      "code_lines": 10890,
-      "classes": 31,
-      "functions": 502,
-      "test_functions": 74,
+      "python_files": 50,
+      "physical_lines": 13035,
+      "code_lines": 11569,
+      "classes": 34,
+      "functions": 531,
+      "test_functions": 75,
       "test_files": 12,
       "workflow_files": [
         ".github/workflows/tests.yml"
       ],
       "coverage_measured": true,
-      "line_coverage_percent": 81.2,
+      "line_coverage_percent": 81.31,
       "coverage_report": "submission_artifacts/coverage/coverage_report.md"
     },
     "coverage": {
       "measured": true,
-      "line_coverage_percent": 81.2,
-      "num_statements": 2995,
-      "missing_lines": 563
+      "line_coverage_percent": 81.31,
+      "num_statements": 3029,
+      "missing_lines": 566
     }
   },
   "categories": [
@@ -264,6 +280,46 @@
         "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/mineru_fallback_cli/standard_contract_cross_page/auto/standard_contract_cross_page_model.json",
         "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/retrieval/retrieval_manifest.json",
         "submission_artifacts/recovery_cases/case_pdf_llm_api_to_cli_fallback/retrieval/retrieval_quality.json"
+      ]
+    },
+    {
+      "id": "failure_recovery_cases",
+      "title": "Failure/recovery fault injection",
+      "description": "Controlled negative and recovery cases for retry, strict provenance, and numeric mismatch paths.",
+      "path": "submission_artifacts/failure_recovery_cases",
+      "exists": true,
+      "result_files": 5,
+      "trace_files": 5,
+      "readmes": [
+        "submission_artifacts/failure_recovery_cases/README.md"
+      ],
+      "reports": [
+        "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/html/numeric_total_mismatch_html.md",
+        "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/summary.md",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/mineru/ocr_retry_failure_controlled/auto/ocr_retry_failure_controlled.md",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/summary.md",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/mineru/ocr_retry_success_controlled/auto/ocr_retry_success_controlled.md",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/mineru_retry_ocr/ocr_retry_success_controlled/ocr/ocr_retry_success_controlled.md",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/summary.md",
+        "submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/mineru/strict_provenance_failure_controlled/agent_api/strict_provenance_failure_controlled.md",
+        "submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/summary.md",
+        "submission_artifacts/failure_recovery_cases/text_cleanup_mojibake/html/text_cleanup_mojibake.md",
+        "submission_artifacts/failure_recovery_cases/text_cleanup_mojibake/recovery/text_cleanup/text_cleanup_mojibake.md",
+        "submission_artifacts/failure_recovery_cases/text_cleanup_mojibake/summary.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/failure_recovery_cases/artifact_index.json",
+        "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/html/numeric_total_mismatch_html_content_list.json",
+        "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/retrieval/retrieval_manifest.json",
+        "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/retrieval/retrieval_quality.json",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/mineru/ocr_retry_failure_controlled/auto/ocr_retry_failure_controlled_content_list.json",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/retrieval/retrieval_manifest.json",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/retrieval/retrieval_quality.json",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/mineru/ocr_retry_success_controlled/auto/ocr_retry_success_controlled_content_list.json",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/mineru_retry_ocr/ocr_retry_success_controlled/ocr/ocr_retry_success_controlled_content_list.json",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/retrieval/retrieval_manifest.json",
+        "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/retrieval/retrieval_quality.json",
+        "submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/mineru/strict_provenance_failure_controlled/agent_api/strict_provenance_failure_controlled_content_list.json"
       ]
     },
     {
@@ -705,6 +761,22 @@
       ],
       "json_reports": [
         "submission_artifacts/long_document_risk/long_document_risk_report.json"
+      ]
+    },
+    {
+      "id": "retrieval_validation",
+      "title": "Retrieval validation",
+      "description": "Chunk schema, de-duplication, density, and lexical label-query smoke checks.",
+      "path": "submission_artifacts/retrieval_validation",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/retrieval_validation/retrieval_validation_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/retrieval_validation/retrieval_validation_report.json"
       ]
     },
     {

@@ -1,0 +1,239 @@
+{
+  "created_at": "2026-05-24T10:16:56.429207+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.349081+00:00",
+      "ended_at": "2026-05-24T10:16:56.349081+00:00",
+      "detail": {
+        "task": "清理 OCR 噪声合同并保留质量问题。",
+        "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\text_cleanup_mojibake.html",
+        "adaptive_decision": {
+          "profile": "low_quality_ocr",
+          "task_intents": [
+            "structured_extraction"
+          ],
+          "target_schema": {
+            "recognized_text": "OCR text candidate",
+            "noise_signal": "blur/mojibake/sparse-text signal",
+            "critical_field": "field that must be reviewed",
+            "recovery_action": "retry or fallback recommendation",
+            "evidence": "source evidence"
+          },
+          "post_processors": [
+            "field_evidence_builder"
+          ],
+          "verification_focus": [
+            "schema_fields_have_evidence",
+            "quality_issues_are_not_hidden"
+          ],
+          "quality_thresholds": {
+            "min_quality_score": 80,
+            "require_tables": false,
+            "require_numeric_facts": false,
+            "prefer_page_provenance": false
+          },
+          "recovery_strategy": [
+            {
+              "action": "text_cleanup",
+              "trigger": "mojibake_or_encoding_noise",
+              "priority": "normal"
+            }
+          ],
+          "rationale": [
+            "profile=low_quality_ocr selected from task/file signals",
+            "input suffix=.html",
+            "task intents=structured_extraction",
+            "schema and recovery priorities are derived before parsing and saved for audit"
+          ]
+        }
+      }
+    },
+    {
+      "name": "agent_task_decomposition",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.349081+00:00",
+      "ended_at": "2026-05-24T10:16:56.349081+00:00",
+      "detail": {
+        "subtask_count": 6,
+        "selected_tools": [
+          "native_extractor",
+          "structured_extractor",
+          "text_cleanup",
+          "retrieval_exporter"
+        ],
+        "replan_trigger_count": 4
+      }
+    },
+    {
+      "name": "extract_html",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.349081+00:00",
+      "ended_at": "2026-05-24T10:16:56.420659+00:00",
+      "detail": {
+        "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\text_cleanup_mojibake.html"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.420659+00:00",
+      "ended_at": "2026-05-24T10:16:56.420659+00:00",
+      "detail": {
+        "item_count": 4,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "html": 4
+        },
+        "section_count": 1,
+        "table_count": 0,
+        "key_value_count": 2,
+        "numeric_fact_count": 0,
+        "semantic_signal_counts": {
+          "dates": 1,
+          "recommendations": 0,
+          "anomaly_lines": 0
+        },
+        "task_result": {
+          "task_intents": [
+            "structured_extraction"
+          ],
+          "target_schema_keys": [
+            "recognized_text",
+            "noise_signal",
+            "critical_field",
+            "recovery_action",
+            "evidence"
+          ],
+          "answer_keys": []
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.420659+00:00",
+      "ended_at": "2026-05-24T10:16:56.420659+00:00",
+      "detail": {
+        "profile": "low_quality_ocr"
+      }
+    },
+    {
+      "name": "auto_recovery_text_cleanup",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.420659+00:00",
+      "ended_at": "2026-05-24T10:16:56.423659+00:00",
+      "detail": {
+        "from_status": "pass_with_warnings"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.423659+00:00",
+      "ended_at": "2026-05-24T10:16:56.423659+00:00",
+      "detail": {
+        "quality_status": "pass_with_warnings",
+        "selected_attempt": "text_cleanup"
+      }
+    },
+    {
+      "name": "agent_replan_after_quality",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.423659+00:00",
+      "ended_at": "2026-05-24T10:16:56.423659+00:00",
+      "detail": {
+        "selected_attempt": "text_cleanup",
+        "quality_status": "pass_with_warnings",
+        "quality_score": 92,
+        "issue_codes": [
+          "document_level_provenance",
+          "expected_anomaly_signal_missing"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "expected_anomaly_signal_missing",
+            "candidate_action": "ocr_retry",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial",
+          "text_cleanup"
+        ],
+        "selected_reason": "text_cleanup had quality_status=pass_with_warnings and score=92",
+        "next_action_if_still_risky": [
+          "accept_with_trace_review"
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "issue_code": "expected_anomaly_signal_missing",
+              "replanning_decision": "ocr_retry",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "text_cleanup",
+          "selected_attempt_quality": {
+            "status": "pass_with_warnings",
+            "score": 92,
+            "issue_codes": [
+              "document_level_provenance",
+              "expected_anomaly_signal_missing"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance",
+            "expected_anomaly_signal_missing"
+          ]
+        }
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.423659+00:00",
+      "ended_at": "2026-05-24T10:16:56.426200+00:00",
+      "detail": {
+        "chunks_count": 1,
+        "by_type": {
+          "text": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\cd1870a37d85\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\cd1870a37d85\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\cd1870a37d85\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [],
+  "run_id": "cd1870a37d85",
+  "task": "清理 OCR 噪声合同并保留质量问题。",
+  "profile": "low_quality_ocr",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\cd1870a37d85\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\cd1870a37d85\\summary.md",
+  "fault_injection_boundary": {
+    "controlled_fault_injection": true,
+    "not_live_benchmark": true,
+    "boundary": "native HTML controlled fixture; validates text cleanup recovery path"
+  }
+}

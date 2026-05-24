@@ -1,13 +1,13 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T08:49:55Z",
+  "generated_at": "2026-05-24T10:08:45Z",
   "scope": "Line coverage measured by coverage.py while running the local pytest suite.",
   "aggregate": {
     "measured": true,
-    "line_coverage_percent": 81.2,
-    "covered_lines": 2432,
-    "num_statements": 2995,
-    "missing_lines": 563,
+    "line_coverage_percent": 81.31,
+    "covered_lines": 2463,
+    "num_statements": 3029,
+    "missing_lines": 566,
     "excluded_lines": 2,
     "pytest_command": "python.exe -m coverage run --source src/mineru_data_agent -m pytest -q",
     "failure": null
@@ -16,21 +16,21 @@
     {
       "command": "-m coverage erase",
       "returncode": 0,
-      "elapsed_seconds": 0.204,
+      "elapsed_seconds": 0.671,
       "stdout_tail": "",
       "stderr_tail": ""
     },
     {
       "command": "-m coverage run --source src/mineru_data_agent -m pytest -q",
       "returncode": 0,
-      "elapsed_seconds": 6.344,
-      "stdout_tail": "........................................................................ [ 97%]\n..                                                                       [100%]\n74 passed in 5.06s\n",
+      "elapsed_seconds": 9.424,
+      "stdout_tail": "........................................................................ [ 96%]\n...                                                                      [100%]\n75 passed in 7.24s\n",
       "stderr_tail": ""
     },
     {
       "command": "-m coverage json -o submission_artifacts/coverage/coverage_raw.json",
       "returncode": 0,
-      "elapsed_seconds": 0.614,
+      "elapsed_seconds": 0.565,
       "stdout_tail": "Wrote JSON report to submission_artifacts/coverage/coverage_raw.json\n",
       "stderr_tail": ""
     }
@@ -126,10 +126,10 @@
     },
     {
       "path": "src/mineru_data_agent/planner.py",
-      "line_coverage_percent": 89.15,
-      "covered_lines": 263,
-      "num_statements": 295,
-      "missing_lines": 32,
+      "line_coverage_percent": 89.36,
+      "covered_lines": 294,
+      "num_statements": 329,
+      "missing_lines": 35,
       "excluded_lines": 0
     },
     {
@@ -216,10 +216,10 @@
     },
     {
       "path": "src/mineru_data_agent/planner.py",
-      "line_coverage_percent": 89.15,
-      "covered_lines": 263,
-      "num_statements": 295,
-      "missing_lines": 32,
+      "line_coverage_percent": 89.36,
+      "covered_lines": 294,
+      "num_statements": 329,
+      "missing_lines": 35,
       "excluded_lines": 0
     },
     {

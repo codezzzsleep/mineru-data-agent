@@ -17,6 +17,7 @@ CATEGORIES = [
     ("mineru_cases", "MinerU CLI PDFs", "Local MinerU CLI PDF runs with page provenance and middle/layout/model artifacts."),
     ("agent_api_cases", "MinerU Agent API PDF", "CPU-friendly online API PDF run with lightweight Markdown output."),
     ("recovery_cases", "Recovery", "API-to-CLI fallback and recovery attempt evidence."),
+    ("failure_recovery_cases", "Failure/recovery fault injection", "Controlled negative and recovery cases for retry, strict provenance, and numeric mismatch paths."),
     ("office_cases", "Office files", "DOCX/PPTX native extraction runs."),
     ("challenge_cases", "Challenge fixtures", "Cross-page table, OCR noise, standard matrix, and incident workflow fixtures."),
     ("adaptive_cases", "Adaptive planning", "Same input with different natural-language tasks and task-specific results."),
@@ -36,6 +37,7 @@ CATEGORIES = [
     ("llm_impact", "LLM impact", "With/without LLM artifact comparison."),
     ("recovery_effectiveness", "Recovery effectiveness", "Saved recovery attempts, selected attempts, issue codes, and extra tool time."),
     ("long_document_risk", "Long-document risk", "Known risks and mitigations for the saved long-document chunked API run."),
+    ("retrieval_validation", "Retrieval validation", "Chunk schema, de-duplication, density, and lexical label-query smoke checks."),
     ("code_quality", "Code quality", "Static repository size, tests, modules, and CI workflow summary."),
     ("coverage", "Coverage", "coverage.py line coverage for the local pytest suite."),
 ]
@@ -161,6 +163,16 @@ def quick_metrics() -> dict[str, Any]:
     long_doc = load_json(ARTIFACT_ROOT / "long_document_risk" / "long_document_risk_report.json")
     if isinstance(long_doc, dict):
         metrics["long_document_risk"] = long_doc.get("aggregate", {})
+    retrieval = load_json(ARTIFACT_ROOT / "retrieval_validation" / "retrieval_validation_report.json")
+    if isinstance(retrieval, dict):
+        aggregate = retrieval.get("aggregate", {}) if isinstance(retrieval.get("aggregate"), dict) else {}
+        metrics["retrieval_validation"] = {
+            "chunk_files": aggregate.get("chunk_files"),
+            "total_chunks": aggregate.get("total_chunks"),
+            "schema_error_count": aggregate.get("schema_error_count"),
+            "duplicate_text_rate": aggregate.get("duplicate_text_rate"),
+            "label_query_checks": aggregate.get("label_query_checks"),
+        }
     code_quality = load_json(ARTIFACT_ROOT / "code_quality" / "code_quality_report.json")
     if isinstance(code_quality, dict):
         metrics["code_quality"] = code_quality.get("aggregate", {})

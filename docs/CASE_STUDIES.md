@@ -271,7 +271,7 @@ API 并发 smoke 位置：`submission_artifacts/api_load_smoke/`
 - Quality status counts: 8 个 `pass`
 - Minimum field evidence count: 5
 
-真实 HTTP loopback 压测位置：`submission_artifacts/http_load_test/`
+本地 HTTP loopback 压测位置：`submission_artifacts/http_load_test/`
 
 该报告由 `scripts/run_http_load_test.py --requests 12 --concurrency 6 --endpoint mixed --keep-artifacts` 生成，先访问运行中的 `http://127.0.0.1:8080/health`，再通过真实 TCP loopback 混合调用同步 `/v1/parse` 和异步 `/v1/jobs`。当前保存结果显示 12/12 成功、12/12 均落盘 trace/result/summary，P95 延迟约 1.42 秒。它比 TestClient smoke 更接近评审脚本调用方式，但仍不是公网或 GPU 高并发压测。
 
@@ -293,7 +293,7 @@ Artifact 总索引位置：`submission_artifacts/ARTIFACTS_INDEX.md`
 
 当前案例覆盖 HTML/网页结构化处理、DOCX/PPTX 文件级结构化、批处理与 trace 机制，以及本地 MinerU CLI 后端对扫描件、财报表格、合同条款和流程图 PDF 的 artifact 产出。
 
-后续如继续冲高分，优先补以下材料：
+后续优先补以下材料：
 
 - 扩大公开真实 PDF 标注集，把当前轻量标注升级为字段级、表格逐格或 OCR 字符级 benchmark。
 - LLM 预调度已接入 profile/method/backend/lang 的安全控制，但 runner 的实际选择仍由部署参数控制，避免模型在运行中切换到当前环境不可用的后端。

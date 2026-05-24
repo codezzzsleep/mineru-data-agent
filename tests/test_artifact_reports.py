@@ -44,6 +44,15 @@ def test_code_quality_report_counts_tests_and_ci() -> None:
     assert ".github/workflows/tests.yml" in report["aggregate"]["workflow_files"]
 
 
+def test_retrieval_validation_report_scans_saved_chunks() -> None:
+    module = _load_script("build_retrieval_validation_report.py")
+    report = module.build_report()
+
+    assert report["aggregate"]["chunk_files"] >= 17
+    assert report["aggregate"]["total_chunks"] > 0
+    assert "label_query_checks" in report["aggregate"]
+
+
 def _load_script(name: str) -> ModuleType:
     path = PROJECT_ROOT / "scripts" / name
     spec = importlib.util.spec_from_file_location(path.stem, path)

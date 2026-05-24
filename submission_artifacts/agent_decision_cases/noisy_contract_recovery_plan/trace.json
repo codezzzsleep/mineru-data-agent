@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T08:49:25.050368+00:00",
+  "created_at": "2026-05-24T10:06:03.822232+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.012580+00:00",
-      "ended_at": "2026-05-24T08:49:25.012580+00:00",
+      "started_at": "2026-05-24T10:06:03.666804+00:00",
+      "ended_at": "2026-05-24T10:06:03.666804+00:00",
       "detail": {
         "task": "解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。",
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html",
@@ -54,8 +54,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.012580+00:00",
-      "ended_at": "2026-05-24T08:49:25.012580+00:00",
+      "started_at": "2026-05-24T10:06:03.666804+00:00",
+      "ended_at": "2026-05-24T10:06:03.666804+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "standard_or_contract",
@@ -481,6 +481,148 @@
                 "reason": "adaptive recovery strategy"
               }
             ],
+            "state_machine": {
+              "model": "single-run conditional DAG",
+              "initial_runner": "native",
+              "initial_method": "auto",
+              "nodes": [
+                {
+                  "id": "understand_task",
+                  "goal": "Classify the document task and identify intent-specific outputs.",
+                  "tools": [
+                    "llm_preplanner"
+                  ]
+                },
+                {
+                  "id": "choose_parse_path",
+                  "goal": "Pick the cheapest parser path that still preserves required provenance.",
+                  "tools": [
+                    "native_extractor"
+                  ]
+                },
+                {
+                  "id": "extract_structure",
+                  "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+                  "tools": [
+                    "structured_extractor"
+                  ]
+                },
+                {
+                  "id": "validate_quality",
+                  "goal": "Run profile and task-specific gates before accepting the result.",
+                  "tools": [
+                    "quality_validator"
+                  ]
+                },
+                {
+                  "id": "llm_review",
+                  "goal": "Review parse output against task-specific risks and propose follow-up actions.",
+                  "tools": [
+                    "llm_post_review"
+                  ]
+                },
+                {
+                  "id": "replan_if_needed",
+                  "goal": "Map quality issues to recovery actions and select the best attempt.",
+                  "tools": [
+                    "text_cleanup",
+                    "llm_suggested_review"
+                  ]
+                },
+                {
+                  "id": "export_artifacts",
+                  "goal": "Write result, trace, summary, and retrieval artifacts.",
+                  "tools": [
+                    "retrieval_exporter",
+                    "trace_writer"
+                  ]
+                }
+              ],
+              "edges": [
+                {
+                  "from": "understand_task",
+                  "to": "choose_parse_path",
+                  "condition": "dependency_completed"
+                },
+                {
+                  "from": "choose_parse_path",
+                  "to": "extract_structure",
+                  "condition": "dependency_completed"
+                },
+                {
+                  "from": "extract_structure",
+                  "to": "validate_quality",
+                  "condition": "dependency_completed"
+                },
+                {
+                  "from": "validate_quality",
+                  "to": "llm_review",
+                  "condition": "dependency_completed"
+                },
+                {
+                  "from": "validate_quality",
+                  "to": "replan_if_needed",
+                  "condition": "dependency_completed"
+                },
+                {
+                  "from": "replan_if_needed",
+                  "to": "export_artifacts",
+                  "condition": "dependency_completed"
+                },
+                {
+                  "from": "llm_review",
+                  "to": "export_artifacts",
+                  "condition": "dependency_completed"
+                }
+              ],
+              "conditional_edges": [
+                {
+                  "from": "validate_quality",
+                  "to": "replan_if_needed",
+                  "condition": "quality_issue:possible_mojibake",
+                  "action": "text_cleanup",
+                  "runner_change": null,
+                  "method_change": null
+                },
+                {
+                  "from": "validate_quality",
+                  "to": "replan_if_needed",
+                  "condition": "quality_issue:short_text",
+                  "action": "ocr_retry",
+                  "runner_change": null,
+                  "method_change": "auto->ocr"
+                },
+                {
+                  "from": "validate_quality",
+                  "to": "replan_if_needed",
+                  "condition": "quality_issue:no_page_provenance",
+                  "action": "cli_fallback",
+                  "runner_change": "agent-api->cli",
+                  "method_change": null
+                },
+                {
+                  "from": "validate_quality",
+                  "to": "replan_if_needed",
+                  "condition": "quality_issue:numeric_total_mismatch",
+                  "action": "manual_numeric_review",
+                  "runner_change": null,
+                  "method_change": null
+                },
+                {
+                  "from": "validate_quality",
+                  "to": "replan_if_needed",
+                  "condition": "quality_issue:run text_cleanup when possible_mojibake appears",
+                  "action": "llm_suggested_review",
+                  "runner_change": null,
+                  "method_change": null
+                }
+              ],
+              "loop_policy": {
+                "max_attempts_per_recovery_action": 1,
+                "selection_rule": "choose highest quality score while preserving audit trail",
+                "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+              }
+            },
             "memory_policy": {
               "scope": "single_run_trace",
               "writes": [
@@ -520,7 +662,29 @@
             "selected_reason": "text_cleanup had quality_status=pass and score=100",
             "next_action_if_still_risky": [
               "accept_with_trace_review"
-            ]
+            ],
+            "quality_triggered_replan": {
+              "triggered": [
+                {
+                  "issue_code": "document_level_provenance",
+                  "replanning_decision": "keep_review_note",
+                  "available_in_attempts": false,
+                  "runner_change": null,
+                  "method_change": null
+                }
+              ],
+              "selected_attempt": "text_cleanup",
+              "selected_attempt_quality": {
+                "status": "pass",
+                "score": 100,
+                "issue_codes": [
+                  "document_level_provenance"
+                ]
+              },
+              "unhandled_issue_codes": [
+                "document_level_provenance"
+              ]
+            }
           }
         }
       }
@@ -528,8 +692,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.012580+00:00",
-      "ended_at": "2026-05-24T08:49:25.012580+00:00",
+      "started_at": "2026-05-24T10:06:03.666804+00:00",
+      "ended_at": "2026-05-24T10:06:03.667309+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -546,8 +710,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.012580+00:00",
-      "ended_at": "2026-05-24T08:49:25.037889+00:00",
+      "started_at": "2026-05-24T10:06:03.667309+00:00",
+      "ended_at": "2026-05-24T10:06:03.764432+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html"
       }
@@ -555,8 +719,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.037889+00:00",
-      "ended_at": "2026-05-24T08:49:25.037889+00:00",
+      "started_at": "2026-05-24T10:06:03.764432+00:00",
+      "ended_at": "2026-05-24T10:06:03.765431+00:00",
       "detail": {
         "item_count": 11,
         "page_count": 0,
@@ -594,8 +758,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.037889+00:00",
-      "ended_at": "2026-05-24T08:49:25.037889+00:00",
+      "started_at": "2026-05-24T10:06:03.765431+00:00",
+      "ended_at": "2026-05-24T10:06:03.765938+00:00",
       "detail": {
         "profile": "low_quality_ocr"
       }
@@ -603,8 +767,8 @@
     {
       "name": "auto_recovery_text_cleanup",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.037889+00:00",
-      "ended_at": "2026-05-24T08:49:25.041394+00:00",
+      "started_at": "2026-05-24T10:06:03.765938+00:00",
+      "ended_at": "2026-05-24T10:06:03.768946+00:00",
       "detail": {
         "from_status": "pass_with_warnings"
       }
@@ -612,8 +776,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.041394+00:00",
-      "ended_at": "2026-05-24T08:49:25.041394+00:00",
+      "started_at": "2026-05-24T10:06:03.768946+00:00",
+      "ended_at": "2026-05-24T10:06:03.768946+00:00",
       "detail": {
         "quality_status": "pass",
         "selected_attempt": "text_cleanup"
@@ -622,8 +786,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.041394+00:00",
-      "ended_at": "2026-05-24T08:49:25.041394+00:00",
+      "started_at": "2026-05-24T10:06:03.768946+00:00",
+      "ended_at": "2026-05-24T10:06:03.768946+00:00",
       "detail": {
         "selected_attempt": "text_cleanup",
         "quality_status": "pass",
@@ -645,14 +809,36 @@
         "selected_reason": "text_cleanup had quality_status=pass and score=100",
         "next_action_if_still_risky": [
           "accept_with_trace_review"
-        ]
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "text_cleanup",
+          "selected_attempt_quality": {
+            "status": "pass",
+            "score": 100,
+            "issue_codes": [
+              "document_level_provenance"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance"
+          ]
+        }
       }
     },
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.041394+00:00",
-      "ended_at": "2026-05-24T08:49:25.044158+00:00",
+      "started_at": "2026-05-24T10:06:03.768946+00:00",
+      "ended_at": "2026-05-24T10:06:03.794310+00:00",
       "detail": {
         "chunks_count": 4,
         "by_type": {
@@ -662,23 +848,23 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4632106fecdf\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4632106fecdf\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4632106fecdf\\retrieval\\retrieval_quality.json"
       }
     },
     {
       "name": "llm_agent_analysis",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.044158+00:00",
-      "ended_at": "2026-05-24T08:49:25.044158+00:00",
+      "started_at": "2026-05-24T10:06:03.794310+00:00",
+      "ended_at": "2026-05-24T10:06:03.794310+00:00",
       "detail": {}
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T08:49:25.044158+00:00",
-      "ended_at": "2026-05-24T08:49:25.044158+00:00",
+      "started_at": "2026-05-24T10:06:03.794310+00:00",
+      "ended_at": "2026-05-24T10:06:03.794310+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "recovered_accept",
@@ -762,12 +948,12 @@
       }
     }
   ],
-  "run_id": "861e18465a13",
+  "run_id": "4632106fecdf",
   "task": "解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。",
   "profile": "low_quality_ocr",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\summary.md",
+  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4632106fecdf\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\4632106fecdf\\summary.md",
   "offline_regression_boundary": {
     "enabled": true,
     "not_live_llm": true,

@@ -49,7 +49,38 @@
         "selected_reason": "initial result remained the best accepted quality attempt",
         "next_action_if_still_risky": [
           "accept_with_trace_review"
-        ]
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "issue_code": "numeric_total_verified",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "initial",
+          "selected_attempt_quality": {
+            "status": "pass",
+            "score": 100,
+            "issue_codes": [
+              "document_level_provenance",
+              "numeric_total_verified"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance",
+            "numeric_total_verified"
+          ]
+        }
       },
       "scripted_usage_summary": {
         "tool_call_count": 2,
@@ -112,7 +143,29 @@
         "selected_reason": "text_cleanup had quality_status=pass and score=100",
         "next_action_if_still_risky": [
           "accept_with_trace_review"
-        ]
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "text_cleanup",
+          "selected_attempt_quality": {
+            "status": "pass",
+            "score": 100,
+            "issue_codes": [
+              "document_level_provenance"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance"
+          ]
+        }
       },
       "scripted_usage_summary": {
         "tool_call_count": 2,
@@ -176,7 +229,29 @@
         "selected_reason": "initial result remained the best accepted quality attempt",
         "next_action_if_still_risky": [
           "accept_with_trace_review"
-        ]
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "initial",
+          "selected_attempt_quality": {
+            "status": "pass",
+            "score": 100,
+            "issue_codes": [
+              "document_level_provenance"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance"
+          ]
+        }
       },
       "scripted_usage_summary": {
         "tool_call_count": 2,
@@ -239,7 +314,29 @@
         "selected_reason": "initial result remained the best accepted quality attempt",
         "next_action_if_still_risky": [
           "accept_with_trace_review"
-        ]
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "initial",
+          "selected_attempt_quality": {
+            "status": "pass",
+            "score": 100,
+            "issue_codes": [
+              "document_level_provenance"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance"
+          ]
+        }
       },
       "scripted_usage_summary": {
         "tool_call_count": 2,
@@ -315,7 +412,47 @@
         "selected_reason": "initial result remained the best accepted quality attempt",
         "next_action_if_still_risky": [
           "manual_numeric_review"
-        ]
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "issue_code": "numeric_total_verified",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "issue_code": "numeric_total_mismatch",
+              "replanning_decision": "manual_numeric_review",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "initial",
+          "selected_attempt_quality": {
+            "status": "pass_with_warnings",
+            "score": 92,
+            "issue_codes": [
+              "document_level_provenance",
+              "numeric_total_verified",
+              "numeric_total_mismatch"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance",
+            "numeric_total_verified",
+            "numeric_total_mismatch"
+          ]
+        }
       },
       "scripted_usage_summary": {
         "tool_call_count": 2,

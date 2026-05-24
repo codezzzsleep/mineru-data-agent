@@ -4,16 +4,16 @@ Recovery effectiveness summary over saved submission artifacts.
 
 ## Aggregate
 
-- Results with recovery records: 34
-- Recovery executed: 5
-- Selected non-initial result: 4
-- Executed rate: 14.71%
-- Selected non-initial rate: 11.76%
-- Avg non-initial tool seconds when executed: 4.733
-- Attempt counts: `{"cli_fallback": 1, "initial": 34, "ocr_retry": 1, "text_cleanup": 3}`
-- Selected attempt counts: `{"cli_fallback": 1, "initial": 30, "text_cleanup": 3}`
-- Initial issue counts: `{"document_level_provenance": 19, "expected_anomaly_signal_missing": 1, "no_page_provenance": 10, "numeric_total_mismatch": 5, "numeric_total_needs_review": 1, "numeric_total_verified": 9, "possible_mojibake": 3}`
-- Failed attempt counts: `{}`
+- Results with recovery records: 39
+- Recovery executed: 8
+- Selected non-initial result: 6
+- Executed rate: 20.51%
+- Selected non-initial rate: 15.38%
+- Avg non-initial tool seconds when executed: 2.963
+- Attempt counts: `{"cli_fallback": 1, "initial": 39, "ocr_retry": 3, "text_cleanup": 4}`
+- Selected attempt counts: `{"cli_fallback": 1, "initial": 33, "ocr_retry": 1, "text_cleanup": 4}`
+- Initial issue counts: `{"document_level_provenance": 21, "expected_anomaly_signal_missing": 2, "no_page_provenance": 11, "numeric_total_mismatch": 6, "numeric_total_needs_review": 1, "numeric_total_verified": 9, "possible_mojibake": 4, "short_text": 2, "weak_clause_structure": 1}`
+- Failed attempt counts: `{"ocr_retry": 1}`
 
 ## Cases
 
@@ -38,6 +38,11 @@ Recovery effectiveness summary over saved submission artifacts.
 | submission_artifacts/challenge_cases/case_7_noisy_contract_scan/result.json | recovered_accept | true | text_cleanup | possible_mojibake, document_level_provenance | pass (100) | false |
 | submission_artifacts/challenge_cases/case_8_industry_standard_matrix/result.json | accept | false | initial | document_level_provenance | pass (100) | false |
 | submission_artifacts/challenge_cases/case_9_incident_workflow_report/result.json | accept | false | initial | document_level_provenance | pass (100) | false |
+| submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/result.json | manual_numeric_review | false | initial | document_level_provenance, numeric_total_mismatch | pass_with_warnings (92) | false |
+| submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/result.json | retry_or_manual_review | true | initial | short_text | pass_with_warnings (92) | false |
+| submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/result.json | recovered_accept | true | ocr_retry | short_text | pass (100) | false |
+| submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/result.json | strict_page_provenance_failed | false | initial | no_page_provenance, weak_clause_structure | needs_review (54) | false |
+| submission_artifacts/failure_recovery_cases/text_cleanup_mojibake/result.json | recovered_with_review_notes | true | text_cleanup | possible_mojibake, document_level_provenance, expected_anomaly_signal_missing | pass_with_warnings (92) | false |
 | submission_artifacts/llm_cases/case_llm_financial_review/result.json | accept | false | initial | document_level_provenance, numeric_total_verified | pass (100) | false |
 | submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p001_020/result.json | accept_with_review_notes | false | initial | no_page_provenance | pass_with_warnings (92) | false |
 | submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/chunks/p021_040/result.json | accept_with_review_notes | false | initial | no_page_provenance | pass_with_warnings (92) | false |

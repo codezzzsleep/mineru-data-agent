@@ -1,0 +1,39 @@
+[
+  {
+    "type": "heading",
+    "text": "# 财报总计校验负样本",
+    "source": "html",
+    "level": 1,
+    "title": "财报总计校验负样本"
+  },
+  {
+    "type": "table",
+    "text": "| 项目 | 金额 |\n| --- | --- |\n| 硬件收入 | 100 |\n| 软件收入 | 200 |\n| 合计 | 400 |",
+    "source": "html",
+    "headers": [
+      "项目",
+      "金额"
+    ],
+    "rows": [
+      [
+        "硬件收入",
+        "100"
+      ],
+      [
+        "软件收入",
+        "200"
+      ],
+      [
+        "合计",
+        "400"
+      ]
+    ],
+    "row_count": 3,
+    "column_count": 2
+  },
+  {
+    "type": "text",
+    "text": "本样本故意让合计行不等于明细行之和，用于验证 numeric_total_mismatch。",
+    "source": "html"
+  }
+]

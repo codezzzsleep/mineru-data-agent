@@ -67,6 +67,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 | PDF CLI | `submission_artifacts/mineru_cases/` | 4 个本地 MinerU CLI 文件级案例，保留工具调用、页级 provenance、MinerU 中间文件和 retrieval 导出 |
 | 在线 API PDF | `submission_artifacts/agent_api_cases/` | 1 个 CPU 环境 PDF 案例，记录在线 API 的轻量 Markdown 路径和 provenance warning |
 | Recovery | `submission_artifacts/recovery_cases/` | 真实 PDF 先走在线 API，命中 `no_page_provenance` 后切到 CLI artifact，最终 `recovery_decision.executed=true` |
+| Failure/recovery fault injection | `submission_artifacts/failure_recovery_cases/` | 5 个 controlled 负样本/恢复样本，覆盖 text cleanup、OCR retry 成功/失败、strict provenance failure 和 numeric mismatch |
 | Office | `submission_artifacts/office_cases/` | 2 个 DOCX/PPTX native extractor 案例 |
 | 挑战样本 | `submission_artifacts/challenge_cases/` | 4 个跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流样本，附人工标注表 |
 | 自适应规划 | `submission_artifacts/adaptive_cases/` | 同一财报输入在增长排名与异常证据任务下生成不同 intents、schema、post-processors 和 `task_result` |
@@ -77,6 +78,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 | LLM impact | `submission_artifacts/llm_impact/` | 保存的规则运行与 LLM-enabled 运行对比，列出决策点、应用/忽略项、recovery suggestion 和 token |
 | Evaluation | `submission_artifacts/evaluation/` | 17 个案例、45 个字段、22 条文本证据、11 条数字证据、6 条表格证据和字段级 precision/recall/F1 |
 | Coverage | `submission_artifacts/coverage/` | coverage.py 对 `src/mineru_data_agent` 的本地 pytest 行覆盖率 |
+| Retrieval validation | `submission_artifacts/retrieval_validation/` | chunk schema、重复率、空文本和 lightweight lexical query smoke；不等同 embedding benchmark |
 | Stability/API/Tradeoff | `submission_artifacts/stability/`、`submission_artifacts/http_load_test_100/`、`submission_artifacts/baseline_comparison/`、`submission_artifacts/llm_cost/` | trace 完整性、工具耗时、100 请求本地 HTTP loopback、runner 分组对比和 LLM token 审计 |
 | Artifact index | `submission_artifacts/ARTIFACTS_INDEX.md` | 提交 artifact 总导航，列出各目录 result/trace 数量和主报告 |
 
@@ -120,6 +122,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - 可选 DeepSeek v4-flash / ModelScope 接入，不把 API key 写入日志或输出文件
 - LLM 预调度的 `execution_control`，记录 recommended/applied/ignored/resolved 参数
 - Agent action plan 的 `execution_control.agent_action_plan`，记录子任务、工具选择和 replan triggers
+- Agent action plan 的 `state_machine`，记录条件 DAG、质量触发边、runner/method 变化和恢复 loop policy
 - 质量后再规划的 `execution_control.replan_after_quality`，记录 issue code 到恢复动作的映射和选择原因
 - 严格来源门槛的 `execution_control.strict_page_provenance`，记录是否要求页级来源、是否适用于当前文件类型、最终是否满足
 - 带标注评测脚本 `scripts/build_evaluation_report.py` 与标注文件 `examples/evaluation/labels.json`
@@ -143,8 +146,8 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - `submission_artifacts/evaluation/` 中包含 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、字段 precision/recall/F1 和 failed-check 分布的带标注评测指标
 - `submission_artifacts/stability/` 中包含 17 个保存案例的 trace、工具耗时、质量状态和恢复统计
 - `submission_artifacts/api_load_smoke/` 中包含 8 请求、并发 4 的本地 FastAPI smoke 报告和对应落盘 artifact
-- `submission_artifacts/http_load_test/` 中包含 12 请求、并发 6 的真实 HTTP loopback 压测，混合同步 `/v1/parse` 和异步 `/v1/jobs`
-- `submission_artifacts/http_load_test_100/` 中包含 100 请求、并发 20 的真实 HTTP loopback 压测，混合同步 `/v1/parse` 和异步 `/v1/jobs`
+- `submission_artifacts/http_load_test/` 中包含 12 请求、并发 6 的本地 HTTP loopback 压测，混合同步 `/v1/parse` 和异步 `/v1/jobs`
+- `submission_artifacts/http_load_test_100/` 中包含 100 请求、并发 20 的本地 HTTP loopback 压测，混合同步 `/v1/parse` 和异步 `/v1/jobs`
 - `submission_artifacts/baseline_comparison/` 中包含保存 artifact 的成本/速度/质量分组对比
 - `submission_artifacts/llm_cost/` 中包含 LLM token/cost 审计报告
 - `docs/BENCHMARK_AND_ROADMAP.md` 中包含外部 baseline 矩阵、真实文档 benchmark 设计和后续 roadmap

@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run 9e5095e11090
+# MinerU Data Agent Run c6ba81595081
 
 - Task: 识别合同条款中的甲方、乙方、义务、例外条件和来源证据。
 - Profile: standard_or_contract

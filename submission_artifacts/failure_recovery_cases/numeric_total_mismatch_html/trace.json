@@ -1,0 +1,246 @@
+{
+  "created_at": "2026-05-24T10:16:56.581523+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.570981+00:00",
+      "ended_at": "2026-05-24T10:16:56.571981+00:00",
+      "detail": {
+        "task": "检查财报表格总计是否一致，并标记人工复核项。",
+        "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\numeric_total_mismatch_html.html",
+        "adaptive_decision": {
+          "profile": "financial_report",
+          "task_intents": [
+            "aggregation"
+          ],
+          "target_schema": {
+            "company_name": "reporting company or organization",
+            "report_period": "reporting period/date",
+            "line_item": "financial statement row name",
+            "current_value": "current period value",
+            "previous_value": "comparison period value",
+            "unit": "currency or unit scale",
+            "evidence": "source text/table evidence"
+          },
+          "post_processors": [
+            "field_evidence_builder",
+            "numeric_fact_extractor",
+            "table_total_validator"
+          ],
+          "verification_focus": [
+            "schema_fields_have_evidence",
+            "quality_issues_are_not_hidden",
+            "numeric_tokens_preserved",
+            "subtotal_total_consistency"
+          ],
+          "quality_thresholds": {
+            "min_quality_score": 90,
+            "require_tables": true,
+            "require_numeric_facts": true,
+            "prefer_page_provenance": false
+          },
+          "recovery_strategy": [
+            {
+              "action": "text_cleanup",
+              "trigger": "mojibake_or_encoding_noise",
+              "priority": "normal"
+            },
+            {
+              "action": "manual_numeric_review",
+              "trigger": "total_or_subtotal_mismatch",
+              "priority": "high"
+            }
+          ],
+          "rationale": [
+            "profile=financial_report selected from task/file signals",
+            "input suffix=.html",
+            "task intents=aggregation",
+            "schema and recovery priorities are derived before parsing and saved for audit"
+          ]
+        }
+      }
+    },
+    {
+      "name": "agent_task_decomposition",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.571981+00:00",
+      "ended_at": "2026-05-24T10:16:56.571981+00:00",
+      "detail": {
+        "subtask_count": 6,
+        "selected_tools": [
+          "native_extractor",
+          "structured_extractor",
+          "numeric_validator",
+          "text_cleanup",
+          "retrieval_exporter"
+        ],
+        "replan_trigger_count": 4
+      }
+    },
+    {
+      "name": "extract_html",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.571981+00:00",
+      "ended_at": "2026-05-24T10:16:56.575521+00:00",
+      "detail": {
+        "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\numeric_total_mismatch_html.html"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.575521+00:00",
+      "ended_at": "2026-05-24T10:16:56.575521+00:00",
+      "detail": {
+        "item_count": 3,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "html": 3
+        },
+        "section_count": 1,
+        "table_count": 1,
+        "key_value_count": 0,
+        "numeric_fact_count": 3,
+        "semantic_signal_counts": {
+          "dates": 0,
+          "recommendations": 0,
+          "anomaly_lines": 0
+        },
+        "task_result": {
+          "task_intents": [
+            "aggregation"
+          ],
+          "target_schema_keys": [
+            "company_name",
+            "report_period",
+            "line_item",
+            "current_value",
+            "previous_value",
+            "unit",
+            "evidence"
+          ],
+          "answer_keys": [
+            "comparisons"
+          ]
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.575521+00:00",
+      "ended_at": "2026-05-24T10:16:56.575521+00:00",
+      "detail": {
+        "profile": "financial_report"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.576552+00:00",
+      "ended_at": "2026-05-24T10:16:56.576552+00:00",
+      "detail": {
+        "quality_status": "pass_with_warnings",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "agent_replan_after_quality",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.576552+00:00",
+      "ended_at": "2026-05-24T10:16:56.576552+00:00",
+      "detail": {
+        "selected_attempt": "initial",
+        "quality_status": "pass_with_warnings",
+        "quality_score": 92,
+        "issue_codes": [
+          "document_level_provenance",
+          "numeric_total_mismatch"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "document_level_provenance",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "numeric_total_mismatch",
+            "candidate_action": "manual_numeric_review",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial"
+        ],
+        "selected_reason": "initial result remained the best accepted quality attempt",
+        "next_action_if_still_risky": [
+          "manual_numeric_review"
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "issue_code": "numeric_total_mismatch",
+              "replanning_decision": "manual_numeric_review",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "initial",
+          "selected_attempt_quality": {
+            "status": "pass_with_warnings",
+            "score": 92,
+            "issue_codes": [
+              "document_level_provenance",
+              "numeric_total_mismatch"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance",
+            "numeric_total_mismatch"
+          ]
+        }
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.576552+00:00",
+      "ended_at": "2026-05-24T10:16:56.578550+00:00",
+      "detail": {
+        "chunks_count": 2,
+        "by_type": {
+          "table": 1,
+          "text": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [],
+  "run_id": "76a5382e895b",
+  "task": "检查财报表格总计是否一致，并标记人工复核项。",
+  "profile": "financial_report",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\76a5382e895b\\summary.md",
+  "fault_injection_boundary": {
+    "controlled_fault_injection": true,
+    "not_live_benchmark": true,
+    "boundary": "native HTML controlled fixture; validates numeric mismatch detection"
+  }
+}

@@ -337,7 +337,7 @@ python scripts/run_api_load_smoke.py --requests 8 --concurrency 4 --keep-runs
 
 当前报告位于 `submission_artifacts/api_load_smoke/api_load_smoke_report.json` 和 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`。它使用 FastAPI TestClient 在本地进程内发起 8 个请求、并发 4，检查每次请求的响应、质量状态、field evidence 数量以及 trace/result/summary 是否落盘。
 
-生成真实 HTTP loopback 压测：
+生成本地 HTTP loopback 压测：
 
 ```bash
 uvicorn mineru_data_agent.api:app --host 127.0.0.1 --port 8080

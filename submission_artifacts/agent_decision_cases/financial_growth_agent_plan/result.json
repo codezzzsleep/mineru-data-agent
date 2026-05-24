@@ -1,9 +1,9 @@
 {
-  "run_id": "ff0fbc9c19c4",
+  "run_id": "c16db47afc6a",
   "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。",
   "profile": "financial_report",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -470,6 +470,151 @@
           "reason": "adaptive recovery strategy"
         }
       ],
+      "state_machine": {
+        "model": "single-run conditional DAG",
+        "initial_runner": "native",
+        "initial_method": "auto",
+        "nodes": [
+          {
+            "id": "understand_task",
+            "goal": "Classify the document task and identify intent-specific outputs.",
+            "tools": [
+              "llm_preplanner"
+            ]
+          },
+          {
+            "id": "choose_parse_path",
+            "goal": "Pick the cheapest parser path that still preserves required provenance.",
+            "tools": [
+              "native_extractor"
+            ]
+          },
+          {
+            "id": "extract_structure",
+            "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+            "tools": [
+              "structured_extractor"
+            ]
+          },
+          {
+            "id": "validate_quality",
+            "goal": "Run profile and task-specific gates before accepting the result.",
+            "tools": [
+              "quality_validator",
+              "numeric_validator",
+              "provenance_checker"
+            ]
+          },
+          {
+            "id": "llm_review",
+            "goal": "Review parse output against task-specific risks and propose follow-up actions.",
+            "tools": [
+              "llm_post_review"
+            ]
+          },
+          {
+            "id": "replan_if_needed",
+            "goal": "Map quality issues to recovery actions and select the best attempt.",
+            "tools": [
+              "text_cleanup",
+              "manual_numeric_review",
+              "llm_suggested_review"
+            ]
+          },
+          {
+            "id": "export_artifacts",
+            "goal": "Write result, trace, summary, and retrieval artifacts.",
+            "tools": [
+              "retrieval_exporter",
+              "trace_writer"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "understand_task",
+            "to": "choose_parse_path",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "choose_parse_path",
+            "to": "extract_structure",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "extract_structure",
+            "to": "validate_quality",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "validate_quality",
+            "to": "llm_review",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "replan_if_needed",
+            "to": "export_artifacts",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "llm_review",
+            "to": "export_artifacts",
+            "condition": "dependency_completed"
+          }
+        ],
+        "conditional_edges": [
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:possible_mojibake",
+            "action": "text_cleanup",
+            "runner_change": null,
+            "method_change": null
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:short_text",
+            "action": "ocr_retry",
+            "runner_change": null,
+            "method_change": "auto->ocr"
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:no_page_provenance",
+            "action": "cli_fallback",
+            "runner_change": "agent-api->cli",
+            "method_change": null
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:numeric_total_mismatch",
+            "action": "manual_numeric_review",
+            "runner_change": null,
+            "method_change": null
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:numeric mismatch requires manual review",
+            "action": "llm_suggested_review",
+            "runner_change": null,
+            "method_change": null
+          }
+        ],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        }
+      },
       "memory_policy": {
         "scope": "single_run_trace",
         "writes": [
@@ -514,7 +659,38 @@
       "selected_reason": "initial result remained the best accepted quality attempt",
       "next_action_if_still_risky": [
         "accept_with_trace_review"
-      ]
+      ],
+      "quality_triggered_replan": {
+        "triggered": [
+          {
+            "issue_code": "document_level_provenance",
+            "replanning_decision": "keep_review_note",
+            "available_in_attempts": false,
+            "runner_change": null,
+            "method_change": null
+          },
+          {
+            "issue_code": "numeric_total_verified",
+            "replanning_decision": "keep_review_note",
+            "available_in_attempts": false,
+            "runner_change": null,
+            "method_change": null
+          }
+        ],
+        "selected_attempt": "initial",
+        "selected_attempt_quality": {
+          "status": "pass",
+          "score": 100,
+          "issue_codes": [
+            "document_level_provenance",
+            "numeric_total_verified"
+          ]
+        },
+        "unhandled_issue_codes": [
+          "document_level_provenance",
+          "numeric_total_verified"
+        ]
+      }
     },
     "offline_decision_regression": {
       "enabled": true,
@@ -1167,8 +1343,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\html\\case_1_financial_report.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\html\\case_1_financial_report_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\html\\case_1_financial_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\html\\case_1_financial_report_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1203,9 +1379,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 3,
       "by_type": {
@@ -1706,6 +1882,151 @@
             "reason": "adaptive recovery strategy"
           }
         ],
+        "state_machine": {
+          "model": "single-run conditional DAG",
+          "initial_runner": "native",
+          "initial_method": "auto",
+          "nodes": [
+            {
+              "id": "understand_task",
+              "goal": "Classify the document task and identify intent-specific outputs.",
+              "tools": [
+                "llm_preplanner"
+              ]
+            },
+            {
+              "id": "choose_parse_path",
+              "goal": "Pick the cheapest parser path that still preserves required provenance.",
+              "tools": [
+                "native_extractor"
+              ]
+            },
+            {
+              "id": "extract_structure",
+              "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+              "tools": [
+                "structured_extractor"
+              ]
+            },
+            {
+              "id": "validate_quality",
+              "goal": "Run profile and task-specific gates before accepting the result.",
+              "tools": [
+                "quality_validator",
+                "numeric_validator",
+                "provenance_checker"
+              ]
+            },
+            {
+              "id": "llm_review",
+              "goal": "Review parse output against task-specific risks and propose follow-up actions.",
+              "tools": [
+                "llm_post_review"
+              ]
+            },
+            {
+              "id": "replan_if_needed",
+              "goal": "Map quality issues to recovery actions and select the best attempt.",
+              "tools": [
+                "text_cleanup",
+                "manual_numeric_review",
+                "llm_suggested_review"
+              ]
+            },
+            {
+              "id": "export_artifacts",
+              "goal": "Write result, trace, summary, and retrieval artifacts.",
+              "tools": [
+                "retrieval_exporter",
+                "trace_writer"
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "from": "understand_task",
+              "to": "choose_parse_path",
+              "condition": "dependency_completed"
+            },
+            {
+              "from": "choose_parse_path",
+              "to": "extract_structure",
+              "condition": "dependency_completed"
+            },
+            {
+              "from": "extract_structure",
+              "to": "validate_quality",
+              "condition": "dependency_completed"
+            },
+            {
+              "from": "validate_quality",
+              "to": "llm_review",
+              "condition": "dependency_completed"
+            },
+            {
+              "from": "validate_quality",
+              "to": "replan_if_needed",
+              "condition": "dependency_completed"
+            },
+            {
+              "from": "replan_if_needed",
+              "to": "export_artifacts",
+              "condition": "dependency_completed"
+            },
+            {
+              "from": "llm_review",
+              "to": "export_artifacts",
+              "condition": "dependency_completed"
+            }
+          ],
+          "conditional_edges": [
+            {
+              "from": "validate_quality",
+              "to": "replan_if_needed",
+              "condition": "quality_issue:possible_mojibake",
+              "action": "text_cleanup",
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "from": "validate_quality",
+              "to": "replan_if_needed",
+              "condition": "quality_issue:short_text",
+              "action": "ocr_retry",
+              "runner_change": null,
+              "method_change": "auto->ocr"
+            },
+            {
+              "from": "validate_quality",
+              "to": "replan_if_needed",
+              "condition": "quality_issue:no_page_provenance",
+              "action": "cli_fallback",
+              "runner_change": "agent-api->cli",
+              "method_change": null
+            },
+            {
+              "from": "validate_quality",
+              "to": "replan_if_needed",
+              "condition": "quality_issue:numeric_total_mismatch",
+              "action": "manual_numeric_review",
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "from": "validate_quality",
+              "to": "replan_if_needed",
+              "condition": "quality_issue:numeric mismatch requires manual review",
+              "action": "llm_suggested_review",
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "loop_policy": {
+            "max_attempts_per_recovery_action": 1,
+            "selection_rule": "choose highest quality score while preserving audit trail",
+            "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+          }
+        },
         "memory_policy": {
           "scope": "single_run_trace",
           "writes": [
@@ -1750,7 +2071,38 @@
         "selected_reason": "initial result remained the best accepted quality attempt",
         "next_action_if_still_risky": [
           "accept_with_trace_review"
-        ]
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "document_level_provenance",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "issue_code": "numeric_total_verified",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "initial",
+          "selected_attempt_quality": {
+            "status": "pass",
+            "score": 100,
+            "issue_codes": [
+              "document_level_provenance",
+              "numeric_total_verified"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "document_level_provenance",
+            "numeric_total_verified"
+          ]
+        }
       }
     },
     "post_parse_analysis": {
@@ -1882,8 +2234,8 @@
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\html\\case_1_financial_report.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\html\\case_1_financial_report_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\html\\case_1_financial_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\html\\case_1_financial_report_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1891,6 +2243,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\c16db47afc6a\\summary.md"
 }

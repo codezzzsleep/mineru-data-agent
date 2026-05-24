@@ -37,6 +37,7 @@ class AgentActionPlan:
     tool_registry: list[dict[str, Any]]
     dynamic_choices: list[dict[str, Any]]
     replan_triggers: list[dict[str, Any]]
+    state_machine: dict[str, Any]
     memory_policy: dict[str, Any]
 
     def to_jsonable(self) -> dict[str, Any]:
@@ -204,13 +205,15 @@ def build_agent_action_plan(
         input_metadata=input_metadata,
         llm_enabled=llm_enabled,
     )
+    replan_triggers = _replan_triggers(profile, intents, recovery_strategy)
     return AgentActionPlan(
         objective=task,
         runner=runner,
         subtasks=subtasks,
         tool_registry=tools,
         dynamic_choices=dynamic_choices,
-        replan_triggers=_replan_triggers(profile, intents, recovery_strategy),
+        replan_triggers=replan_triggers,
+        state_machine=_state_machine(subtasks, replan_triggers, runner=runner, method=method),
         memory_policy={
             "scope": "single_run_trace",
             "writes": [
@@ -267,6 +270,13 @@ def build_quality_replan(
         )
     attempted = [str(item.get("name")) for item in attempts if isinstance(item, dict)]
     plan_payload = action_plan.to_jsonable() if isinstance(action_plan, AgentActionPlan) else (action_plan or {})
+    quality_triggered_replan = _quality_triggered_replan(
+        issue_codes=issue_codes,
+        considered=considered,
+        attempts=attempts,
+        selected_attempt=selected_attempt,
+        plan_payload=plan_payload,
+    )
     return {
         "quality_status": quality.get("status"),
         "quality_score": quality.get("score"),
@@ -276,6 +286,7 @@ def build_quality_replan(
         "selected_attempt": selected_attempt,
         "selected_reason": _selected_attempt_reason(selected_attempt, attempts),
         "next_action_if_still_risky": _next_action_if_still_risky(issue_codes, payload, plan_payload),
+        "quality_triggered_replan": quality_triggered_replan,
     }
 
 
@@ -427,6 +438,60 @@ def _subtasks_for_agent(
     return subtasks
 
 
+def _state_machine(
+    subtasks: list[dict[str, Any]],
+    replan_triggers: list[dict[str, Any]],
+    *,
+    runner: str,
+    method: str,
+) -> dict[str, Any]:
+    nodes = []
+    edges = []
+    for subtask in subtasks:
+        if not isinstance(subtask, dict):
+            continue
+        subtask_id = str(subtask.get("id"))
+        nodes.append(
+            {
+                "id": subtask_id,
+                "goal": subtask.get("goal"),
+                "tools": subtask.get("tools", []),
+            }
+        )
+        dependencies = subtask.get("depends_on", []) if isinstance(subtask.get("depends_on"), list) else []
+        for dependency in dependencies:
+            edges.append({"from": str(dependency), "to": subtask_id, "condition": "dependency_completed"})
+
+    conditional_edges = []
+    for trigger in replan_triggers:
+        if not isinstance(trigger, dict):
+            continue
+        action = str(trigger.get("action") or "keep_review_note")
+        conditional_edges.append(
+            {
+                "from": "validate_quality",
+                "to": "replan_if_needed",
+                "condition": f"quality_issue:{trigger.get('issue_code')}",
+                "action": action,
+                "runner_change": "agent-api->cli" if action == "cli_fallback" else None,
+                "method_change": f"{method}->ocr" if action == "ocr_retry" and method != "ocr" else None,
+            }
+        )
+    return {
+        "model": "single-run conditional DAG",
+        "initial_runner": runner,
+        "initial_method": method,
+        "nodes": nodes,
+        "edges": edges,
+        "conditional_edges": conditional_edges,
+        "loop_policy": {
+            "max_attempts_per_recovery_action": 1,
+            "selection_rule": "choose highest quality score while preserving audit trail",
+            "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts",
+        },
+    }
+
+
 def _quality_tools(profile: str, intents: list[str]) -> list[str]:
     tools = ["quality_validator"]
     if profile == "financial_report" or "aggregation" in intents:
@@ -494,6 +559,53 @@ def _selected_attempt_reason(selected_attempt: str, attempts: list[dict[str, Any
         if isinstance(item, dict) and item.get("name") == selected_attempt:
             return f"{selected_attempt} had quality_status={item.get('quality_status')} and score={item.get('score')}"
     return "selected attempt was recorded by recovery policy"
+
+
+def _quality_triggered_replan(
+    *,
+    issue_codes: list[str],
+    considered: list[dict[str, Any]],
+    attempts: list[dict[str, Any]],
+    selected_attempt: str,
+    plan_payload: dict[str, Any],
+) -> dict[str, Any]:
+    state_machine = plan_payload.get("state_machine", {}) if isinstance(plan_payload, dict) else {}
+    conditional_edges = state_machine.get("conditional_edges", []) if isinstance(state_machine, dict) else []
+    actions_by_issue = {
+        str(edge.get("condition", "")).removeprefix("quality_issue:"): edge
+        for edge in conditional_edges
+        if isinstance(edge, dict) and str(edge.get("condition", "")).startswith("quality_issue:")
+    }
+    triggered = []
+    for item in considered:
+        if not isinstance(item, dict):
+            continue
+        code = str(item.get("issue_code"))
+        edge = actions_by_issue.get(code, {})
+        triggered.append(
+            {
+                "issue_code": code,
+                "replanning_decision": item.get("candidate_action"),
+                "available_in_attempts": item.get("available_in_attempts"),
+                "runner_change": edge.get("runner_change") if isinstance(edge, dict) else None,
+                "method_change": edge.get("method_change") if isinstance(edge, dict) else None,
+            }
+        )
+    selected = next((attempt for attempt in attempts if isinstance(attempt, dict) and attempt.get("name") == selected_attempt), None)
+    return {
+        "triggered": triggered,
+        "selected_attempt": selected_attempt,
+        "selected_attempt_quality": {
+            "status": selected.get("quality_status") if isinstance(selected, dict) else None,
+            "score": selected.get("score") if isinstance(selected, dict) else None,
+            "issue_codes": selected.get("issue_codes") if isinstance(selected, dict) else None,
+        },
+        "unhandled_issue_codes": [
+            code
+            for code in issue_codes
+            if not any(item.get("issue_code") == code and item.get("available_in_attempts") for item in considered)
+        ],
+    }
 
 
 def _next_action_if_still_risky(

@@ -1,35 +1,40 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T08:50:20Z",
+  "generated_at": "2026-05-24T10:17:15Z",
   "scope": "Recovery effectiveness summary over saved submission artifacts.",
   "aggregate": {
-    "results_with_recovery": 34,
-    "recovery_executed": 5,
-    "selected_non_initial": 4,
-    "executed_rate": 0.14705882352941177,
-    "selected_non_initial_rate": 0.11764705882352941,
-    "average_non_initial_tool_seconds_when_executed": 4.733,
+    "results_with_recovery": 39,
+    "recovery_executed": 8,
+    "selected_non_initial": 6,
+    "executed_rate": 0.20512820512820512,
+    "selected_non_initial_rate": 0.15384615384615385,
+    "average_non_initial_tool_seconds_when_executed": 2.963,
     "attempt_counts": {
       "cli_fallback": 1,
-      "initial": 34,
-      "ocr_retry": 1,
-      "text_cleanup": 3
+      "initial": 39,
+      "ocr_retry": 3,
+      "text_cleanup": 4
     },
     "selected_attempt_counts": {
       "cli_fallback": 1,
-      "initial": 30,
-      "text_cleanup": 3
+      "initial": 33,
+      "ocr_retry": 1,
+      "text_cleanup": 4
     },
     "initial_issue_counts": {
-      "document_level_provenance": 19,
-      "expected_anomaly_signal_missing": 1,
-      "no_page_provenance": 10,
-      "numeric_total_mismatch": 5,
+      "document_level_provenance": 21,
+      "expected_anomaly_signal_missing": 2,
+      "no_page_provenance": 11,
+      "numeric_total_mismatch": 6,
       "numeric_total_needs_review": 1,
       "numeric_total_verified": 9,
-      "possible_mojibake": 3
+      "possible_mojibake": 4,
+      "short_text": 2,
+      "weak_clause_structure": 1
     },
-    "failed_attempt_counts": {}
+    "failed_attempt_counts": {
+      "ocr_retry": 1
+    }
   },
   "cases": [
     {
@@ -104,7 +109,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/result.json",
-      "run_id": "37cca18831d0",
+      "run_id": "2fd1c4d39e6e",
       "profile": "financial_report",
       "quality_status": "pass_with_warnings",
       "quality_score": 92,
@@ -130,7 +135,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/financial_growth_agent_plan/result.json",
-      "run_id": "ff0fbc9c19c4",
+      "run_id": "c16db47afc6a",
       "profile": "financial_report",
       "quality_status": "pass",
       "quality_score": 100,
@@ -154,7 +159,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/result.json",
-      "run_id": "861e18465a13",
+      "run_id": "4632106fecdf",
       "profile": "low_quality_ocr",
       "quality_status": "pass",
       "quality_score": 100,
@@ -178,7 +183,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/standard_clause_entity_plan/result.json",
-      "run_id": "9e5095e11090",
+      "run_id": "c6ba81595081",
       "profile": "standard_or_contract",
       "quality_status": "pass",
       "quality_score": 100,
@@ -200,7 +205,7 @@
     },
     {
       "result_path": "submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/result.json",
-      "run_id": "acca7aeb59c4",
+      "run_id": "df92e5e1d62c",
       "profile": "workflow_or_diagram",
       "quality_status": "pass",
       "quality_score": 100,
@@ -467,6 +472,127 @@
       ],
       "final_issue_codes": [
         "document_level_provenance"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/failure_recovery_cases/numeric_total_mismatch_html/result.json",
+      "run_id": "76a5382e895b",
+      "profile": "financial_report",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "manual_numeric_review",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_mismatch"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance",
+        "numeric_total_mismatch"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/failure_recovery_cases/ocr_retry_failure_controlled/result.json",
+      "run_id": "ee040526a32d",
+      "profile": "general_document",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "retry_or_manual_review",
+      "executed": true,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial",
+        "ocr_retry"
+      ],
+      "initial_issue_codes": [
+        "short_text"
+      ],
+      "final_issue_codes": [
+        "short_text"
+      ],
+      "failed_attempts": [
+        "ocr_retry"
+      ],
+      "non_initial_tool_seconds": 0.02,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/failure_recovery_cases/ocr_retry_success_controlled/result.json",
+      "run_id": "5c45a2dd3913",
+      "profile": "general_document",
+      "quality_status": "pass",
+      "quality_score": 100,
+      "decision": "recovered_accept",
+      "executed": true,
+      "selected_attempt": "ocr_retry",
+      "attempt_names": [
+        "initial",
+        "ocr_retry"
+      ],
+      "initial_issue_codes": [
+        "short_text"
+      ],
+      "final_issue_codes": [],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0.02,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/failure_recovery_cases/strict_provenance_failure_controlled/result.json",
+      "run_id": "5d9be5a86a3b",
+      "profile": "standard_or_contract",
+      "quality_status": "needs_review",
+      "quality_score": 54,
+      "decision": "strict_page_provenance_failed",
+      "executed": false,
+      "selected_attempt": "initial",
+      "attempt_names": [
+        "initial"
+      ],
+      "initial_issue_codes": [
+        "no_page_provenance",
+        "weak_clause_structure"
+      ],
+      "final_issue_codes": [
+        "no_page_provenance",
+        "weak_clause_structure",
+        "strict_page_provenance_failed"
+      ],
+      "failed_attempts": [],
+      "non_initial_tool_seconds": 0.01,
+      "llm_quality_decision_present": false
+    },
+    {
+      "result_path": "submission_artifacts/failure_recovery_cases/text_cleanup_mojibake/result.json",
+      "run_id": "cd1870a37d85",
+      "profile": "low_quality_ocr",
+      "quality_status": "pass_with_warnings",
+      "quality_score": 92,
+      "decision": "recovered_with_review_notes",
+      "executed": true,
+      "selected_attempt": "text_cleanup",
+      "attempt_names": [
+        "initial",
+        "text_cleanup"
+      ],
+      "initial_issue_codes": [
+        "possible_mojibake",
+        "document_level_provenance",
+        "expected_anomaly_signal_missing"
+      ],
+      "final_issue_codes": [
+        "document_level_provenance",
+        "expected_anomaly_signal_missing"
       ],
       "failed_attempts": [],
       "non_initial_tool_seconds": 0,

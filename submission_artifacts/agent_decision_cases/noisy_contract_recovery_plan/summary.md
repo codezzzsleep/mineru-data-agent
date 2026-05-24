@@ -1,6 +1,6 @@
 > Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
 
-# MinerU Data Agent Run 861e18465a13
+# MinerU Data Agent Run 4632106fecdf
 
 - Task: 解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。
 - Profile: low_quality_ocr

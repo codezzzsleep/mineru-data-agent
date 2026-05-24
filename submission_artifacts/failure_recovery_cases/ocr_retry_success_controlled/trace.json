@@ -1,0 +1,240 @@
+{
+  "created_at": "2026-05-24T10:16:56.469271+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.456645+00:00",
+      "ended_at": "2026-05-24T10:16:56.456645+00:00",
+      "detail": {
+        "task": "解析稀疏 PDF；初始文本过短时切到 OCR。",
+        "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\ocr_retry_success_controlled.pdf",
+        "adaptive_decision": {
+          "profile": "general_document",
+          "task_intents": [
+            "structured_extraction"
+          ],
+          "target_schema": {
+            "title": "document title",
+            "key_fact": "important extracted fact",
+            "evidence": "source evidence"
+          },
+          "post_processors": [
+            "field_evidence_builder"
+          ],
+          "verification_focus": [
+            "schema_fields_have_evidence",
+            "quality_issues_are_not_hidden"
+          ],
+          "quality_thresholds": {
+            "min_quality_score": 80,
+            "require_tables": false,
+            "require_numeric_facts": false,
+            "prefer_page_provenance": true
+          },
+          "recovery_strategy": [
+            {
+              "action": "cli_fallback",
+              "trigger": "online_api_missing_page_provenance",
+              "priority": "normal"
+            },
+            {
+              "action": "ocr_retry",
+              "trigger": "empty_or_sparse_text_or_ocr_quality_issue",
+              "priority": "normal"
+            },
+            {
+              "action": "text_cleanup",
+              "trigger": "mojibake_or_encoding_noise",
+              "priority": "normal"
+            }
+          ],
+          "rationale": [
+            "profile=general_document selected from task/file signals",
+            "input suffix=.pdf",
+            "task intents=structured_extraction",
+            "schema and recovery priorities are derived before parsing and saved for audit"
+          ]
+        }
+      }
+    },
+    {
+      "name": "agent_task_decomposition",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.456645+00:00",
+      "ended_at": "2026-05-24T10:16:56.456645+00:00",
+      "detail": {
+        "subtask_count": 6,
+        "selected_tools": [
+          "mineru_cli",
+          "structured_extractor",
+          "text_cleanup",
+          "ocr_retry",
+          "retrieval_exporter"
+        ],
+        "replan_trigger_count": 4
+      }
+    },
+    {
+      "name": "mineru_parse",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.456645+00:00",
+      "ended_at": "2026-05-24T10:16:56.458655+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.458655+00:00",
+      "ended_at": "2026-05-24T10:16:56.458655+00:00",
+      "detail": {
+        "item_count": 1,
+        "page_count": 1,
+        "provenance_level": "page",
+        "source_counts": {
+          "controlled-initial": 1
+        },
+        "section_count": 1,
+        "table_count": 0,
+        "key_value_count": 0,
+        "numeric_fact_count": 0,
+        "semantic_signal_counts": {
+          "dates": 0,
+          "recommendations": 0,
+          "anomaly_lines": 0
+        },
+        "task_result": {
+          "task_intents": [
+            "structured_extraction"
+          ],
+          "target_schema_keys": [
+            "title",
+            "key_fact",
+            "evidence"
+          ],
+          "answer_keys": []
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.458655+00:00",
+      "ended_at": "2026-05-24T10:16:56.458655+00:00",
+      "detail": {
+        "profile": "general_document"
+      }
+    },
+    {
+      "name": "auto_recovery_ocr_retry",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.458655+00:00",
+      "ended_at": "2026-05-24T10:16:56.463178+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "from_method": "auto",
+        "retry_method": "ocr"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.463178+00:00",
+      "ended_at": "2026-05-24T10:16:56.463178+00:00",
+      "detail": {
+        "quality_status": "pass",
+        "selected_attempt": "ocr_retry"
+      }
+    },
+    {
+      "name": "agent_replan_after_quality",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.463178+00:00",
+      "ended_at": "2026-05-24T10:16:56.463178+00:00",
+      "detail": {
+        "selected_attempt": "ocr_retry",
+        "quality_status": "pass",
+        "quality_score": 100,
+        "issue_codes": [],
+        "considered_actions": [],
+        "attempted_actions": [
+          "initial",
+          "ocr_retry"
+        ],
+        "selected_reason": "ocr_retry had quality_status=pass and score=100",
+        "next_action_if_still_risky": [
+          "accept_with_trace_review"
+        ],
+        "quality_triggered_replan": {
+          "triggered": [],
+          "selected_attempt": "ocr_retry",
+          "selected_attempt_quality": {
+            "status": "pass",
+            "score": 100,
+            "issue_codes": []
+          },
+          "unhandled_issue_codes": []
+        }
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.463178+00:00",
+      "ended_at": "2026-05-24T10:16:56.466274+00:00",
+      "detail": {
+        "chunks_count": 1,
+        "by_type": {
+          "text": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5c45a2dd3913\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5c45a2dd3913\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5c45a2dd3913\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "controlled-mineru",
+      "command": [
+        "controlled-mineru",
+        "auto"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 0.01,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "metadata": {}
+    },
+    {
+      "tool": "controlled-mineru",
+      "command": [
+        "controlled-mineru",
+        "ocr"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 0.01,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "metadata": {}
+    }
+  ],
+  "run_id": "5c45a2dd3913",
+  "task": "解析稀疏 PDF；初始文本过短时切到 OCR。",
+  "profile": "general_document",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5c45a2dd3913\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5c45a2dd3913\\summary.md",
+  "fault_injection_boundary": {
+    "controlled_fault_injection": true,
+    "not_live_benchmark": true,
+    "boundary": "controlled fake MinerU runner; validates retry selection logic, not live OCR quality"
+  }
+}

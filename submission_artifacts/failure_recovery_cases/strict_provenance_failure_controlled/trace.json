@@ -1,0 +1,290 @@
+{
+  "created_at": "2026-05-24T10:16:56.546007+00:00",
+  "steps": [
+    {
+      "name": "infer_task_profile",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.533945+00:00",
+      "ended_at": "2026-05-24T10:16:56.533945+00:00",
+      "detail": {
+        "task": "解析 PDF，并要求字段能追溯到页级来源。",
+        "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\strict_provenance_failure_controlled.pdf",
+        "adaptive_decision": {
+          "profile": "standard_or_contract",
+          "task_intents": [
+            "evidence_trace"
+          ],
+          "target_schema": {
+            "document_title": "standard or contract title",
+            "parties": "contract parties or responsible organizations",
+            "clause_id": "clause or section identifier",
+            "obligation": "requirement or obligation text",
+            "effective_date": "date evidence",
+            "evidence": "source clause evidence"
+          },
+          "post_processors": [
+            "field_evidence_builder",
+            "evidence_trace_export"
+          ],
+          "verification_focus": [
+            "schema_fields_have_evidence",
+            "quality_issues_are_not_hidden"
+          ],
+          "quality_thresholds": {
+            "min_quality_score": 88,
+            "require_tables": false,
+            "require_numeric_facts": false,
+            "prefer_page_provenance": true
+          },
+          "recovery_strategy": [
+            {
+              "action": "cli_fallback",
+              "trigger": "online_api_missing_page_provenance",
+              "priority": "high"
+            },
+            {
+              "action": "ocr_retry",
+              "trigger": "empty_or_sparse_text_or_ocr_quality_issue",
+              "priority": "normal"
+            },
+            {
+              "action": "text_cleanup",
+              "trigger": "mojibake_or_encoding_noise",
+              "priority": "normal"
+            }
+          ],
+          "rationale": [
+            "profile=standard_or_contract selected from task/file signals",
+            "input suffix=.pdf",
+            "task intents=evidence_trace",
+            "schema and recovery priorities are derived before parsing and saved for audit"
+          ]
+        }
+      }
+    },
+    {
+      "name": "agent_task_decomposition",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.533945+00:00",
+      "ended_at": "2026-05-24T10:16:56.533945+00:00",
+      "detail": {
+        "subtask_count": 6,
+        "selected_tools": [
+          "mineru_cli",
+          "structured_extractor",
+          "contract_validator",
+          "text_cleanup",
+          "ocr_retry",
+          "retrieval_exporter"
+        ],
+        "replan_trigger_count": 4
+      }
+    },
+    {
+      "name": "mineru_parse",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.533945+00:00",
+      "ended_at": "2026-05-24T10:16:56.538487+00:00",
+      "detail": {
+        "backend": "pipeline",
+        "method": "auto",
+        "lang": "ch"
+      }
+    },
+    {
+      "name": "build_structured_view",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.538487+00:00",
+      "ended_at": "2026-05-24T10:16:56.538487+00:00",
+      "detail": {
+        "item_count": 3,
+        "page_count": 0,
+        "provenance_level": "document",
+        "source_counts": {
+          "controlled-agent-api": 3
+        },
+        "section_count": 1,
+        "table_count": 0,
+        "key_value_count": 1,
+        "numeric_fact_count": 0,
+        "semantic_signal_counts": {
+          "dates": 0,
+          "recommendations": 0,
+          "anomaly_lines": 0
+        },
+        "task_result": {
+          "task_intents": [
+            "evidence_trace"
+          ],
+          "target_schema_keys": [
+            "document_title",
+            "parties",
+            "clause_id",
+            "obligation",
+            "effective_date",
+            "evidence"
+          ],
+          "answer_keys": [
+            "field_evidence"
+          ]
+        }
+      }
+    },
+    {
+      "name": "quality_validation",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.538487+00:00",
+      "ended_at": "2026-05-24T10:16:56.538487+00:00",
+      "detail": {
+        "profile": "standard_or_contract"
+      }
+    },
+    {
+      "name": "strict_page_provenance_gate",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.538487+00:00",
+      "ended_at": "2026-05-24T10:16:56.538487+00:00",
+      "detail": {
+        "selected_attempt": "initial",
+        "enabled": true,
+        "required": true,
+        "satisfied": false,
+        "mode": "partial_result_returned",
+        "failure_code": "strict_page_provenance_failed",
+        "action": "rerun_with_local_cli_or_provider_page_provenance"
+      }
+    },
+    {
+      "name": "recovery_decision",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.538487+00:00",
+      "ended_at": "2026-05-24T10:16:56.538487+00:00",
+      "detail": {
+        "quality_status": "needs_review",
+        "selected_attempt": "initial"
+      }
+    },
+    {
+      "name": "agent_replan_after_quality",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.538487+00:00",
+      "ended_at": "2026-05-24T10:16:56.538487+00:00",
+      "detail": {
+        "selected_attempt": "initial",
+        "quality_status": "needs_review",
+        "quality_score": 54,
+        "issue_codes": [
+          "no_page_provenance",
+          "weak_clause_structure",
+          "strict_page_provenance_failed"
+        ],
+        "considered_actions": [
+          {
+            "issue_code": "no_page_provenance",
+            "candidate_action": "cli_fallback",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "weak_clause_structure",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          },
+          {
+            "issue_code": "strict_page_provenance_failed",
+            "candidate_action": "keep_review_note",
+            "available_in_attempts": false
+          }
+        ],
+        "attempted_actions": [
+          "initial"
+        ],
+        "selected_reason": "initial result remained the best accepted quality attempt",
+        "next_action_if_still_risky": [
+          "cli_fallback"
+        ],
+        "quality_triggered_replan": {
+          "triggered": [
+            {
+              "issue_code": "no_page_provenance",
+              "replanning_decision": "cli_fallback",
+              "available_in_attempts": false,
+              "runner_change": "agent-api->cli",
+              "method_change": null
+            },
+            {
+              "issue_code": "weak_clause_structure",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            },
+            {
+              "issue_code": "strict_page_provenance_failed",
+              "replanning_decision": "keep_review_note",
+              "available_in_attempts": false,
+              "runner_change": null,
+              "method_change": null
+            }
+          ],
+          "selected_attempt": "initial",
+          "selected_attempt_quality": {
+            "status": "pass_with_warnings",
+            "score": 84,
+            "issue_codes": [
+              "no_page_provenance",
+              "weak_clause_structure"
+            ]
+          },
+          "unhandled_issue_codes": [
+            "no_page_provenance",
+            "weak_clause_structure",
+            "strict_page_provenance_failed"
+          ]
+        }
+      }
+    },
+    {
+      "name": "build_retrieval_export",
+      "status": "completed",
+      "started_at": "2026-05-24T10:16:56.538487+00:00",
+      "ended_at": "2026-05-24T10:16:56.541459+00:00",
+      "detail": {
+        "chunks_count": 1,
+        "by_type": {
+          "text": 1
+        },
+        "pages": [
+          1
+        ],
+        "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\retrieval\\retrieval_quality.json"
+      }
+    }
+  ],
+  "tool_calls": [
+    {
+      "tool": "controlled-agent-api",
+      "command": [
+        "controlled-agent-api",
+        "auto"
+      ],
+      "status": "completed",
+      "elapsed_seconds": 0.01,
+      "stdout_tail": "",
+      "stderr_tail": "",
+      "metadata": {}
+    }
+  ],
+  "run_id": "5d9be5a86a3b",
+  "task": "解析 PDF，并要求字段能追溯到页级来源。",
+  "profile": "standard_or_contract",
+  "status": "completed",
+  "result_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\summary.md",
+  "fault_injection_boundary": {
+    "controlled_fault_injection": true,
+    "not_live_benchmark": true,
+    "boundary": "controlled fake online-API runner; validates strict provenance gate without claiming live API behavior"
+  }
+}

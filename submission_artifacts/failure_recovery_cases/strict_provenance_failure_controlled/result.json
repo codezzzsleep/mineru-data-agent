@@ -1,0 +1,834 @@
+{
+  "run_id": "5d9be5a86a3b",
+  "task": "解析 PDF，并要求字段能追溯到页级来源。",
+  "profile": "standard_or_contract",
+  "input_file": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\_inputs\\strict_provenance_failure_controlled.pdf",
+  "output_dir": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b",
+  "plan": [
+    "Inspect input type, document metadata, and natural-language task objective",
+    "Infer task intents and generate a target extraction schema",
+    "Choose MinerU/native parsing path and record execution rationale",
+    "Normalize content blocks with page-level or document-level provenance",
+    "Build markdown, section, key-value, table, numeric, and field-evidence views",
+    "Run task-specific post-processing and quality checks",
+    "Select recovery action from issue codes, retry history, and task priorities",
+    "Produce traceable result, summary, retrieval chunks, and audit logs",
+    "Prioritize section hierarchy, clause-like paragraphs, parties, obligations, and dates",
+    "Preserve source page or document heading evidence for each clause",
+    "Apply task intent `evidence_trace` with schema-aware extraction and verification"
+  ],
+  "execution_control": {
+    "llm_preplan_enabled": false,
+    "strict_page_provenance": {
+      "enabled": true,
+      "required": true,
+      "satisfied": false,
+      "selected_attempt": "initial",
+      "mode": "partial_result_returned",
+      "failure_code": "strict_page_provenance_failed",
+      "action": "rerun_with_local_cli_or_provider_page_provenance"
+    },
+    "requested": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch"
+    },
+    "initial": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "cli"
+    },
+    "resolved": {
+      "profile": "standard_or_contract",
+      "backend": "pipeline",
+      "method": "auto",
+      "lang": "ch",
+      "runner": "cli"
+    },
+    "planning_rationale": {
+      "source": "rules",
+      "file_family": "pdf_or_image",
+      "profile_reason": "standard/contract keywords or explicit profile require section and clause preservation",
+      "runner_reason": "local MinerU CLI is selected when full artifacts and page-level provenance are required",
+      "backend_reason": "backend=pipeline is used for MinerU parsing when the selected runner calls MinerU",
+      "method_reason": "method=auto balances automatic parsing with OCR fallback when quality gates require it",
+      "lang_reason": "lang=ch is passed to MinerU or recorded for native extraction audit",
+      "recovery_policy": [
+        "text_cleanup if mojibake or encoding noise is detected",
+        "ocr_retry for PDF/image results with blocking extraction or OCR-related quality issues",
+        "cli_fallback when online API lacks page-level provenance and a local MinerU CLI is available",
+        "manual_numeric_review when subtotal/total consistency checks fail"
+      ]
+    },
+    "adaptive_decision": {
+      "profile": "standard_or_contract",
+      "task_intents": [
+        "evidence_trace"
+      ],
+      "target_schema": {
+        "document_title": "standard or contract title",
+        "parties": "contract parties or responsible organizations",
+        "clause_id": "clause or section identifier",
+        "obligation": "requirement or obligation text",
+        "effective_date": "date evidence",
+        "evidence": "source clause evidence"
+      },
+      "post_processors": [
+        "field_evidence_builder",
+        "evidence_trace_export"
+      ],
+      "verification_focus": [
+        "schema_fields_have_evidence",
+        "quality_issues_are_not_hidden"
+      ],
+      "quality_thresholds": {
+        "min_quality_score": 88,
+        "require_tables": false,
+        "require_numeric_facts": false,
+        "prefer_page_provenance": true
+      },
+      "recovery_strategy": [
+        {
+          "action": "cli_fallback",
+          "trigger": "online_api_missing_page_provenance",
+          "priority": "high"
+        },
+        {
+          "action": "ocr_retry",
+          "trigger": "empty_or_sparse_text_or_ocr_quality_issue",
+          "priority": "normal"
+        },
+        {
+          "action": "text_cleanup",
+          "trigger": "mojibake_or_encoding_noise",
+          "priority": "normal"
+        }
+      ],
+      "rationale": [
+        "profile=standard_or_contract selected from task/file signals",
+        "input suffix=.pdf",
+        "task intents=evidence_trace",
+        "schema and recovery priorities are derived before parsing and saved for audit"
+      ]
+    },
+    "runner_class": "_NoProvenanceRunner",
+    "applied": [],
+    "ignored": [],
+    "agent_action_plan": {
+      "objective": "解析 PDF，并要求字段能追溯到页级来源。",
+      "runner": "cli",
+      "subtasks": [
+        {
+          "id": "understand_task",
+          "goal": "Classify the document task and identify intent-specific outputs.",
+          "tools": [
+            "rule_intent_classifier"
+          ],
+          "expected_output": {
+            "profile": "standard_or_contract",
+            "intents": [
+              "evidence_trace"
+            ],
+            "schema_keys": [
+              "document_title",
+              "parties",
+              "clause_id",
+              "obligation",
+              "effective_date",
+              "evidence"
+            ]
+          },
+          "depends_on": []
+        },
+        {
+          "id": "choose_parse_path",
+          "goal": "Pick the cheapest parser path that still preserves required provenance.",
+          "tools": [
+            "mineru_cli"
+          ],
+          "expected_output": {
+            "runner": "cli"
+          },
+          "depends_on": [
+            "understand_task"
+          ]
+        },
+        {
+          "id": "extract_structure",
+          "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+          "tools": [
+            "structured_extractor"
+          ],
+          "expected_output": {
+            "post_processors": [
+              "field_evidence_builder",
+              "evidence_trace_export"
+            ]
+          },
+          "depends_on": [
+            "choose_parse_path"
+          ]
+        },
+        {
+          "id": "validate_quality",
+          "goal": "Run profile and task-specific gates before accepting the result.",
+          "tools": [
+            "quality_validator",
+            "contract_validator",
+            "provenance_checker"
+          ],
+          "expected_output": {
+            "quality_status": "pass|pass_with_warnings|needs_review"
+          },
+          "depends_on": [
+            "extract_structure"
+          ]
+        },
+        {
+          "id": "replan_if_needed",
+          "goal": "Map quality issues to recovery actions and select the best attempt.",
+          "tools": [
+            "cli_fallback",
+            "ocr_retry",
+            "text_cleanup"
+          ],
+          "expected_output": {
+            "selected_attempt": "initial or recovery action"
+          },
+          "depends_on": [
+            "validate_quality"
+          ]
+        },
+        {
+          "id": "export_artifacts",
+          "goal": "Write result, trace, summary, and retrieval artifacts.",
+          "tools": [
+            "retrieval_exporter",
+            "trace_writer"
+          ],
+          "expected_output": {
+            "files": [
+              "result.json",
+              "trace.json",
+              "summary.md",
+              "retrieval_chunks.jsonl"
+            ]
+          },
+          "depends_on": [
+            "replan_if_needed"
+          ]
+        }
+      ],
+      "tool_registry": [
+        {
+          "name": "native_extractor",
+          "capability": "Parse HTML/DOCX/PPTX structure without external OCR",
+          "selected": false,
+          "selection_reason": "file suffix is native text/Office",
+          "parameters": {}
+        },
+        {
+          "name": "mineru_cli",
+          "capability": "Run local MinerU CLI and keep page/layout artifacts",
+          "selected": true,
+          "selection_reason": "runner resolved to cli",
+          "parameters": {
+            "backend": "pipeline",
+            "method": "auto"
+          }
+        },
+        {
+          "name": "mineru_agent_api",
+          "capability": "Run online MinerU Agent API for CPU-friendly PDF parsing",
+          "selected": false,
+          "selection_reason": "runner resolved to agent-api",
+          "parameters": {
+            "backend": "pipeline",
+            "method": "auto"
+          }
+        },
+        {
+          "name": "llm_preplanner",
+          "capability": "Classify task and propose schema/controls before parsing",
+          "selected": false,
+          "selection_reason": "LLM client configured",
+          "parameters": {}
+        },
+        {
+          "name": "structured_extractor",
+          "capability": "Build sections, tables, key-values, numeric facts, and field evidence",
+          "selected": true,
+          "selection_reason": "always needed for output contract",
+          "parameters": {}
+        },
+        {
+          "name": "numeric_validator",
+          "capability": "Check numeric facts and table totals",
+          "selected": false,
+          "selection_reason": "financial or aggregation task",
+          "parameters": {}
+        },
+        {
+          "name": "contract_validator",
+          "capability": "Check section/clause/date evidence",
+          "selected": true,
+          "selection_reason": "contract or standard profile",
+          "parameters": {}
+        },
+        {
+          "name": "workflow_validator",
+          "capability": "Check workflow steps, anomalies, and visual-review hints",
+          "selected": false,
+          "selection_reason": "workflow or diagram profile",
+          "parameters": {}
+        },
+        {
+          "name": "text_cleanup",
+          "capability": "Clean mojibake/encoding noise and re-evaluate quality",
+          "selected": true,
+          "selection_reason": "enabled as recovery candidate",
+          "parameters": {}
+        },
+        {
+          "name": "ocr_retry",
+          "capability": "Retry parse with OCR mode after sparse/weak PDF result",
+          "selected": true,
+          "selection_reason": "PDF/image recovery candidate",
+          "parameters": {
+            "method": "ocr"
+          }
+        },
+        {
+          "name": "cli_fallback",
+          "capability": "Fallback from online API to CLI when page provenance is missing",
+          "selected": false,
+          "selection_reason": "audit-grade provenance candidate",
+          "parameters": {}
+        },
+        {
+          "name": "llm_post_review",
+          "capability": "Review extracted result for risks and recovery suggestions",
+          "selected": false,
+          "selection_reason": "LLM client configured",
+          "parameters": {}
+        },
+        {
+          "name": "retrieval_exporter",
+          "capability": "Write retrieval chunks and manifest",
+          "selected": true,
+          "selection_reason": "always needed for downstream data use",
+          "parameters": {}
+        }
+      ],
+      "dynamic_choices": [
+        {
+          "name": "profile",
+          "selected": "standard_or_contract",
+          "reason": "task and file signals after optional LLM merge"
+        },
+        {
+          "name": "runner",
+          "selected": "cli",
+          "reason": "native suffix, CLI/API configuration, and provenance requirement"
+        },
+        {
+          "name": "backend",
+          "selected": "pipeline",
+          "reason": "MinerU backend used when runner calls MinerU"
+        },
+        {
+          "name": "method",
+          "selected": "auto",
+          "reason": "initial parse method; recovery can switch to OCR"
+        },
+        {
+          "name": "lang",
+          "selected": "ch",
+          "reason": "OCR language hint"
+        },
+        {
+          "name": "llm",
+          "selected": false,
+          "reason": "enabled only when a provider client is configured"
+        },
+        {
+          "name": "provenance_requirement",
+          "selected": "page",
+          "reason": "PDF/image outputs benefit most from page-level audit"
+        },
+        {
+          "name": "table_priority",
+          "selected": false,
+          "reason": "financial/aggregation tasks require table checks"
+        }
+      ],
+      "replan_triggers": [
+        {
+          "issue_code": "possible_mojibake",
+          "action": "text_cleanup",
+          "reason": "encoding noise can be improved without rerunning OCR"
+        },
+        {
+          "issue_code": "short_text",
+          "action": "ocr_retry",
+          "reason": "sparse PDF text often needs OCR mode"
+        },
+        {
+          "issue_code": "no_page_provenance",
+          "action": "cli_fallback",
+          "reason": "audit tasks need page-level source evidence"
+        },
+        {
+          "issue_code": "numeric_total_mismatch",
+          "action": "manual_numeric_review",
+          "reason": "numeric mismatch should not be silently repaired"
+        }
+      ],
+      "state_machine": {
+        "model": "single-run conditional DAG",
+        "initial_runner": "cli",
+        "initial_method": "auto",
+        "nodes": [
+          {
+            "id": "understand_task",
+            "goal": "Classify the document task and identify intent-specific outputs.",
+            "tools": [
+              "rule_intent_classifier"
+            ]
+          },
+          {
+            "id": "choose_parse_path",
+            "goal": "Pick the cheapest parser path that still preserves required provenance.",
+            "tools": [
+              "mineru_cli"
+            ]
+          },
+          {
+            "id": "extract_structure",
+            "goal": "Normalize sections, tables, key-values, numeric facts, and field evidence.",
+            "tools": [
+              "structured_extractor"
+            ]
+          },
+          {
+            "id": "validate_quality",
+            "goal": "Run profile and task-specific gates before accepting the result.",
+            "tools": [
+              "quality_validator",
+              "contract_validator",
+              "provenance_checker"
+            ]
+          },
+          {
+            "id": "replan_if_needed",
+            "goal": "Map quality issues to recovery actions and select the best attempt.",
+            "tools": [
+              "cli_fallback",
+              "ocr_retry",
+              "text_cleanup"
+            ]
+          },
+          {
+            "id": "export_artifacts",
+            "goal": "Write result, trace, summary, and retrieval artifacts.",
+            "tools": [
+              "retrieval_exporter",
+              "trace_writer"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "from": "understand_task",
+            "to": "choose_parse_path",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "choose_parse_path",
+            "to": "extract_structure",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "extract_structure",
+            "to": "validate_quality",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "dependency_completed"
+          },
+          {
+            "from": "replan_if_needed",
+            "to": "export_artifacts",
+            "condition": "dependency_completed"
+          }
+        ],
+        "conditional_edges": [
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:possible_mojibake",
+            "action": "text_cleanup",
+            "runner_change": null,
+            "method_change": null
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:short_text",
+            "action": "ocr_retry",
+            "runner_change": null,
+            "method_change": "auto->ocr"
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:no_page_provenance",
+            "action": "cli_fallback",
+            "runner_change": "agent-api->cli",
+            "method_change": null
+          },
+          {
+            "from": "validate_quality",
+            "to": "replan_if_needed",
+            "condition": "quality_issue:numeric_total_mismatch",
+            "action": "manual_numeric_review",
+            "runner_change": null,
+            "method_change": null
+          }
+        ],
+        "loop_policy": {
+          "max_attempts_per_recovery_action": 1,
+          "selection_rule": "choose highest quality score while preserving audit trail",
+          "fallback_when_all_recovery_fails": "return best available partial result with recovery_decision attempts"
+        }
+      },
+      "memory_policy": {
+        "scope": "single_run_trace",
+        "writes": [
+          "execution_control.agent_action_plan",
+          "trace.steps",
+          "recovery_decision.attempts",
+          "retrieval_manifest"
+        ],
+        "reads": [
+          "input_metadata",
+          "task_intents",
+          "quality_issues",
+          "retry_history"
+        ],
+        "cross_run_learning": false,
+        "reason": "Competition submission keeps runs deterministic; cross-run learning can be added by indexing prior traces."
+      }
+    },
+    "replan_after_quality": {
+      "quality_status": "needs_review",
+      "quality_score": 54,
+      "issue_codes": [
+        "no_page_provenance",
+        "weak_clause_structure",
+        "strict_page_provenance_failed"
+      ],
+      "considered_actions": [
+        {
+          "issue_code": "no_page_provenance",
+          "candidate_action": "cli_fallback",
+          "available_in_attempts": false
+        },
+        {
+          "issue_code": "weak_clause_structure",
+          "candidate_action": "keep_review_note",
+          "available_in_attempts": false
+        },
+        {
+          "issue_code": "strict_page_provenance_failed",
+          "candidate_action": "keep_review_note",
+          "available_in_attempts": false
+        }
+      ],
+      "attempted_actions": [
+        "initial"
+      ],
+      "selected_attempt": "initial",
+      "selected_reason": "initial result remained the best accepted quality attempt",
+      "next_action_if_still_risky": [
+        "cli_fallback"
+      ],
+      "quality_triggered_replan": {
+        "triggered": [
+          {
+            "issue_code": "no_page_provenance",
+            "replanning_decision": "cli_fallback",
+            "available_in_attempts": false,
+            "runner_change": "agent-api->cli",
+            "method_change": null
+          },
+          {
+            "issue_code": "weak_clause_structure",
+            "replanning_decision": "keep_review_note",
+            "available_in_attempts": false,
+            "runner_change": null,
+            "method_change": null
+          },
+          {
+            "issue_code": "strict_page_provenance_failed",
+            "replanning_decision": "keep_review_note",
+            "available_in_attempts": false,
+            "runner_change": null,
+            "method_change": null
+          }
+        ],
+        "selected_attempt": "initial",
+        "selected_attempt_quality": {
+          "status": "pass_with_warnings",
+          "score": 84,
+          "issue_codes": [
+            "no_page_provenance",
+            "weak_clause_structure"
+          ]
+        },
+        "unhandled_issue_codes": [
+          "no_page_provenance",
+          "weak_clause_structure",
+          "strict_page_provenance_failed"
+        ]
+      }
+    }
+  },
+  "extracted": {
+    "content_summary": {
+      "item_count": 3,
+      "page_indices": [],
+      "page_count": 0,
+      "provenance_level": "document",
+      "type_counts": {
+        "heading": 1,
+        "text": 2
+      },
+      "source_counts": {
+        "controlled-agent-api": 3
+      },
+      "text_characters": 807
+    },
+    "sections": [
+      {
+        "level": 1,
+        "title": "Contract",
+        "line": 1,
+        "source": "heading",
+        "text": "Contract No: STRICT-001\n\nDocument-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence."
+      }
+    ],
+    "tables": [],
+    "key_values": [
+      {
+        "key": "Contract No",
+        "value": "STRICT-001"
+      }
+    ],
+    "key_value_map": {
+      "Contract No": "STRICT-001"
+    },
+    "field_evidence": [
+      {
+        "key": "Contract No",
+        "value": "STRICT-001",
+        "confidence": 0.86,
+        "confidence_reason": "exact key/value match in document-level content block",
+        "evidence_text": "Contract No: STRICT-001",
+        "provenance": {
+          "line": 3,
+          "level": "document",
+          "source": "controlled-agent-api"
+        },
+        "candidate_index": 0
+      }
+    ],
+    "field_evidence_map": {
+      "Contract No": [
+        {
+          "value": "STRICT-001",
+          "confidence": 0.86,
+          "provenance": {
+            "line": 3,
+            "level": "document",
+            "source": "controlled-agent-api"
+          },
+          "evidence_text": "Contract No: STRICT-001"
+        }
+      ]
+    },
+    "numeric_facts": [],
+    "semantic_signals": {
+      "dates": [],
+      "recommendations": [],
+      "anomaly_lines": [],
+      "field_coverage": {
+        "has_date": false,
+        "has_recommendation": false,
+        "has_anomaly_signal": false
+      }
+    },
+    "structure_quality": {
+      "heading_section_count": 1,
+      "fallback_section_count": 0
+    },
+    "markdown_preview": "# Contract\n\nContract No: STRICT-001\n\nDocument-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. Document-level text without page evidence. ",
+    "task_result": {
+      "task_intents": [
+        "evidence_trace"
+      ],
+      "target_schema": {
+        "document_title": "standard or contract title",
+        "parties": "contract parties or responsible organizations",
+        "clause_id": "clause or section identifier",
+        "obligation": "requirement or obligation text",
+        "effective_date": "date evidence",
+        "evidence": "source clause evidence"
+      },
+      "post_processors": [
+        "field_evidence_builder",
+        "evidence_trace_export"
+      ],
+      "verification_focus": [
+        "schema_fields_have_evidence",
+        "quality_issues_are_not_hidden"
+      ],
+      "answers": {
+        "field_evidence": [
+          {
+            "key": "Contract No",
+            "value": "STRICT-001",
+            "confidence": 0.86,
+            "confidence_reason": "exact key/value match in document-level content block",
+            "evidence_text": "Contract No: STRICT-001",
+            "provenance": {
+              "line": 3,
+              "level": "document",
+              "source": "controlled-agent-api"
+            },
+            "candidate_index": 0
+          }
+        ]
+      }
+    }
+  },
+  "quality": {
+    "score": 54,
+    "status": "needs_review",
+    "issue_count": 3,
+    "issue_counts": {
+      "error": 1,
+      "warning": 2,
+      "info": 0
+    },
+    "issues": [
+      {
+        "code": "no_page_provenance",
+        "level": "warning",
+        "message": "Content blocks were extracted, but no page-level provenance is available.",
+        "evidence": {
+          "page_count": 0,
+          "item_count": 3
+        }
+      },
+      {
+        "code": "weak_clause_structure",
+        "level": "warning",
+        "message": "Standard/contract profile expects clearer section hierarchy.",
+        "evidence": {}
+      },
+      {
+        "code": "strict_page_provenance_failed",
+        "level": "error",
+        "message": "Strict page provenance was requested, but the selected result still lacks page-level provenance.",
+        "evidence": {
+          "selected_attempt": "initial",
+          "available_attempts": [
+            "initial"
+          ]
+        }
+      }
+    ]
+  },
+  "recovery_decision": {
+    "decision": "strict_page_provenance_failed",
+    "actions": [
+      "Use local MinerU CLI when page-level provenance is required.",
+      "Strict page provenance was requested; treat this as a partial result until a CLI/provider path emits page evidence."
+    ],
+    "issue_codes": [
+      "no_page_provenance",
+      "weak_clause_structure",
+      "strict_page_provenance_failed"
+    ],
+    "initial_issue_codes": [
+      "no_page_provenance",
+      "weak_clause_structure"
+    ],
+    "selected_attempt": "initial",
+    "executed": false,
+    "attempts": [
+      {
+        "name": "initial",
+        "backend": "pipeline",
+        "method": "auto",
+        "quality_status": "pass_with_warnings",
+        "score": 84,
+        "issue_codes": [
+          "no_page_provenance",
+          "weak_clause_structure"
+        ],
+        "selected": true,
+        "artifacts": {
+          "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled_content_list.json",
+          "middle_json_path": null,
+          "model_json_path": null,
+          "layout_pdf_path": null,
+          "span_pdf_path": null,
+          "origin_pdf_path": null,
+          "image_dir": null
+        }
+      }
+    ]
+  },
+  "retrieval_export": {
+    "chunks_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\retrieval\\retrieval_quality.json",
+    "stats": {
+      "total_chunks": 1,
+      "by_type": {
+        "text": 1
+      },
+      "pages": [
+        1
+      ]
+    }
+  },
+  "llm_analysis": {
+    "enabled": false
+  },
+  "artifacts": {
+    "markdown_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\mineru\\strict_provenance_failure_controlled\\agent_api\\strict_provenance_failure_controlled_content_list.json",
+    "middle_json_path": null,
+    "model_json_path": null,
+    "layout_pdf_path": null,
+    "span_pdf_path": null,
+    "origin_pdf_path": null,
+    "image_dir": null
+  },
+  "trace_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\failure_recovery_cases\\5d9be5a86a3b\\summary.md",
+  "fault_injection_boundary": {
+    "controlled_fault_injection": true,
+    "not_live_benchmark": true,
+    "boundary": "controlled fake online-API runner; validates strict provenance gate without claiming live API behavior"
+  }
+}
