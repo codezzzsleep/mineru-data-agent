@@ -66,6 +66,7 @@ class MinerUDataAgent:
         backend: str = "pipeline",
         method: str = "auto",
         lang: str = "ch",
+        strict_page_provenance: bool = False,
     ) -> AgentResult:
         input_path = Path(input_file).expanduser().resolve()
         if not input_path.exists():
@@ -102,6 +103,7 @@ class MinerUDataAgent:
                 suffix=suffix,
                 runner_name=self.mineru_runner.__class__.__name__,
                 adaptive_decision=adaptive_decision.to_jsonable(),
+                strict_page_provenance=strict_page_provenance,
             )
 
             if self.llm_client:
@@ -135,6 +137,7 @@ class MinerUDataAgent:
                         suffix=suffix,
                         runner_kind=_runner_kind(self.mineru_runner),
                         runner_name=self.mineru_runner.__class__.__name__,
+                        strict_page_provenance=strict_page_provenance,
                     )
                     adaptive_decision = analyze_requirement(
                         task,
@@ -384,6 +387,23 @@ class MinerUDataAgent:
 
             _mark_selected_attempt(recovery_attempts, selected_attempt)
 
+            if strict_page_provenance:
+                with trace.step("strict_page_provenance_gate", selected_attempt=selected_attempt) as strict_step:
+                    quality, strict_gate = _apply_strict_page_provenance(
+                        quality=quality,
+                        suffix=suffix,
+                        attempts=recovery_attempts,
+                        selected_attempt=selected_attempt,
+                    )
+                    execution_control["strict_page_provenance"] = strict_gate
+                    strict_step.detail.update(strict_gate)
+            else:
+                execution_control["strict_page_provenance"] = {
+                    "enabled": False,
+                    "required": False,
+                    "satisfied": None,
+                }
+
             with trace.step("recovery_decision", quality_status=quality.get("status"), selected_attempt=selected_attempt):
                 recovery_decision = _build_recovery_decision(
                     quality,
@@ -571,10 +591,16 @@ def _initial_execution_control(
     suffix: str,
     runner_name: str,
     adaptive_decision: dict[str, Any] | None = None,
+    strict_page_provenance: bool = False,
 ) -> dict[str, Any]:
     runner_kind = "native" if suffix in NATIVE_SUFFIXES else ("agent-api" if "AgentAPI" in runner_name else "cli")
     return {
         "llm_preplan_enabled": False,
+        "strict_page_provenance": {
+            "enabled": bool(strict_page_provenance),
+            "required": bool(strict_page_provenance and _requires_page_provenance(suffix)),
+            "satisfied": None,
+        },
         "requested": {
             "profile": requested_profile,
             "backend": backend,
@@ -622,6 +648,7 @@ def _apply_llm_preplan(
     suffix: str,
     runner_kind: str,
     runner_name: str,
+    strict_page_provenance: bool = False,
 ) -> tuple[str, str, str, str, dict[str, Any]]:
     resolved_profile = initial_profile
     resolved_backend = backend
@@ -635,6 +662,7 @@ def _apply_llm_preplan(
         lang=lang,
         suffix=suffix,
         runner_name=runner_name,
+        strict_page_provenance=strict_page_provenance,
     )
     control["llm_preplan_enabled"] = True
     control["llm_preplan_status"] = preplan.get("status")
@@ -1069,6 +1097,67 @@ def _write_recovery_parse_artifacts(
     return ParseArtifacts(markdown_path=md_path, content_list_path=content_path)
 
 
+def _requires_page_provenance(suffix: str) -> bool:
+    return suffix.lower() not in NATIVE_SUFFIXES
+
+
+def _apply_strict_page_provenance(
+    *,
+    quality: dict[str, Any],
+    suffix: str,
+    attempts: list[dict[str, Any]],
+    selected_attempt: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    required = _requires_page_provenance(suffix)
+    issue_codes = _issue_codes(quality)
+    gate: dict[str, Any] = {
+        "enabled": True,
+        "required": required,
+        "satisfied": None,
+        "selected_attempt": selected_attempt,
+        "mode": "not_applicable" if not required else "audit_gate",
+    }
+    if not required:
+        gate["satisfied"] = True
+        return quality, gate
+    if "no_page_provenance" not in issue_codes:
+        gate["satisfied"] = True
+        gate["mode"] = "audit_grade_result"
+        return quality, gate
+
+    updated = dict(quality)
+    issues = [dict(issue) for issue in quality.get("issues", []) if isinstance(issue, dict)]
+    if "strict_page_provenance_failed" not in issue_codes:
+        issues.append(
+            {
+                "code": "strict_page_provenance_failed",
+                "level": "error",
+                "message": "Strict page provenance was requested, but the selected result still lacks page-level provenance.",
+                "evidence": {
+                    "selected_attempt": selected_attempt,
+                    "available_attempts": [str(attempt.get("name")) for attempt in attempts if isinstance(attempt, dict)],
+                },
+            }
+        )
+    error_count = sum(1 for issue in issues if issue.get("level") == "error")
+    warning_count = sum(1 for issue in issues if issue.get("level") == "warning")
+    info_count = sum(1 for issue in issues if issue.get("level") == "info")
+    updated["issues"] = issues
+    updated["issue_count"] = len(issues)
+    updated["issue_counts"] = {"error": error_count, "warning": warning_count, "info": info_count}
+    updated["status"] = "needs_review"
+    updated["score"] = min(int(updated.get("score") or 0), max(0, 100 - error_count * 30 - warning_count * 8))
+    gate.update(
+        {
+            "satisfied": False,
+            "mode": "partial_result_returned",
+            "failure_code": "strict_page_provenance_failed",
+            "action": "rerun_with_local_cli_or_provider_page_provenance",
+        }
+    )
+    return updated, gate
+
+
 def _build_recovery_decision(
     quality: dict[str, Any],
     extracted: dict[str, Any],
@@ -1115,6 +1204,11 @@ def _build_recovery_decision(
     if "numeric_total_mismatch" in issue_codes:
         decision = "manual_numeric_review"
         actions.append("Route total/subtotal mismatches to numeric review before downstream use.")
+    if "strict_page_provenance_failed" in issue_codes:
+        decision = "strict_page_provenance_failed"
+        actions.append(
+            "Strict page provenance was requested; treat this as a partial result until a CLI/provider path emits page evidence."
+        )
     if suffix in {".docx", ".pptx", ".html", ".htm"}:
         actions.append("Native extractor result has document/slide-level provenance; use PDF/MinerU path for page-layout audit.")
     if profile == "financial_report" and not extracted.get("tables"):

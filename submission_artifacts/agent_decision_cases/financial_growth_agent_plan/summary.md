@@ -1,4 +1,6 @@
-# MinerU Data Agent Run 7b67d34ae5e9
+> Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
+
+# MinerU Data Agent Run ff0fbc9c19c4
 
 - Task: 找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。
 - Profile: financial_report

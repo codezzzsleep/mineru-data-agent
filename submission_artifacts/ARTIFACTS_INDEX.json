@@ -1,6 +1,6 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T08:05:51Z",
+  "generated_at": "2026-05-24T08:51:58Z",
   "root": "submission_artifacts",
   "quick_metrics": {
     "evaluation": {
@@ -41,7 +41,7 @@
         "text_cleanup",
         "workflow_validator"
       ],
-      "boundary": "scripted local LLM client; live provider case remains in llm_cases"
+      "boundary": "offline scripted decision regression; token counts are synthetic; live provider case remains in llm_cases"
     },
     "llm_impact": {
       "compared_pairs": 1,
@@ -65,31 +65,31 @@
       }
     },
     "recovery_effectiveness": {
-      "results_with_recovery": 29,
-      "recovery_executed": 4,
-      "selected_non_initial": 3,
-      "executed_rate": 0.13793103448275862,
-      "selected_non_initial_rate": 0.10344827586206896,
-      "average_non_initial_tool_seconds_when_executed": 5.917,
+      "results_with_recovery": 34,
+      "recovery_executed": 5,
+      "selected_non_initial": 4,
+      "executed_rate": 0.14705882352941177,
+      "selected_non_initial_rate": 0.11764705882352941,
+      "average_non_initial_tool_seconds_when_executed": 4.733,
       "attempt_counts": {
         "cli_fallback": 1,
-        "initial": 29,
+        "initial": 34,
         "ocr_retry": 1,
-        "text_cleanup": 2
+        "text_cleanup": 3
       },
       "selected_attempt_counts": {
         "cli_fallback": 1,
-        "initial": 26,
-        "text_cleanup": 2
+        "initial": 30,
+        "text_cleanup": 3
       },
       "initial_issue_counts": {
-        "document_level_provenance": 14,
+        "document_level_provenance": 19,
         "expected_anomaly_signal_missing": 1,
         "no_page_provenance": 10,
-        "numeric_total_mismatch": 4,
+        "numeric_total_mismatch": 5,
         "numeric_total_needs_review": 1,
-        "numeric_total_verified": 7,
-        "possible_mojibake": 2
+        "numeric_total_verified": 9,
+        "possible_mojibake": 3
       },
       "failed_attempt_counts": {}
     },
@@ -113,17 +113,25 @@
       }
     },
     "code_quality": {
-      "python_files": 47,
-      "physical_lines": 11834,
-      "code_lines": 10488,
+      "python_files": 48,
+      "physical_lines": 12280,
+      "code_lines": 10890,
       "classes": 31,
-      "functions": 488,
-      "test_functions": 71,
+      "functions": 502,
+      "test_functions": 74,
       "test_files": 12,
       "workflow_files": [
         ".github/workflows/tests.yml"
       ],
-      "coverage_measured": false
+      "coverage_measured": true,
+      "line_coverage_percent": 81.2,
+      "coverage_report": "submission_artifacts/coverage/coverage_report.md"
+    },
+    "coverage": {
+      "measured": true,
+      "line_coverage_percent": 81.2,
+      "num_statements": 2995,
+      "missing_lines": 563
     }
   },
   "categories": [
@@ -357,8 +365,8 @@
     },
     {
       "id": "agent_decision_cases",
-      "title": "Agent decision cases",
-      "description": "Task decomposition, dynamic tool selection, quality replanning, and scripted LLM decision hooks.",
+      "title": "Agent decision regression",
+      "description": "Offline task decomposition, tool selection, quality replanning, and scripted decision-hook schema checks.",
       "path": "submission_artifacts/agent_decision_cases",
       "exists": true,
       "result_files": 5,
@@ -713,6 +721,23 @@
       ],
       "json_reports": [
         "submission_artifacts/code_quality/code_quality_report.json"
+      ]
+    },
+    {
+      "id": "coverage",
+      "title": "Coverage",
+      "description": "coverage.py line coverage for the local pytest suite.",
+      "path": "submission_artifacts/coverage",
+      "exists": true,
+      "result_files": 0,
+      "trace_files": 0,
+      "readmes": [],
+      "reports": [
+        "submission_artifacts/coverage/coverage_report.md"
+      ],
+      "json_reports": [
+        "submission_artifacts/coverage/coverage_raw.json",
+        "submission_artifacts/coverage/coverage_report.json"
       ]
     }
   ]

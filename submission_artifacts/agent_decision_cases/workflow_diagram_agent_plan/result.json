@@ -1,9 +1,9 @@
 {
-  "run_id": "f5a01c555bb7",
+  "run_id": "acca7aeb59c4",
   "task": "把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。",
   "profile": "workflow_or_diagram",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_4_workflow_diagram.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -21,6 +21,11 @@
   ],
   "execution_control": {
     "llm_preplan_enabled": true,
+    "strict_page_provenance": {
+      "enabled": false,
+      "required": false,
+      "satisfied": null
+    },
     "requested": {
       "profile": "auto",
       "backend": "pipeline",
@@ -478,6 +483,13 @@
       "next_action_if_still_risky": [
         "accept_with_trace_review"
       ]
+    },
+    "offline_decision_regression": {
+      "enabled": true,
+      "not_live_llm": true,
+      "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+      "token_usage": "synthetic scripted tokens; not provider billing data",
+      "live_provider_reference": "submission_artifacts/llm_cases/"
     }
   },
   "extracted": {
@@ -832,8 +844,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7\\html\\case_4_workflow_diagram.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7\\html\\case_4_workflow_diagram_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4\\html\\case_4_workflow_diagram.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4\\html\\case_4_workflow_diagram_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -868,9 +880,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 2,
       "by_type": {
@@ -926,6 +938,11 @@
     },
     "execution_control": {
       "llm_preplan_enabled": true,
+      "strict_page_provenance": {
+        "enabled": false,
+        "required": false,
+        "satisfied": null
+      },
       "requested": {
         "profile": "auto",
         "backend": "pipeline",
@@ -1506,11 +1523,18 @@
       "applied_effects": [
         "append_recovery_suggestion"
       ]
+    },
+    "offline_regression_boundary": {
+      "enabled": true,
+      "not_live_llm": true,
+      "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+      "token_usage": "synthetic scripted tokens; not provider billing data",
+      "live_provider_reference": "submission_artifacts/llm_cases/"
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7\\html\\case_4_workflow_diagram.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7\\html\\case_4_workflow_diagram_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4\\html\\case_4_workflow_diagram.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4\\html\\case_4_workflow_diagram_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1518,6 +1542,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\f5a01c555bb7\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\acca7aeb59c4\\summary.md"
 }

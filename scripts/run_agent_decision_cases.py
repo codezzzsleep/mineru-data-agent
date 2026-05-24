@@ -100,13 +100,13 @@ def main() -> None:
     RUN_ROOT.mkdir(parents=True, exist_ok=True)
 
     rows = [
-        "# Agent Decision Case Pack",
+        "# Offline Agent Decision Regression Pack",
         "",
-        "Five deterministic local cases that exercise task decomposition, dynamic tool selection, quality-triggered replanning, and LLM-compatible pre/post decision hooks.",
+        "Five deterministic local cases that exercise task decomposition, tool selection, quality-triggered replanning, and the LLM-compatible decision hook schema.",
         "",
-        "Boundary: these cases use a scripted local LLM client so they are reproducible without API keys. They do not replace the saved live ModelScope case in `submission_artifacts/llm_cases/`.",
+        "Boundary: these are offline regression cases. They use a scripted local decision client, token counts are synthetic, and they do not count as live LLM evidence. The saved live provider case remains `submission_artifacts/llm_cases/`.",
         "",
-        "| Case | Profile | Intents | Selected Tools | Replan Issues | LLM Tokens |",
+        "| Case | Profile | Intents | Selected Tools | Replan Issues | Scripted Tokens |",
         "| --- | --- | --- | --- | --- | ---: |",
     ]
     index = []
@@ -124,6 +124,7 @@ def main() -> None:
         case_dir = DEST_ROOT / case["id"]
         shutil.copytree(Path(result.output_dir), case_dir)
         shutil.copy2(case["input"], case_dir / f"input{case['input'].suffix.lower()}")
+        mark_offline_regression(case_dir)
         sanitize_tree(case_dir)
 
         action_plan = result.execution_control.get("agent_action_plan", {})
@@ -157,13 +158,21 @@ def main() -> None:
                 "task_intents": task_result.get("task_intents", []),
                 "selected_tools": tools,
                 "replan_after_quality": replan,
-                "llm_usage_summary": usage,
+                "scripted_usage_summary": usage,
+                "boundary": "offline scripted decision regression; not live provider evidence",
             }
         )
 
     (DEST_ROOT / "README.md").write_text("\n".join(rows).strip() + "\n", encoding="utf-8")
     (DEST_ROOT / "artifact_index.json").write_text(
-        json.dumps({"cases": index, "boundary": "scripted local LLM client; live provider case remains in llm_cases"}, ensure_ascii=False, indent=2),
+        json.dumps(
+            {
+                "cases": index,
+                "boundary": "offline scripted decision regression; token counts are synthetic; live provider case remains in llm_cases",
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
         encoding="utf-8",
     )
     print(json.dumps({"dest": display_path(DEST_ROOT), "cases": [case["id"] for case in CASES]}, ensure_ascii=False, indent=2))
@@ -243,6 +252,39 @@ def sanitize_tree(path: Path) -> None:
         clean = text.replace(str(PROJECT_ROOT), "<PROJECT_ROOT>")
         clean = clean.replace(str(PROJECT_ROOT).replace("\\", "\\\\"), "<PROJECT_ROOT>")
         item.write_text(clean, encoding="utf-8")
+
+
+def mark_offline_regression(case_dir: Path) -> None:
+    boundary = {
+        "enabled": True,
+        "not_live_llm": True,
+        "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+        "token_usage": "synthetic scripted tokens; not provider billing data",
+        "live_provider_reference": "submission_artifacts/llm_cases/",
+    }
+    result_path = case_dir / "result.json"
+    if result_path.exists():
+        payload = json.loads(result_path.read_text(encoding="utf-8"))
+        if isinstance(payload.get("execution_control"), dict):
+            payload["execution_control"]["offline_decision_regression"] = boundary
+        if isinstance(payload.get("llm_analysis"), dict):
+            payload["llm_analysis"]["offline_regression_boundary"] = boundary
+        result_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    trace_path = case_dir / "trace.json"
+    if trace_path.exists():
+        payload = json.loads(trace_path.read_text(encoding="utf-8"))
+        payload["offline_regression_boundary"] = boundary
+        trace_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    summary_path = case_dir / "summary.md"
+    if summary_path.exists():
+        text = summary_path.read_text(encoding="utf-8")
+        note = (
+            "> Boundary: offline scripted decision regression. "
+            "Token counts here are synthetic and should not be read as live provider usage.\n\n"
+        )
+        summary_path.write_text(note + text, encoding="utf-8")
 
 
 def display_path(path: Path) -> str:

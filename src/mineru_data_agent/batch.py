@@ -73,6 +73,7 @@ def run_batch(
                 backend=str(task.get("backend", "pipeline")),
                 method=str(task.get("method", "auto")),
                 lang=str(task.get("lang", "ch")),
+                strict_page_provenance=_to_bool(task.get("strict_page_provenance", False)),
             )
             record.update(
                 {
@@ -122,3 +123,11 @@ def _resolve_task_input(input_file: Any, manifest_dir: Path) -> Path:
     if not path.is_absolute():
         path = manifest_dir / path
     return path.resolve()
+
+
+def _to_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+    return bool(value)

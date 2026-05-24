@@ -41,7 +41,7 @@
 
 对于生产化稳定性，系统提供批处理 manifest 入口。批处理中单个任务失败不会中断整批，最终生成 `batch_report.json`，记录每个任务的状态、run id、输出路径、质量评分和错误信息。在线 API 调用对 429、5xx 和网络异常等瞬时错误提供重试，并把重试事件写入工具调用日志。
 
-大模型层默认关闭。配置 DeepSeek 官方或 ModelScope 推理入口后，系统会先让 LLM 参与解析前调度，再进行解析后复核。解析前调度的结果保存在 `execution_control` 与 `llm_analysis.pre_execution_plan`，解析后复核保存在 `llm_analysis.post_parse_analysis`。本提交包已保存 1 个实际启用 ModelScope `deepseek-ai/DeepSeek-V4-Flash` 的案例，见 `submission_artifacts/llm_cases/`；另保存 1 个真实 PDF 的解析前调度 + API-to-CLI fallback recovery 演练，见 `submission_artifacts/recovery_cases/`。`submission_artifacts/agent_decision_cases/` 使用本地 scripted LLM client 展示 5 个任务的 pre/post decision hooks，便于无 key 环境复查字段结构；它不替代 live provider 证据。
+大模型层默认关闭。配置 DeepSeek 官方或 ModelScope 推理入口后，系统会先让 LLM 参与解析前调度，再进行解析后复核。解析前调度的结果保存在 `execution_control` 与 `llm_analysis.pre_execution_plan`，解析后复核保存在 `llm_analysis.post_parse_analysis`。本提交包已保存 1 个实际启用 ModelScope `deepseek-ai/DeepSeek-V4-Flash` 的案例，见 `submission_artifacts/llm_cases/`；另保存 1 个真实 PDF 的解析前调度 + API-to-CLI fallback recovery 演练，见 `submission_artifacts/recovery_cases/`。`submission_artifacts/agent_decision_cases/` 是离线决策回归材料，使用本地 scripted decision client 检查 pre/post decision hook schema；它不替代 live provider 证据，其中 token 数也不作为真实用量。
 
 ## 4. MinerU 使用方式
 
@@ -70,12 +70,13 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 | Office | `submission_artifacts/office_cases/` | 2 个 DOCX/PPTX native extractor 案例 |
 | 挑战样本 | `submission_artifacts/challenge_cases/` | 4 个跨页财报、OCR 噪声合同、行业标准矩阵和故障工作流样本，附人工标注表 |
 | 自适应规划 | `submission_artifacts/adaptive_cases/` | 同一财报输入在增长排名与异常证据任务下生成不同 intents、schema、post-processors 和 `task_result` |
-| Agent decision | `submission_artifacts/agent_decision_cases/` | 5 个本地案例展示子任务拆解、动态工具选择、质量后 replan 和 scripted LLM hooks |
+| Agent decision regression | `submission_artifacts/agent_decision_cases/` | 5 个本地离线案例展示子任务拆解、动态工具选择、质量后 replan 和 scripted decision hooks |
 | 公开真实 PDF | `submission_artifacts/public_real_cases/` | IRS、NIST、SEC、CDC 4 份官方公开 PDF，保存 source metadata、human labels、trace、result 和 retrieval 导出 |
 | 长文档分片 | `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/` | NIST AI RMF 48 页拆成 3 个 page range，3/3 成功，58 个 retrieval chunks |
 | LLM case | `submission_artifacts/llm_cases/case_llm_financial_review/` | ModelScope DeepSeek-V4-Flash 预调度和复核，`usage_summary.total_tokens=4309` |
 | LLM impact | `submission_artifacts/llm_impact/` | 保存的规则运行与 LLM-enabled 运行对比，列出决策点、应用/忽略项、recovery suggestion 和 token |
 | Evaluation | `submission_artifacts/evaluation/` | 17 个案例、45 个字段、22 条文本证据、11 条数字证据、6 条表格证据和字段级 precision/recall/F1 |
+| Coverage | `submission_artifacts/coverage/` | coverage.py 对 `src/mineru_data_agent` 的本地 pytest 行覆盖率 |
 | Stability/API/Tradeoff | `submission_artifacts/stability/`、`submission_artifacts/http_load_test_100/`、`submission_artifacts/baseline_comparison/`、`submission_artifacts/llm_cost/` | trace 完整性、工具耗时、100 请求本地 HTTP loopback、runner 分组对比和 LLM token 审计 |
 | Artifact index | `submission_artifacts/ARTIFACTS_INDEX.md` | 提交 artifact 总导航，列出各目录 result/trace 数量和主报告 |
 
@@ -87,6 +88,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - 编码噪声/乱码模式检查
 - 内容块数量与页码溯源检查
 - 在线 Markdown 轻量结果缺失页级 provenance 时输出 `no_page_provenance` 警告；HTML fixture 会标记为 `document_level_provenance` 信息项，不伪装成页级来源
+- 审计型任务可启用 `--strict-page-provenance` / API `strict_page_provenance=true`；PDF/image 最终仍缺页级 provenance 时，结果保留但标为 `needs_review` 和 `strict_page_provenance_failed`
 - 财报任务的表格/数字事实检查
 - 合同/规范任务的章节结构检查
 - 任务显式要求日期、建议、异常/风险时，检查对应语义信号是否存在
@@ -119,6 +121,7 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - LLM 预调度的 `execution_control`，记录 recommended/applied/ignored/resolved 参数
 - Agent action plan 的 `execution_control.agent_action_plan`，记录子任务、工具选择和 replan triggers
 - 质量后再规划的 `execution_control.replan_after_quality`，记录 issue code 到恢复动作的映射和选择原因
+- 严格来源门槛的 `execution_control.strict_page_provenance`，记录是否要求页级来源、是否适用于当前文件类型、最终是否满足
 - 带标注评测脚本 `scripts/build_evaluation_report.py` 与标注文件 `examples/evaluation/labels.json`
 - 每次运行的 trace 文件
 - 失败运行也会保留 trace 文件
@@ -134,7 +137,8 @@ data-agent run --input demo.pdf --out runs --task "..." --backend pipeline --met
 - `submission_artifacts/challenge_cases/` 中包含 4 个挑战 fixture、结果日志和人工标注表
 - `submission_artifacts/public_real_cases/` 中包含 4 个官方公开真实 PDF 案例、来源元数据和人工轻量标注
 - `submission_artifacts/llm_cases/` 中包含 1 个实际启用 DeepSeek-V4-Flash 的 LLM 运行证据
-- `submission_artifacts/agent_decision_cases/` 中包含 5 个本地 Agent decision 案例，用 scripted LLM client 离线复现 pre/post decision hooks
+- `submission_artifacts/agent_decision_cases/` 中包含 5 个本地 Agent decision regression 案例，用 scripted decision client 离线复现 pre/post decision hook schema
+- `submission_artifacts/coverage/` 中包含本地 pytest 对 `src/mineru_data_agent` 的 coverage.py 行覆盖率报告
 - `submission_artifacts/llm_impact/` 中包含保存的规则运行与 LLM-enabled 运行对比
 - `submission_artifacts/evaluation/` 中包含 17 个案例、45 个标注字段、22 条文本证据、11 条数字证据、6 条表格证据、字段 precision/recall/F1 和 failed-check 分布的带标注评测指标
 - `submission_artifacts/stability/` 中包含 17 个保存案例的 trace、工具耗时、质量状态和恢复统计

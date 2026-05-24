@@ -177,6 +177,33 @@ def test_agent_api_no_page_provenance_falls_back_to_cli_attempt(tmp_path: Path) 
     assert trace["tool_calls"][1]["tool"] == "fake-mineru-cli"
 
 
+def test_strict_page_provenance_marks_unrecovered_pdf_as_partial_result(tmp_path: Path) -> None:
+    input_path = tmp_path / "contract.pdf"
+    input_path.write_bytes(b"%PDF-1.4\n% contract")
+    primary = _AgentAPIRunnerNoProvenance()
+
+    result = MinerUDataAgent(mineru_runner=primary).run(
+        input_path,
+        tmp_path / "runs",
+        task="解析合同 PDF，并要求字段能追溯到页码",
+        profile="standard_or_contract",
+        strict_page_provenance=True,
+    )
+
+    issue_codes = [issue["code"] for issue in result.quality["issues"]]
+    assert primary.calls == ["auto"]
+    assert result.quality["status"] == "needs_review"
+    assert "no_page_provenance" in issue_codes
+    assert "strict_page_provenance_failed" in issue_codes
+    assert result.execution_control["strict_page_provenance"]["satisfied"] is False
+    assert result.execution_control["strict_page_provenance"]["mode"] == "partial_result_returned"
+    assert result.recovery_decision["decision"] == "strict_page_provenance_failed"
+    assert result.recovery_decision["executed"] is False
+    trace = json.loads(Path(result.trace_path).read_text(encoding="utf-8"))
+    step = next(item for item in trace["steps"] if item["name"] == "strict_page_provenance_gate")
+    assert step["detail"]["failure_code"] == "strict_page_provenance_failed"
+
+
 class _RetryRunner:
     def __init__(self) -> None:
         self.methods: list[str] = []

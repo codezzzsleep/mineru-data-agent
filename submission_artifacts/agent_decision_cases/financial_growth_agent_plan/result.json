@@ -1,9 +1,9 @@
 {
-  "run_id": "7b67d34ae5e9",
+  "run_id": "ff0fbc9c19c4",
   "task": "找出财报中与上一期相比增长最快的项目，计算变化幅度，并列出证据。",
   "profile": "financial_report",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_1_financial_report.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -25,6 +25,11 @@
   ],
   "execution_control": {
     "llm_preplan_enabled": true,
+    "strict_page_provenance": {
+      "enabled": false,
+      "required": false,
+      "satisfied": null
+    },
     "requested": {
       "profile": "auto",
       "backend": "pipeline",
@@ -510,6 +515,13 @@
       "next_action_if_still_risky": [
         "accept_with_trace_review"
       ]
+    },
+    "offline_decision_regression": {
+      "enabled": true,
+      "not_live_llm": true,
+      "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+      "token_usage": "synthetic scripted tokens; not provider billing data",
+      "live_provider_reference": "submission_artifacts/llm_cases/"
     }
   },
   "extracted": {
@@ -1155,8 +1167,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9\\html\\case_1_financial_report.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9\\html\\case_1_financial_report_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\html\\case_1_financial_report.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\html\\case_1_financial_report_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -1191,9 +1203,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 3,
       "by_type": {
@@ -1249,6 +1261,11 @@
     },
     "execution_control": {
       "llm_preplan_enabled": true,
+      "strict_page_provenance": {
+        "enabled": false,
+        "required": false,
+        "satisfied": null
+      },
       "requested": {
         "profile": "auto",
         "backend": "pipeline",
@@ -1855,11 +1872,18 @@
       "applied_effects": [
         "append_recovery_suggestion"
       ]
+    },
+    "offline_regression_boundary": {
+      "enabled": true,
+      "not_live_llm": true,
+      "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+      "token_usage": "synthetic scripted tokens; not provider billing data",
+      "live_provider_reference": "submission_artifacts/llm_cases/"
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9\\html\\case_1_financial_report.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9\\html\\case_1_financial_report_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\html\\case_1_financial_report.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\html\\case_1_financial_report_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1867,6 +1891,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\7b67d34ae5e9\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\ff0fbc9c19c4\\summary.md"
 }

@@ -4,15 +4,15 @@ Recovery effectiveness summary over saved submission artifacts.
 
 ## Aggregate
 
-- Results with recovery records: 29
-- Recovery executed: 4
-- Selected non-initial result: 3
-- Executed rate: 13.79%
-- Selected non-initial rate: 10.34%
-- Avg non-initial tool seconds when executed: 5.917
-- Attempt counts: `{"cli_fallback": 1, "initial": 29, "ocr_retry": 1, "text_cleanup": 2}`
-- Selected attempt counts: `{"cli_fallback": 1, "initial": 26, "text_cleanup": 2}`
-- Initial issue counts: `{"document_level_provenance": 14, "expected_anomaly_signal_missing": 1, "no_page_provenance": 10, "numeric_total_mismatch": 4, "numeric_total_needs_review": 1, "numeric_total_verified": 7, "possible_mojibake": 2}`
+- Results with recovery records: 34
+- Recovery executed: 5
+- Selected non-initial result: 4
+- Executed rate: 14.71%
+- Selected non-initial rate: 11.76%
+- Avg non-initial tool seconds when executed: 4.733
+- Attempt counts: `{"cli_fallback": 1, "initial": 34, "ocr_retry": 1, "text_cleanup": 3}`
+- Selected attempt counts: `{"cli_fallback": 1, "initial": 30, "text_cleanup": 3}`
+- Initial issue counts: `{"document_level_provenance": 19, "expected_anomaly_signal_missing": 1, "no_page_provenance": 10, "numeric_total_mismatch": 5, "numeric_total_needs_review": 1, "numeric_total_verified": 9, "possible_mojibake": 3}`
 - Failed attempt counts: `{}`
 
 ## Cases
@@ -22,6 +22,11 @@ Recovery effectiveness summary over saved submission artifacts.
 | submission_artifacts/adaptive_cases/case_financial_anomaly_evidence_query/result.json | accept | false | initial | document_level_provenance, numeric_total_verified | pass (100) | false |
 | submission_artifacts/adaptive_cases/case_financial_growth_query/result.json | accept | false | initial | document_level_provenance, numeric_total_verified | pass (100) | false |
 | submission_artifacts/agent_api_cases/case_agent_api_contract_pdf/result.json | accept_with_review_notes | false | initial | no_page_provenance | pass_with_warnings (92) | false |
+| submission_artifacts/agent_decision_cases/cross_page_table_agent_plan/result.json | manual_numeric_review | false | initial | document_level_provenance, numeric_total_verified, numeric_total_mismatch | pass_with_warnings (92) | true |
+| submission_artifacts/agent_decision_cases/financial_growth_agent_plan/result.json | accept | false | initial | document_level_provenance, numeric_total_verified | pass (100) | true |
+| submission_artifacts/agent_decision_cases/noisy_contract_recovery_plan/result.json | recovered_accept | true | text_cleanup | possible_mojibake, document_level_provenance | pass (100) | true |
+| submission_artifacts/agent_decision_cases/standard_clause_entity_plan/result.json | accept | false | initial | document_level_provenance | pass (100) | true |
+| submission_artifacts/agent_decision_cases/workflow_diagram_agent_plan/result.json | accept | false | initial | document_level_provenance | pass (100) | true |
 | submission_artifacts/api_smoke/run_2478fc60f3b2/result.json | accept | false | initial | document_level_provenance | pass (100) | false |
 | submission_artifacts/api_smoke/run_pdf_e1354b67a7d7/result.json | accept_with_review_notes | false | initial | no_page_provenance | pass_with_warnings (92) | false |
 | submission_artifacts/cases/case_1_financial_report/result.json | accept | false | initial | document_level_provenance, numeric_total_verified | pass (100) | false |

@@ -148,12 +148,12 @@ DOCX/PPTX 使用轻量 native extractor，而不是 MinerU CLI。其价值是覆
 
 Agent decision 位置：`submission_artifacts/agent_decision_cases/`
 
-该案例包使用 5 个本地可复跑输入，检查新运行是否输出 `execution_control.agent_action_plan` 和 `execution_control.replan_after_quality`。每个案例都包含子任务图、selected tools、dynamic choices、replan triggers、LLM-compatible pre/post decision hooks 和 trace 步骤 `agent_task_decomposition` / `agent_replan_after_quality`。
+该案例包使用 5 个本地可复跑输入，检查新运行是否输出 `execution_control.agent_action_plan` 和 `execution_control.replan_after_quality`。每个案例都包含子任务图、selected tools、dynamic choices、replan triggers、LLM-compatible pre/post decision hook schema 和 trace 步骤 `agent_task_decomposition` / `agent_replan_after_quality`。
 
 | Case | 任务重点 | 关键字段 |
 | --- | --- | --- |
 | `financial_growth_agent_plan` | 财报增长排名 | `comparison/ranking/growth_analysis/evidence_trace`、`numeric_validator`、`top_growth_candidate` |
-| `noisy_contract_recovery_plan` | OCR 噪声合同 | LLM 建议切到 `low_quality_ocr`，触发 `text_cleanup` 并选择恢复结果 |
+| `noisy_contract_recovery_plan` | OCR 噪声合同 | 脚本化决策建议切到 `low_quality_ocr`，触发 `text_cleanup` 并选择恢复结果 |
 | `standard_clause_entity_plan` | 条款实体与证据 | `entity_resolution/evidence_trace`、`contract_validator` |
 | `workflow_diagram_agent_plan` | 流程图文档 | `workflow_validator`、异常候选与视觉复核提示 |
 | `cross_page_table_agent_plan` | 跨页表格与合计 | `aggregation/cross_page_reasoning`、`manual_numeric_review` 下一步动作 |
@@ -164,7 +164,7 @@ Agent decision 位置：`submission_artifacts/agent_decision_cases/`
 .\.venv\Scripts\python.exe .\scripts\run_agent_decision_cases.py
 ```
 
-口径说明：该包使用 scripted local LLM client，保证无 API key 也能复查字段结构和执行路径。真实 provider 的保存案例仍见 `submission_artifacts/llm_cases/`。
+口径说明：该包是离线决策回归材料，使用 scripted decision client，保证无 API key 也能复查字段结构和执行路径；其中 token 数是脚本化计数，不代表真实 provider 用量。真实 provider 的保存案例仍见 `submission_artifacts/llm_cases/`。
 
 ## 9. 官方公开真实文档案例
 

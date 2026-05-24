@@ -34,6 +34,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=True,
         help="Disable automatic local MinerU CLI fallback when the online API lacks page provenance.",
     )
+    run.add_argument(
+        "--strict-page-provenance",
+        action="store_true",
+        help="Mark PDF/image results as needs_review if page-level provenance is still missing after recovery.",
+    )
     run.add_argument("--fallback-mineru-executable", default=None, help="Path to mineru executable for CLI fallback.")
     _add_llm_args(run)
 
@@ -55,6 +60,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         default=True,
         help="Disable automatic local MinerU CLI fallback when the online API lacks page provenance.",
+    )
+    batch.add_argument(
+        "--strict-page-provenance",
+        action="store_true",
+        help="Mark PDF/image results as needs_review if page-level provenance is still missing after recovery.",
     )
     batch.add_argument("--fallback-mineru-executable", default=None, help="Path to mineru executable for CLI fallback.")
     _add_llm_args(batch)
@@ -79,6 +89,7 @@ def main() -> None:
             backend=args.backend,
             method=args.method,
             lang=args.lang,
+            strict_page_provenance=args.strict_page_provenance,
         )
         print(json.dumps(result.to_jsonable(), ensure_ascii=False, indent=2))
     elif args.command == "batch":
@@ -91,6 +102,7 @@ def main() -> None:
                 "backend": args.backend,
                 "method": args.method,
                 "lang": args.lang,
+                "strict_page_provenance": args.strict_page_provenance,
             },
         )
         print(json.dumps(report, ensure_ascii=False, indent=2))

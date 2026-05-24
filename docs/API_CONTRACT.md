@@ -42,6 +42,7 @@ Optional fields:
 | `llm_timeout` | `60` | `0..600` seconds |
 | `output_root` | `MINERU_DATA_AGENT_OUTPUT_DIR` or `runs/api` | Persistent output directory |
 | `cli_fallback_on_no_page_provenance` | `true` | Enables local CLI fallback when online API lacks page provenance and a CLI is available |
+| `strict_page_provenance` | `false` | For PDF/image inputs, marks the result as `needs_review` with `strict_page_provenance_failed` if page-level provenance is still missing after recovery |
 | `fallback_mineru_executable` | unset | Explicit MinerU CLI path for fallback |
 
 ## Successful Response Schema
@@ -74,6 +75,7 @@ Evidence fields reviewers should inspect:
 - `execution_control.adaptive_decision`: task intents, target schema, post-processors, quality thresholds, and recovery strategy chosen for this request.
 - `execution_control.agent_action_plan`: subtask graph, selected tool registry, dynamic choices, replan triggers, and single-run memory policy.
 - `execution_control.replan_after_quality`: quality issue codes, considered actions, attempted actions, selected attempt, and next action if risk remains.
+- `execution_control.strict_page_provenance`: whether strict page provenance was requested, whether it applied to this file type, and whether the final result satisfied it.
 - `extracted.content_summary.provenance_level`: `page`, `document`, or `none`.
 - `extracted.field_evidence[*]`: key, value, confidence proxy, evidence text, and line/page/block provenance when available.
 - `extracted.task_result`: task-specific answers derived from the adaptive decision, such as growth ranking candidates, anomaly candidates, entity candidates, or evidence lists.

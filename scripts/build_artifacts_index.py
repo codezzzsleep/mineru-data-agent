@@ -20,7 +20,7 @@ CATEGORIES = [
     ("office_cases", "Office files", "DOCX/PPTX native extraction runs."),
     ("challenge_cases", "Challenge fixtures", "Cross-page table, OCR noise, standard matrix, and incident workflow fixtures."),
     ("adaptive_cases", "Adaptive planning", "Same input with different natural-language tasks and task-specific results."),
-    ("agent_decision_cases", "Agent decision cases", "Task decomposition, dynamic tool selection, quality replanning, and scripted LLM decision hooks."),
+    ("agent_decision_cases", "Agent decision regression", "Offline task decomposition, tool selection, quality replanning, and scripted decision-hook schema checks."),
     ("public_real_cases", "Public real PDFs", "IRS, NIST, SEC, and CDC public PDF cases with lightweight labels."),
     ("long_document_chunks", "Long document chunks", "NIST AI RMF page-range chunking across the online API page limit."),
     ("llm_cases", "LLM cases", "OpenAI-compatible LLM preplanning and post-parse review results."),
@@ -37,6 +37,7 @@ CATEGORIES = [
     ("recovery_effectiveness", "Recovery effectiveness", "Saved recovery attempts, selected attempts, issue codes, and extra tool time."),
     ("long_document_risk", "Long-document risk", "Known risks and mitigations for the saved long-document chunked API run."),
     ("code_quality", "Code quality", "Static repository size, tests, modules, and CI workflow summary."),
+    ("coverage", "Coverage", "coverage.py line coverage for the local pytest suite."),
 ]
 
 
@@ -163,6 +164,15 @@ def quick_metrics() -> dict[str, Any]:
     code_quality = load_json(ARTIFACT_ROOT / "code_quality" / "code_quality_report.json")
     if isinstance(code_quality, dict):
         metrics["code_quality"] = code_quality.get("aggregate", {})
+    coverage = load_json(ARTIFACT_ROOT / "coverage" / "coverage_report.json")
+    if isinstance(coverage, dict):
+        aggregate = coverage.get("aggregate", {}) if isinstance(coverage.get("aggregate"), dict) else {}
+        metrics["coverage"] = {
+            "measured": aggregate.get("measured"),
+            "line_coverage_percent": aggregate.get("line_coverage_percent"),
+            "num_statements": aggregate.get("num_statements"),
+            "missing_lines": aggregate.get("missing_lines"),
+        }
     return metrics
 
 

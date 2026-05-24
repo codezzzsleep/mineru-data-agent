@@ -1,4 +1,6 @@
-# MinerU Data Agent Run f5a01c555bb7
+> Boundary: offline scripted decision regression. Token counts here are synthetic and should not be read as live provider usage.
+
+# MinerU Data Agent Run acca7aeb59c4
 
 - Task: 把流程图文档拆成步骤、责任角色、输入输出、异常触发条件，并标记需要视觉复核的节点。
 - Profile: workflow_or_diagram

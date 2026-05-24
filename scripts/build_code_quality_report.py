@@ -40,6 +40,9 @@ def build_report() -> dict[str, Any]:
             "test_functions": sum(row["test_functions"] for row in rows),
         }
     workflow_files = sorted((PROJECT_ROOT / ".github" / "workflows").glob("*.yml"))
+    coverage = load_json(PROJECT_ROOT / "submission_artifacts" / "coverage" / "coverage_report.json")
+    coverage_aggregate = coverage.get("aggregate", {}) if isinstance(coverage, dict) else {}
+    coverage_measured = bool(coverage_aggregate.get("measured"))
     return {
         "schema_version": "2026-05-24",
         "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
@@ -53,14 +56,16 @@ def build_report() -> dict[str, Any]:
             "test_functions": sum(row["test_functions"] for row in file_rows),
             "test_files": sum(1 for row in file_rows if row["area"] == "tests"),
             "workflow_files": [display_path(path) for path in workflow_files],
-            "coverage_measured": False,
+            "coverage_measured": coverage_measured,
+            "line_coverage_percent": coverage_aggregate.get("line_coverage_percent") if coverage_measured else None,
+            "coverage_report": "submission_artifacts/coverage/coverage_report.md" if coverage_measured else None,
         },
         "by_area": by_area,
         "largest_files": sorted(file_rows, key=lambda row: row["code_lines"], reverse=True)[:12],
         "test_modules": [row for row in file_rows if row["area"] == "tests"],
         "notes": [
-            "This report counts files, lines, functions, tests, and CI workflow files. It does not run a coverage tool.",
-            "Run `python -m pytest -q` for functional validation and add pytest-cov if line coverage is required.",
+            "This report counts files, lines, functions, tests, and CI workflow files. It reads coverage output when present but does not itself run coverage.",
+            "Run `python scripts/build_coverage_report.py` before this script to refresh line coverage.",
             "The GitHub Actions workflow is in `.github/workflows/tests.yml`; the current CI status should be checked on GitHub for the submitted commit.",
         ],
     }
@@ -104,6 +109,8 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Test functions: {aggregate['test_functions']}",
         f"- CI workflows: `{json.dumps(aggregate['workflow_files'], ensure_ascii=False)}`",
         f"- Coverage measured: {str(aggregate['coverage_measured']).lower()}",
+        f"- Line coverage: {aggregate.get('line_coverage_percent')}",
+        f"- Coverage report: `{aggregate.get('coverage_report')}`",
         "",
         "## By Area",
         "",
@@ -140,6 +147,13 @@ def display_path(path: Path) -> str:
         return str(path.resolve().relative_to(PROJECT_ROOT)).replace("\\", "/")
     except ValueError:
         return str(path)
+
+
+def load_json(path: Path) -> Any:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
 
 
 if __name__ == "__main__":

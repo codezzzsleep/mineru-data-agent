@@ -32,6 +32,34 @@ def test_parse_api_keeps_trace_files(tmp_path: Path, monkeypatch) -> None:
     assert Path(data["summary_path"]).exists()
     assert Path(data["artifacts"]["markdown_path"]).exists()
     assert data["api_output_root"] == str((tmp_path / "api_runs").resolve())
+    assert data["execution_control"]["strict_page_provenance"]["enabled"] is False
+
+
+def test_parse_api_accepts_strict_page_provenance_for_native_input(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("MINERU_DATA_AGENT_ALLOWED_OUTPUT_BASE", str(tmp_path))
+    client = TestClient(app)
+    response = client.post(
+        "/v1/parse",
+        data={
+            "task": "抽取报告日期",
+            "profile": "general_document",
+            "strict_page_provenance": "true",
+            "output_root": str(tmp_path / "api_runs"),
+        },
+        files={
+            "file": (
+                "report.html",
+                "<html><body><h1>日报</h1><p>报告日期：2026-05-22</p></body></html>",
+                "text/html",
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    gate = response.json()["execution_control"]["strict_page_provenance"]
+    assert gate["enabled"] is True
+    assert gate["required"] is False
+    assert gate["satisfied"] is True
 
 
 def test_async_parse_job_exposes_status_and_result(tmp_path: Path, monkeypatch) -> None:

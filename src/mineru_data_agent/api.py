@@ -38,6 +38,7 @@ class ParseRequestConfig:
     runner: str = "cli"
     mineru_executable: str | None = None
     cli_fallback_on_no_page_provenance: bool = True
+    strict_page_provenance: bool = False
     fallback_mineru_executable: str | None = None
     api_max_retries: int = 2
     llm: str = "none"
@@ -62,6 +63,7 @@ async def parse_document(
     runner: str = Form("cli"),
     mineru_executable: str | None = Form(None),
     cli_fallback_on_no_page_provenance: bool = Form(True),
+    strict_page_provenance: bool = Form(False),
     fallback_mineru_executable: str | None = Form(None),
     api_max_retries: int = Form(2),
     llm: str = Form("none"),
@@ -79,6 +81,7 @@ async def parse_document(
         runner=runner,
         mineru_executable=mineru_executable,
         cli_fallback_on_no_page_provenance=cli_fallback_on_no_page_provenance,
+        strict_page_provenance=strict_page_provenance,
         fallback_mineru_executable=fallback_mineru_executable,
         api_max_retries=api_max_retries,
         llm=llm,
@@ -102,6 +105,7 @@ async def create_parse_job(
     runner: str = Form("cli"),
     mineru_executable: str | None = Form(None),
     cli_fallback_on_no_page_provenance: bool = Form(True),
+    strict_page_provenance: bool = Form(False),
     fallback_mineru_executable: str | None = Form(None),
     api_max_retries: int = Form(2),
     llm: str = Form("none"),
@@ -119,6 +123,7 @@ async def create_parse_job(
         runner=runner,
         mineru_executable=mineru_executable,
         cli_fallback_on_no_page_provenance=cli_fallback_on_no_page_provenance,
+        strict_page_provenance=strict_page_provenance,
         fallback_mineru_executable=fallback_mineru_executable,
         api_max_retries=api_max_retries,
         llm=llm,
@@ -170,6 +175,7 @@ def _parse_config(
     runner: str,
     mineru_executable: str | None,
     cli_fallback_on_no_page_provenance: bool,
+    strict_page_provenance: bool,
     fallback_mineru_executable: str | None,
     api_max_retries: int,
     llm: str,
@@ -192,6 +198,7 @@ def _parse_config(
         runner=runner,
         mineru_executable=mineru_executable,
         cli_fallback_on_no_page_provenance=cli_fallback_on_no_page_provenance,
+        strict_page_provenance=strict_page_provenance,
         fallback_mineru_executable=fallback_mineru_executable,
         api_max_retries=api_max_retries,
         llm=llm,
@@ -232,6 +239,7 @@ def _run_parse(*, input_path: Path, root: Path, config: ParseRequestConfig) -> d
             backend=config.backend,
             method=config.method,
             lang=config.lang,
+            strict_page_provenance=config.strict_page_provenance,
         )
     except AgentRunError as exc:
         raise _parse_failed_http_error(exc) from exc

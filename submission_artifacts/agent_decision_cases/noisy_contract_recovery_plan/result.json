@@ -1,9 +1,9 @@
 {
-  "run_id": "297caca18acf",
+  "run_id": "861e18465a13",
   "task": "解析 OCR 噪声合同，抽取合同编号、双方和日期；如果有乱码，先清理后再接受。",
   "profile": "low_quality_ocr",
   "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_7_noisy_contract_scan.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -21,6 +21,11 @@
   ],
   "execution_control": {
     "llm_preplan_enabled": true,
+    "strict_page_provenance": {
+      "enabled": false,
+      "required": false,
+      "satisfied": null
+    },
     "requested": {
       "profile": "auto",
       "backend": "pipeline",
@@ -473,6 +478,13 @@
       "next_action_if_still_risky": [
         "accept_with_trace_review"
       ]
+    },
+    "offline_decision_regression": {
+      "enabled": true,
+      "not_live_llm": true,
+      "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+      "token_usage": "synthetic scripted tokens; not provider billing data",
+      "live_provider_reference": "submission_artifacts/llm_cases/"
     }
   },
   "extracted": {
@@ -802,8 +814,8 @@
         ],
         "selected": false,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\html\\case_7_noisy_contract_scan.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\html\\case_7_noisy_contract_scan_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\html\\case_7_noisy_contract_scan.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\html\\case_7_noisy_contract_scan_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -823,8 +835,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -859,9 +871,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 4,
       "by_type": {
@@ -918,6 +930,11 @@
     },
     "execution_control": {
       "llm_preplan_enabled": true,
+      "strict_page_provenance": {
+        "enabled": false,
+        "required": false,
+        "satisfied": null
+      },
       "requested": {
         "profile": "auto",
         "backend": "pipeline",
@@ -1493,11 +1510,18 @@
       "applied_effects": [
         "append_recovery_suggestion"
       ]
+    },
+    "offline_regression_boundary": {
+      "enabled": true,
+      "not_live_llm": true,
+      "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+      "token_usage": "synthetic scripted tokens; not provider billing data",
+      "live_provider_reference": "submission_artifacts/llm_cases/"
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\recovery\\text_cleanup\\case_7_noisy_contract_scan.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\recovery\\text_cleanup\\case_7_noisy_contract_scan_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1505,6 +1529,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\297caca18acf\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\861e18465a13\\summary.md"
 }

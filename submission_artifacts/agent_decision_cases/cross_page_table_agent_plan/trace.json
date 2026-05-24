@@ -1,11 +1,11 @@
 {
-  "created_at": "2026-05-24T07:53:25.168861+00:00",
+  "created_at": "2026-05-24T08:49:25.211412+00:00",
   "steps": [
     {
       "name": "infer_task_profile",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.151352+00:00",
-      "ended_at": "2026-05-24T07:53:25.151352+00:00",
+      "started_at": "2026-05-24T08:49:25.196790+00:00",
+      "ended_at": "2026-05-24T08:49:25.196790+00:00",
       "detail": {
         "task": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html",
@@ -67,8 +67,8 @@
     {
       "name": "llm_pre_execution_planning",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.151352+00:00",
-      "ended_at": "2026-05-24T07:53:25.151352+00:00",
+      "started_at": "2026-05-24T08:49:25.196790+00:00",
+      "ended_at": "2026-05-24T08:49:25.196790+00:00",
       "detail": {
         "requested_profile": "auto",
         "inferred_profile": "financial_report",
@@ -77,6 +77,11 @@
         "lang": "ch",
         "execution_control": {
           "llm_preplan_enabled": true,
+          "strict_page_provenance": {
+            "enabled": false,
+            "required": false,
+            "satisfied": null
+          },
           "requested": {
             "profile": "auto",
             "backend": "pipeline",
@@ -573,8 +578,8 @@
     {
       "name": "agent_task_decomposition",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.151352+00:00",
-      "ended_at": "2026-05-24T07:53:25.151352+00:00",
+      "started_at": "2026-05-24T08:49:25.196790+00:00",
+      "ended_at": "2026-05-24T08:49:25.196790+00:00",
       "detail": {
         "subtask_count": 7,
         "selected_tools": [
@@ -592,8 +597,8 @@
     {
       "name": "extract_html",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.151352+00:00",
-      "ended_at": "2026-05-24T07:53:25.157838+00:00",
+      "started_at": "2026-05-24T08:49:25.196790+00:00",
+      "ended_at": "2026-05-24T08:49:25.202899+00:00",
       "detail": {
         "input_file": "<PROJECT_ROOT>\\examples\\challenge_cases\\case_6_cross_page_financial_table.html"
       }
@@ -601,8 +606,8 @@
     {
       "name": "build_structured_view",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.157838+00:00",
-      "ended_at": "2026-05-24T07:53:25.158838+00:00",
+      "started_at": "2026-05-24T08:49:25.202899+00:00",
+      "ended_at": "2026-05-24T08:49:25.202899+00:00",
       "detail": {
         "item_count": 12,
         "page_count": 0,
@@ -648,8 +653,8 @@
     {
       "name": "quality_validation",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.158838+00:00",
-      "ended_at": "2026-05-24T07:53:25.158838+00:00",
+      "started_at": "2026-05-24T08:49:25.202899+00:00",
+      "ended_at": "2026-05-24T08:49:25.202899+00:00",
       "detail": {
         "profile": "financial_report"
       }
@@ -657,8 +662,8 @@
     {
       "name": "recovery_decision",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.158838+00:00",
-      "ended_at": "2026-05-24T07:53:25.158838+00:00",
+      "started_at": "2026-05-24T08:49:25.204405+00:00",
+      "ended_at": "2026-05-24T08:49:25.204405+00:00",
       "detail": {
         "quality_status": "pass_with_warnings",
         "selected_attempt": "initial"
@@ -667,8 +672,8 @@
     {
       "name": "agent_replan_after_quality",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.158838+00:00",
-      "ended_at": "2026-05-24T07:53:25.158838+00:00",
+      "started_at": "2026-05-24T08:49:25.204405+00:00",
+      "ended_at": "2026-05-24T08:49:25.204405+00:00",
       "detail": {
         "selected_attempt": "initial",
         "quality_status": "pass_with_warnings",
@@ -707,8 +712,8 @@
     {
       "name": "build_retrieval_export",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.158838+00:00",
-      "ended_at": "2026-05-24T07:53:25.162345+00:00",
+      "started_at": "2026-05-24T08:49:25.204405+00:00",
+      "ended_at": "2026-05-24T08:49:25.206444+00:00",
       "detail": {
         "chunks_count": 5,
         "by_type": {
@@ -718,23 +723,23 @@
         "pages": [
           1
         ],
-        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\retrieval\\retrieval_chunks.jsonl",
-        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\retrieval\\retrieval_manifest.json",
-        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\retrieval\\retrieval_quality.json"
+        "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\37cca18831d0\\retrieval\\retrieval_chunks.jsonl",
+        "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\37cca18831d0\\retrieval\\retrieval_manifest.json",
+        "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\37cca18831d0\\retrieval\\retrieval_quality.json"
       }
     },
     {
       "name": "llm_agent_analysis",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.162345+00:00",
-      "ended_at": "2026-05-24T07:53:25.162345+00:00",
+      "started_at": "2026-05-24T08:49:25.206444+00:00",
+      "ended_at": "2026-05-24T08:49:25.206444+00:00",
       "detail": {}
     },
     {
       "name": "llm_quality_decision",
       "status": "completed",
-      "started_at": "2026-05-24T07:53:25.162345+00:00",
-      "ended_at": "2026-05-24T07:53:25.162345+00:00",
+      "started_at": "2026-05-24T08:49:25.206444+00:00",
+      "ended_at": "2026-05-24T08:49:25.206444+00:00",
       "detail": {
         "status": "completed",
         "previous_decision": "manual_numeric_review",
@@ -820,10 +825,17 @@
       }
     }
   ],
-  "run_id": "e9681de1b983",
+  "run_id": "37cca18831d0",
   "task": "处理跨页财报表格，合并上下文，检查小计和总计，并输出需要人工复核的差异。",
   "profile": "financial_report",
   "status": "completed",
-  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\result.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\e9681de1b983\\summary.md"
+  "result_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\37cca18831d0\\result.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\37cca18831d0\\summary.md",
+  "offline_regression_boundary": {
+    "enabled": true,
+    "not_live_llm": true,
+    "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+    "token_usage": "synthetic scripted tokens; not provider billing data",
+    "live_provider_reference": "submission_artifacts/llm_cases/"
+  }
 }

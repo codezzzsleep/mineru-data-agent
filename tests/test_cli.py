@@ -28,3 +28,20 @@ def test_cli_fallback_runner_uses_explicit_executable(monkeypatch) -> None:
 
     assert runner is not None
     assert runner.executable == "/opt/mineru/bin/mineru"
+
+
+def test_cli_parser_accepts_strict_page_provenance() -> None:
+    args = cli_module.build_parser().parse_args(
+        [
+            "run",
+            "--input",
+            "sample.pdf",
+            "--out",
+            "runs",
+            "--task",
+            "extract with page evidence",
+            "--strict-page-provenance",
+        ]
+    )
+
+    assert args.strict_page_provenance is True

@@ -1,9 +1,9 @@
 {
-  "run_id": "9c95c050d0f0",
+  "run_id": "9e5095e11090",
   "task": "识别合同条款中的甲方、乙方、义务、例外条件和来源证据。",
   "profile": "standard_or_contract",
   "input_file": "<PROJECT_ROOT>\\examples\\cases\\case_3_standard_contract.html",
-  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0",
+  "output_dir": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090",
   "plan": [
     "Inspect input type, document metadata, and natural-language task objective",
     "Infer task intents and generate a target extraction schema",
@@ -22,6 +22,11 @@
   ],
   "execution_control": {
     "llm_preplan_enabled": true,
+    "strict_page_provenance": {
+      "enabled": false,
+      "required": false,
+      "satisfied": null
+    },
     "requested": {
       "profile": "auto",
       "backend": "pipeline",
@@ -478,6 +483,13 @@
       "next_action_if_still_risky": [
         "accept_with_trace_review"
       ]
+    },
+    "offline_decision_regression": {
+      "enabled": true,
+      "not_live_llm": true,
+      "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+      "token_usage": "synthetic scripted tokens; not provider billing data",
+      "live_provider_reference": "submission_artifacts/llm_cases/"
     }
   },
   "extracted": {
@@ -846,8 +858,8 @@
         ],
         "selected": true,
         "artifacts": {
-          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0\\html\\case_3_standard_contract.md",
-          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0\\html\\case_3_standard_contract_content_list.json",
+          "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090\\html\\case_3_standard_contract.md",
+          "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090\\html\\case_3_standard_contract_content_list.json",
           "middle_json_path": null,
           "model_json_path": null,
           "layout_pdf_path": null,
@@ -882,9 +894,9 @@
     }
   },
   "retrieval_export": {
-    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0\\retrieval\\retrieval_chunks.jsonl",
-    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0\\retrieval\\retrieval_manifest.json",
-    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0\\retrieval\\retrieval_quality.json",
+    "chunks_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090\\retrieval\\retrieval_chunks.jsonl",
+    "manifest_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090\\retrieval\\retrieval_manifest.json",
+    "quality_report_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090\\retrieval\\retrieval_quality.json",
     "stats": {
       "total_chunks": 5,
       "by_type": {
@@ -941,6 +953,11 @@
     },
     "execution_control": {
       "llm_preplan_enabled": true,
+      "strict_page_provenance": {
+        "enabled": false,
+        "required": false,
+        "satisfied": null
+      },
       "requested": {
         "profile": "auto",
         "backend": "pipeline",
@@ -1522,11 +1539,18 @@
       "applied_effects": [
         "append_recovery_suggestion"
       ]
+    },
+    "offline_regression_boundary": {
+      "enabled": true,
+      "not_live_llm": true,
+      "purpose": "offline regression for decision-hook schema, task decomposition, selected tools, and replan fields",
+      "token_usage": "synthetic scripted tokens; not provider billing data",
+      "live_provider_reference": "submission_artifacts/llm_cases/"
     }
   },
   "artifacts": {
-    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0\\html\\case_3_standard_contract.md",
-    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0\\html\\case_3_standard_contract_content_list.json",
+    "markdown_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090\\html\\case_3_standard_contract.md",
+    "content_list_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090\\html\\case_3_standard_contract_content_list.json",
     "middle_json_path": null,
     "model_json_path": null,
     "layout_pdf_path": null,
@@ -1534,6 +1558,6 @@
     "origin_pdf_path": null,
     "image_dir": null
   },
-  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0\\trace.json",
-  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9c95c050d0f0\\summary.md"
+  "trace_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090\\trace.json",
+  "summary_path": "<PROJECT_ROOT>\\runs\\agent_decision_cases\\9e5095e11090\\summary.md"
 }

@@ -20,7 +20,7 @@
 - [x] 同一文档不同自然语言任务的自适应规划证据已生成，见 `submission_artifacts/adaptive_cases/`
 - [x] Agent action plan 已写入新运行的 `execution_control.agent_action_plan`
 - [x] 质量后再规划已写入新运行的 `execution_control.replan_after_quality`
-- [x] 5 个 Agent decision 案例已生成，见 `submission_artifacts/agent_decision_cases/`
+- [x] 5 个 Agent decision 离线回归案例已生成，见 `submission_artifacts/agent_decision_cases/`；不把它们作为 live LLM 证据
 - [x] 真实 PDF 已保存解析前调度 + API-to-CLI fallback 恢复证据，见 `submission_artifacts/recovery_cases/`
 - [x] `recovery_decision.executed=true` 的 PDF 证据已生成，且评测标签会检查 `selected_attempt=cli_fallback`
 - [x] 带标注评测指标已生成，见 `submission_artifacts/evaluation/`
@@ -33,6 +33,7 @@
 - [x] LLM impact 对比报告已生成，见 `submission_artifacts/llm_impact/`
 - [x] 恢复有效性汇总已生成，见 `submission_artifacts/recovery_effectiveness/`
 - [x] 长文档分片风险汇总已生成，见 `submission_artifacts/long_document_risk/`
+- [x] coverage.py 本地行覆盖率报告已生成，见 `submission_artifacts/coverage/`
 - [x] 代码质量摘要已生成，见 `submission_artifacts/code_quality/`
 - [x] Artifact 总索引已生成，见 `submission_artifacts/ARTIFACTS_INDEX.md`
 - [x] Live ModelScope DeepSeek-V4-Flash 复跑已记录 provider token usage：4309 tokens
@@ -48,6 +49,7 @@
 - [x] API 返回的 `trace_path`、`summary_path` 和 artifact 路径在请求结束后仍存在
 - [x] trace 中包含任务输入、执行步骤、工具调用、最终输出
 - [x] 新运行的 `execution_control.planning_rationale` 会解释 profile、runner、backend、method、语言和恢复策略选择
+- [x] 新运行支持 `strict_page_provenance`，PDF/image 最终缺页级来源时返回 partial result 并标为 `strict_page_provenance_failed`
 - [x] 失败路径也会写出 `trace.json`，记录失败步骤和错误摘要
 - [x] API 失败响应会返回失败 run 的 `trace_path`，便于评审脚本定位证据
 - [x] `result.json` 包含章节、表格、键值对、数字事实、日期/建议/异常语义信号

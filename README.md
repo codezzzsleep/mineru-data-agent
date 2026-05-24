@@ -181,6 +181,8 @@ data-agent run \
   --task "先用在线 API 解析 PDF，缺少页级 provenance 时自动切换本地 CLI"
 ```
 
+如果评测任务必须要求页级来源，可加 `--strict-page-provenance`。在 fallback 后仍缺页级来源时，系统会保留 partial result，但把 `quality.status` 标成 `needs_review`，并在 `recovery_decision.decision=strict_page_provenance_failed` 中写明原因。
+
 生成并复跑额外 PDF 文件级样本：
 
 ```powershell
@@ -334,11 +336,12 @@ python scripts/build_llm_impact_report.py
 python scripts/build_cost_model.py
 python scripts/build_recovery_effectiveness_report.py
 python scripts/build_long_document_risk_report.py
+python scripts/build_coverage_report.py
 python scripts/build_code_quality_report.py
 python scripts/build_artifacts_index.py
 ```
 
-当前报告分别位于 `submission_artifacts/cost_model/`、`submission_artifacts/recovery_effectiveness/`、`submission_artifacts/long_document_risk/` 和 `submission_artifacts/code_quality/`。成本报告默认只给公式；设置 `MINERU_DATA_AGENT_GPU_CNY_PER_HOUR`、`MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE`、`MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF`、`MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS` 后会给出人民币估算。
+当前报告分别位于 `submission_artifacts/cost_model/`、`submission_artifacts/recovery_effectiveness/`、`submission_artifacts/long_document_risk/`、`submission_artifacts/coverage/` 和 `submission_artifacts/code_quality/`。成本报告默认只给公式；设置 `MINERU_DATA_AGENT_GPU_CNY_PER_HOUR`、`MINERU_DATA_AGENT_AGENT_API_CNY_PER_PAGE`、`MINERU_DATA_AGENT_ASSUMED_PAGES_PER_PDF`、`MINERU_DATA_AGENT_LLM_CNY_PER_MILLION_TOKENS` 后会给出人民币估算。
 
 Agent decision 案例包可通过以下命令生成：
 
@@ -347,7 +350,7 @@ python scripts/run_agent_decision_cases.py
 python scripts/build_artifacts_index.py
 ```
 
-当前结果位于 `submission_artifacts/agent_decision_cases/`。该包使用本地 scripted LLM client，目的是离线复现 Agent 子任务拆解、工具选择和 replan 字段；真实 provider 调用仍以 `submission_artifacts/llm_cases/` 中的 ModelScope 案例为准。
+当前结果位于 `submission_artifacts/agent_decision_cases/`。该包是离线决策回归材料，使用本地 scripted decision client 复现子任务拆解、工具选择和 replan 字段；其中 token 数是脚本化计数，不作为 live LLM 用量或模型自主规划证据。真实 provider 调用仍以 `submission_artifacts/llm_cases/` 中的 ModelScope 案例为准。
 
 ## Recommended HeyWhale Setup
 
@@ -382,19 +385,20 @@ python scripts/build_artifacts_index.py
 
 - `--runner agent-api`：调用 MinerU 在线 Agent API，免 Token、资源轻、启动快，适合 CPU 环境先跑通主流程。
 - 在线 Agent API 的轻量 Markdown 路径不保证页级 provenance；系统会在 `quality.issues` 中用 `no_page_provenance` 显式提示，并在检测到可用 CLI fallback 时自动尝试本地 MinerU CLI。
+- `--strict-page-provenance`：当 PDF/image 类输入最终仍缺页级 provenance 时，把结果标为 `needs_review` 和 `strict_page_provenance_failed`，用于审计型任务。
 - `--runner cli`：调用本地 MinerU CLI，适合 GPU 镜像、大文件、完整中间结果和可视化 PDF artifact。
 - `--llm deepseek`：可选 DeepSeek v4-flash 官方推理层，参与解析前调度和解析后复核；不开启时项目仍可运行。
 - `--llm modelscope`：可选 ModelScope 推理入口，默认模型 `deepseek-ai/DeepSeek-V4-Flash`。
 
 当前提交包按以下材料组织：
 
-- 案例：HTML/网页 fixture、PDF CLI、Agent API PDF、PDF recovery、DOCX/PPTX、挑战样本、Agent decision case pack、公开真实 PDF、长文档分片、LLM-enabled 财报复核。
+- 案例：HTML/网页 fixture、PDF CLI、Agent API PDF、PDF recovery、DOCX/PPTX、挑战样本、离线 Agent decision regression pack、公开真实 PDF、长文档分片、LLM-enabled 财报复核。
 - 指标：`submission_artifacts/evaluation/` 统计 17 个案例、45 个字段、22 条文本证据、11 条数字证据、6 条表格证据和字段级 precision/recall/F1。
 - 稳定性：`submission_artifacts/stability/` 汇总 trace、工具调用、耗时、质量状态和恢复执行。
 - API：`submission_artifacts/api_load_smoke/`、`submission_artifacts/http_load_test/`、`submission_artifacts/http_load_test_100/` 保存本地接口验证和 100 请求并发结果。
 - 成本/速度/质量：`submission_artifacts/baseline_comparison/` 按 runner 和场景组展示耗时、质量、页级 provenance 和 recovery；`submission_artifacts/llm_cost/` 记录 live LLM token usage；`submission_artifacts/llm_impact/` 对比规则运行与 LLM-enabled 运行。
-- 运行边界：`submission_artifacts/cost_model/` 给出成本公式，`submission_artifacts/recovery_effectiveness/` 汇总恢复触发和选择情况，`submission_artifacts/long_document_risk/` 列出长文档分片风险，`submission_artifacts/code_quality/` 汇总代码和测试规模。
+- 运行边界：`submission_artifacts/cost_model/` 给出成本公式，`submission_artifacts/recovery_effectiveness/` 汇总恢复触发和选择情况，`submission_artifacts/long_document_risk/` 列出长文档分片风险，`submission_artifacts/coverage/` 保存覆盖率，`submission_artifacts/code_quality/` 汇总代码和测试规模。
 
 新运行还会输出 `extracted.field_evidence` 和 `extracted.task_result`，为键值字段、任务级答案和 schema 决策提供可复查字段。公开真实文档样本使用轻量人工标注；如果需要 OCR 字符级或表格逐格 benchmark，应按 `docs/BENCHMARK_AND_ROADMAP.md` 扩展。
 
-针对评审高概率扣分点的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；对标与后续真实 benchmark 路线见 `docs/BENCHMARK_AND_ROADMAP.md`；artifact 总索引见 `submission_artifacts/ARTIFACTS_INDEX.md`；稳定性摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`，真实 HTTP 压测见 `submission_artifacts/http_load_test/http_load_test_report.md` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`，Agent decision 案例见 `submission_artifacts/agent_decision_cases/README.md`，长文档分片证据见 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`，长文档风险拆解见 `submission_artifacts/long_document_risk/long_document_risk_report.md`，成本/速度/质量对比见 `submission_artifacts/baseline_comparison/baseline_comparison.md`，成本模型见 `submission_artifacts/cost_model/cost_model.md`，LLM token/cost 审计见 `submission_artifacts/llm_cost/llm_cost_report.md`，LLM impact 对比见 `submission_artifacts/llm_impact/llm_impact_report.md`，恢复有效性见 `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md`，代码质量摘要见 `submission_artifacts/code_quality/code_quality_report.md`。
+针对评审常见追问的证据矩阵见 `docs/ENGINEERING_EVIDENCE.md`；API 同步/异步接口、错误码和返回 schema 见 `docs/API_CONTRACT.md`；对标与后续真实 benchmark 路线见 `docs/BENCHMARK_AND_ROADMAP.md`；artifact 总索引见 `submission_artifacts/ARTIFACTS_INDEX.md`；稳定性摘要见 `submission_artifacts/stability/stability_report.md`，本地 API 并发 smoke 见 `submission_artifacts/api_load_smoke/api_load_smoke_report.md`，真实 HTTP 压测见 `submission_artifacts/http_load_test/http_load_test_report.md` 和 `submission_artifacts/http_load_test_100/http_load_test_report.md`，Agent decision 回归案例见 `submission_artifacts/agent_decision_cases/README.md`，长文档分片证据见 `submission_artifacts/long_document_chunks/public_nist_ai_rmf_full_chunked/long_document_chunk_report.md`，长文档风险拆解见 `submission_artifacts/long_document_risk/long_document_risk_report.md`，成本/速度/质量对比见 `submission_artifacts/baseline_comparison/baseline_comparison.md`，成本模型见 `submission_artifacts/cost_model/cost_model.md`，LLM token/cost 审计见 `submission_artifacts/llm_cost/llm_cost_report.md`，LLM impact 对比见 `submission_artifacts/llm_impact/llm_impact_report.md`，恢复有效性见 `submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md`，覆盖率见 `submission_artifacts/coverage/coverage_report.md`，代码质量摘要见 `submission_artifacts/code_quality/code_quality_report.md`。

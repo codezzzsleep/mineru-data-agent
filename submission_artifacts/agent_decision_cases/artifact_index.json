@@ -51,7 +51,7 @@
           "accept_with_trace_review"
         ]
       },
-      "llm_usage_summary": {
+      "scripted_usage_summary": {
         "tool_call_count": 2,
         "prompt_tokens": 1140,
         "completion_tokens": 320,
@@ -69,7 +69,8 @@
           }
         ],
         "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
-      }
+      },
+      "boundary": "offline scripted decision regression; not live provider evidence"
     },
     {
       "id": "noisy_contract_recovery_plan",
@@ -113,7 +114,7 @@
           "accept_with_trace_review"
         ]
       },
-      "llm_usage_summary": {
+      "scripted_usage_summary": {
         "tool_call_count": 2,
         "prompt_tokens": 1140,
         "completion_tokens": 320,
@@ -131,7 +132,8 @@
           }
         ],
         "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
-      }
+      },
+      "boundary": "offline scripted decision regression; not live provider evidence"
     },
     {
       "id": "standard_clause_entity_plan",
@@ -176,7 +178,7 @@
           "accept_with_trace_review"
         ]
       },
-      "llm_usage_summary": {
+      "scripted_usage_summary": {
         "tool_call_count": 2,
         "prompt_tokens": 1140,
         "completion_tokens": 320,
@@ -194,7 +196,8 @@
           }
         ],
         "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
-      }
+      },
+      "boundary": "offline scripted decision regression; not live provider evidence"
     },
     {
       "id": "workflow_diagram_agent_plan",
@@ -238,7 +241,7 @@
           "accept_with_trace_review"
         ]
       },
-      "llm_usage_summary": {
+      "scripted_usage_summary": {
         "tool_call_count": 2,
         "prompt_tokens": 1140,
         "completion_tokens": 320,
@@ -256,7 +259,8 @@
           }
         ],
         "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
-      }
+      },
+      "boundary": "offline scripted decision regression; not live provider evidence"
     },
     {
       "id": "cross_page_table_agent_plan",
@@ -313,7 +317,7 @@
           "manual_numeric_review"
         ]
       },
-      "llm_usage_summary": {
+      "scripted_usage_summary": {
         "tool_call_count": 2,
         "prompt_tokens": 1140,
         "completion_tokens": 320,
@@ -331,8 +335,9 @@
           }
         ],
         "boundary": "Cost is computed only when token usage is returned by the provider and token price env vars are configured."
-      }
+      },
+      "boundary": "offline scripted decision regression; not live provider evidence"
     }
   ],
-  "boundary": "scripted local LLM client; live provider case remains in llm_cases"
+  "boundary": "offline scripted decision regression; token counts are synthetic; live provider case remains in llm_cases"
 }

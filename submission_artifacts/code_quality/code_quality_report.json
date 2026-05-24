@@ -1,54 +1,56 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T08:05:51Z",
+  "generated_at": "2026-05-24T08:50:20Z",
   "scope": "Static repository quality summary generated from local files.",
   "aggregate": {
-    "python_files": 47,
-    "physical_lines": 11834,
-    "code_lines": 10488,
+    "python_files": 48,
+    "physical_lines": 12280,
+    "code_lines": 10890,
     "classes": 31,
-    "functions": 488,
-    "test_functions": 71,
+    "functions": 502,
+    "test_functions": 74,
     "test_files": 12,
     "workflow_files": [
       ".github/workflows/tests.yml"
     ],
-    "coverage_measured": false
+    "coverage_measured": true,
+    "line_coverage_percent": 81.2,
+    "coverage_report": "submission_artifacts/coverage/coverage_report.md"
   },
   "by_area": {
     "src": {
       "python_files": 14,
-      "physical_lines": 5906,
-      "code_lines": 5283,
+      "physical_lines": 6029,
+      "code_lines": 5398,
       "classes": 19,
-      "functions": 243,
+      "functions": 246,
       "test_functions": 0
     },
     "scripts": {
-      "python_files": 21,
-      "physical_lines": 4414,
-      "code_lines": 3929,
+      "python_files": 22,
+      "physical_lines": 4665,
+      "code_lines": 4154,
       "classes": 6,
-      "functions": 162,
+      "functions": 170,
       "test_functions": 0
     },
     "tests": {
       "python_files": 12,
-      "physical_lines": 1514,
-      "code_lines": 1276,
+      "physical_lines": 1586,
+      "code_lines": 1338,
       "classes": 6,
-      "functions": 83,
-      "test_functions": 71
+      "functions": 86,
+      "test_functions": 74
     }
   },
   "largest_files": [
     {
       "path": "src/mineru_data_agent/agent.py",
       "area": "src",
-      "physical_lines": 1324,
-      "code_lines": 1222,
+      "physical_lines": 1418,
+      "code_lines": 1310,
       "classes": 2,
-      "functions": 34,
+      "functions": 36,
       "test_functions": 0
     },
     {
@@ -117,17 +119,17 @@
     {
       "path": "tests/test_agent_recovery.py",
       "area": "tests",
-      "physical_lines": 403,
-      "code_lines": 360,
+      "physical_lines": 430,
+      "code_lines": 383,
       "classes": 6,
-      "functions": 17,
-      "test_functions": 6
+      "functions": 18,
+      "test_functions": 7
     },
     {
       "path": "src/mineru_data_agent/api.py",
       "area": "src",
-      "physical_lines": 409,
-      "code_lines": 354,
+      "physical_lines": 417,
+      "code_lines": 362,
       "classes": 1,
       "functions": 23,
       "test_functions": 0
@@ -155,20 +157,20 @@
     {
       "path": "tests/test_agent_recovery.py",
       "area": "tests",
-      "physical_lines": 403,
-      "code_lines": 360,
+      "physical_lines": 430,
+      "code_lines": 383,
       "classes": 6,
-      "functions": 17,
-      "test_functions": 6
+      "functions": 18,
+      "test_functions": 7
     },
     {
       "path": "tests/test_api.py",
       "area": "tests",
-      "physical_lines": 177,
-      "code_lines": 142,
+      "physical_lines": 205,
+      "code_lines": 167,
       "classes": 0,
-      "functions": 10,
-      "test_functions": 10
+      "functions": 11,
+      "test_functions": 11
     },
     {
       "path": "tests/test_artifact_reports.py",
@@ -191,11 +193,11 @@
     {
       "path": "tests/test_cli.py",
       "area": "tests",
-      "physical_lines": 30,
-      "code_lines": 22,
+      "physical_lines": 47,
+      "code_lines": 36,
       "classes": 0,
-      "functions": 2,
-      "test_functions": 2
+      "functions": 3,
+      "test_functions": 3
     },
     {
       "path": "tests/test_evaluation.py",
@@ -262,8 +264,8 @@
     }
   ],
   "notes": [
-    "This report counts files, lines, functions, tests, and CI workflow files. It does not run a coverage tool.",
-    "Run `python -m pytest -q` for functional validation and add pytest-cov if line coverage is required.",
+    "This report counts files, lines, functions, tests, and CI workflow files. It reads coverage output when present but does not itself run coverage.",
+    "Run `python scripts/build_coverage_report.py` before this script to refresh line coverage.",
     "The GitHub Actions workflow is in `.github/workflows/tests.yml`; the current CI status should be checked on GitHub for the submitted commit."
   ]
 }
