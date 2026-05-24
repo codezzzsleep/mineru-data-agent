@@ -22,3 +22,12 @@ jobs:
         run: python -m pip install -e ".[dev]"
       - name: Run tests
         run: pytest -q
+      - name: API performance smoke
+        run: >
+          python scripts/run_api_load_smoke.py
+          --requests 6
+          --concurrency 3
+          --output-dir runs/ci_api_load_smoke
+          --min-success-rate 1.0
+          --min-artifact-complete-rate 1.0
+          --max-p95-seconds 5.0

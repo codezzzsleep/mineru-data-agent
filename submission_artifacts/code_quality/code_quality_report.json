@@ -1,13 +1,13 @@
 {
   "schema_version": "2026-05-24",
-  "generated_at": "2026-05-24T13:06:48Z",
+  "generated_at": "2026-05-24T13:33:48Z",
   "scope": "Static repository quality summary generated from local files.",
   "aggregate": {
     "python_files": 54,
-    "physical_lines": 14812,
-    "code_lines": 13145,
+    "physical_lines": 14855,
+    "code_lines": 13186,
     "classes": 38,
-    "functions": 609,
+    "functions": 610,
     "test_functions": 83,
     "test_files": 12,
     "workflow_files": [
@@ -28,10 +28,10 @@
     },
     "scripts": {
       "python_files": 26,
-      "physical_lines": 5764,
-      "code_lines": 5124,
+      "physical_lines": 5807,
+      "code_lines": 5165,
       "classes": 9,
-      "functions": 219,
+      "functions": 220,
       "test_functions": 0
     },
     "tests": {

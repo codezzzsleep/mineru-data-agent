@@ -5,10 +5,10 @@ Static repository quality summary generated from local files.
 ## Aggregate
 
 - Python files: 54
-- Physical lines: 14812
-- Code lines: 13145
+- Physical lines: 14855
+- Code lines: 13186
 - Classes: 38
-- Functions: 609
+- Functions: 610
 - Test files: 12
 - Test functions: 83
 - CI workflows: `[".github/workflows/tests.yml"]`
@@ -21,7 +21,7 @@ Static repository quality summary generated from local files.
 | Area | Files | Physical Lines | Code Lines | Classes | Functions | Test Functions |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | src | 16 | 7152 | 6416 | 21 | 291 | 0 |
-| scripts | 26 | 5764 | 5124 | 9 | 219 | 0 |
+| scripts | 26 | 5807 | 5165 | 9 | 220 | 0 |
 | tests | 12 | 1896 | 1605 | 8 | 99 | 83 |
 
 ## Largest Python Files

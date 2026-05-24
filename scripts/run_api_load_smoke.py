@@ -44,6 +44,7 @@ def main() -> None:
     elapsed = time.perf_counter() - started
     results.sort(key=lambda item: item["index"])
     report = build_report(args=args, input_path=input_path, results=results, elapsed=elapsed, out_dir=out_dir)
+    threshold_failures = evaluate_thresholds(report, args=args)
     (out_dir / "api_load_smoke_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     (out_dir / "api_load_smoke_report.md").write_text(render_markdown(report), encoding="utf-8")
     sanitize_text_tree(out_dir)
@@ -55,9 +56,12 @@ def main() -> None:
                 "out_dir": display_path(out_dir),
                 "success": report["aggregate"]["success"],
                 "failed": report["aggregate"]["failed"],
+                "threshold_failures": threshold_failures,
             }
         )
     )
+    if threshold_failures:
+        raise SystemExit("API load smoke threshold failure: " + "; ".join(threshold_failures))
 
 
 def parse_args() -> argparse.Namespace:
@@ -67,11 +71,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--input", default=str(DEFAULT_INPUT))
     parser.add_argument("--output-dir", default=str(OUT_DIR))
     parser.add_argument("--keep-runs", action="store_true", help="Keep per-request run artifacts under the report dir.")
+    parser.add_argument("--min-success-rate", type=float, default=None)
+    parser.add_argument("--max-p95-seconds", type=float, default=None)
+    parser.add_argument("--min-artifact-complete-rate", type=float, default=None)
     args = parser.parse_args()
     if args.requests < 1:
         raise SystemExit("--requests must be >= 1")
     if args.concurrency < 1:
         raise SystemExit("--concurrency must be >= 1")
+    for field in ["min_success_rate", "min_artifact_complete_rate"]:
+        value = getattr(args, field)
+        if value is not None and not 0 <= value <= 1:
+            raise SystemExit(f"--{field.replace('_', '-')} must be between 0 and 1")
+    if args.max_p95_seconds is not None and args.max_p95_seconds <= 0:
+        raise SystemExit("--max-p95-seconds must be > 0")
     return args
 
 
@@ -136,6 +149,11 @@ def build_report(
         "input": display_path(input_path),
         "output_dir": display_path(out_dir),
         "parameters": {"requests": args.requests, "concurrency": args.concurrency},
+        "thresholds": {
+            "min_success_rate": args.min_success_rate,
+            "max_p95_seconds": args.max_p95_seconds,
+            "min_artifact_complete_rate": args.min_artifact_complete_rate,
+        },
         "aggregate": {
             "requests": len(results),
             "success": len(successes),
@@ -163,6 +181,30 @@ def build_report(
             "It does not replace an external network load test, GPU stress test, or long-document soak test.",
         ],
     }
+
+
+def evaluate_thresholds(report: dict[str, Any], *, args: argparse.Namespace) -> list[str]:
+    aggregate = report["aggregate"]
+    failures: list[str] = []
+    success_rate = float(aggregate.get("success_rate") or 0.0)
+    p95 = float((aggregate.get("latency_seconds") or {}).get("p95") or 0.0)
+    success_count = int(aggregate.get("success") or 0)
+    artifact_complete = int(aggregate.get("artifact_complete") or 0)
+    artifact_complete_rate = artifact_complete / success_count if success_count else 0.0
+    if args.min_success_rate is not None and success_rate < args.min_success_rate:
+        failures.append(f"success_rate {success_rate:.4f} < {args.min_success_rate:.4f}")
+    if args.max_p95_seconds is not None and p95 > args.max_p95_seconds:
+        failures.append(f"p95_seconds {p95:.4f} > {args.max_p95_seconds:.4f}")
+    if args.min_artifact_complete_rate is not None and artifact_complete_rate < args.min_artifact_complete_rate:
+        failures.append(
+            f"artifact_complete_rate {artifact_complete_rate:.4f} < {args.min_artifact_complete_rate:.4f}"
+        )
+    report["threshold_result"] = {
+        "passed": not failures,
+        "failures": failures,
+        "artifact_complete_rate": round(artifact_complete_rate, 6),
+    }
+    return failures
 
 
 def percentile(values: list[float], pct: float) -> float:
@@ -229,6 +271,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- Complete artifact sets: {aggregate['artifact_complete']}/{aggregate['success']}",
         f"- Quality status counts: `{json.dumps(aggregate['quality_status_counts'], ensure_ascii=False)}`",
         f"- Minimum field evidence count: {aggregate['field_evidence_min']}",
+        f"- Threshold result: `{json.dumps(report.get('threshold_result', {}), ensure_ascii=False)}`",
         "",
         "## Requests",
         "",

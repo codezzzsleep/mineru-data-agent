@@ -45,6 +45,7 @@
 - 1 份 coverage.py 行覆盖率报告，当前覆盖 `src/mineru_data_agent`
 - 1 份代码质量报告，统计 Python 文件、代码行、测试函数和 CI workflow，方便评审快速检查工程规模
 - 1 份带标注评测报告，新增字段级 precision/recall/F1 与 failed-check 分布，用于区分规则质量分和人工标签指标
+- CI 中新增小规模 API performance smoke：每次 push/PR 运行 6 请求、并发 3 的 in-process FastAPI 门禁，检查成功率、artifact 完整率和 P95 延迟阈值
 - 2 份本地 HTTP loopback 压测报告，覆盖同步解析和异步 job 轮询；其中加强版为 100 请求、并发 20、100/100 成功；另有 1 份成本/速度/质量对比报告，按 runner/场景组展示 tradeoff
 
 ## Quick Start
@@ -130,7 +131,7 @@ API 默认把输出持久化到 `runs/api`，也可以通过 `MINERU_DATA_AGENT_
 
 本提交包内保存了本地 API 冒烟测试结果：`submission_artifacts/api_smoke/`。该测试覆盖 `/health`、一次 HTML 上传解析和一次 PDF 上传解析，返回结构化结果、trace、summary 和 retrieval 路径；当前尚未提供公网服务地址。
 
-异步接口使用 `POST /v1/jobs` 提交同样的 multipart 表单，随后用 `GET /v1/jobs/{job_id}` 查询 `queued/running/completed/failed` 状态；完成后 `result` 字段与 `/v1/parse` 返回一致。并发 smoke 结果位于 `submission_artifacts/api_load_smoke/`，当前保存 8 请求、并发 4 的本地 FastAPI TestClient 结果，8/8 成功且每次都落盘 trace/result/summary。本地 HTTP loopback 压测结果位于 `submission_artifacts/http_load_test/` 和 `submission_artifacts/http_load_test_100/`：前者保存 12 请求、并发 6、12/12 成功并保留每次请求 artifact；后者保存 100 请求、并发 20，混合同步 `/v1/parse` 和异步 `/v1/jobs`，100/100 成功、P95 约 4.21 秒。这是本地 TCP 层验证；公网和 GPU 压测需在部署环境另跑。
+异步接口使用 `POST /v1/jobs` 提交同样的 multipart 表单，随后用 `GET /v1/jobs/{job_id}` 查询 `queued/running/completed/failed` 状态；完成后 `result` 字段与 `/v1/parse` 返回一致。并发 smoke 结果位于 `submission_artifacts/api_load_smoke/`，当前保存 8 请求、并发 4 的本地 FastAPI TestClient 结果，8/8 成功且每次都落盘 trace/result/summary；同一脚本也在 CI 中以 6 请求、并发 3 的小规模门禁运行，失败条件包括成功率低于 100%、artifact 完整率低于 100% 或 P95 超过 5 秒。本地 HTTP loopback 压测结果位于 `submission_artifacts/http_load_test/` 和 `submission_artifacts/http_load_test_100/`：前者保存 12 请求、并发 6、12/12 成功并保留每次请求 artifact；后者保存 100 请求、并发 20，混合同步 `/v1/parse` 和异步 `/v1/jobs`，100/100 成功、P95 约 4.21 秒。这是本地 TCP 层验证；公网和 GPU 压测需在部署环境另跑。
 
 本地 MinerU CLI API 调用：
 
