@@ -74,6 +74,11 @@ foreach ($item in $items) {
   }
 }
 
+Get-ChildItem -LiteralPath $root -File -Filter "*.md" | ForEach-Object {
+  $target = Join-Path $stage $_.Name
+  Copy-Item -LiteralPath $_.FullName -Destination $target -Force
+}
+
 $textExtensions = @(".md", ".json", ".jsonl", ".txt", ".py", ".toml", ".ps1", ".html", ".yml", ".yaml")
 $jsonEscapedRoot = $root.Replace('\', '\\')
 $slashRoot = $root.Replace('\', '/')

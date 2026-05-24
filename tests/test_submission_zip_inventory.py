@@ -12,6 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_ZIP_ENTRIES = {
     "README.md",
+    "技术报告.md",
     "pyproject.toml",
     ".github/workflows/tests.yml",
     "src/mineru_data_agent/cli.py",
