@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="570" viewBox="0 0 640 570" fill="none">
+  <defs>
+    <radialGradient id="halo"><stop stop-color="#eac784" stop-opacity=".12"/><stop offset="1" stop-color="#eac784" stop-opacity="0"/></radialGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fcf6e9"/><stop offset="1" stop-color="#dbcaac"/></linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1c1e21"/><stop offset="1" stop-color="#101317"/></linearGradient>
+    <linearGradient id="line" x1="85" y1="250" x2="580" y2="250" gradientUnits="userSpaceOnUse"><stop stop-color="#be9453" stop-opacity=".2"/><stop offset=".5" stop-color="#e2bd77"/><stop offset="1" stop-color="#be9453" stop-opacity=".3"/></linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="15" stdDeviation="17" flood-color="#000" flood-opacity=".5"/></filter>
+    <filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="4"/></filter>
+  </defs>
+  <circle cx="337" cy="282" r="255" fill="url(#halo)"/>
+  <g stroke="#b69765">
+    <ellipse cx="337" cy="285" rx="240" ry="188" stroke-opacity=".1" transform="rotate(-18 337 285)"/>
+    <circle cx="337" cy="285" r="154" stroke-opacity=".15" stroke-dasharray="2 11"/>
+    <circle cx="337" cy="285" r="111" stroke-opacity=".18"/>
+    <path d="M84 410h480M112 430h416M143 450h357M183 470h264M180 380l-61 107m124-107-32 119m93-119v128m61-128 32 119m30-119 61 107" stroke-opacity=".065"/>
+  </g>
+  <text x="337" y="74" text-anchor="middle" font-family="Consolas,monospace" font-size="8" letter-spacing="2.6" fill="#8b795b">UNDERSTAND · ROUTE · VERIFY · DELIVER</text>
+  <g stroke="url(#line)" stroke-width="1.2">
+    <path d="M142 215h68c29 0 29 71 58 71h27"/>
+    <path d="M384 284h28c26 0 30-73 57-73h42"/>
+    <path d="M337 334v46c0 24-17 24-17 45" stroke-dasharray="3 6"/>
+    <path d="M318 446H191c-34 0-34-61-64-61h-9" stroke-dasharray="3 6"/>
+  </g>
+  <g transform="rotate(-12 144 242)" filter="url(#shadow)">
+    <rect x="65" y="132" width="145" height="202" rx="2" fill="#17191b" stroke="#8f7850" stroke-opacity=".5"/>
+    <rect x="76" y="121" width="145" height="202" rx="2" fill="#343126" stroke="#c0a373" stroke-opacity=".65"/>
+    <path d="M87 110h119l26 27v175H87z" fill="url(#paper)" stroke="#e2cc9e"/>
+    <path d="M206 110v27h26" fill="#cfba92" stroke="#c1a981"/>
+    <rect x="101" y="127" width="64" height="17" fill="#2d2921"/>
+    <text x="110" y="139" font-family="Consolas,monospace" font-size="8" letter-spacing="1.2" fill="#ebd7b2">SOURCE_001</text>
+    <path d="M101 167h106m-106 10h94m-94 10h106m-106 10h54" stroke="#9b8e78" stroke-width="2" stroke-opacity=".6"/>
+    <rect x="101" y="218" width="106" height="49" fill="#e6d9bf" stroke="#9c8a6a" stroke-opacity=".55"/>
+    <path d="M101 234h106m-106 16h106m-65-32v49m34-49v49" stroke="#a79677" stroke-opacity=".6"/>
+    <rect x="142" y="234" width="34" height="16" fill="#bb8c38" fill-opacity=".2"/>
+    <path d="M101 285h74m-74 7h43" stroke="#9b8e78" stroke-width="2" stroke-opacity=".6"/>
+    <text x="178" y="295" font-family="Consolas,monospace" font-size="7" fill="#947d58">PDF</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="407" y="159" width="189" height="205" rx="2" fill="url(#panel)" stroke="#8e744b" stroke-opacity=".75"/>
+    <path d="M407 197h189" stroke="#6a583b" stroke-opacity=".7"/>
+    <circle cx="423" cy="178" r="2" fill="#ddb66e"/>
+    <text x="435" y="181" font-family="Consolas,monospace" font-size="7" letter-spacing=".9" fill="#cfb27b">DOCUMENT PACKAGE</text>
+    <g fill="#c2b59c" font-family="Consolas,monospace" font-size="10">
+      <text x="441" y="229">result.json</text><text x="441" y="265">trace.json</text><text x="441" y="301">document_skill/</text>
+    </g>
+    <g stroke="#b0935c" stroke-width="1.1"><path d="M423 218h9v14h-9zM423 254h9v14h-9zM422 292h5l2 3h6v11h-13z"/></g>
+    <g stroke="#b2a073" stroke-opacity=".22"><path d="M422 241h159M422 277h159M422 313h159"/></g>
+    <g stroke="#a6b18f" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="m567 223 3 3 5-6m-8 39 3 3 5-6m-8 39 3 3 5-6"/></g>
+    <text x="422" y="342" font-family="Consolas,monospace" font-size="6.5" letter-spacing="1" fill="#8e7c5a">RESULTS WITH ORIGINAL EVIDENCE</text>
+  </g>
+  <g filter="url(#shadow)">
+    <circle cx="337" cy="285" r="69" fill="#111419" stroke="#b48b49"/>
+    <circle cx="337" cy="285" r="61" stroke="#b48b49" stroke-opacity=".25"/>
+    <text x="337" y="286" text-anchor="middle" font-family="Georgia,serif" font-size="37" letter-spacing="-2" fill="#f0cc86">DA</text>
+    <path d="M315 300h44" stroke="#9d7d47" stroke-opacity=".7"/>
+    <text x="337" y="316" text-anchor="middle" font-family="Consolas,monospace" font-size="6" letter-spacing="1.7" fill="#d7b477">HARNESS</text>
+  </g>
+  <g>
+    <circle cx="242" cy="261" r="9" fill="#e7c27a" fill-opacity=".15" filter="url(#glow)"/><circle cx="242" cy="261" r="2.6" fill="#e7c27a"/>
+    <circle cx="438" cy="236" r="9" fill="#e7c27a" fill-opacity=".15" filter="url(#glow)"/><circle cx="438" cy="236" r="2.6" fill="#e7c27a"/>
+    <circle cx="320" cy="386" r="2.6" fill="#c2a064"/>
+    <circle cx="235" cy="161" r="2" fill="#c2a064" fill-opacity=".5"/>
+    <circle cx="527" cy="387" r="1.5" fill="#c2a064" fill-opacity=".5"/>
+    <circle cx="165" cy="375" r="1.5" fill="#c2a064" fill-opacity=".5"/>
+  </g>
+  <text x="244" y="221" font-family="Consolas,monospace" font-size="6.5" letter-spacing=".7" fill="#978162">TASK + PROFILE</text>
+  <text x="379" y="401" font-family="Consolas,monospace" font-size="6.5" letter-spacing=".7" fill="#978162">CHECK + RECOVER</text>
+  <g transform="translate(263 427)">
+    <rect width="114" height="37" fill="#111419" stroke="#7f6945" stroke-opacity=".8"/>
+    <text x="57" y="23" text-anchor="middle" font-family="Consolas,monospace" font-size="7" letter-spacing="1.2" fill="#c6aa73">SOURCE ANCHORS ↗</text>
+  </g>
+  <text x="337" y="520" text-anchor="middle" font-family="Consolas,monospace" font-size="7" letter-spacing="1.5" fill="#82725a">EVERY RESULT HAS A SOURCE.</text>
+</svg>
