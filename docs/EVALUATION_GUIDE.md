@@ -58,7 +58,7 @@ python scripts/run_agent_live_cases.py --provider modelscope --min-completed-rat
 | 难点场景攻克与技术价值 | 跨页财报 fixture、OCR 噪声合同、PDF recovery、controlled failure/recovery、长文档分片与风险说明 | `submission_artifacts/challenge_cases/`、`submission_artifacts/recovery_cases/`、`submission_artifacts/failure_recovery_cases/README.md`、`submission_artifacts/long_document_chunks/`、`submission_artifacts/long_document_risk/long_document_risk_report.md` |
 | Agent 规划与自动执行 | CLI action plan、runtime recovery plan、本地恢复记忆、live tool-calling trace、离线 scripted regression 边界 | `docs/CLI_CONTRACT.md`、`submission_artifacts/memory_cases/`、`submission_artifacts/agent_live_cases/agent_live_report.md`、`submission_artifacts/agent_decision_cases/README.md`、`submission_artifacts/recovery_effectiveness/recovery_effectiveness_report.md` |
 | 系统稳定性与可复现性 | CI 中的 CLI smoke、trace 聚合、覆盖率、代码/测试摘要、提交 zip inventory | `.github/workflows/tests.yml`、`submission_artifacts/stability/stability_report.md`、`submission_artifacts/coverage/coverage_report.md`、`submission_artifacts/code_quality/code_quality_report.md`、`tests/test_submission_zip_inventory.py` |
-| 开源共享与生态价值 | 仓库结构、CLI 契约、License、贡献指南、原创性说明、artifact 索引 | `README.md`、`docs/CLI_CONTRACT.md`、`LICENSE`、`CONTRIBUTING.md`、`docs/ORIGINALITY_AND_COMPLIANCE.md`、`submission_artifacts/ARTIFACTS_INDEX.md` |
+| 开源共享与生态价值 | 仓库结构、CLI 契约、License、维护说明、原创性说明、artifact 索引 | `README.md`、`docs/CLI_CONTRACT.md`、`LICENSE`、`docs/ORIGINALITY_AND_COMPLIANCE.md`、`submission_artifacts/ARTIFACTS_INDEX.md` |
 
 ## 5. 关键数字
 

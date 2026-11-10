@@ -10,7 +10,8 @@ def test_project_docs_are_cli_first() -> None:
     workflow = (PROJECT_ROOT / ".github" / "workflows" / "tests.yml").read_text(encoding="utf-8")
 
     assert "CLI-first" in readme
-    assert "stable review" in readme
+    assert "data-agent run" in readme
+    assert "data-agent chat" in readme
     assert "data-agent run" in cli_contract
     assert "data-agent batch" in cli_contract
     assert "data-agent agent-run" in cli_contract

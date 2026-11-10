@@ -1,0 +1,60 @@
+{
+  "viewports": [
+    {
+      "width": 320,
+      "height": 780,
+      "horizontal_overflow": false,
+      "workflow_panels": 4,
+      "javascript_errors": 0,
+      "http_errors": 0
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "horizontal_overflow": false,
+      "workflow_panels": 4,
+      "javascript_errors": 0,
+      "http_errors": 0
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "horizontal_overflow": false,
+      "workflow_panels": 4,
+      "javascript_errors": 0,
+      "http_errors": 0
+    },
+    {
+      "width": 1024,
+      "height": 900,
+      "horizontal_overflow": false,
+      "workflow_panels": 4,
+      "javascript_errors": 0,
+      "http_errors": 0
+    },
+    {
+      "width": 1440,
+      "height": 1000,
+      "horizontal_overflow": false,
+      "workflow_panels": 4,
+      "javascript_errors": 0,
+      "http_errors": 0
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "horizontal_overflow": false,
+      "workflow_panels": 4,
+      "javascript_errors": 0,
+      "http_errors": 0
+    }
+  ],
+  "interactions": {
+    "mobile_navigation_and_keyboard_tabs": "passed",
+    "clipboard": "passed",
+    "video_playback": "passed"
+  },
+  "local_links": 36,
+  "source_hashes": 24,
+  "result": "passed"
+}

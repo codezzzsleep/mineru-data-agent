@@ -24,7 +24,6 @@ New-Item -ItemType Directory -Force -Path $stage | Out-Null
 $items = @(
   "README.md",
   "mineru_data_agent.html",
-  "CONTRIBUTING.md",
   "LICENSE",
   ".gitignore",
   ".env.example",

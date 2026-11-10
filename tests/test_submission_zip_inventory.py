@@ -78,7 +78,6 @@ def test_submission_zip_script_includes_required_project_areas() -> None:
 
     for item in [
         "README.md",
-        "CONTRIBUTING.md",
         "LICENSE",
         ".github",
         "pyproject.toml",

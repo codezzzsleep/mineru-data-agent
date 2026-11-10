@@ -2,7 +2,7 @@
 
 - [x] 最终提交压缩包包含完整源码、测试、文档和案例 artifact
 - [x] 压缩包提交路径已完整，可用 `dist/mineru-data-agent-submission.zip` 提交
-- [x] 开源发布材料已准备：`LICENSE`、`.gitignore`、`CONTRIBUTING.md`、`.github/ISSUE_TEMPLATE/`、`docs/OPEN_SOURCE_RELEASE.md`
+- [x] 开源发布材料已准备：`LICENSE`、`.gitignore`、`README.md`、`.github/ISSUE_TEMPLATE/`、`docs/OPEN_SOURCE_RELEASE.md`
 - [x] GitHub 公开仓库已创建：https://github.com/codezzzsleep/mineru-data-agent
 - [x] GitHub Actions 测试工作流已加入，push/PR 会运行 pytest
 - [x] README 写清 CLI-first 定位、安装、命令行运行和输出说明
