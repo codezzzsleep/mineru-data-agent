@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MinerU Data Agent - 智能数据处理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        surface: '#ffffff',
+                        deep: '#f8fafc',
+                        borderline: '#e2e8f0'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for clean look */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Scanning Animation for processing cards */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #0ea5e9, transparent);
+            box-shadow: 0 0 8px #0ea5e9;
+            animation: scan 2s linear infinite;
+            opacity: 0.7;
+            z-index: 10;
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        /* Typing dot animation */
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Diff Box popup animation */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-pop-in {
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen font-sans flex flex-col antialiased">
+
+    <!-- Header -->
+    <header class="bg-surface border-b border-borderline sticky top-0 z-40 shadow-sm">
+        <div class="max-w-[1600px] mx-auto px-4 h-14 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-50 p-1.5 rounded-lg border border-brand-100">
+                    <i data-lucide="cpu" class="h-5 w-5 text-brand-600"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight text-gray-900 flex items-center gap-2">
+                        MinerU Data Agent
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 border border-gray-200 font-normal">多模态智能处理终端</span>
+                    </h1>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div id="throughput-counter" class="hidden text-[11px] text-gray-500 font-mono items-center gap-1.5 mr-4">
+                    <i data-lucide="activity" class="w-3.5 h-3.5 text-brand-500"></i> 吞吐: <span id="tps-val">0</span> t/s
+                </div>
+                <span class="flex items-center gap-1.5 text-[11px] text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-medium">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> DeepSeek-V4 Engine
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-[1600px] w-full mx-auto flex h-[calc(100vh-3.5rem)] overflow-hidden">
+
+        <!-- Left: Chat Interface -->
+        <div class="w-[35%] flex flex-col border-r border-borderline bg-surface relative z-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-6 bg-deep custom-scrollbar space-y-6">
+                <!-- Welcome Message -->
+                <div class="flex justify-start">
+                    <div class="max-w-[90%] rounded-2xl rounded-tl-sm p-4 bg-surface border border-borderline shadow-sm">
+                        <p class="text-[13px] text-gray-700 leading-relaxed">
+                            你好！我是 <b>MinerU Data Agent</b>。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator (Hidden by default) -->
+            <div id="typing-indicator" class="hidden px-6 pb-4 bg-deep">
+                <div class="flex space-x-1.5 items-center bg-surface w-fit px-3 py-2 rounded-full border border-borderline shadow-sm">
+                    <div class="w-1.5 h-1.5 bg-brand-500 rounded-full typing-dot"></div>
+                    <div class="w-1.5 h-1.5 bg-brand-500 rounded-full typing-dot"></div>
+                    <div class="w-1.5 h-1.5 bg-brand-500 rounded-full typing-dot"></div>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="p-4 bg-surface border-t border-borderline shrink-0">
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="paperclip" class="w-4 h-4 text-gray-400 group-hover:text-brand-500 transition-colors"></i>
+                    </div>
+                    <textarea id="chat-input" rows="3" readonly
+                        class="w-full bg-deep border border-borderline rounded-xl pl-9 pr-12 py-3 text-[13px] text-gray-800 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 resize-none transition-all custom-scrollbar"
+                        placeholder="点击右侧发送按钮，模拟传入混合图文素材..."></textarea>
+                    <button onclick="startDemoScenario()" id="send-btn" class="absolute bottom-2 right-2 p-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg flex items-center justify-center transition-all shadow-md">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-2 text-center">MinerU Agent 支持混合上传 PDF、截图、手稿并自动路由解析规则</p>
+            </div>
+        </div>
+
+        <!-- Right: Glassbox Visualization & Output -->
+        <div class="w-[65%] bg-deep flex flex-col relative">
+
+            <!-- Default Placeholder -->
+            <div id="vis-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 z-10 transition-opacity duration-300">
+                <i data-lucide="focus" class="w-16 h-16 mb-4 opacity-20 text-brand-500"></i>
+                <h2 class="text-lg font-semibold text-gray-600">等待任务接入</h2>
+                <p class="text-xs text-gray-500 mt-2">Agent Harness 视图将在此展示底层路由调度与解析实况</p>
+            </div>
+
+            <!-- Processing Visualization (Hidden initially) -->
+            <div id="vis-processing" class="hidden absolute inset-0 bg-deep z-20 flex flex-col p-6 overflow-hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="git-merge" class="w-4 h-4 text-brand-500"></i>
+                        多模态并发路由 (Harness Pipeline)
+                    </h3>
+                    <span id="global-status-badge" class="text-[10px] px-2 py-1 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded font-mono flex items-center gap-1.5 transition-colors">
+                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span> ROUTING STAGE
+                    </span>
+                </div>
+
+                <!-- Dynamic Router Console -->
+                <div class="bg-gray-900 rounded-xl p-3 mb-4 border border-gray-800 shadow-inner h-[88px] flex flex-col relative overflow-hidden shrink-0">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500 transition-colors duration-500" id="router-led"></div>
+                    <div class="flex items-center justify-between mb-1.5 pl-2">
+                        <span class="text-[10px] text-gray-400 font-bold flex items-center gap-1.5"><i data-lucide="cpu" class="w-3 h-3 text-indigo-400"></i> Agent Router 嗅探日志</span>
+                    </div>
+                    <div id="routing-log" class="font-mono text-[11px] text-gray-300 space-y-1.5 overflow-y-auto custom-scrollbar flex-1 pl-2 pb-1">
+                        <div class="opacity-50 text-gray-500">> System ready. Receiving 4 payloads...</div>
+                    </div>
+                </div>
+
+                <!-- Grid of Processing Cards -->
+                <div class="grid grid-cols-2 gap-4 flex-1">
+
+                    <!-- Card 1: PDF Mixed -->
+                    <div class="bg-surface rounded-xl border border-borderline shadow-sm overflow-hidden flex flex-col relative group">
+                        <div id="scan-1" class="scan-line hidden"></div>
+                        <div class="p-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="file-text" class="w-4 h-4 text-rose-500"></i>
+                                <span class="text-[11px] font-semibold text-gray-700 truncate max-w-[120px]">...刘祖爱_副本.pdf</span>
+                            </div>
+                            <span id="badge-1" class="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded border border-gray-200 transition-all duration-300">等待嗅探...</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-center items-center text-center">
+                            <div class="w-12 h-14 bg-gray-100 border border-gray-200 rounded flex flex-col justify-between p-1.5 mb-3 relative overflow-hidden">
+                                <div class="w-full h-1.5 bg-gray-300 rounded-sm"></div>
+                                <div class="w-3/4 h-1.5 bg-gray-300 rounded-sm"></div>
+                                <div class="w-full h-4 bg-rose-200/50 border border-rose-300 border-dashed rounded-sm my-1 flex items-center justify-center text-[6px] text-rose-600 font-bold">图表切片</div>
+                                <div class="w-full h-1.5 bg-gray-300 rounded-sm"></div>
+                            </div>
+                            <p id="status-1" class="text-[11px] text-gray-500 font-mono">等待调度...</p>
+                        </div>
+                        <div class="h-1 w-full bg-gray-100"><div id="prog-1" class="h-full bg-rose-500 w-0 transition-all duration-300"></div></div>
+                    </div>
+
+                    <!-- Card 2: Old Newspaper -->
+                    <div class="bg-surface rounded-xl border border-borderline shadow-sm overflow-hidden flex flex-col relative">
+                        <div id="scan-2" class="scan-line hidden"></div>
+                        <div class="p-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="layout" class="w-4 h-4 text-emerald-500"></i>
+                                <span class="text-[11px] font-semibold text-gray-700">image_dd19ff.png</span>
+                            </div>
+                            <span id="badge-2" class="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded border border-gray-200 transition-all duration-300">等待嗅探...</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-center items-center text-center">
+                            <div class="w-16 h-12 flex gap-1 mb-3">
+                                <div class="flex-1 border border-gray-200 bg-gray-50 flex flex-col gap-1 p-1">
+                                    <div class="w-full h-1 bg-gray-300"></div><div class="w-full h-1 bg-gray-300"></div><div class="w-full h-1 bg-gray-300"></div>
+                                </div>
+                                <div class="flex-1 border border-gray-200 bg-gray-50 flex flex-col gap-1 p-1">
+                                    <div class="w-full h-1 bg-gray-300"></div><div class="w-full h-1 bg-gray-300"></div><div class="w-full h-1 bg-gray-300"></div>
+                                </div>
+                            </div>
+                            <p id="status-2" class="text-[11px] text-gray-500 font-mono">等待调度...</p>
+                        </div>
+                        <div class="h-1 w-full bg-gray-100"><div id="prog-2" class="h-full bg-emerald-500 w-0 transition-all duration-300"></div></div>
+                    </div>
+
+                    <!-- Card 3: Grid Table (Conflict Demo) -->
+                    <div class="bg-surface rounded-xl border border-borderline shadow-sm overflow-hidden flex flex-col relative">
+                        <div id="scan-3" class="scan-line hidden"></div>
+                        <div class="p-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="grid-3x3" class="w-4 h-4 text-amber-500"></i>
+                                <span class="text-[11px] font-semibold text-gray-700">image_dd1d0b.jpg</span>
+                            </div>
+                            <span id="badge-3" class="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded border border-gray-200 transition-all duration-300">等待嗅探...</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-center items-center text-center relative">
+                            <!-- Visual Table -->
+                            <div class="w-16 h-12 border border-gray-300 grid grid-cols-3 grid-rows-3 gap-[1px] bg-gray-300 mb-3 opacity-70">
+                                <div class="bg-white"></div><div class="bg-white"></div><div class="bg-white"></div>
+                                <div class="bg-white"></div><div class="bg-white"></div><div class="bg-white"></div>
+                                <div class="bg-white"></div><div class="bg-white flex items-center justify-center relative"><span id="target-cell" class="text-[5px] text-gray-400">???</span></div><div class="bg-white"></div>
+                            </div>
+                            <p id="status-3" class="text-[11px] text-gray-500 font-mono">等待调度...</p>
+
+                            <!-- Diff Box Overlay (Hidden initially) -->
+                            <div id="diff-box" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-30 flex-col items-center justify-center border-2 border-brand-400 animate-pop-in">
+                                <div class="bg-brand-50 text-brand-700 text-[9px] font-bold px-2 py-0.5 rounded-b absolute top-0">幻觉仲裁介入</div>
+                                <div class="flex flex-col gap-1.5 mt-2">
+                                    <div class="flex items-center justify-between gap-3 text-[10px] font-mono bg-red-50 text-red-600 px-2 py-1 rounded border border-red-100">
+                                        <span>VLM 视觉感知:</span> <span class="line-through opacity-70">6577</span> ❌
+                                    </div>
+                                    <div class="flex items-center justify-between gap-3 text-[10px] font-mono bg-emerald-50 text-emerald-600 px-2 py-1 rounded border border-emerald-100 shadow-sm">
+                                        <span class="font-bold">物理 OCR 基准:</span> <span class="font-bold">6603</span> ✅
+                                    </div>
+                                </div>
+                                <p class="text-[8px] text-gray-400 mt-2">已回滚至物理骨架，清除幻觉</p>
+                            </div>
+                        </div>
+                        <div class="h-1 w-full bg-gray-100"><div id="prog-3" class="h-full bg-amber-500 w-0 transition-all duration-300"></div></div>
+                    </div>
+
+                    <!-- Card 4: Manuscript -->
+                    <div class="bg-surface rounded-xl border border-borderline shadow-sm overflow-hidden flex flex-col relative">
+                        <div id="scan-4" class="scan-line hidden"></div>
+                        <div class="p-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="pen-tool" class="w-4 h-4 text-purple-500"></i>
+                                <span class="text-[11px] font-semibold text-gray-700 truncate max-w-[120px]">88caf808...3ec.jpg</span>
+                            </div>
+                            <span id="badge-4" class="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded border border-gray-200 transition-all duration-300">等待嗅探...</span>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-center items-center text-center">
+                            <div class="w-14 h-10 border border-gray-200 bg-[#fdfbf7] p-1 flex flex-col gap-1.5 mb-3 shadow-inner transform rotate-1">
+                                <div class="text-[6px] text-gray-400 font-serif line-through">梁淑〔漱〕溟</div>
+                                <div class="w-full h-0.5 bg-gray-300"></div>
+                            </div>
+                            <p id="status-4" class="text-[11px] text-gray-500 font-mono">等待调度...</p>
+                        </div>
+                        <div class="h-1 w-full bg-gray-100"><div id="prog-4" class="h-full bg-purple-500 w-0 transition-all duration-300"></div></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Final Result View (Progressive SKILL Delivery Format) -->
+            <div id="content-skill" class="hidden h-full flex-col relative bg-surface z-30">
+                <!-- Header explaining the concept -->
+                <div class="bg-indigo-50/80 border-b border-indigo-100 p-3.5 flex items-start gap-3 shrink-0">
+                    <div class="mt-0.5 bg-indigo-100 text-indigo-600 p-1.5 rounded-lg shadow-sm border border-indigo-200">
+                        <i data-lucide="boxes" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-[13px] font-bold text-indigo-900">面向 AI Agent 的渐进式文档交付格式 (SKILL Package)</h3>
+                        <p class="text-[11px] text-indigo-700 mt-0.5 font-medium">默认只暴露描述供模型决策，正文及多模态证据实现「按需加载」。</p>
+                    </div>
+                </div>
+
+                <!-- Two-pane explorer -->
+                <div class="flex flex-1 overflow-hidden">
+                    <!-- Left: File Tree -->
+                    <div class="w-[32%] border-r border-borderline bg-[#fafafa] p-4 overflow-y-auto font-mono text-[11px] text-gray-600 custom-scrollbar">
+                        <div class="text-indigo-900 font-bold flex items-center gap-1.5 mb-2.5"><i data-lucide="folder-open" class="w-4 h-4 text-indigo-500 fill-indigo-500/20"></i> document_skill/</div>
+                        <div class="pl-2 space-y-2 border-l border-gray-200/80 ml-2 mt-1">
+                            <div class="flex items-center gap-2 text-brand-700 bg-brand-50 rounded py-1 px-2 -ml-2 font-semibold cursor-pointer border border-brand-100/50 shadow-sm"><i data-lucide="file-code-2" class="w-3.5 h-3.5"></i> SKILL.md</div>
+                            <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="file-json" class="w-3.5 h-3.5 text-amber-500"></i> manifest.json</div>
+                            <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="file-json" class="w-3.5 h-3.5 text-amber-500"></i> material_index.json</div>
+
+                            <div class="flex items-center gap-2 mt-2.5 pt-1 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="folder" class="w-3.5 h-3.5 text-blue-400 fill-blue-400/20"></i> references/</div>
+                            <div class="pl-4 space-y-1.5 border-l border-gray-200/80 ml-1.5 mt-1">
+                                <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="file-text" class="w-3 h-3 text-gray-400"></i> summary.md</div>
+                                <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="file-text" class="w-3 h-3 text-gray-400"></i> structured.md</div>
+                                <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="file-text" class="w-3 h-3 text-gray-400"></i> tables.md</div>
+                                <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="file-text" class="w-3 h-3 text-gray-400"></i> evidence.md</div>
+                                <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="folder" class="w-3 h-3 text-blue-400 fill-blue-400/20"></i> pages/</div>
+                            </div>
+
+                            <div class="flex items-center gap-2 mt-2.5 pt-1 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="folder" class="w-3.5 h-3.5 text-purple-400 fill-purple-400/20"></i> chunks/</div>
+                            <div class="pl-4 space-y-1.5 border-l border-gray-200/80 ml-1.5 mt-1">
+                                <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="database" class="w-3 h-3 text-gray-400"></i> evidence_chunks.jsonl</div>
+                            </div>
+
+                            <div class="flex items-center gap-2 mt-2.5 pt-1 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="folder" class="w-3.5 h-3.5 text-slate-400 fill-slate-400/20"></i> raw/</div>
+                            <div class="pl-4 space-y-1.5 border-l border-gray-200/80 ml-1.5 mt-1">
+                                <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="file-json" class="w-3 h-3 text-gray-400"></i> result.json</div>
+                                <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="file-json" class="w-3 h-3 text-gray-400"></i> trace.json</div>
+                            </div>
+
+                            <div class="flex items-center gap-2 mt-2.5 pt-1 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="folder" class="w-3.5 h-3.5 text-emerald-400 fill-emerald-400/20"></i> assets/</div>
+                            <div class="pl-4 space-y-1.5 border-l border-gray-200/80 ml-1.5 mt-1">
+                                <div class="flex items-center gap-2 hover:text-gray-900 cursor-pointer transition-colors"><i data-lucide="file" class="w-3 h-3 text-gray-400"></i> source.pdf</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: File Viewer -->
+                    <div class="flex-1 bg-white flex flex-col relative min-w-0">
+                        <div class="border-b border-borderline px-4 py-2 bg-gray-50/80 text-[11px] font-mono text-gray-500 flex items-center justify-between shrink-0 shadow-sm z-10">
+                            <span class="flex items-center gap-2 font-medium text-gray-700">
+                                <i data-lucide="file-code-2" class="w-4 h-4 text-brand-500"></i>
+                                SKILL.md
+                            </span>
+                            <div class="flex items-center gap-3">
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    Ready
+                                </span>
+                                <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded text-[10px] font-bold border border-indigo-200">
+                                    Payload: 42 Tokens
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-5 flex-1 overflow-y-auto font-mono text-[12px] leading-relaxed relative bg-[#1e1e1e] custom-scrollbar">
+                            <pre class="text-[#d4d4d4] break-all whitespace-pre-wrap"><code class="block"><span class="text-gray-500 select-none">1 |</span> <span class="text-gray-400">---</span>
+<span class="text-gray-500 select-none">2 |</span> <span class="text-[#9cdcfe]">name</span><span class="text-gray-400">:</span> <span class="text-[#ce9178]">balujun-materials-recovery-analysis</span>
+<span class="text-gray-500 select-none">3 |</span>
+<span class="text-gray-500 select-none">4 |</span> <span class="text-[#9cdcfe]">description</span><span class="text-gray-400">:</span> <span class="text-[#ce9178]">用于回答抗战时期八路军对兵工材料回收与再利用的具体措施、战役伤亡统计数据（基于校准后的表格），以及相关旧报纸法案出版物和校对注记证据的问题。</span>
+<span class="text-gray-500 select-none">5 |</span> <span class="text-gray-400">---</span>
+<span class="text-gray-500 select-none">6 |</span>
+<span class="text-gray-500 select-none">7 |</span> <span class="text-[#6a9955]"># 提示 (AI System Prompt): </span>
+<span class="text-gray-500 select-none">8 |</span> <span class="text-[#6a9955]">> 当你需要查阅具体伤亡明细、兵工回收数据时，</span>
+<span class="text-gray-500 select-none">9 |</span> <span class="text-[#6a9955]">> 请调用内部检索工具读取 `references/tables.md`。</span>
+<span class="text-gray-500 select-none">10|</span> <span class="text-[#6a9955]">> 当你需要校验原始手稿出处时，请载入 `chunks/evidence_chunks.jsonl`。</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Core Value Footer Bar -->
+                <div class="bg-indigo-600 text-white text-[12px] px-4 py-2.5 flex items-center justify-center gap-2 shrink-0 font-medium">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-indigo-300"></i>
+                    核心价值：不是把全文直接交给模型，而是先给 AI 一个可理解的资料目录与描述，再按需加载正文。
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Init icons
+        window.onload = function() {
+            lucide.createIcons();
+            // Fill input box initially
+            document.getElementById('chat-input').value = "把《抗战时期八路军对兵工材料的回收与再利用_刘祖爱_副本.pdf》、image_dd19ff.png、image_dd1d0b.jpg、88caf8081861b5f90de923ec3558b9b9.jpg 等资料精确提取文本资料。";
+        };
+
+        const chatMessages = document.getElementById('chat-messages');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        let isStarted = false;
+
+        function addMessage(text, isUser = false) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = `max-w-[90%] rounded-2xl p-4 shadow-sm text-[13px] leading-relaxed
+                ${isUser ? 'bg-brand-600 text-white rounded-tr-sm' : 'bg-surface border border-borderline text-gray-700 rounded-tl-sm'}`;
+
+            // Allow basic markdown parsing for bold
+            const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+            bubble.innerHTML = formattedText;
+
+            wrapper.appendChild(bubble);
+            chatMessages.appendChild(wrapper);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTyping() {
+            typingIndicator.classList.remove('hidden');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTyping() {
+            typingIndicator.classList.add('hidden');
+        }
+
+        function startDemoScenario() {
+            const val = chatInput.value.trim();
+            if(!val) return;
+
+            // Handle post-extraction follow-up chat
+            if(isStarted) {
+                addMessage(val, true);
+                chatInput.value = '';
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    addMessage("根据 `references/tables.md` 中核正后的防幻觉数据，战役伤亡总计为 **6603** 人。\n\n需要我继续为您检索兵工材料的回收政策吗？");
+                }, 1000);
+                return;
+            }
+
+            // Normal startup flow
+            isStarted = true;
+            chatInput.value = '';
+            chatInput.readOnly = true;
+            sendBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            addMessage(val, true);
+            showTyping();
+
+            setTimeout(() => {
+                hideTyping();
+                addMessage("收到提取指令。正在唤醒底层 **MinerU Agent Harness** 嗅探文件特征并分配路由...");
+
+                // Show processing view
+                document.getElementById('vis-placeholder').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('vis-placeholder').classList.add('hidden');
+                    document.getElementById('vis-processing').classList.remove('hidden');
+                    startSimulation();
+                }, 300);
+
+            }, 800);
+        }
+
+        function appendRouterLog(htmlText) {
+            const logBox = document.getElementById('routing-log');
+            const entry = document.createElement('div');
+            entry.className = "animate-pop-in";
+            entry.innerHTML = htmlText;
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function updateBadge(id, text, colorClasses) {
+            const badge = document.getElementById(`badge-${id}`);
+            badge.innerText = text;
+            badge.className = `text-[9px] px-1.5 py-0.5 rounded border transition-all duration-300 ${colorClasses}`;
+        }
+
+        function startSimulation() {
+            // --- STAGE 1: Dynamic Routing (Sequential Sniffing) ---
+            let delay = 500;
+
+            // PDF Sniff
+            setTimeout(() => {
+                appendRouterLog(`<span class="text-rose-400">[File_1]</span> 嗅探 PDF 底层... 发现原生字符层 & 复杂报表。分配混合路由策略。`);
+                updateBadge(1, "文本库 + VLM切片", "bg-rose-50 text-rose-600 border-rose-200");
+                document.getElementById(`status-1`).innerText = "路由已就绪";
+            }, delay += 500);
+
+            // Newspaper Sniff
+            setTimeout(() => {
+                appendRouterLog(`<span class="text-emerald-400">[File_2]</span> 嗅探 PNG... 识别到高密度分栏。指向 <span class="text-emerald-300">Layout Decoupling</span> 专线。`);
+                updateBadge(2, "物理版面解耦", "bg-emerald-50 text-emerald-700 border-emerald-200");
+                document.getElementById(`status-2`).innerText = "路由已就绪";
+            }, delay += 600);
+
+            // Grid Table Sniff
+            setTimeout(() => {
+                appendRouterLog(`<span class="text-amber-400">[File_3]</span> 嗅探 JPG... 识别无框网格。开启 <span class="text-amber-300">VLM/OCR 联合双重核正</span> 链路。`);
+                updateBadge(3, "VLM/OCR 联合仲裁", "bg-amber-50 text-amber-700 border-amber-200");
+                document.getElementById(`status-3`).innerText = "路由已就绪";
+            }, delay += 600);
+
+            // Manuscript Sniff
+            setTimeout(() => {
+                appendRouterLog(`<span class="text-purple-400">[File_4]</span> 嗅探 JPG... 识别手写/生僻印记。分配 <span class="text-purple-300">OCR 实体纠偏</span> 节点。`);
+                updateBadge(4, "手写/实体纠偏", "bg-purple-50 text-purple-700 border-purple-200");
+                document.getElementById(`status-4`).innerText = "路由已就绪";
+            }, delay += 600);
+
+
+            // --- STAGE 2: Concurrent Processing Execution ---
+            setTimeout(() => {
+                appendRouterLog(`<span class="text-white font-bold bg-indigo-500 px-1 rounded">> 路由决策完毕，全功率启动并发流水线。</span>`);
+                document.getElementById('router-led').classList.replace('bg-indigo-500', 'bg-blue-500');
+
+                const globalBadge = document.getElementById('global-status-badge');
+                globalBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> PROCESSING`;
+                globalBadge.className = "text-[10px] px-2 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded font-mono flex items-center gap-1.5 transition-colors";
+
+                // Activate scan lines
+                for(let i=1; i<=4; i++) {
+                    document.getElementById(`scan-${i}`).classList.remove('hidden');
+                }
+
+                // Throughput fake counter
+                const tpCounter = document.getElementById('throughput-counter');
+                tpCounter.classList.remove('hidden');
+                tpCounter.classList.add('flex');
+                let tps = 0;
+                window.tpsInterval = setInterval(() => {
+                    tps = Math.floor(Math.random() * 45) + 120;
+                    document.getElementById('tps-val').innerText = tps;
+                }, 500);
+
+                // Timeline of processing events
+                setTimeout(() => updateCard(1, 30, '提取PDF原生文本层...'), 800);
+                setTimeout(() => updateCard(2, 40, '应用物理分栏坐标系...'), 1000);
+                setTimeout(() => updateCard(4, 50, '校准印刷异体字...'), 1200);
+                setTimeout(() => updateCard(3, 30, 'VLM / OCR 双路并行识别...'), 1500);
+
+                setTimeout(() => updateCard(1, 60, '提取图表切片交由VLM...'), 2000);
+                setTimeout(() => updateCard(4, 100, '修正: 梁淑[漱]溟 ✅', 'bg-emerald-500'), 2200);
+                setTimeout(() => updateCard(2, 100, '老报纸提取完成 ✅', 'bg-emerald-500'), 2500);
+
+                // Hallucination Arbitration trigger
+                setTimeout(() => {
+                    updateCard(3, 70, '发现数字置信度冲突...');
+                    document.getElementById('target-cell').innerText = "6577";
+                    document.getElementById('target-cell').classList.add('text-rose-500', 'font-bold', 'text-[8px]');
+                    setTimeout(() => {
+                        document.getElementById('diff-box').classList.remove('hidden');
+                        document.getElementById('diff-box').classList.add('flex');
+                    }, 500);
+                }, 3000);
+
+                setTimeout(() => {
+                    updateCard(3, 100, '已拦截幻觉，回滚物理字框 6603 ✅', 'bg-emerald-500');
+                    updateCard(1, 100, '混合解析完成 ✅', 'bg-emerald-500');
+                }, 4500);
+
+                // Finish simulation
+                setTimeout(() => {
+                    clearInterval(window.tpsInterval);
+                    document.getElementById('tps-val').innerText = '0';
+
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addMessage("⚙️ **多模态路由与解析已全部完成**。\n已成功修正战役伤亡表的 VLM 数字幻觉，并修复手稿实体排版错误。\n\n成果已封装为按需加载的 **SKILL 渐进式文档格式**，右侧已为您展开。");
+
+                        // Switch to SKILL view
+                        document.getElementById('vis-processing').classList.add('hidden');
+                        document.getElementById('content-skill').classList.remove('hidden');
+                        document.getElementById('content-skill').classList.add('flex');
+
+                        // Reactivate chat
+                        chatInput.readOnly = false;
+                        chatInput.placeholder = "Agent 已就绪。你可以追问细节（如：伤亡总计到底是多少？）";
+                        sendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        chatInput.focus();
+                    }, 1000);
+
+                }, 5200);
+
+            }, delay + 800);
+        }
+
+        function updateCard(id, progress, statusText, colorClass = null) {
+            const prog = document.getElementById(`prog-${id}`);
+            const stat = document.getElementById(`status-${id}`);
+            prog.style.width = `${progress}%`;
+            stat.innerText = statusText;
+            if(colorClass) {
+                prog.className = `h-full transition-all duration-300 ${colorClass}`;
+                document.getElementById(`scan-${id}`).classList.add('hidden'); // Stop scanning
+                stat.classList.remove('text-gray-500');
+                stat.classList.add('text-emerald-600', 'font-bold');
+            }
+        }
+    </script>
+</body>
+</html>

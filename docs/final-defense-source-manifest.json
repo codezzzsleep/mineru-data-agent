@@ -1,0 +1,104 @@
+{
+  "source_archive": "MinerU.zip",
+  "source_directory": "MinerU/mineru-data-agent-submission/",
+  "normalization": "CRLF to LF only",
+  "source_file_count": 24,
+  "files": [
+    {
+      "path": "src/mineru_data_agent/agent.py",
+      "sha256": "5fb79409548de0f55d0e4c5d8def00557575b05e0fc92f3854af5d07c0b4ea11"
+    },
+    {
+      "path": "src/mineru_data_agent/agent_live.py",
+      "sha256": "57f18d011cf339aff64b87e54bd93cf741b64059bb7e0d924317446b1c84e24c"
+    },
+    {
+      "path": "src/mineru_data_agent/api.py",
+      "sha256": "b74ed2ed32ed58efb773132280967e663887e15dc50db3c8be436412f2f4edb9"
+    },
+    {
+      "path": "src/mineru_data_agent/batch.py",
+      "sha256": "23106050f603aef2e0d70ba1f2d21b0d43b696a13daf65544eca142bfcb031a9"
+    },
+    {
+      "path": "src/mineru_data_agent/cli.py",
+      "sha256": "c7456934c7f15e9400f71a52f41572994c489741a401b311f6a69128a4f396bd"
+    },
+    {
+      "path": "src/mineru_data_agent/consistency.py",
+      "sha256": "db7d6068e8c76a579c48574ccfe1a143b87fa63fe8202e2d10e2e0c7942550ed"
+    },
+    {
+      "path": "src/mineru_data_agent/corpus.py",
+      "sha256": "659c4764c985073e05de2b13183a577f0522ff3847c3dde5984a2766e0b5b47b"
+    },
+    {
+      "path": "src/mineru_data_agent/evaluation.py",
+      "sha256": "38fca47f1e5edd9f13c5ac683b80e3278eb4f98f91f87ef9a1219bc0f0e67f63"
+    },
+    {
+      "path": "src/mineru_data_agent/extractors.py",
+      "sha256": "c38c4aa0f11fb9c82a6c568e273cf7987de2fa3e1da878e1ad58b5f6c6b80660"
+    },
+    {
+      "path": "src/mineru_data_agent/interactive.py",
+      "sha256": "0414849347ab9de4879b268a0b050378c33f4ab3dc57034615c38cc049b745ac"
+    },
+    {
+      "path": "src/mineru_data_agent/llm_client.py",
+      "sha256": "0e764d827b5c9388e6d51e1282ff9b560d7be561ca4f437d1689ca7e34105c20"
+    },
+    {
+      "path": "src/mineru_data_agent/logging_utils.py",
+      "sha256": "71646b5effe3d72ca1521c7fe034ab36f6800a33bcb8d3be72b11d9abd671487"
+    },
+    {
+      "path": "src/mineru_data_agent/memory.py",
+      "sha256": "22253eace28755feb65994ea1637ac2112700e75e17bf8f921db378df0a8c310"
+    },
+    {
+      "path": "src/mineru_data_agent/mineru_client.py",
+      "sha256": "34fa17af7f400aa71ea4ec2335a7df6489601d7ef2e96965a8801d69b9a60777"
+    },
+    {
+      "path": "src/mineru_data_agent/models.py",
+      "sha256": "07d8cc7c0d689f6543be2b2015d7b1e18a41c4536d7aa54709b4b0eb1e010bf3"
+    },
+    {
+      "path": "src/mineru_data_agent/planner.py",
+      "sha256": "a5160541666895d0a5ead5d40084e443631993e36d0865e13b9a74a6ca91b305"
+    },
+    {
+      "path": "src/mineru_data_agent/profile_config.py",
+      "sha256": "71e51930f4adbc0790bfe12c500aa3bb847173046b541db054fc0c0e616d8687"
+    },
+    {
+      "path": "src/mineru_data_agent/recovery.py",
+      "sha256": "a0796a94315d1249bf0df28924991795ba67ba033732ab580e35cca41b2813cb"
+    },
+    {
+      "path": "src/mineru_data_agent/retrieval_exporter.py",
+      "sha256": "ebd246c4b067239e30684d538f219910ec1992d26950a70e8269048c1ebc52a1"
+    },
+    {
+      "path": "src/mineru_data_agent/routing.py",
+      "sha256": "388d997bfb8f5787a60ced4ab552b3d1aa1a1bd4d153c3723e99661b0bd6c179"
+    },
+    {
+      "path": "src/mineru_data_agent/skill_exporter.py",
+      "sha256": "9874d2505f5877588ea5b553928f9b7d9edd2e868de2407e3d21666305ce79af"
+    },
+    {
+      "path": "src/mineru_data_agent/source_packager.py",
+      "sha256": "d8beb988d733900fd8b207f1357aec8d1d1d5e3f1444997dcff90df3061eebf6"
+    },
+    {
+      "path": "src/mineru_data_agent/validators.py",
+      "sha256": "d38f30a2d6f8e0da2fe48a03239cf0add7c40c87af9aa3a62f94fb6845c1b541"
+    },
+    {
+      "path": "src/mineru_data_agent/__init__.py",
+      "sha256": "6583a861e76162baad7e245015d66694a75618a6773ce2e9525f9324a41d6083"
+    }
+  ]
+}

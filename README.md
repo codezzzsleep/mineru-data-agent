@@ -1,6 +1,10 @@
 # MinerU Data Agent
 
+CLI-first Data Agent Harness for complex document processing, with stable review gates, traceable recovery, and Agent-ready document skill packages.
+
 本项目为 MDIC 2026 赛道二数据智能体提交作品，主交付形态是命令行工具 `data-agent`。
+
+本仓库已同步决赛答辩版本，包含交互式 `chat`、自动路由和逐本语料包。版本来源与发布检查见 [决赛版本说明](docs/FINAL_DEFENSE_RELEASE.md)。
 
 **正式技术报告只有一份：根目录 [技术报告.md](技术报告.md)。**
 
@@ -25,6 +29,14 @@ data-agent run --input examples/cases/case_1_financial_report.html --out runs/cl
 ```bash
 data-agent batch --manifest examples/batch_manifest.json --out runs/batch_demo
 ```
+
+把批处理或切块处理结果重组为“每份原始资料一个 AI 友好交付包”：
+
+```bash
+data-agent corpus package-sources --run-root runs/202606170251 --source-root 史料part --out runs/source_packages
+```
+
+每份资料目录会包含 `result.json`、`summary.md`、`trace.json`、`retrieval/retrieval_chunks.jsonl` 和 `document_skill/`。如果一本资料被拆成多个页段处理，系统会合并回同一个原始资料目录，并在 `trace.json` 与 `result.json.source_runs` 中保留页段和原 run 证据。
 
 Live LLM Agent 复跑需要真实 provider key：
 

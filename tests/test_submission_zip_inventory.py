@@ -11,6 +11,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 REQUIRED_ZIP_ENTRIES = {
+    ".env.example",
+    "mineru_data_agent.html",
     "README.md",
     "技术报告.md",
     "pyproject.toml",
@@ -18,6 +20,12 @@ REQUIRED_ZIP_ENTRIES = {
     "src/mineru_data_agent/cli.py",
     "src/mineru_data_agent/agent.py",
     "src/mineru_data_agent/agent_live.py",
+    "src/mineru_data_agent/interactive.py",
+    "src/mineru_data_agent/consistency.py",
+    "src/mineru_data_agent/corpus.py",
+    "src/mineru_data_agent/routing.py",
+    "src/mineru_data_agent/skill_exporter.py",
+    "src/mineru_data_agent/source_packager.py",
     "tests/test_cli.py",
     "tests/test_agent_live.py",
     "docs/技术报告.md",
@@ -40,6 +48,8 @@ FORBIDDEN_ENTRY_PARTS = {
     "review_exchange",
     "real_world_docs",
     "__pycache__",
+    ".claude",
+    ".codex",
 }
 
 TEXT_ENTRY_SUFFIXES = {".md", ".json", ".jsonl", ".txt", ".py", ".toml", ".ps1", ".html", ".yml", ".yaml"}
@@ -101,6 +111,9 @@ def test_submission_zip_inventory_if_present() -> None:
             assert ".." not in parts
             assert ":" not in normalized
             assert not normalized.endswith(".pyc")
+            assert Path(normalized).suffix.lower() not in {".sqlite", ".sqlite3", ".pem", ".key", ".p12", ".pfx"}
+            basename = Path(normalized).name
+            assert not (basename.startswith(".env") and not basename.endswith(".example")), normalized
             assert not (parts & FORBIDDEN_ENTRY_PARTS), normalized
             if Path(normalized).suffix.lower() in TEXT_ENTRY_SUFFIXES or Path(normalized).name in TEXT_ENTRY_NAMES:
                 text = archive.read(name).decode("utf-8", errors="ignore")

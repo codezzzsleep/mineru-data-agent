@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import io
 import json
+import logging
 import re
+import warnings
 import zipfile
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
@@ -42,6 +46,300 @@ def read_content_list(path: Path | None) -> list[dict[str, Any]]:
     if isinstance(data, list):
         return data
     return []
+
+
+@contextmanager
+def _suppress_pdf_library_noise():
+    loggers = [
+        logging.getLogger("pypdf"),
+        logging.getLogger("pypdf._reader"),
+        logging.getLogger("pypdf.generic"),
+        logging.getLogger("pypdf.generic._data_structures"),
+    ]
+    old_levels = [logger.level for logger in loggers]
+    try:
+        for logger in loggers:
+            logger.setLevel(logging.ERROR)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                yield
+    finally:
+        for logger, level in zip(loggers, old_levels):
+            logger.setLevel(level)
+
+
+def probe_pdf_text_layer(path: Path, *, sample_pages: int = 5, min_chars_per_page: int = 40) -> tuple[int | None, bool]:
+    """Cheaply decide whether a PDF is born-digital (has an extractable text layer).
+
+    Samples the first few pages so routing can pick local extraction for vector
+    PDFs and reserve online MinerU OCR for scanned/image PDFs. Returns
+    (page_count, has_text_layer); page_count is None when pypdf is unavailable.
+    """
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        return None, False
+    try:
+        with _suppress_pdf_library_noise():
+            reader = PdfReader(str(path))
+            page_count = len(reader.pages)
+            sample = reader.pages[: max(1, sample_pages)]
+            chars = 0
+            for page in sample:
+                try:
+                    chars += len((page.extract_text() or "").strip())
+                except Exception:
+                    continue
+        has_text = bool(sample) and (chars / max(len(sample), 1)) >= min_chars_per_page
+        return page_count, has_text
+    except Exception:
+        return None, False
+
+
+def probe_pdf_layout_complexity(path: Path, *, sample_pages: int = 5) -> dict[str, Any]:
+    """Estimate whether local text-layer extraction may break reading order.
+
+    This is a cheap routing probe, not a full layout parser. It uses text
+    positions when PyMuPDF is available and falls back to pypdf visitor
+    coordinates. A positive result means "use a layout-aware parser as the
+    primary parser"; the text layer can still be kept as evidence.
+    """
+    result: dict[str, Any] = {
+        "is_complex_layout": False,
+        "layout_type": "unknown",
+        "layout_risk": "unknown",
+        "multi_column_pages": 0,
+        "table_pages": [],
+        "table_count": 0,
+        "has_tables": False,
+        "table_risk": "unknown",
+        "sampled_pages": 0,
+        "probe_source": "unavailable",
+    }
+    if sample_pages <= 0:
+        return result
+    try:
+        measured = _probe_pdf_layout_with_pymupdf(path, sample_pages=sample_pages)
+    except Exception:
+        measured = None
+    if measured is None:
+        try:
+            measured = _probe_pdf_layout_with_pypdf(path, sample_pages=sample_pages)
+        except Exception:
+            measured = None
+    if measured is None:
+        return result
+    sampled = int(measured.get("sampled_pages") or 0)
+    multi = int(measured.get("multi_column_pages") or 0)
+    table_pages = [int(item) for item in measured.get("table_pages", []) if _safe_int_like(item)]
+    table_count = int(measured.get("table_count") or len(table_pages))
+    ratio = (multi / sampled) if sampled else 0.0
+    measured["is_complex_layout"] = bool(sampled and (multi >= 2 or ratio >= 0.5))
+    measured["layout_type"] = "multi_column" if measured["is_complex_layout"] else "simple_or_unknown"
+    measured["layout_risk"] = "reading_order_risk" if measured["is_complex_layout"] else "low"
+    measured["table_pages"] = sorted(set(table_pages))
+    measured["table_count"] = table_count
+    measured["has_tables"] = bool(table_pages or table_count)
+    measured["table_risk"] = "table_structure_or_numeric_risk" if measured["has_tables"] else "low"
+    return measured
+
+
+def _probe_pdf_layout_with_pymupdf(path: Path, *, sample_pages: int) -> dict[str, Any] | None:
+    try:
+        import fitz  # type: ignore[import-not-found]
+    except ImportError:
+        return None
+    with _suppress_pdf_library_noise():
+        doc = fitz.open(str(path))
+        sampled_pages = min(sample_pages, len(doc))
+        multi_column_pages = 0
+        table_pages: list[int] = []
+        table_count = 0
+        page_details = []
+        for index in range(sampled_pages):
+            page = doc[index]
+            width = float(page.rect.width or 0)
+            blocks = [
+                block
+                for block in page.get_text("blocks")
+                if len(block) >= 5 and len(str(block[4]).strip()) >= 20 and float(block[3] - block[1]) >= 8
+            ]
+            left = sum(1 for block in blocks if _block_center_x(block) < width * 0.46)
+            right = sum(1 for block in blocks if _block_center_x(block) > width * 0.54)
+            is_multi = left >= 2 and right >= 2
+            multi_column_pages += 1 if is_multi else 0
+            detected_tables = _pymupdf_table_count(page)
+            if detected_tables:
+                table_pages.append(index + 1)
+                table_count += detected_tables
+            page_details.append(
+                {
+                    "page": index + 1,
+                    "left_blocks": left,
+                    "right_blocks": right,
+                    "block_count": len(blocks),
+                    "table_count": detected_tables,
+                }
+            )
+        doc.close()
+    return {
+        "multi_column_pages": multi_column_pages,
+        "table_pages": table_pages,
+        "table_count": table_count,
+        "sampled_pages": sampled_pages,
+        "probe_source": "pymupdf",
+        "page_details": page_details,
+    }
+
+
+def _probe_pdf_layout_with_pypdf(path: Path, *, sample_pages: int) -> dict[str, Any] | None:
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        return None
+    with _suppress_pdf_library_noise():
+        reader = PdfReader(str(path))
+        sampled_pages = min(sample_pages, len(reader.pages))
+        multi_column_pages = 0
+        table_pages: list[int] = []
+        page_details = []
+        for index, page in enumerate(reader.pages[:sampled_pages]):
+            positions: list[tuple[float, float, str]] = []
+
+            def visitor(text: str, _cm: Any, tm: Any, _font_dict: Any, _font_size: Any) -> None:
+                snippet = (text or "").strip()
+                if len(snippet) < 4:
+                    return
+                try:
+                    x = float(tm[4])
+                    y = float(tm[5])
+                except Exception:
+                    return
+                positions.append((x, y, snippet))
+
+            try:
+                page.extract_text(visitor_text=visitor)
+            except TypeError:
+                return None
+            xs = [x for x, _y, _text in positions]
+            if not xs:
+                page_details.append({"page": index + 1, "left_blocks": 0, "right_blocks": 0, "text_positions": 0})
+                continue
+            min_x, max_x = min(xs), max(xs)
+            width = max(max_x - min_x, 1.0)
+            left_threshold = min_x + width * 0.46
+            right_threshold = min_x + width * 0.54
+            left = sum(1 for x, _y, _text in positions if x < left_threshold)
+            right = sum(1 for x, _y, _text in positions if x > right_threshold)
+            is_multi = left >= 10 and right >= 10
+            multi_column_pages += 1 if is_multi else 0
+            page_text = "\n".join(text for _x, _y, text in positions)
+            table_like = _looks_like_table_text(page_text)
+            if table_like:
+                table_pages.append(index + 1)
+            page_details.append(
+                {
+                    "page": index + 1,
+                    "left_blocks": left,
+                    "right_blocks": right,
+                    "text_positions": len(positions),
+                    "table_like": table_like,
+                }
+            )
+    return {
+        "multi_column_pages": multi_column_pages,
+        "table_pages": table_pages,
+        "table_count": len(table_pages),
+        "sampled_pages": sampled_pages,
+        "probe_source": "pypdf",
+        "page_details": page_details,
+    }
+
+
+def _block_center_x(block: Any) -> float:
+    return (float(block[0]) + float(block[2])) / 2.0
+
+
+def _pymupdf_table_count(page: Any) -> int:
+    if not hasattr(page, "find_tables"):
+        return 0
+    try:
+        tables = page.find_tables()
+    except Exception:
+        return 0
+    return len(getattr(tables, "tables", []) or [])
+
+
+def _looks_like_table_text(text: str) -> bool:
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if any(line.startswith(("表 ", "表1", "表一", "表二", "表三", "表四", "表五")) for line in lines):
+        return True
+    dense_numeric_lines = 0
+    for line in lines:
+        digits = sum(char.isdigit() for char in line)
+        separators = sum(line.count(char) for char in ["|", "\t", "  ", "、"])
+        if digits >= 6 and separators >= 2:
+            dense_numeric_lines += 1
+    return dense_numeric_lines >= 2
+
+
+def _safe_int_like(value: Any) -> bool:
+    try:
+        int(value)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+
+def extract_pdf_text(path: Path, *, min_chars_per_page: int = 40) -> tuple[str, list[dict[str, Any]], dict[str, Any]]:
+    """Extract a born-digital PDF's text layer locally (no MinerU, no OCR).
+
+    Returns (markdown, content_list, meta). ``meta['has_text_layer']`` is False
+    when the PDF looks scanned (little/no extractable text), which signals the
+    caller to route to online MinerU instead of trusting an empty local parse.
+    """
+    try:
+        from pypdf import PdfReader
+    except ImportError as exc:
+        raise RuntimeError(
+            "pypdf is required for local PDF text extraction. Install it (pip install '.[pdf]') "
+            "or route this PDF to the online MinerU API."
+        ) from exc
+    with _suppress_pdf_library_noise():
+        reader = PdfReader(str(path))
+        page_count = len(reader.pages)
+        lines: list[str] = []
+        content: list[dict[str, Any]] = []
+        total_chars = 0
+        for index, page in enumerate(reader.pages):
+            try:
+                raw = page.extract_text() or ""
+            except Exception:
+                raw = ""
+            text = _normalize_pdf_page_text(raw)
+            total_chars += len(text)
+            if text:
+                lines.append(f"# Page {index + 1}\n\n{text}")
+                content.append(
+                    {
+                        "type": "text",
+                        "text": text,
+                        "source": "pdf-text-layer",
+                        "page_idx": index,
+                        "block_idx": len(content),
+                    }
+                )
+    markdown = "\n\n".join(lines).strip()
+    has_text_layer = page_count > 0 and (total_chars / max(page_count, 1)) >= min_chars_per_page
+    meta = {"page_count": page_count, "text_chars": total_chars, "has_text_layer": has_text_layer}
+    return markdown, content, meta
+
+
+def _normalize_pdf_page_text(text: str) -> str:
+    stripped = [line.strip() for line in text.splitlines()]
+    joined = "\n".join(line for line in stripped if line)
+    return re.sub(r"\n{3,}", "\n\n", joined).strip()
 
 
 def extract_sections(markdown: str) -> list[dict[str, Any]]:

@@ -68,6 +68,7 @@ class AgentResult:
     artifacts: dict[str, str | None]
     trace_path: str
     summary_path: str
+    skill_package: dict[str, Any] = field(default_factory=dict)
     schema_version: str = RESULT_SCHEMA_VERSION
 
     def to_jsonable(self) -> dict[str, Any]:

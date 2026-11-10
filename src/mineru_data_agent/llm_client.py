@@ -213,7 +213,7 @@ class OpenAICompatibleLLMClient:
                                 "recommended_profile": (
                                     "financial_report|standard_or_contract|workflow_or_diagram|low_quality_ocr|general_document"
                                 ),
-                                "recommended_runner": "cli|agent-api|native",
+                                "recommended_runner": "cli|agent-api|precise-api|native",
                                 "recommended_backend": "pipeline|vlm-transformers|vlm-sglang-engine|vlm-sglang-client",
                                 "recommended_method": "auto|ocr|txt",
                                 "recommended_lang": "ch|en",
@@ -304,6 +304,123 @@ class OpenAICompatibleLLMClient:
             metadata={"llm_usage": plan.get("llm_usage", {})},
         )
         return plan, call
+
+    def build_document_understanding(
+        self,
+        *,
+        task: str,
+        profile: str,
+        markdown: str,
+        extracted: dict[str, Any],
+        quality: dict[str, Any],
+    ) -> tuple[dict[str, Any], ToolCall]:
+        if not self.api_key:
+            raise RuntimeError(f"{self.key_env_name} is required when {self.provider} LLM mode is enabled.")
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "You write compact document-skill metadata for downstream AI workflows. "
+                        "Return strict JSON only. Do not include markdown fences."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        {
+                            "objective": (
+                                "Create progressive-disclosure metadata for this parsed document. "
+                                "The name and description must help an AI decide whether to load this document. "
+                                "The compressed field should preserve the main facts, scope, entities, structure, "
+                                "quality caveats, and evidence hints without copying the whole text."
+                            ),
+                            "required_json_schema": {
+                                "name": "lowercase-kebab-case short skill name",
+                                "description": "one sentence, <=800 chars, semantic retrieval description",
+                                "compressed": "multi-paragraph compact document understanding",
+                                "topics": ["topic strings"],
+                                "entities": ["person/org/place/time strings"],
+                                "quality_notes": ["quality or provenance caveats"],
+                            },
+                            "task": task,
+                            "profile": profile,
+                            "content_summary": extracted.get("content_summary", {}),
+                            "section_titles": [item.get("title") for item in extracted.get("sections", [])[:80]],
+                            "table_count": len(extracted.get("tables", [])),
+                            "key_value_examples": extracted.get("key_values", [])[:40],
+                            "quality": quality,
+                            "markdown_preview": markdown[: self.max_preview_chars],
+                        },
+                        ensure_ascii=False,
+                    ),
+                },
+            ],
+            "temperature": 0.1,
+        }
+        start = perf_counter()
+        try:
+            with httpx.Client(timeout=self.timeout_seconds) as client:
+                response = client.post(
+                    _chat_completions_url(self.base_url),
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json=payload,
+                )
+                response.raise_for_status()
+                data = response.json()
+            content, reasoning_content = _extract_message_parts(data)
+            understanding = _normalize_document_understanding(_parse_json_object(content))
+            usage_payload = _usage_payload(
+                provider=self.provider,
+                model=self.model,
+                raw_usage=_extract_usage(data),
+            )
+            understanding["llm_usage"] = usage_payload
+            if reasoning_content:
+                understanding["reasoning_content"] = reasoning_content
+            understanding.setdefault("status", "completed")
+            status = "completed"
+            stderr = ""
+        except Exception as exc:
+            error_text = _sanitize_error_text(str(exc), self.api_key)
+            understanding = {
+                "status": "failed",
+                "error": error_text,
+                "name": "",
+                "description": "",
+                "compressed": "",
+                "topics": [],
+                "entities": [],
+                "quality_notes": [],
+                "llm_usage": _usage_payload(provider=self.provider, model=self.model, raw_usage={}),
+            }
+            status = "failed"
+            stderr = error_text[-4000:]
+
+        call = ToolCall(
+            tool=f"{self.provider}-llm-document-understanding",
+            command=[f"{self.provider}-chat-completions", self.model, "document-understanding"],
+            status=status,
+            elapsed_seconds=round(perf_counter() - start, 3),
+            stdout_tail=json.dumps(
+                {
+                    "provider": self.provider,
+                    "model": self.model,
+                    "base_url": self.base_url,
+                    "understanding": _safe_document_understanding_preview(understanding),
+                },
+                ensure_ascii=False,
+                indent=2,
+            )[-4000:],
+            stderr_tail=stderr,
+            metadata={"llm_usage": understanding.get("llm_usage", {})},
+        )
+        return understanding, call
 
 
 class DeepSeekLLMClient(OpenAICompatibleLLMClient):
@@ -512,6 +629,19 @@ def _normalize_preplan(plan: dict[str, Any]) -> dict[str, Any]:
     return clean
 
 
+def _normalize_document_understanding(data: dict[str, Any]) -> dict[str, Any]:
+    clean = dict(data)
+    name = str(clean.get("name", "")).strip().lower()
+    name = re.sub(r"[^a-z0-9-]+", "-", name).strip("-")
+    clean["name"] = name[:64]
+    clean["description"] = re.sub(r"\s+", " ", str(clean.get("description", ""))).strip()[:800]
+    clean["compressed"] = str(clean.get("compressed", "")).strip()
+    for key in ["topics", "entities", "quality_notes"]:
+        value = clean.get(key, [])
+        clean[key] = [str(item).strip() for item in value if str(item).strip()][:80] if isinstance(value, list) else []
+    return clean
+
+
 def _safe_analysis_preview(analysis: dict[str, Any]) -> dict[str, Any]:
     return {
         "status": analysis.get("status", "completed"),
@@ -522,6 +652,16 @@ def _safe_analysis_preview(analysis: dict[str, Any]) -> dict[str, Any]:
         "risk_findings": analysis.get("risk_findings", [])[:10]
         if isinstance(analysis.get("risk_findings"), list)
         else [],
+    }
+
+
+def _safe_document_understanding_preview(understanding: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "status": understanding.get("status", "completed"),
+        "name": understanding.get("name", ""),
+        "description": str(understanding.get("description", ""))[:500],
+        "compressed_preview": str(understanding.get("compressed", ""))[:500],
+        "topics": understanding.get("topics", [])[:20] if isinstance(understanding.get("topics"), list) else [],
     }
 
 

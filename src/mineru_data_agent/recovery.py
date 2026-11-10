@@ -15,6 +15,8 @@ NATIVE_SUFFIXES = HTML_SUFFIXES | DOCX_SUFFIXES | PPTX_SUFFIXES
 
 def runner_kind(runner: Any) -> str:
     name = runner.__class__.__name__.lower()
+    if "preciseapi" in name or "precise_api" in name or "precise" in name and "api" in name:
+        return "precise-api"
     if "agentapi" in name or "agent_api" in name or "agent" in name and "api" in name:
         return "agent-api"
     return "cli"

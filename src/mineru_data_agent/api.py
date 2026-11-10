@@ -16,11 +16,11 @@ from fastapi.responses import JSONResponse
 from . import __version__
 from .agent import AgentRunError, BACKEND_CHOICES, LANG_CHOICES, METHOD_CHOICES, PROFILE_CHOICES, MinerUDataAgent
 from .llm_client import DeepSeekLLMClient, ModelScopeLLMClient
-from .mineru_client import MinerUAgentAPIRunner, MinerURunner, resolve_mineru_executable
+from .mineru_client import MinerUAgentAPIRunner, MinerUPreciseAPIRunner, MinerURunner, resolve_mineru_executable
 
 app = FastAPI(title="MinerU Data Agent", version=__version__)
 
-VALID_RUNNERS = {"cli", "agent-api"}
+VALID_RUNNERS = {"auto", "cli", "agent-api", "precise-api"}
 VALID_LLMS = {"none", "deepseek", "modelscope"}
 VALID_PROFILES = set(PROFILE_CHOICES) | {"auto"}
 ALLOWED_UPLOAD_SUFFIXES = {".pdf", ".png", ".jpg", ".jpeg", ".html", ".htm", ".docx", ".pptx"}
@@ -30,6 +30,9 @@ FORBIDDEN_FORM_FIELDS = {
     "llm_api_key",
     "llm_base_url",
     "provider_api_key",
+    "mineru_api_token",
+    "mineru_precise_api_token",
+    "precise_api_token",
     "mineru_executable",
     "fallback_mineru_executable",
 }
@@ -219,7 +222,7 @@ def _parse_config(
 
 
 def _run_parse(*, input_path: Path, root: Path, config: ParseRequestConfig) -> dict[str, Any]:
-    parser_runner = MinerUAgentAPIRunner(max_retries=config.api_max_retries) if config.runner == "agent-api" else MinerURunner()
+    parser_runner = _build_parser_runner(config)
     fallback_runner = _build_fallback_runner(
         runner=config.runner,
         enabled=config.cli_fallback_on_no_page_provenance,
@@ -231,7 +234,13 @@ def _run_parse(*, input_path: Path, root: Path, config: ParseRequestConfig) -> d
     else:
         llm_client = None
     try:
-        result = MinerUDataAgent(parser_runner, llm_client=llm_client, fallback_mineru_runner=fallback_runner).run(
+        result = MinerUDataAgent(
+            parser_runner,
+            llm_client=llm_client,
+            fallback_mineru_runner=fallback_runner,
+            requested_runner=config.runner,
+            auto_runner=config.runner == "auto",
+        ).run(
             input_path,
             root,
             task=config.task,
@@ -263,6 +272,14 @@ def _parse_failed_http_error(exc: AgentRunError) -> HTTPException:
             "summary_path": exc.summary_path,
         },
     )
+
+
+def _build_parser_runner(config: ParseRequestConfig) -> MinerURunner | MinerUAgentAPIRunner | MinerUPreciseAPIRunner:
+    if config.runner == "agent-api":
+        return MinerUAgentAPIRunner(max_retries=config.api_max_retries)
+    if config.runner == "precise-api":
+        return MinerUPreciseAPIRunner(max_retries=config.api_max_retries)
+    return MinerURunner()
 
 
 def _execute_job(job_id: str, input_path: Path, root: Path, config: ParseRequestConfig) -> None:
@@ -383,7 +400,7 @@ def _build_fallback_runner(
     runner: str,
     enabled: bool,
 ) -> MinerURunner | None:
-    if runner != "agent-api" or not enabled:
+    if runner not in {"agent-api", "auto"} or not enabled:
         return None
     executable = resolve_mineru_executable()
     if not executable:

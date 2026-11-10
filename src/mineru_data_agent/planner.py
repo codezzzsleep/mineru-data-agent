@@ -350,6 +350,7 @@ def _tool_registry(
         ("native_extractor", "Parse HTML/DOCX/PPTX structure without external OCR", is_native, "file suffix is native text/Office"),
         ("mineru_cli", "Run local MinerU CLI and keep page/layout artifacts", runner == "cli" and not is_native, "runner resolved to cli"),
         ("mineru_agent_api", "Run online MinerU Agent API for CPU-friendly PDF parsing", runner == "agent-api" and not is_native, "runner resolved to agent-api"),
+        ("mineru_precise_api", "Run token-based MinerU precise API and keep Markdown/JSON zip artifacts", runner == "precise-api" and not is_native, "runner resolved to precise-api"),
         ("llm_preplanner", "Classify task and propose schema/controls before parsing", llm_enabled, "LLM client configured"),
         ("structured_extractor", "Build sections, tables, key-values, numeric facts, and field evidence", True, "always needed for output contract"),
         ("numeric_validator", "Check numeric facts and table totals", profile == "financial_report" or "aggregation" in intents, "financial or aggregation task"),
@@ -376,7 +377,7 @@ def _tool_registry(
 
 
 def _tool_parameters(name: str, *, backend: str, method: str) -> dict[str, Any]:
-    if name in {"mineru_cli", "mineru_agent_api"}:
+    if name in {"mineru_cli", "mineru_agent_api", "mineru_precise_api"}:
         return {"backend": backend, "method": method}
     if name == "ocr_retry":
         return {"method": "ocr"}

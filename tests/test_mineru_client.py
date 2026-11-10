@@ -1,4 +1,12 @@
-from mineru_data_agent.mineru_client import _build_page_range, _markdown_to_content_blocks, _redact_sensitive_text
+from pathlib import Path
+
+from mineru_data_agent.mineru_client import (
+    _build_page_range,
+    _build_precise_file_urls_payload,
+    _markdown_to_content_blocks,
+    _precise_model_version,
+    _redact_sensitive_text,
+)
 
 
 def test_build_page_range() -> None:
@@ -62,3 +70,31 @@ def test_redact_sensitive_text_masks_tokens_and_signed_urls() -> None:
     assert "deadbeef" not in clean
     assert "Bearer ***" in clean
     assert "X-Amz-Signature=***" in clean
+
+
+def test_precise_model_version_routes_html_and_vlm() -> None:
+    assert _precise_model_version(Path("demo.html"), backend="pipeline") == "MinerU-HTML"
+    assert _precise_model_version(Path("demo.pdf"), backend="vlm-transformers") == "vlm"
+    assert _precise_model_version(Path("demo.pdf"), backend="pipeline") == "pipeline"
+    assert _precise_model_version(Path("demo.pdf"), backend="pipeline", explicit_model_version="vlm") == "vlm"
+
+
+def test_build_precise_file_urls_payload_for_pdf() -> None:
+    payload = _build_precise_file_urls_payload(
+        Path("demo.pdf"),
+        model_version="vlm",
+        method="ocr",
+        lang="ch",
+        enable_table=True,
+        enable_formula=True,
+        page_ranges="1-3",
+        extra_formats=["docx", "bad"],
+    )
+
+    assert payload["model_version"] == "vlm"
+    assert payload["language"] == "ch"
+    assert payload["enable_table"] is True
+    assert payload["files"][0]["name"] == "demo.pdf"
+    assert payload["files"][0]["is_ocr"] is True
+    assert payload["files"][0]["page_ranges"] == "1-3"
+    assert payload["extra_formats"] == ["docx"]

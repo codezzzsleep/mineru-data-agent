@@ -1,16 +1,26 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import uuid
 from pathlib import Path
 from typing import Any
 
-from .extractors import build_extracted_view, extract_docx, extract_html, extract_pptx, read_content_list, read_markdown
+from .consistency import build_fine_grained_escalation_plan
+from .extractors import (
+    build_extracted_view,
+    extract_docx,
+    extract_html,
+    extract_pdf_text,
+    extract_pptx,
+    read_content_list,
+    read_markdown,
+)
 from .retrieval_exporter import build_retrieval_export
 from .logging_utils import TraceRecorder
 from .memory import AgentMemoryStore
-from .mineru_client import MinerUParseError, MinerURunner
+from .mineru_client import MinerUAgentAPIRunner, MinerUParseError, MinerUPreciseAPIRunner, MinerURunner, resolve_mineru_executable
 from .models import AgentResult, ParseArtifacts, ToolCall
 from .planner import (
     analyze_requirement,
@@ -39,11 +49,13 @@ from .recovery import (
     runner_kind as _runner_kind,
     runtime_recovery_skip_reason as _runtime_recovery_skip_reason,
 )
+from .routing import build_input_metadata, build_workflow_routing
+from .skill_exporter import build_document_skill_package
 from .validators import build_quality_report
 
 
 PROFILE_CHOICES = {"financial_report", "standard_or_contract", "workflow_or_diagram", "low_quality_ocr", "general_document"}
-RUNNER_CHOICES = {"cli", "agent-api", "native"}
+RUNNER_CHOICES = {"cli", "agent-api", "precise-api", "native"}
 BACKEND_CHOICES = {"pipeline", "vlm-transformers", "vlm-sglang-engine", "vlm-sglang-client"}
 METHOD_CHOICES = {"auto", "ocr", "txt"}
 LANG_CHOICES = {"ch", "en"}
@@ -74,10 +86,14 @@ class MinerUDataAgent:
         mineru_runner: MinerURunner | None = None,
         llm_client: Any | None = None,
         fallback_mineru_runner: MinerURunner | None = None,
+        requested_runner: str = "cli",
+        auto_runner: bool = False,
     ) -> None:
         self.mineru_runner = mineru_runner or MinerURunner()
         self.llm_client = llm_client
         self.fallback_mineru_runner = fallback_mineru_runner
+        self.requested_runner = requested_runner
+        self.auto_runner = auto_runner
 
     def run(
         self,
@@ -90,6 +106,8 @@ class MinerUDataAgent:
         method: str = "auto",
         lang: str = "ch",
         strict_page_provenance: bool = False,
+        start_page: int | None = None,
+        end_page: int | None = None,
     ) -> AgentResult:
         input_path = Path(input_file).expanduser().resolve()
         if not input_path.exists():
@@ -108,6 +126,10 @@ class MinerUDataAgent:
         llm_preplan: dict[str, Any] = {"enabled": False}
         execution_control: dict[str, Any] = {}
         input_metadata = _input_metadata(input_path)
+        if start_page is not None or end_page is not None:
+            input_metadata["page_range"] = _format_page_range(start_page, end_page)
+            if start_page is not None and end_page is not None and end_page >= start_page:
+                input_metadata["page_count"] = end_page - start_page + 1
 
         try:
             with trace.step("infer_task_profile", task=task, input_file=str(input_path)) as profile_step:
@@ -143,6 +165,18 @@ class MinerUDataAgent:
                 profile_inference=profile_inference,
                 strict_page_provenance=strict_page_provenance,
             )
+            execution_control["workflow_routing"] = build_workflow_routing(
+                input_metadata=input_metadata,
+                task=task,
+                profile=resolved_profile,
+                backend=backend,
+                method=method,
+                lang=lang,
+                requested_runner=self.requested_runner if self.auto_runner else _runner_kind(self.mineru_runner),
+                current_runner="auto" if self.auto_runner else _runner_kind(self.mineru_runner),
+                precise_api_token_available=_precise_api_token_available(),
+                local_cli_available=resolve_mineru_executable() is not None,
+            ).to_jsonable()
 
             if self.llm_client:
                 with trace.step(
@@ -161,7 +195,7 @@ class MinerUDataAgent:
                         requested_backend=backend,
                         requested_method=method,
                         requested_lang=lang,
-                        current_runner=_runner_kind(self.mineru_runner),
+                        current_runner="auto" if self.auto_runner else _runner_kind(self.mineru_runner),
                     )
                     llm_preplan["enabled"] = True
                     trace.add_tool_call(llm_pre_call.__dict__)
@@ -177,6 +211,7 @@ class MinerUDataAgent:
                         runner_name=self.mineru_runner.__class__.__name__,
                         profile_inference=profile_inference,
                         strict_page_provenance=strict_page_provenance,
+                        runner_flexible=self.auto_runner,
                     )
                     adaptive_decision = analyze_requirement(
                         task,
@@ -186,6 +221,37 @@ class MinerUDataAgent:
                     )
                     execution_control["adaptive_decision"] = adaptive_decision.to_jsonable()
                     execution_control["planning_rationale"]["adaptive_decision_rationale"] = adaptive_decision.rationale
+                    execution_control["workflow_routing"] = build_workflow_routing(
+                        input_metadata=input_metadata,
+                        task=task,
+                        profile=resolved_profile,
+                        backend=backend,
+                        method=method,
+                        lang=lang,
+                        requested_runner=self.requested_runner if self.auto_runner else _runner_kind(self.mineru_runner),
+                        current_runner="auto" if self.auto_runner else _runner_kind(self.mineru_runner),
+                        llm_preplan=llm_preplan,
+                        precise_api_token_available=_precise_api_token_available(),
+                        local_cli_available=resolve_mineru_executable() is not None,
+                    ).to_jsonable()
+                    if self.auto_runner:
+                        self.mineru_runner = _runner_from_workflow_routing(
+                            execution_control["workflow_routing"],
+                            current_runner=self.mineru_runner,
+                        )
+                        execution_control["runner_class"] = self.mineru_runner.__class__.__name__
+                        execution_control["resolved"]["runner"] = (
+                            "native" if suffix in NATIVE_SUFFIXES else _runner_kind(self.mineru_runner)
+                        )
+                        execution_control["planning_rationale"] = _planning_rationale(
+                            profile=resolved_profile,
+                            runner=execution_control["resolved"]["runner"],
+                            backend=backend,
+                            method=method,
+                            lang=lang,
+                            suffix=suffix,
+                            source="llm_preplan+workflow_router",
+                        )
                     plan = _merge_plan(
                         build_plan(task, resolved_profile, adaptive_decision),
                         llm_preplan.get("execution_plan", []),
@@ -193,6 +259,24 @@ class MinerUDataAgent:
                     pre_step.detail["execution_control"] = execution_control
 
             with trace.step("agent_task_decomposition") as agent_plan_step:
+                if self.auto_runner and not self.llm_client:
+                    self.mineru_runner = _runner_from_workflow_routing(
+                        execution_control["workflow_routing"],
+                        current_runner=self.mineru_runner,
+                    )
+                    execution_control["runner_class"] = self.mineru_runner.__class__.__name__
+                    execution_control["resolved"]["runner"] = (
+                        "native" if suffix in NATIVE_SUFFIXES else _runner_kind(self.mineru_runner)
+                    )
+                    execution_control["planning_rationale"] = _planning_rationale(
+                        profile=resolved_profile,
+                        runner=execution_control["resolved"]["runner"],
+                        backend=backend,
+                        method=method,
+                        lang=lang,
+                        suffix=suffix,
+                        source="workflow_router",
+                    )
                 agent_action_plan = build_agent_action_plan(
                     task,
                     resolved_profile,
@@ -233,15 +317,33 @@ class MinerUDataAgent:
                 with trace.step("extract_pptx", input_file=str(input_path)):
                     markdown, content_list = extract_pptx(input_path)
                     artifacts = _write_native_parse_artifacts(output_dir, input_path, "office", markdown, content_list)
+            elif _should_use_local_pdf_text(suffix=suffix, execution_control=execution_control):
+                with trace.step("extract_pdf_text_layer", input_file=str(input_path)):
+                    markdown, content_list, pdf_text_meta = extract_pdf_text(input_path)
+                    if not pdf_text_meta.get("has_text_layer"):
+                        raise AgentRunError(
+                            "Local PDF text extraction was selected, but no usable text layer was found.",
+                            run_id=run_id,
+                            output_dir=output_dir,
+                            trace_path=trace_path,
+                            result_path=result_path,
+                            summary_path=summary_path,
+                        )
+                    artifacts = _write_native_parse_artifacts(output_dir, input_path, "pdf_text", markdown, content_list)
+                    execution_control.setdefault("resolved", {})["runner"] = "local-pdf-text"
+                    execution_control.setdefault("local_pdf_text", {}).update(pdf_text_meta)
             else:
                 with trace.step("mineru_parse", backend=backend, method=method, lang=lang):
                     try:
-                        artifacts, call = self.mineru_runner.parse(
+                        artifacts, call = _parse_with_optional_pages(
+                            self.mineru_runner,
                             input_path,
                             output_dir / "mineru",
                             backend=backend,
                             method=method,
                             lang=lang,
+                            start_page=start_page,
+                            end_page=end_page,
                         )
                     except MinerUParseError as exc:
                         trace.add_tool_call(exc.tool_call.__dict__)
@@ -383,12 +485,15 @@ class MinerUDataAgent:
                         plan_source=recovery_action.get("source"),
                     ) as retry_step:
                         try:
-                            retry_artifacts, retry_call = self.mineru_runner.parse(
+                            retry_artifacts, retry_call = _parse_with_optional_pages(
+                                self.mineru_runner,
                                 input_path,
                                 output_dir / "mineru_retry_ocr",
                                 backend=backend,
                                 method="ocr",
                                 lang=lang,
+                                start_page=start_page,
+                                end_page=end_page,
                             )
                         except Exception as exc:
                             _record_tool_call_from_exception(trace, exc)
@@ -440,12 +545,15 @@ class MinerUDataAgent:
                         plan_source=recovery_action.get("source"),
                     ) as fallback_step:
                         try:
-                            fallback_artifacts, fallback_call = self.fallback_mineru_runner.parse(
+                            fallback_artifacts, fallback_call = _parse_with_optional_pages(
+                                self.fallback_mineru_runner,
                                 input_path,
                                 output_dir / "mineru_fallback_cli",
                                 backend=backend,
                                 method=method,
                                 lang=lang,
+                                start_page=start_page,
+                                end_page=end_page,
                             )
                         except Exception as exc:
                             _record_tool_call_from_exception(trace, exc)
@@ -540,6 +648,15 @@ class MinerUDataAgent:
                 execution_control["replan_after_quality"] = replan_after_quality
                 replan_step.detail.update(replan_after_quality)
 
+            with trace.step("fine_grained_escalation_plan") as escalation_step:
+                fine_grained_plan = build_fine_grained_escalation_plan(
+                    extracted=extracted,
+                    quality=quality,
+                    input_metadata=input_metadata,
+                )
+                execution_control["fine_grained_escalation_plan"] = fine_grained_plan
+                escalation_step.detail.update(fine_grained_plan)
+
             with trace.step("build_retrieval_export") as retrieval_step:
                 retrieval_export = build_retrieval_export(
                     markdown=markdown,
@@ -598,6 +715,47 @@ class MinerUDataAgent:
                 trace_path=str(trace_path),
                 summary_path=str(summary_path),
             )
+            document_understanding: dict[str, Any] | None = None
+            if self.llm_client:
+                with trace.step("llm_document_understanding") as understanding_step:
+                    document_understanding, understanding_call = self.llm_client.build_document_understanding(
+                        task=task,
+                        profile=resolved_profile,
+                        markdown=markdown,
+                        extracted=extracted,
+                        quality=quality,
+                    )
+                    llm_analysis["document_understanding"] = document_understanding
+                    llm_analysis["usage_summary"] = _summarize_llm_usage(
+                        llm_preplan,
+                        post_llm_analysis,
+                        document_understanding,
+                    )
+                    trace.add_tool_call(understanding_call.__dict__)
+                    understanding_step.detail.update(
+                        {
+                            "status": document_understanding.get("status"),
+                            "name": document_understanding.get("name"),
+                            "description_source": "llm",
+                            "has_compressed": bool(document_understanding.get("compressed")),
+                        }
+                    )
+            with trace.step("build_document_skill_package") as skill_step:
+                skill_package = build_document_skill_package(
+                    result=result,
+                    output_dir=output_dir / "document_skill",
+                    source_file=input_path,
+                    understanding=document_understanding,
+                    full_markdown=markdown,
+                )
+                result.skill_package = skill_package
+                skill_step.detail.update(
+                    {
+                        "package_dir": skill_package.get("package_dir"),
+                        "skill_name": skill_package.get("skill_name"),
+                        "files": skill_package.get("files", {}),
+                    }
+                )
             result_path.write_text(json.dumps(result.to_jsonable(), ensure_ascii=False, indent=2), encoding="utf-8")
             summary_path.write_text(_build_summary(result), encoding="utf-8")
             trace.write(
@@ -637,12 +795,136 @@ class MinerUDataAgent:
 
 
 def _input_metadata(input_path: Path) -> dict[str, Any]:
-    stat = input_path.stat()
+    return build_input_metadata(input_path)
+
+
+def _format_page_range(start_page: int | None, end_page: int | None) -> str:
+    if start_page is not None and end_page is not None:
+        return f"{start_page}-{end_page}"
+    if start_page is not None:
+        return str(start_page)
+    if end_page is not None:
+        return str(end_page)
+    return ""
+
+
+def _parse_with_optional_pages(
+    runner: Any,
+    input_path: Path,
+    output_dir: Path,
+    *,
+    backend: str,
+    method: str,
+    lang: str,
+    start_page: int | None = None,
+    end_page: int | None = None,
+) -> tuple[ParseArtifacts, ToolCall]:
+    kwargs: dict[str, Any] = {"backend": backend, "method": method, "lang": lang}
+    if start_page is not None:
+        kwargs["start_page"] = start_page
+    if end_page is not None:
+        kwargs["end_page"] = end_page
+    return runner.parse(input_path, output_dir, **kwargs)
+
+
+def _precise_api_token_available() -> bool:
+    return bool(os.getenv("MINERU_PRECISE_API_TOKEN") or os.getenv("MINERU_API_TOKEN"))
+
+
+def _runner_from_workflow_routing(routing: dict[str, Any], *, current_runner: Any) -> Any:
+    selected = str(routing.get("selected_runner") or "").strip().lower()
+    if selected == "agent-api":
+        return current_runner if _runner_kind(current_runner) == "agent-api" else MinerUAgentAPIRunner()
+    if selected == "precise-api":
+        return current_runner if _runner_kind(current_runner) == "precise-api" else MinerUPreciseAPIRunner()
+    if selected == "cli":
+        return current_runner if _runner_kind(current_runner) == "cli" else MinerURunner()
+    return current_runner
+
+
+def _should_use_local_pdf_text(*, suffix: str, execution_control: dict[str, Any]) -> bool:
+    if suffix != ".pdf":
+        return False
+    routing = execution_control.get("workflow_routing", {})
+    signals = routing.get("applied_signals", {}) if isinstance(routing, dict) else {}
+    if signals.get("has_text_layer") is not True:
+        return False
+    gate = _pdf_text_layer_harness_gate(signals, routing)
+    if gate.get("blocked"):
+        execution_control.setdefault("harness_gate", {}).update(gate)
+        execution_control.setdefault("overrides", []).append(
+            {
+                "field": "parser",
+                "from": "local-pdf-text",
+                "to": gate.get("target") or str(routing.get("selected_runner") or "layout-aware-parser"),
+                "reason": gate.get("reason", "Harness risk gate blocked local text extraction as the primary parser"),
+            }
+        )
+        return False
+    backend = str(signals.get("backend") or "").lower()
+    method = str(signals.get("method") or "").lower()
+    if backend.startswith("vlm") or method == "ocr":
+        return False
+    selected_runner = str(routing.get("selected_runner") or "").lower() if isinstance(routing, dict) else ""
+    task_signals = signals.get("task_signals") if isinstance(signals, dict) else {}
+    if isinstance(task_signals, dict) and (
+        task_signals.get("complex_layout") or task_signals.get("needs_json_artifacts")
+    ):
+        return selected_runner in {"agent-api", "cli", "auto", ""}
+    if selected_runner == "precise-api":
+        execution_control.setdefault("overrides", []).append(
+            {
+                "field": "runner",
+                "from": "precise-api",
+                "to": "local-pdf-text",
+                "reason": "born-digital PDF has an extractable text layer; local text extraction is cheaper and avoids OCR/VLM hallucination",
+            }
+        )
+    return selected_runner in {"agent-api", "cli", "auto", "", "precise-api"}
+
+
+def _pdf_text_layer_harness_gate(signals: dict[str, Any], routing: dict[str, Any]) -> dict[str, Any]:
+    risk_reasons = []
+    if signals.get("is_complex_layout") is True or signals.get("layout_risk") == "reading_order_risk":
+        risk_reasons.append("复杂/双栏版式可能破坏本地文字层阅读顺序")
+    if signals.get("has_tables") is True or signals.get("table_risk") == "table_structure_or_numeric_risk":
+        pages = signals.get("table_pages") if isinstance(signals.get("table_pages"), list) else []
+        risk_reasons.append(
+            "检测到表格页"
+            + (f" {pages}" if pages else "")
+            + "，需要保持行列结构并校验数字"
+        )
+    if not risk_reasons:
+        return {"blocked": False, "initial_decision": "local-pdf-text"}
+    target = str(routing.get("selected_runner") or "agent-api")
     return {
-        "filename": input_path.name,
-        "suffix": input_path.suffix.lower(),
-        "size_bytes": stat.st_size,
-        "is_native_extractor_input": input_path.suffix.lower() in NATIVE_SUFFIXES,
+        "blocked": True,
+        "initial_decision": "local-pdf-text",
+        "target": target,
+        "reason": "；".join(risk_reasons),
+        "actions": [
+            {
+                "action": "layout_aware_parse",
+                "parser": target,
+                "backend": "pipeline",
+                "reason": "用 MinerU 版面解析保留段落、双栏阅读顺序和页面结构",
+            },
+            {
+                "action": "vlm_table_review",
+                "parser": "precise-api",
+                "backend": "vlm-transformers",
+                "pages": signals.get("table_pages") if isinstance(signals.get("table_pages"), list) else [],
+                "reason": "表格页使用 VLM 保持行列结构和跨行/跨列关系",
+            },
+            {
+                "action": "ocr_or_text_numeric_check",
+                "parser": "pipeline/text-layer",
+                "method": "ocr_or_text",
+                "pages": signals.get("table_pages") if isinstance(signals.get("table_pages"), list) else [],
+                "reason": "表格数字必须由 OCR 或文字层进行二次校验，不默认相信 VLM 数字",
+            },
+        ],
+        "policy": "Harness keeps low-cost direct-read as the initial decision, then blocks it when layout/table risks require structured parsing and independent numeric evidence.",
     }
 
 
@@ -708,7 +990,15 @@ def _initial_execution_control(
     profile_inference: dict[str, Any] | None = None,
     strict_page_provenance: bool = False,
 ) -> dict[str, Any]:
-    runner_kind = "native" if suffix in NATIVE_SUFFIXES else ("agent-api" if "AgentAPI" in runner_name else "cli")
+    runner_kind = (
+        "native"
+        if suffix in NATIVE_SUFFIXES
+        else (
+            "precise-api"
+            if "PreciseAPI" in runner_name
+            else ("agent-api" if "AgentAPI" in runner_name else "cli")
+        )
+    )
     return {
         "llm_preplan_enabled": False,
         "strict_page_provenance": {
@@ -766,6 +1056,7 @@ def _apply_llm_preplan(
     runner_name: str,
     profile_inference: dict[str, Any] | None = None,
     strict_page_provenance: bool = False,
+    runner_flexible: bool = False,
 ) -> tuple[str, str, str, str, dict[str, Any]]:
     resolved_profile = initial_profile
     resolved_backend = backend
@@ -798,14 +1089,24 @@ def _apply_llm_preplan(
 
     requested_runner = _safe_choice(preplan.get("recommended_runner"), RUNNER_CHOICES)
     if requested_runner and requested_runner != runner_kind and suffix not in NATIVE_SUFFIXES:
-        control["ignored"].append(
-            {
-                "field": "runner",
-                "recommended": requested_runner,
-                "current": runner_kind,
-                "reason": "runner is fixed by the constructed runner; choose --runner before execution",
-            }
-        )
+        if runner_flexible:
+            control["applied"].append(
+                {
+                    "field": "runner",
+                    "from": runner_kind,
+                    "to": requested_runner,
+                    "reason": "llm_preplan routed by workflow_router",
+                }
+            )
+        else:
+            control["ignored"].append(
+                {
+                    "field": "runner",
+                    "recommended": requested_runner,
+                    "current": runner_kind,
+                    "reason": "runner is fixed by the constructed runner; choose --runner before execution",
+                }
+            )
 
     recommended_profile = _safe_choice(preplan.get("recommended_profile"), PROFILE_CHOICES)
     if recommended_profile and requested_profile == "auto" and recommended_profile != resolved_profile:
@@ -924,6 +1225,7 @@ def _planning_rationale(
     runner_reasons = {
         "native": "HTML/DOCX/PPTX inputs are handled by native extractors to preserve document structure without MinerU",
         "agent-api": "online MinerU Agent API is selected for CPU-friendly PDF parsing and quick reproducibility",
+        "precise-api": "token-based MinerU precise API is selected for high-fidelity Markdown/JSON zip artifacts",
         "cli": "local MinerU CLI is selected when full artifacts and page-level provenance are required",
     }
     recovery_policy = [
@@ -996,6 +1298,7 @@ def _build_summary(result: AgentResult) -> str:
         f"- Recovery attempts: {len(result.recovery_decision.get('attempts', []))}",
         f"- Task intents: {', '.join(task_result.get('task_intents', [])) if task_result.get('task_intents') else 'none'}",
         f"- LLM analysis: {_llm_status_label(result.llm_analysis)}",
+        f"- Document skill package: {result.skill_package.get('files', {}).get('skill', '') or 'not generated'}",
         "",
         "## Plan",
     ]

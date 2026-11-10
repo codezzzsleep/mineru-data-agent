@@ -23,9 +23,11 @@ New-Item -ItemType Directory -Force -Path $stage | Out-Null
 
 $items = @(
   "README.md",
+  "mineru_data_agent.html",
   "CONTRIBUTING.md",
   "LICENSE",
   ".gitignore",
+  ".env.example",
   ".gitattributes",
   ".dockerignore",
   ".github",
@@ -43,8 +45,8 @@ if ($IncludeReviewExchange) {
   $items += "review_exchange"
 }
 
-$excludeDirs = @("__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".venv", ".mineru_data_agent", "runs", "dist", "logs", "real_world_docs")
-$excludeFiles = @("*.pyc", "*.pyo", "*.log", ".env", "_audit_traces.py")
+$excludeDirs = @("__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".venv", ".mineru_data_agent", ".claude", ".codex", "runs", "dist", "logs", "real_world_docs")
+$excludeFiles = @("*.pyc", "*.pyo", "*.log", "*.sqlite", "*.sqlite3", "*.pem", "*.key", "*.p12", "*.pfx", "_diag.txt", "_review_probe*.txt", "_audit_traces.py")
 
 foreach ($item in $items) {
   $source = Join-Path $root $item
@@ -57,8 +59,9 @@ foreach ($item in $items) {
       $relative = $_.FullName.Substring($source.Length).TrimStart("\", "/")
       if (-not $relative) { return }
       $parts = $relative -split '[\\/]'
-      if ($parts | Where-Object { $excludeDirs -contains $_ }) { return }
+      if ($parts | Where-Object { $excludeDirs -contains $_ -or $_ -like "*.egg-info" }) { return }
       if (-not $_.PSIsContainer) {
+        if ($_.Name -like ".env*" -and $_.Name -notlike "*.example") { return }
         foreach ($pattern in $excludeFiles) {
           if ($_.Name -like $pattern) { return }
         }
@@ -85,6 +88,9 @@ $slashRoot = $root.Replace('\', '/')
 $userHome = [Environment]::GetFolderPath("UserProfile")
 $jsonEscapedUserHome = $userHome.Replace('\', '\\')
 $slashUserHome = $userHome.Replace('\', '/')
+$windowsUserPrefix = "C:" + [char]92 + "Users" + [char]92
+$jsonWindowsUserPrefix = $windowsUserPrefix.Replace([string][char]92, ('{0}{0}' -f [char]92))
+$windowsUsernamePattern = '[^\\/\s"'']+'
 $pathReplacements = @(
   @{ Pattern = [regex]::Escape($jsonEscapedRoot); Replacement = "<PROJECT_ROOT>" },
   @{ Pattern = [regex]::Escape($slashRoot); Replacement = "<PROJECT_ROOT>" },
@@ -99,11 +105,11 @@ if ($userHome) {
     @{ Pattern = [regex]::Escape($jsonEscapedUserHome); Replacement = "<USER_HOME>" },
     @{ Pattern = [regex]::Escape($slashUserHome); Replacement = "<USER_HOME>" },
     @{ Pattern = [regex]::Escape($userHome); Replacement = "<USER_HOME>" },
-    @{ Pattern = "(?i)C:\\\\Users\\\\[^\\\\/\s`"']+"; Replacement = "<USER_HOME>" },
-    @{ Pattern = "(?i)C:\\Users\\[^\\/\s`"']+"; Replacement = "<USER_HOME>" }
+    @{ Pattern = "(?i)" + [regex]::Escape($jsonWindowsUserPrefix) + $windowsUsernamePattern; Replacement = "<USER_HOME>" },
+    @{ Pattern = "(?i)" + [regex]::Escape($windowsUserPrefix) + $windowsUsernamePattern; Replacement = "<USER_HOME>" }
   )
 }
-Get-ChildItem -LiteralPath $stage -Recurse -File | Where-Object {
+Get-ChildItem -LiteralPath $stage -Recurse -Force -File | Where-Object {
   $textExtensions -contains $_.Extension.ToLowerInvariant()
 } | ForEach-Object {
   $text = [System.IO.File]::ReadAllText($_.FullName)
@@ -120,7 +126,7 @@ Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::Open($outputPath, [System.IO.Compression.ZipArchiveMode]::Create)
 try {
-  Get-ChildItem -LiteralPath $stage -Recurse -File | ForEach-Object {
+  Get-ChildItem -LiteralPath $stage -Recurse -Force -File | ForEach-Object {
     $entryName = $_.FullName.Substring($stage.Length).TrimStart("\", "/") -replace '\\', '/'
     [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $entryName) | Out-Null
   }

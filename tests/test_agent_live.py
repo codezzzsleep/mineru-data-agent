@@ -113,6 +113,235 @@ def test_post_chat_normalizes_base_url(monkeypatch) -> None:
     assert captured["url"] == "https://api.deepseek.com/v1/chat/completions"
 
 
+def test_parse_pdf_tool_uses_requested_precise_runner(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.pdf"
+    input_path.write_bytes(b"%PDF-1.4")
+    markdown_path = tmp_path / "out" / "input.md"
+    content_path = tmp_path / "out" / "input_content_list.json"
+    markdown_path.parent.mkdir()
+    markdown_path.write_text("PDF text", encoding="utf-8")
+    content_path.write_text('[{"type":"text","text":"PDF text"}]', encoding="utf-8")
+
+    class FakeRunner:
+        def parse(self, **kwargs):
+            from mineru_data_agent.models import ParseArtifacts, ToolCall
+
+            return (
+                ParseArtifacts(markdown_path=markdown_path, content_list_path=content_path),
+                ToolCall(
+                    tool="mineru-precise-api",
+                    command=["fake"],
+                    status="completed",
+                    elapsed_seconds=0.01,
+                ),
+            )
+
+    state = agent_live.AgentState(input_path=input_path, output_dir=tmp_path / "run")
+    result = agent_live._tool_parse_pdf(
+        state,
+        {"precise-api": FakeRunner()},
+        parser="precise-api",
+        backend="vlm-transformers",
+    )
+
+    assert result["ok"] is True
+    assert result["parser"] == "precise-api"
+    assert result["backend"] == "vlm-transformers"
+    assert result["mineru_tool"] == "mineru-precise-api"
+    assert state.parses["pdf"]["parser"] == "precise-api"
+
+
+def test_parse_pdf_tool_passes_page_range_to_online_runner(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.pdf"
+    input_path.write_bytes(b"%PDF-1.4")
+    markdown_path = tmp_path / "out" / "input.md"
+    content_path = tmp_path / "out" / "input_content_list.json"
+    markdown_path.parent.mkdir()
+    markdown_path.write_text("PDF page text", encoding="utf-8")
+    content_path.write_text('[{"type":"text","text":"PDF page text"}]', encoding="utf-8")
+    captured: dict[str, object] = {}
+
+    class FakeRunner:
+        def parse(self, **kwargs):
+            from mineru_data_agent.models import ParseArtifacts, ToolCall
+
+            captured.update(kwargs)
+            return (
+                ParseArtifacts(markdown_path=markdown_path, content_list_path=content_path),
+                ToolCall(
+                    tool="mineru-precise-api",
+                    command=["fake"],
+                    status="completed",
+                    elapsed_seconds=0.01,
+                ),
+            )
+
+    state = agent_live.AgentState(input_path=input_path, output_dir=tmp_path / "run")
+    result = agent_live._tool_parse_pdf(
+        state,
+        {"precise-api": FakeRunner()},
+        parser="precise-api",
+        start_page=3,
+        end_page=5,
+    )
+
+    assert result["ok"] is True
+    assert captured["start_page"] == 3
+    assert captured["end_page"] == 5
+    assert result["start_page"] == 3
+    assert result["end_page"] == 5
+
+
+def test_parse_pdf_tool_blocks_local_text_layer_when_runtime_gate_fires(tmp_path: Path, monkeypatch) -> None:
+    input_path = tmp_path / "table.pdf"
+    input_path.write_bytes(b"%PDF-1.4")
+    markdown_path = tmp_path / "out" / "table.md"
+    content_path = tmp_path / "out" / "table_content_list.json"
+    markdown_path.parent.mkdir()
+    markdown_path.write_text("table text", encoding="utf-8")
+    content_path.write_text('[{"type":"text","text":"table text"}]', encoding="utf-8")
+
+    monkeypatch.setattr(
+        agent_live,
+        "build_input_metadata",
+        lambda path: {
+            "suffix": ".pdf",
+            "page_count": 8,
+            "has_text_layer": True,
+            "is_complex_layout": False,
+            "layout_type": "simple_or_unknown",
+            "layout_risk": "low",
+            "has_tables": True,
+            "table_pages": [2, 3],
+            "table_count": 2,
+            "table_risk": "table_structure_or_numeric_risk",
+        },
+    )
+    monkeypatch.setenv("MINERU_PRECISE_API_TOKEN", "test-token")
+
+    class FakeRunner:
+        def parse(self, **kwargs):
+            from mineru_data_agent.models import ParseArtifacts, ToolCall
+
+            return (
+                ParseArtifacts(markdown_path=markdown_path, content_list_path=content_path),
+                ToolCall(
+                    tool="mineru-precise-api",
+                    command=["fake"],
+                    status="completed",
+                    elapsed_seconds=0.01,
+                ),
+            )
+
+    state = agent_live.AgentState(input_path=input_path, output_dir=tmp_path / "run", default_pdf_parser="local")
+    result = agent_live._tool_parse_pdf(
+        state,
+        {"precise-api": FakeRunner()},
+        parser="auto",
+    )
+
+    assert result["ok"] is True
+    assert result["parser"] == "precise-api"
+    assert result["backend"] == "vlm-transformers"
+    assert result["harness_gate"]["blocked"] is True
+    assert result["harness_gate"]["initial_decision"] == "local-pdf-text"
+    assert "表格页" in result["harness_gate"]["reason"]
+    assert state.runtime_harness_events[0]["target"] == "precise-api"
+
+
+def test_parse_url_tool_routes_online_html_to_precise_mineru_html(tmp_path: Path, monkeypatch) -> None:
+    captured: dict[str, object] = {}
+    markdown_path = tmp_path / "runner" / "doc.md"
+    content_path = tmp_path / "runner" / "doc_content_list.json"
+
+    class FakeResponse:
+        headers = {"content-type": "text/html; charset=utf-8"}
+        content = b"<html><body>online html</body></html>"
+
+        def raise_for_status(self) -> None:
+            return None
+
+    class FakeRunner:
+        def parse(self, **kwargs):
+            from mineru_data_agent.models import ParseArtifacts, ToolCall
+
+            captured.update(kwargs)
+            markdown_path.parent.mkdir(parents=True, exist_ok=True)
+            markdown_path.write_text("Online HTML parsed by MinerU-HTML", encoding="utf-8")
+            content_path.write_text('[{"type":"text","text":"Online HTML parsed by MinerU-HTML"}]', encoding="utf-8")
+            return (
+                ParseArtifacts(markdown_path=markdown_path, content_list_path=content_path),
+                ToolCall(
+                    tool="mineru-precise-api",
+                    command=["fake"],
+                    status="completed",
+                    elapsed_seconds=0.01,
+                ),
+            )
+
+    monkeypatch.setattr(agent_live.httpx, "get", lambda *args, **kwargs: FakeResponse())
+
+    state = agent_live.AgentState(output_dir=tmp_path / "run", workspace_root=tmp_path)
+    result = agent_live._tool_parse_url(
+        state,
+        {"precise-api": FakeRunner()},
+        url="https://example.com/source.html",
+        parser="precise-api",
+    )
+
+    assert result["ok"] is True
+    assert result["backend"] == "MinerU-HTML"
+    assert result["parser"] == "precise-api"
+    assert captured["backend"] == "pipeline"
+    assert Path(captured["input_path"]).suffix == ".html"
+    assert state.parses["url"]["backend"] == "MinerU-HTML"
+    assert state.parses["url"]["markdown"] == "Online HTML parsed by MinerU-HTML"
+
+
+def test_plan_escalation_tool_recommends_focused_vlm_and_ocr_chunks(tmp_path: Path) -> None:
+    state = agent_live.AgentState(input_path=tmp_path / "scan.pdf", output_dir=tmp_path)
+    state.extracted = {
+        "content_summary": {"page_count": 8, "page_indices": [0, 1, 2, 3, 4, 5, 6, 7]},
+        "tables": [{"page": 4, "headers": ["A"], "rows": [["1"]]}],
+    }
+    state.quality = {
+        "issues": [
+            {"code": "short_text", "level": "warning"},
+            {"code": "numeric_total_mismatch", "level": "warning"},
+        ]
+    }
+
+    result = agent_live._tool_plan_escalation(state)
+
+    actions = {item["action"]: item for item in result["actions"]}
+    assert result["ok"] is True
+    assert actions["ocr_pipeline_retry"]["method"] == "ocr"
+    assert actions["vlm_region_or_page_retry"]["backend"] == "vlm-transformers"
+    assert actions["vlm_region_or_page_retry"]["pages"] == [4]
+    assert "fine_grained_escalation_plan" in state.notes[-1]
+
+
+def test_compare_parsers_tool_flags_vlm_disagreement_as_hallucination_risk(tmp_path: Path) -> None:
+    state = agent_live.AgentState(input_path=tmp_path / "doc.pdf", output_dir=tmp_path)
+    state.parses["pdf"] = {
+        "markdown": "archive source says cotton exports were 1200 tons in 1931",
+        "content_list": [],
+        "parser": "local-text-layer",
+    }
+
+    result = agent_live._tool_compare_parsers(
+        state,
+        candidate_parser="mineru-vlm",
+        candidate_text="fictional railway revenue was 9988 yuan in 1949",
+    )
+
+    assert result["ok"] is True
+    assert result["status"] == "needs_review"
+    assert result["hallucination_risks"][0]["parser"] == "mineru-vlm"
+    assert state.consistency == {key: value for key, value in result.items() if key != "ok"}
+    assert "vlm_hallucination_risk_detected" in state.notes
+
+
 def test_run_live_agent_writes_result_json_with_unified_schema(tmp_path: Path, monkeypatch) -> None:
     input_path = tmp_path / "input.html"
     input_path.write_text("<html><body>ok</body></html>", encoding="utf-8")
@@ -183,6 +412,8 @@ def test_run_live_agent_writes_result_json_with_unified_schema(tmp_path: Path, m
     assert data["tool_sequence"] == ["select_skill", "parse_html", "validate_answer", "finalize"]
     assert data["selected_skill"]["skill_id"] == "structured_extraction"
     assert data["answer_validation"]["ok"] is True
+    assert data["answer_validation"]["answer_full"] == "ok"
+    assert data["answer_validation"]["evidence_full"] == ["input contained ok"]
     assert data["autonomy_controls"]["mode"] == "skill_guided_tool_calling"
     assert Path(trace.output_dir, "live_agent_trace.json").exists()
     assert Path(trace.output_dir, "live_agent_summary.md").exists()
@@ -195,6 +426,94 @@ def test_finalize_requires_prior_answer_validation(tmp_path: Path) -> None:
 
     assert result["ok"] is False
     assert result["required_tool"] == "validate_answer"
+
+
+def test_run_live_agent_harness_finalizes_after_validated_answer(tmp_path: Path, monkeypatch) -> None:
+    input_path = tmp_path / "input.html"
+    input_path.write_text("<html><body>ok</body></html>", encoding="utf-8")
+    calls = iter(
+        [
+            (
+                "select_skill",
+                '{"skill_id":"structured_extraction","reason":"simple HTML smoke"}',
+            ),
+            (
+                "parse_html",
+                "{}",
+            ),
+            (
+                "validate_answer",
+                '{"answer":"ok","evidence":["ok"],"claims":["ok"]}',
+            ),
+        ]
+    )
+
+    def fake_post_chat(**kwargs):
+        name, arguments = next(calls)
+        return {
+            "choices": [
+                {
+                    "message": {
+                        "content": "",
+                        "tool_calls": [
+                            {
+                                "id": "call_1",
+                                "type": "function",
+                                "function": {"name": name, "arguments": arguments},
+                            }
+                        ],
+                    },
+                    "finish_reason": "tool_calls",
+                }
+            ],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
+        }
+
+    monkeypatch.setattr(agent_live, "_post_chat", fake_post_chat)
+
+    trace = agent_live.run_live_agent(
+        input_file=input_path,
+        output_root=tmp_path / "runs",
+        task="answer directly",
+        provider="deepseek",
+        api_key="test-key",
+        max_turns=3,
+    )
+
+    assert trace.status == "completed"
+    assert trace.final_answer == "ok"
+    assert trace.final_evidence == ["ok"]
+    assert "harness_assisted_finalize_after_validated_answer" in trace.to_jsonable()["notes"]
+
+
+def test_run_live_agent_summarizes_when_model_loops_after_parse(tmp_path: Path, monkeypatch) -> None:
+    input_path = tmp_path / "input.html"
+    input_path.write_text("<html><body><h1>Title</h1><p>alpha beta</p></body></html>", encoding="utf-8")
+    calls = iter(
+        [
+            ("select_skill", '{"skill_id":"structured_extraction","reason":"simple HTML smoke"}'),
+            ("parse_html", "{}"),
+            ("build_extracted", "{}"),
+            ("validate_quality", '{"profile":"general_document","task":"parse"}'),
+            ("query_extracted", '{"query":"alpha"}'),
+            ("query_extracted", '{"query":"beta"}'),
+        ]
+    )
+
+    monkeypatch.setattr(agent_live, "_post_chat", _fake_tool_sequence(calls))
+
+    trace = agent_live.run_live_agent(
+        input_file=input_path,
+        output_root=tmp_path / "runs",
+        task="parse only",
+        provider="deepseek",
+        api_key="test-key",
+        max_turns=6,
+    )
+
+    assert trace.status == "completed"
+    assert "文档解析已完成" in (trace.final_answer or "")
+    assert "harness_assisted_finalize_after_parse_summary" in trace.to_jsonable()["notes"]
 
 
 def test_dispatch_requires_skill_before_tool_use(tmp_path: Path) -> None:
@@ -365,3 +684,129 @@ def test_report_markdown_marks_incomplete_cases_as_non_evidence() -> None:
     assert "Tool-validated cases: **0**" in markdown
     assert "Answer-quality pass cases: **0**" in markdown
     assert "| 2 | `bad` | `-` | empty | false | false | unreviewed | assistant_answer_without_finalize" in markdown
+
+
+def _fake_tool_sequence(calls):
+    def fake_post_chat(**kwargs):
+        name, arguments = next(calls)
+        return {
+            "choices": [
+                {
+                    "message": {
+                        "content": "",
+                        "tool_calls": [
+                            {"id": "c", "type": "function", "function": {"name": name, "arguments": arguments}}
+                        ],
+                    },
+                    "finish_reason": "tool_calls",
+                }
+            ],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 2, "total_tokens": 3},
+        }
+
+    return fake_post_chat
+
+
+def _new_session(tmp_path: Path, input_path: Path | None = None) -> "agent_live.LiveAgentSession":
+    return agent_live.LiveAgentSession(
+        output_dir=tmp_path / "out",
+        provider="deepseek",
+        model="m",
+        api_key="k",
+        base_url="https://api.deepseek.com/v1",
+        max_turns=8,
+        max_tokens=256,
+        timeout=1,
+        runners=agent_live._build_live_mineru_runners(None),
+        workspace_root=tmp_path,
+        input_path=input_path,
+    )
+
+
+def test_live_session_reuses_parse_across_sends(tmp_path: Path, monkeypatch) -> None:
+    input_path = tmp_path / "doc.html"
+    input_path.write_text("<html><body>alpha beta gamma</body></html>", encoding="utf-8")
+    calls = iter(
+        [
+            # send #1: parse + extract + finalize
+            ("select_skill", '{"skill_id":"structured_extraction","reason":"smoke"}'),
+            ("parse_html", "{}"),
+            ("build_extracted", "{}"),
+            ("validate_answer", '{"answer":"alpha","evidence":["alpha"]}'),
+            ("finalize", '{"answer":"alpha","evidence":["alpha"]}'),
+            # send #2: must reuse prior parse/extract (no parse_html again)
+            ("query_extracted", '{"query":"alpha"}'),
+            ("validate_answer", '{"answer":"beta","evidence":["beta"]}'),
+            ("finalize", '{"answer":"beta","evidence":["beta"]}'),
+        ]
+    )
+    monkeypatch.setattr(agent_live, "_post_chat", _fake_tool_sequence(calls))
+
+    session = _new_session(tmp_path, input_path)
+    first = session.send("extract alpha")
+    assert first["status"] == "completed"
+    parse_obj = session.state.parses.get("html")
+    assert parse_obj is not None
+
+    second = session.send("now answer beta from the same document")
+    assert second["status"] == "completed"
+    # Hard state reuse: the second turn did NOT re-parse the document.
+    assert session.state.parses.get("html") is parse_obj
+    send2_tools = [t.tool_call["name"] for t in session.trace.turns if t.tool_call][-3:]
+    assert "parse_html" not in send2_tools
+
+
+def test_live_session_interrupt_returns_and_keeps_session(tmp_path: Path, monkeypatch) -> None:
+    input_path = tmp_path / "doc.html"
+    input_path.write_text("<html><body>ok</body></html>", encoding="utf-8")
+
+    def boom(**kwargs):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(agent_live, "_post_chat", boom)
+
+    session = _new_session(tmp_path, input_path)
+    result = session.send("do something")
+
+    assert result["status"] == "interrupted"
+    assert "user_interrupted" in session.trace.notes
+    # Conversation is preserved so the user can continue after interrupting.
+    assert any(message["role"] == "user" for message in session.messages)
+
+
+def test_live_session_set_current_document_sets_parser_and_message(tmp_path: Path) -> None:
+    pdf_path = tmp_path / "a.pdf"
+    pdf_path.write_bytes(b"%PDF-1.4")
+    session = _new_session(tmp_path)
+
+    session.set_current_document(
+        pdf_path,
+        default_pdf_parser="precise-api",
+        routing_note="router selected runner=precise-api",
+    )
+
+    assert session.state.default_pdf_parser == "precise-api"
+    assert session.state.input_path == pdf_path.resolve()
+    assert any("precise-api" in str(m.get("content", "")) for m in session.messages if m["role"] == "user")
+
+
+def test_live_session_set_current_document_clears_prior_document_state(tmp_path: Path) -> None:
+    first = tmp_path / "first.html"
+    second = tmp_path / "second.html"
+    first.write_text("<html>first</html>", encoding="utf-8")
+    second.write_text("<html>second</html>", encoding="utf-8")
+    session = _new_session(tmp_path, first)
+    session.state.parses["html"] = {"markdown": "first", "content_list": []}
+    session.state.extracted = {"sections": [{"title": "first"}]}
+    session.state.quality = {"status": "pass"}
+    session.state.retrieval = {"stats": {"total_chunks": 1}}
+    session.state.answer_validation = {"ok": True}
+
+    session.set_current_document(second)
+
+    assert session.state.input_path == second.resolve()
+    assert session.state.parses == {}
+    assert session.state.extracted is None
+    assert session.state.quality is None
+    assert session.state.retrieval is None
+    assert session.state.answer_validation is None

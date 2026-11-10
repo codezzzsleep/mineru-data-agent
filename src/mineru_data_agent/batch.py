@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from time import perf_counter
-from typing import Any
+from typing import Any, Callable
 
 from .agent import MinerUDataAgent
 from .logging_utils import utc_now
@@ -15,6 +15,7 @@ def run_batch(
     output_root: Path,
     agent: MinerUDataAgent,
     defaults: dict[str, Any] | None = None,
+    progress_callback: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
     manifest_path = manifest_path.expanduser().resolve()
     output_root = output_root.expanduser().resolve()
@@ -60,6 +61,8 @@ def run_batch(
             "resolved_input": str(resolved_input) if resolved_input else None,
             "task": objective,
             "profile": task.get("profile", "auto"),
+            "source_file": task.get("source_file"),
+            "page_range": task.get("page_range"),
             "status": "running",
         }
         try:
@@ -74,6 +77,8 @@ def run_batch(
                 method=str(task.get("method", "auto")),
                 lang=str(task.get("lang", "ch")),
                 strict_page_provenance=_to_bool(task.get("strict_page_provenance", False)),
+                start_page=_to_optional_int(task.get("start_page")),
+                end_page=_to_optional_int(task.get("end_page")),
             )
             record.update(
                 {
@@ -88,10 +93,15 @@ def run_batch(
                     "retrieval_chunks_path": result.retrieval_export.get("chunks_path"),
                 }
             )
+            harness_gate = _result_harness_gate(result)
+            if harness_gate:
+                record["harness_gate"] = harness_gate
         except Exception as exc:
             record.update({"status": "failed", "error": repr(exc)})
         record["elapsed_seconds"] = round(perf_counter() - item_started, 3)
         items.append(record)
+        if progress_callback:
+            progress_callback(dict(record))
 
     completed = sum(1 for item in items if item["status"] == "completed")
     failed = len(items) - completed
@@ -125,9 +135,26 @@ def _resolve_task_input(input_file: Any, manifest_dir: Path) -> Path:
     return path.resolve()
 
 
+def _result_harness_gate(result: Any) -> dict[str, Any]:
+    execution_control = getattr(result, "execution_control", None)
+    if not isinstance(execution_control, dict):
+        return {}
+    gate = execution_control.get("harness_gate")
+    return gate if isinstance(gate, dict) and gate.get("blocked") else {}
+
+
 def _to_bool(value: Any) -> bool:
     if isinstance(value, bool):
         return value
     if isinstance(value, str):
         return value.strip().lower() in {"1", "true", "yes", "y", "on"}
     return bool(value)
+
+
+def _to_optional_int(value: Any) -> int | None:
+    if value in (None, ""):
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None

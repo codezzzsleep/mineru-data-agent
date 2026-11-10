@@ -6,6 +6,7 @@ from types import SimpleNamespace
 import pytest
 
 from mineru_data_agent import cli as cli_module
+from mineru_data_agent.mineru_client import MinerUPreciseAPIRunner
 
 
 def test_cli_fallback_runner_skips_when_cli_unavailable(monkeypatch) -> None:
@@ -52,6 +53,39 @@ def test_cli_parser_accepts_strict_page_provenance() -> None:
     assert args.strict_page_provenance is True
 
 
+def test_cli_parser_accepts_auto_and_precise_runner() -> None:
+    auto_args = cli_module.build_parser().parse_args(
+        [
+            "run",
+            "--input",
+            "sample.pdf",
+            "--out",
+            "runs",
+            "--task",
+            "extract with routing",
+            "--runner",
+            "auto",
+        ]
+    )
+    precise_args = cli_module.build_parser().parse_args(
+        [
+            "run",
+            "--input",
+            "sample.pdf",
+            "--out",
+            "runs",
+            "--task",
+            "extract with precise api",
+            "--runner",
+            "precise-api",
+        ]
+    )
+
+    assert auto_args.runner == "auto"
+    assert precise_args.runner == "precise-api"
+    assert isinstance(cli_module._build_runner(precise_args), MinerUPreciseAPIRunner)
+
+
 def test_cli_parser_accepts_agent_run() -> None:
     args = cli_module.build_parser().parse_args(
         [
@@ -75,6 +109,41 @@ def test_cli_parser_accepts_agent_run() -> None:
     assert args.provider == "deepseek"
     assert args.max_turns == 6
     assert args.max_tokens == 512
+
+
+def test_cli_parser_accepts_chat() -> None:
+    args = cli_module.build_parser().parse_args(["chat", "--out", "runs/chat", "--dry-run"])
+
+    assert args.command == "chat"
+    assert args.out == "runs/chat"
+    assert args.dry_run is True
+
+
+def test_cli_parser_accepts_corpus_commands() -> None:
+    build_args = cli_module.build_parser().parse_args(["corpus", "build", "--root", "runs"])
+    package_args = cli_module.build_parser().parse_args(["corpus", "package-sources", "--run-root", "runs/raw", "--out", "runs/packaged"])
+    search_args = cli_module.build_parser().parse_args(["corpus", "search", "--catalog", "catalog.json", "--query", "history"])
+    load_args = cli_module.build_parser().parse_args(["corpus", "load", "--package-dir", "doc", "--reference", "compressed"])
+
+    assert build_args.command == "corpus"
+    assert build_args.corpus_command == "build"
+    assert package_args.corpus_command == "package-sources"
+    assert package_args.run_root == "runs/raw"
+    assert search_args.corpus_command == "search"
+    assert load_args.corpus_command == "load"
+
+
+def test_cli_loads_project_env_without_overriding_existing(monkeypatch, tmp_path: Path) -> None:
+    env_path = tmp_path / ".env"
+    env_path.write_text("DEEPSEEK_API_KEY=from-file\nMINERU_API_TOKEN=mineru\n", encoding="utf-8")
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.setenv("MINERU_API_TOKEN", "from-env")
+
+    loaded = cli_module._load_project_env(tmp_path)
+
+    assert loaded == env_path
+    assert cli_module.os.environ["DEEPSEEK_API_KEY"] == "from-file"
+    assert cli_module.os.environ["MINERU_API_TOKEN"] == "from-env"
 
 
 def test_cli_agent_run_invokes_live_agent(monkeypatch, capsys, tmp_path: Path) -> None:

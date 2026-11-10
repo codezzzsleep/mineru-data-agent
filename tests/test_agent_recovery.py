@@ -36,6 +36,260 @@ def test_text_cleanup_recovery_selects_cleaned_attempt(tmp_path: Path) -> None:
     assert Path(result.artifacts["markdown_path"]).parts[-3:-1] == ("recovery", "text_cleanup")
 
 
+def test_born_digital_pdf_uses_local_text_layer_without_mineru(tmp_path: Path, monkeypatch) -> None:
+    input_path = tmp_path / "vector.pdf"
+    input_path.write_bytes(b"%PDF-1.4")
+
+    def fake_probe(path):
+        return 2, True
+
+    def fake_extract(path):
+        text = "Local PDF text. " * 20
+        return (
+            "# Page 1\n\n" + text,
+            [{"type": "text", "text": text, "source": "pdf-text-layer", "page_idx": 0}],
+            {"page_count": 2, "text_chars": len(text), "has_text_layer": True},
+        )
+
+    monkeypatch.setattr("mineru_data_agent.routing.probe_pdf_text_layer", fake_probe)
+    monkeypatch.setattr("mineru_data_agent.agent.extract_pdf_text", fake_extract)
+
+    class FailingRunner:
+        def parse(self, *args, **kwargs):
+            raise AssertionError("MinerU should not be called for a text-layer PDF")
+
+    result = MinerUDataAgent(mineru_runner=FailingRunner(), requested_runner="auto", auto_runner=True).run(
+        input_path,
+        tmp_path / "runs",
+        task="整理 PDF 文本",
+    )
+
+    assert result.execution_control["resolved"]["runner"] == "local-pdf-text"
+    assert result.extracted["content_summary"]["source_counts"]["pdf-text-layer"] == 1
+
+
+def test_text_layer_pdf_overrides_unnecessary_llm_precise_api_route(tmp_path: Path, monkeypatch) -> None:
+    input_path = tmp_path / "vector.pdf"
+    input_path.write_bytes(b"%PDF-1.4")
+
+    def fake_probe(path):
+        return 7, True
+
+    def fake_extract(path):
+        text = "Born digital PDF text layer. " * 20
+        return (
+            "# Page 1\n\n" + text,
+            [{"type": "text", "text": text, "source": "pdf-text-layer", "page_idx": 0}],
+            {"page_count": 7, "text_chars": len(text), "has_text_layer": True},
+        )
+
+    class PrecisePreferringLLM:
+        def plan_execution(self, **kwargs: object) -> tuple[dict, ToolCall]:
+            return (
+                {
+                    "enabled": True,
+                    "status": "completed",
+                    "task_understanding": "born digital PDF",
+                    "recommended_profile": "general_document",
+                    "recommended_runner": "precise-api",
+                    "recommended_backend": "pipeline",
+                    "recommended_method": "txt",
+                    "recommended_lang": "ch",
+                    "confidence": 0.9,
+                    "llm_usage": {"usage": {"total_tokens": 1}},
+                },
+                ToolCall(
+                    tool="fake-llm-preplan",
+                    command=["fake"],
+                    status="completed",
+                    elapsed_seconds=0.01,
+                    metadata={"llm_usage": {"usage": {"total_tokens": 1}}},
+                ),
+            )
+
+        def analyze(self, **kwargs: object) -> tuple[dict, ToolCall]:
+            return (
+                {"status": "completed", "risk_findings": [], "llm_usage": {"usage": {"total_tokens": 1}}},
+                ToolCall(
+                    tool="fake-llm",
+                    command=["fake"],
+                    status="completed",
+                    elapsed_seconds=0.01,
+                    metadata={"llm_usage": {"usage": {"total_tokens": 1}}},
+                ),
+            )
+
+        def build_document_understanding(self, **kwargs: object) -> tuple[dict, ToolCall]:
+            return (
+                {
+                    "status": "completed",
+                    "name": "born-digital-pdf",
+                    "description": "Born digital PDF text-layer document.",
+                    "compressed": "Born digital PDF text-layer document.",
+                    "llm_usage": {"usage": {"total_tokens": 1}},
+                },
+                ToolCall(
+                    tool="fake-llm-understanding",
+                    command=["fake"],
+                    status="completed",
+                    elapsed_seconds=0.01,
+                    metadata={"llm_usage": {"usage": {"total_tokens": 1}}},
+                ),
+            )
+
+    class FailingRunner:
+        def parse(self, *args, **kwargs):
+            raise AssertionError("Precise API should not be called for a text-layer PDF")
+
+    monkeypatch.setattr("mineru_data_agent.routing.probe_pdf_text_layer", fake_probe)
+    monkeypatch.setattr("mineru_data_agent.agent.extract_pdf_text", fake_extract)
+    monkeypatch.setenv("MINERU_PRECISE_API_TOKEN", "test-token")
+
+    result = MinerUDataAgent(
+        mineru_runner=FailingRunner(),
+        llm_client=PrecisePreferringLLM(),
+        requested_runner="auto",
+        auto_runner=True,
+    ).run(
+        input_path,
+        tmp_path / "runs",
+        task="summarize this born-digital PDF",
+        profile="general_document",
+        method="txt",
+    )
+
+    assert result.execution_control["resolved"]["runner"] == "local-pdf-text"
+    assert result.execution_control["overrides"][0]["to"] == "local-pdf-text"
+    assert result.extracted["content_summary"]["source_counts"]["pdf-text-layer"] == 1
+
+
+def test_complex_layout_text_layer_pdf_uses_layout_aware_parser(tmp_path: Path, monkeypatch) -> None:
+    input_path = tmp_path / "two-column.pdf"
+    input_path.write_bytes(b"%PDF-1.4")
+
+    def fake_probe(path):
+        return 20, True
+
+    def fake_layout(path):
+        return {
+            "is_complex_layout": True,
+            "layout_type": "multi_column",
+            "layout_risk": "reading_order_risk",
+            "multi_column_pages": 4,
+            "sampled_pages": 5,
+            "probe_source": "test",
+        }
+
+    def fail_extract(path):
+        raise AssertionError("complex layout PDF should not use local text extraction as primary parser")
+
+    class RecordingAgentAPIRunner:
+        def __init__(self) -> None:
+            self.called = False
+
+        def parse(self, input_file, output_dir, **kwargs):
+            self.called = True
+            output_dir.mkdir(parents=True, exist_ok=True)
+            md_path = output_dir / "out.md"
+            content_path = output_dir / "out_content_list.json"
+            md_path.write_text("# Page 1\n\nLayout-aware parse", encoding="utf-8")
+            content_path.write_text(
+                json.dumps(
+                    [{"type": "text", "text": "Layout-aware parse", "source": "mineru", "page_idx": 0}],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            return (
+                ParseArtifacts(markdown_path=md_path, content_list_path=content_path),
+                ToolCall(tool="fake-mineru", command=["fake"], status="completed", elapsed_seconds=0.01),
+            )
+
+    runner = RecordingAgentAPIRunner()
+    monkeypatch.setattr("mineru_data_agent.routing.probe_pdf_text_layer", fake_probe)
+    monkeypatch.setattr("mineru_data_agent.routing.probe_pdf_layout_complexity", fake_layout)
+    monkeypatch.setattr("mineru_data_agent.agent.extract_pdf_text", fail_extract)
+
+    result = MinerUDataAgent(mineru_runner=runner, requested_runner="auto", auto_runner=True).run(
+        input_path,
+        tmp_path / "runs",
+        task="整理双栏论文",
+    )
+
+    assert runner.called is True
+    assert result.execution_control["workflow_routing"]["applied_signals"]["is_complex_layout"] is True
+    assert result.execution_control["overrides"][0]["to"] == "agent-api"
+    assert result.extracted["content_summary"]["source_counts"]["mineru"] == 1
+
+
+def test_table_text_layer_pdf_records_vlm_and_numeric_check_gate(tmp_path: Path, monkeypatch) -> None:
+    input_path = tmp_path / "table.pdf"
+    input_path.write_bytes(b"%PDF-1.4")
+
+    def fake_probe(path):
+        return 8, True
+
+    def fake_layout(path):
+        return {
+            "is_complex_layout": False,
+            "layout_type": "simple_or_unknown",
+            "layout_risk": "low",
+            "multi_column_pages": 0,
+            "sampled_pages": 5,
+            "has_tables": True,
+            "table_pages": [2, 3],
+            "table_count": 2,
+            "table_risk": "table_structure_or_numeric_risk",
+            "probe_source": "test",
+        }
+
+    def fail_extract(path):
+        raise AssertionError("table PDF should not trust local text extraction as primary parser")
+
+    class RecordingPreciseAPIRunner:
+        def __init__(self) -> None:
+            self.called = False
+
+        def parse(self, input_file, output_dir, **kwargs):
+            self.called = True
+            output_dir.mkdir(parents=True, exist_ok=True)
+            md_path = output_dir / "out.md"
+            content_path = output_dir / "out_content_list.json"
+            md_path.write_text("# Page 1\n\n| 材料 | 数量 |\n|---|---:|\n| 铜 | 12 |", encoding="utf-8")
+            content_path.write_text(
+                json.dumps(
+                    [{"type": "text", "text": "材料 数量 铜 12", "source": "mineru", "page_idx": 0}],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            return (
+                ParseArtifacts(markdown_path=md_path, content_list_path=content_path),
+                ToolCall(tool="fake-mineru", command=["fake"], status="completed", elapsed_seconds=0.01),
+            )
+
+    runner = RecordingPreciseAPIRunner()
+    monkeypatch.setenv("MINERU_PRECISE_API_TOKEN", "test-token")
+    monkeypatch.setattr("mineru_data_agent.routing.probe_pdf_text_layer", fake_probe)
+    monkeypatch.setattr("mineru_data_agent.routing.probe_pdf_layout_complexity", fake_layout)
+    monkeypatch.setattr("mineru_data_agent.agent.extract_pdf_text", fail_extract)
+
+    result = MinerUDataAgent(mineru_runner=runner, requested_runner="auto", auto_runner=True).run(
+        input_path,
+        tmp_path / "runs",
+        task="整理表格资料",
+    )
+
+    gate = result.execution_control["harness_gate"]
+    assert runner.called is True
+    assert gate["initial_decision"] == "local-pdf-text"
+    assert "检测到表格页" in gate["reason"]
+    actions = {item["action"]: item for item in gate["actions"]}
+    assert actions["vlm_table_review"]["backend"] == "vlm-transformers"
+    assert actions["ocr_or_text_numeric_check"]["method"] == "ocr_or_text"
+    assert actions["ocr_or_text_numeric_check"]["pages"] == [2, 3]
+
+
 def test_cross_run_memory_recommends_prior_successful_recovery(tmp_path: Path) -> None:
     html_path = tmp_path / "mojibake.html"
     noisy = "锟斤拷" + ("这是一段需要清理但仍可结构化的巡检文本。" * 20)
@@ -172,8 +426,15 @@ def test_llm_preplan_controls_profile_method_and_trace(tmp_path: Path) -> None:
     assert "OCR" in result.execution_control["planning_rationale"]["profile_reason"]
     assert {"field": "method", "from": "auto", "to": "ocr", "reason": "llm_preplan"} in result.execution_control["applied"]
     assert result.llm_analysis["pre_execution_plan"]["target_schema"]["报告日期"] == "date"
-    assert result.llm_analysis["usage_summary"]["total_tokens"] == 430
-    assert result.llm_analysis["usage_summary"]["estimated_cost_usd"] == 0.003
+    assert result.llm_analysis["usage_summary"]["total_tokens"] == 470
+    assert result.llm_analysis["usage_summary"]["estimated_cost_usd"] == 0.0035
+    assert result.llm_analysis["document_understanding"]["description"] == "Semantic document description"
+    skill_package = result.skill_package
+    assert skill_package["description_source"] == "llm"
+    assert skill_package["has_compressed_view"] is True
+    assert skill_package["has_full_content"] is True
+    assert Path(skill_package["files"]["compressed"]).exists()
+    assert Path(skill_package["files"]["content"]).exists()
     assert result.llm_analysis["quality_decision"]["risk_counts"]["warning"] == 1
     assert result.recovery_decision["decision"] == "accept_with_llm_review_notes"
     assert result.recovery_decision["llm_quality_decision"]["suggested_actions"] == ["keep OCR quality review note"]
@@ -471,7 +732,35 @@ class _LLMSuggestedRetryRunner:
         )
 
 
-class _OcrRetrySuggestionLLM:
+class _DocumentUnderstandingMixin:
+    def build_document_understanding(self, **kwargs: object) -> tuple[dict, ToolCall]:
+        return (
+            {
+                "status": "completed",
+                "name": "semantic-document",
+                "description": "Semantic document description",
+                "compressed": "This is an LLM-generated compact understanding for progressive loading.",
+                "topics": ["topic-a"],
+                "entities": ["entity-a"],
+                "quality_notes": ["review quality gates"],
+                "llm_usage": {
+                    "provider": "fake",
+                    "model": "fake-understanding",
+                    "usage": {"prompt_tokens": 25, "completion_tokens": 15, "total_tokens": 40},
+                    "cost_estimate": {"configured": True, "estimated_cost": 0.0005, "currency": "USD"},
+                },
+            },
+            ToolCall(
+                tool="fake-llm-document-understanding",
+                command=["fake-llm", "document-understanding"],
+                status="completed",
+                elapsed_seconds=0.01,
+                metadata={"llm_usage": {"usage": {"total_tokens": 40}}},
+            ),
+        )
+
+
+class _OcrRetrySuggestionLLM(_DocumentUnderstandingMixin):
     def plan_execution(self, **kwargs: object) -> tuple[dict, ToolCall]:
         return (
             {
@@ -520,7 +809,7 @@ class _OcrRetrySuggestionLLM:
         )
 
 
-class _PreplanningLLM:
+class _PreplanningLLM(_DocumentUnderstandingMixin):
     def __init__(self) -> None:
         self.post_parse_profile = ""
 
